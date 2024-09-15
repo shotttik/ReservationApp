@@ -1,4 +1,6 @@
 using API.Middlewares;
+using Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,12 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 // Configure services
 ConfigureServices(builder.Services);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddUserAccountDbContext(connectionString);
+
+// Add AutoMapper profiles and application services using the extension methods
+builder.Services.AddAutoMapperProfiles();
+builder.Services.AddApplicationServices();
 // Build the app
 var app = builder.Build();
 
@@ -34,6 +42,8 @@ void ConfigureServices(IServiceCollection services)
     // Add any other services here, for example:
     // services.AddDbContext<MyDbContext>();
     // services.AddScoped<IMyService, MyService>();
+    // Register DbContext with SQL Server
+
 }
 
 void ConfigureMiddleware(WebApplication app)
