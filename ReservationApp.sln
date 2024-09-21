@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{540B4C2B-0EBF-4769-8F64-7A4EF1EDE994}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{50D6574A-63EC-4273-87A8-5094AC6E0921}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{50D6574A-63EC-4273-87A8-5094AC6E0921}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

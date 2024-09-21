@@ -2,13 +2,13 @@
 using Domain.Interfaces;
 using Infrastructure.Data;
 
-namespace Domain.Repositories
+namespace Infrastructure.Repositories
 {
-    public class UserAccountRepository: IUserAccountRepository
+    public class UserAccountRepository :IUserAccountRepository
     {
-        private readonly UserAccountDbContext context;
+        private readonly UserDbContext context;
 
-        public UserAccountRepository(UserAccountDbContext context)
+        public UserAccountRepository(UserDbContext context)
         {
             this.context = context;
         }

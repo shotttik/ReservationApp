@@ -18,10 +18,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 ConfigureServices(builder.Services);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddUserAccountDbContext(connectionString);
+builder.Services.AddUserDbContext(connectionString);
+
 
 // Add AutoMapper profiles and application services using the extension methods
-builder.Services.AddAutoMapperProfiles();
 builder.Services.AddApplicationServices();
 // Build the app
 var app = builder.Build();
