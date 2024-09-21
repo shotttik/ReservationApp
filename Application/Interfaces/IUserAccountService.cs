@@ -4,6 +4,6 @@ namespace Application.Interfaces
 {
     public interface IUserAccountService
     {
-        Task AddUserAccountAsync(UserAccountDTO userAccountDTO);
+        Task AddUserAccountAsync(AddUserAccountRequest userAccountDTO);
     }
 }

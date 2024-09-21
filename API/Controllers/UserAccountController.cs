@@ -18,7 +18,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> AddUserAccount([FromBody] UserAccountDTO userAccountDTO)
+        public async Task<IActionResult> AddUserAccount([FromBody] AddUserAccountRequest userAccountDTO)
         {
             await userAccountService.AddUserAccountAsync(userAccountDTO);
             //return CreatedAtAction(nameof(GetReservationById), new { id = reservationDto.Id }, reservationDto);

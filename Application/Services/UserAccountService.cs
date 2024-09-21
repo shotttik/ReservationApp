@@ -14,7 +14,7 @@ namespace Application.Services
             this.userAccountRepository = userAccountRepository;
         }
 
-        public async Task AddUserAccountAsync(UserAccountDTO userAccountDTO)
+        public async Task AddUserAccountAsync(AddUserAccountRequest userAccountDTO)
         {
             //await userAccountRepository.AddAsync(userAccount);
         }

@@ -2,8 +2,8 @@
 {
     public class Permission
     {
-        public required int ID { get; set; }
-        public required string PermissionDescription { get; set; }
+        public int ID { get; set; }
+        public string PermissionDescription { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public ICollection<UserRole>? UserRoles { get; } = [];
     }

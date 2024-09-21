@@ -37,6 +37,58 @@ namespace Infrastructure.Data
                 .WithOne(ua => ua.Role)
                 .HasForeignKey(ua => ua.RoleID)
                 .IsRequired();
+
+            modelBuilder.Entity<Permission>(entity =>
+            {
+                entity.Property(e => e.PermissionDescription).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.Property(e => e.RoleDescription).HasMaxLength(20).IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<UserAccount>(
+                entity =>
+                {
+                    entity.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
+                    entity.Property(e => e.LastName).HasMaxLength(100).IsRequired();
+                    entity.Property(e => e.IdentificationNumber).HasMaxLength(11);
+                    entity.Property(e => e.Gender).HasDefaultValue(4).ValueGeneratedOnAdd();
+                    entity.Property(e => e.RoleID).HasDefaultValue(1); // User
+                    entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
+                    entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+                }
+            );
+
+            modelBuilder.Entity<UserLoginData>(entity =>
+            {
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.HashAlgorithmID).IsRequired();
+                entity.Property(e => e.ConfirmationToken).HasMaxLength(150);
+                entity.Property(e => e.TokenGenerationTime).IsRequired();
+                entity.Property(e => e.PasswordRecoveryToken).HasMaxLength(150);
+                entity.Property(e => e.RecoveryTokenTime).IsRequired();
+                entity.Property(e => e.UserAccountID).IsRequired();
+                entity.Property(e => e.EmailValidationStatus).HasDefaultValue(0); // deactivated
+                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<HashingAlgorithm>(entity =>
+            {
+                entity.Property(e => e.AlgorithmName).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .ValueGeneratedOnAdd();
+            });
         }
     }
 }

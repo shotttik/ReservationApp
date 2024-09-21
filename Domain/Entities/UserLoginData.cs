@@ -6,8 +6,8 @@ namespace Domain.Entities
     {
         public int ID { get; set; }
         [EmailAddress]
-        public required string Email { get; set; }
-        public required string PasswordHash { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
         public int HashAlgorithmID { get; set; }
         public string? ConfirmationToken { get; set; }
         public int UserAccountID { get; set; }
