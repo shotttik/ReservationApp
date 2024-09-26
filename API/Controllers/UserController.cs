@@ -1,0 +1,35 @@
+﻿using API.Attributes;
+using Application.DTOs.User;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Controllers
+{
+    [Route("API/[controller]/[action]")]
+    [ApiController]
+    public class UserController :ControllerBase
+    {
+        private readonly IUserService userAccountService;
+
+        public UserController(IUserService userAccountService)
+        {
+            this.userAccountService = userAccountService;
+        }
+
+        [HttpPost]
+        [Logging(LoggingType.ExceptBody)]
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
+        {
+            await userAccountService.RegisterRequest(registerUserRequest);
+
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+            var response = await userAccountService.Login(loginRequest);
+
+            return Ok(response);
+        }
+    }
+}

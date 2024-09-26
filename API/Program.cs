@@ -1,7 +1,10 @@
 using API.Middlewares;
 using Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 // Configure services
 ConfigureServices(builder.Services);
+ConfigureAuthentication(builder);
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddUserDbContext(connectionString);
@@ -58,6 +63,7 @@ void ConfigureMiddleware(WebApplication app)
     // Other middleware
     app.UseHttpsRedirection();
     app.UseRouting();
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
@@ -65,4 +71,22 @@ void ConfigureMiddleware(WebApplication app)
     // Add any other middleware here, for example:
     // app.UseAuthentication();
     // app.UseCors("AllowSpecificOrigins");
+}
+void ConfigureAuthentication(WebApplicationBuilder builder)
+{
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration ["Jwt:Issuer"],
+            ValidAudience = builder.Configuration ["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration ["Jwt:Key"]!)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 }

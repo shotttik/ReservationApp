@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20240921210502_updatedDefaultValueToRoleID")]
-    partial class updatedDefaultValueToRoleID
+    [Migration("20240924173223_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,29 +24,6 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Domain.Entities.HashingAlgorithm", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("AlgorithmName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("HashingAlgorithms");
-                });
 
             modelBuilder.Entity("Domain.Entities.Permission", b =>
                 {
@@ -97,11 +74,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(4);
 
-                    b.Property<string>("IdentificationNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -151,17 +123,18 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("HashAlgorithmID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("varbinary(255)");
 
                     b.Property<string>("PasswordRecoveryToken")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateTime?>("RecoveryTokenTime")
                         .IsRequired()
@@ -180,8 +153,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("HashAlgorithmID");
 
                     b.HasIndex("UserAccountID")
                         .IsUnique();
@@ -240,19 +211,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserLoginData", b =>
                 {
-                    b.HasOne("Domain.Entities.HashingAlgorithm", "HashingAlgorithm")
-                        .WithMany("UserLoginDatas")
-                        .HasForeignKey("HashAlgorithmID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.UserAccount", "UserAccount")
                         .WithOne("UserLoginData")
                         .HasForeignKey("Domain.Entities.UserLoginData", "UserAccountID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("HashingAlgorithm");
 
                     b.Navigation("UserAccount");
                 });
@@ -270,11 +233,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("UserRolesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entities.HashingAlgorithm", b =>
-                {
-                    b.Navigation("UserLoginDatas");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserAccount", b =>

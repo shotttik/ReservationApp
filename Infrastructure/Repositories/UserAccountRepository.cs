@@ -13,10 +13,12 @@ namespace Infrastructure.Repositories
             this.context = context;
         }
 
-        public async Task AddAsync(UserAccount userAccount)
+        public async Task<int> AddAsync(UserAccount userAccount)
         {
             await context.UserAccounts.AddAsync(userAccount);
             await context.SaveChangesAsync();
+
+            return userAccount.ID;
         }
     }
 }

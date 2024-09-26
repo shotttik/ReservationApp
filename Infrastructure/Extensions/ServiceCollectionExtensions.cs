@@ -17,9 +17,9 @@ namespace Infrastructure.Extensions
             // services.AddDbContext<MyDbContext>();
             // services.AddScoped<IMyService, MyService>();
             // Register DbContext with SQL Server
-            services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
-
+            services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
             return services;
         }
 

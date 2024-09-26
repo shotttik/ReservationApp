@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class removedRequiredBirthDate : Migration
+    public partial class RemovedRequiredRecoveryToken : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<DateTime>(
-                name: "DateOfBirth",
-                table: "UserAccounts",
+                name: "RecoveryTokenTime",
+                table: "UserLoginDatas",
                 type: "datetime2",
                 nullable: true,
                 oldClrType: typeof(DateTime),
@@ -24,8 +24,8 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<DateTime>(
-                name: "DateOfBirth",
-                table: "UserAccounts",
+                name: "RecoveryTokenTime",
+                table: "UserLoginDatas",
                 type: "datetime2",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
