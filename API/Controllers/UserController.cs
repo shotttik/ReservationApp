@@ -31,5 +31,15 @@ namespace API.Controllers
 
             return Ok(response);
         }
+        [HttpPost]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
+        {
+            var response = await userAccountService.Refresh(refreshTokenRequest);
+            return Ok(response);
+            //var response = await userAccountService.Refresh(refreshTokenRequest);
+
+            //return Ok(response);
+        }
+
     }
 }

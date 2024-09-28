@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task RegisterRequest(RegisterUserRequest registerUserRequest);
         Task<LoginResponse> Login(LoginRequest loginRequest);
+        Task<RefreshResponse> Refresh(RefreshTokenRequest refreshTokenRequest);
     }
 }
