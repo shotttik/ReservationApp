@@ -74,7 +74,7 @@ namespace Application.Services
                 AccessTokenExpirationTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
             };
         }
-        public async Task<RefreshResponse> Refresh(RefreshTokenRequest request)
+        public async Task<RefreshResponse> Refresh(TokenRequest request)
         {
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
             //if (principal == null)
@@ -106,6 +106,30 @@ namespace Application.Services
             };
             return response;
 
+        }
+        public async Task Logout(TokenRequest request)
+        {
+            var refreshToken = request.RefreshToken;
+            var accessToken = request.AccessToken;
+            if (refreshToken is null || accessToken is null)
+            {
+                throw new Exception("Invalid refresh token");
+            }
+            var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
+            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+            var userLoginData = await userLoginDataRepository.GetByEmailAsync(email);
+
+            if (userLoginData is null)
+            {
+                throw new Exception("user not found");
+            }
+            if (userLoginData.RefreshToken is null ||
+                userLoginData.RefreshToken != request.RefreshToken ||
+                userLoginData.RefreshTokenExpirationTime < DateTime.Now)
+            {
+                throw new Exception("InvalidRefreshToken"); // should result patterni
+            }
+            await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, null, DateTime.Now);
         }
     }
 }

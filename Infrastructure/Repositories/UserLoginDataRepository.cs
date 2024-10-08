@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
         {
             return await context.UserLoginDatas.Where(uld => uld.Email == email).FirstOrDefaultAsync();
         }
-        public async Task UpdateRefreshToken(int ID, string refreshToken, DateTime refreshTokenExpirationTime)
+        public async Task UpdateRefreshToken(int ID, string? refreshToken, DateTime refreshTokenExpirationTime)
         {
             var userLoginData = await context.UserLoginDatas.FindAsync(ID);
             userLoginData.RefreshToken = refreshToken;

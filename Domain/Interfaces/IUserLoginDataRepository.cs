@@ -6,6 +6,6 @@ namespace Domain.Interfaces
     {
         Task AddAsync(UserLoginData userLoginData);
         Task<UserLoginData?> GetByEmailAsync(string email);
-        Task UpdateRefreshToken (int ID, string refreshToken, DateTime refreshTokenExpirationTime);
+        Task UpdateRefreshToken (int ID, string? refreshToken, DateTime refreshTokenExpirationTime);
     }
 }

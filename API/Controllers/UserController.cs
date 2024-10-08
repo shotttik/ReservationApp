@@ -32,13 +32,18 @@ namespace API.Controllers
             return Ok(response);
         }
         [HttpPost]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
+        public async Task<IActionResult> Refresh([FromBody] TokenRequest refreshTokenRequest)
         {
             var response = await userAccountService.Refresh(refreshTokenRequest);
+         
             return Ok(response);
-            //var response = await userAccountService.Refresh(refreshTokenRequest);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Logout([FromBody] TokenRequest logoutRequest)
+        {
+            await userAccountService.Logout(logoutRequest);
 
-            //return Ok(response);
+            return Ok();
         }
 
     }
