@@ -2,6 +2,7 @@
 using Application.Common.ResultsErrors;
 using Application.DTOs.User;
 using Application.Interfaces;
+using Application.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -28,16 +29,16 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var response = await userAccountService.Login(loginRequest);
+            Result<LoginResponse> result = await userAccountService.Login(loginRequest);
 
-            return Ok(response);
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
         [HttpPost]
         public async Task<IActionResult> Refresh([FromBody] TokenRequest refreshTokenRequest)
         {
-            var response = await userAccountService.Refresh(refreshTokenRequest);
-         
-            return Ok(response);
+            Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
+
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
         [HttpPost]
         public async Task<IActionResult> Logout([FromBody] TokenRequest logoutRequest)
@@ -46,6 +47,5 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
-
     }
 }
