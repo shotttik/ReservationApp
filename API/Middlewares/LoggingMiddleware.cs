@@ -1,5 +1,7 @@
 ﻿using API.Attributes;
+using Application.Common.ResultsErrors;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Serilog.Context;
 using Shared.Extensions;
@@ -185,8 +187,18 @@ namespace API.Middlewares
         private async Task HandleException(HttpContext context, Exception ex)
         {
             var serverErrorCode = (int)HttpStatusCode.InternalServerError;
-            var errorMessageObject = new { ex.Message, Code = serverErrorCode };
-            var errorMessage = JsonConvert.SerializeObject(errorMessageObject);
+            var error = Error.Failure("Server.Failure", ex.Message);
+            var problemDetails = new ProblemDetails
+            {
+                Status = serverErrorCode,
+                Title = "Internal Server Error",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+                Extensions = { { "errors", new [] { error } } }
+            };
+            var errorMessage = JsonConvert.SerializeObject(problemDetails, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
 
             context.Response.StatusCode = serverErrorCode;
             context.Response.ContentType = "application/json";
@@ -198,7 +210,7 @@ namespace API.Middlewares
                 logger.Error(ex, "Exception has occurred");
             }
 
-            await context.Response.WriteAsync(errorMessage);
+            await context.Response.WriteAsJsonAsync(problemDetails);
         }
 
         private static LoggingType GetLoggingType(HttpContext context)
