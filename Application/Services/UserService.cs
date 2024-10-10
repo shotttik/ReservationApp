@@ -1,4 +1,5 @@
-﻿using Application.DTOs.User;
+﻿using Application.Common.ResultsErrors;
+using Application.DTOs.User;
 using Application.Helpers;
 using Application.Interfaces;
 using Application.Responses;
@@ -107,13 +108,13 @@ namespace Application.Services
             return response;
 
         }
-        public async Task Logout(TokenRequest request)
+        public async Task<Result> Logout(TokenRequest request)
         {
             var refreshToken = request.RefreshToken;
             var accessToken = request.AccessToken;
             if (refreshToken is null || accessToken is null)
             {
-                throw new Exception("Invalid refresh token");
+                return Result.Failure(LogoutErrors.SameUser);
             }
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
             var email = principal.FindFirst(ClaimTypes.Email)?.Value;
@@ -121,15 +122,17 @@ namespace Application.Services
 
             if (userLoginData is null)
             {
-                throw new Exception("user not found");
+                return Result.Failure(LogoutErrors.NotFound);
             }
             if (userLoginData.RefreshToken is null ||
                 userLoginData.RefreshToken != request.RefreshToken ||
                 userLoginData.RefreshTokenExpirationTime < DateTime.Now)
             {
-                throw new Exception("InvalidRefreshToken"); // should result patterni
+                return Result.Failure(LogoutErrors.InvalidToken); // should result patterni
             }
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, null, DateTime.Now);
+            
+            return Result.Success();
         }
     }
 }

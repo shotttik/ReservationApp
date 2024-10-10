@@ -1,4 +1,5 @@
 ﻿using API.Attributes;
+using Application.Common.ResultsErrors;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +42,9 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout([FromBody] TokenRequest logoutRequest)
         {
-            await userAccountService.Logout(logoutRequest);
+            var result = await userAccountService.Logout(logoutRequest);
 
-            return Ok();
+            return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
     }
