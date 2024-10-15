@@ -31,9 +31,9 @@ namespace Application.Helpers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static string GenerateRefreshToken()
+        public static string GenerateSecureToken()
         {
-            var randomNumber = new byte [32];
+            var randomNumber = new byte [64];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);

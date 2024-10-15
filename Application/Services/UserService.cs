@@ -63,7 +63,7 @@ namespace Application.Services
             }
 
             var accessToken = JWTGenerator.GenerateAccessToken(userLoginData.Email, configuration);
-            var refreshToken = JWTGenerator.GenerateRefreshToken();
+            var refreshToken = JWTGenerator.GenerateSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, refreshToken, refreshTokenExpirationTime);
@@ -95,7 +95,7 @@ namespace Application.Services
             }
 
             var newAccessToken = JWTGenerator.GenerateAccessToken(email, configuration);
-            var newRefreshToken = JWTGenerator.GenerateRefreshToken();
+            var newRefreshToken = JWTGenerator.GenerateSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, newRefreshToken, refreshTokenExpirationTime);
