@@ -61,5 +61,13 @@ namespace Application.Helpers
             }
             return principal;
         }
+        public static string HashToken(string token)
+        {
+            using var sha256 = SHA256.Create();
+            var tokenBytes = Encoding.UTF8.GetBytes(token);
+            var hashedBytes = sha256.ComputeHash(tokenBytes);
+
+            return Convert.ToBase64String(hashedBytes);
+        }
     }
 }

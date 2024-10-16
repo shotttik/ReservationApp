@@ -10,5 +10,7 @@ namespace Application.Interfaces
         Task<Result<LoginResponse>> Login(LoginRequest loginRequest);
         Task<Result<RefreshResponse>> Refresh(TokenRequest refreshTokenRequest);
         Task<Result> Logout(TokenRequest logoutRequest);
+        Task<Result<string>> ForgotPassword(ForgotPasswordRequest request);
+        Task<Result> ResetPassword(ResetPasswordRequest request);
     }
 }

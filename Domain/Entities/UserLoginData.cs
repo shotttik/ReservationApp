@@ -11,7 +11,6 @@ namespace Domain.Entities
         public byte [] PasswordSalt { get; set; }
         public string? ConfirmationToken { get; set; }
         public int UserAccountID { get; set; }
-        public DateTime? TokenGenerationTime { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpirationTime { get; set; }
         public int EmailValidationStatus { get; set; }

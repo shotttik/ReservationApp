@@ -134,5 +134,39 @@ namespace Application.Services
 
             return Result.Success();
         }
+        public async Task<Result<string>> ForgotPassword(ForgotPasswordRequest request)
+        {
+            var userLoginData = await userLoginDataRepository.GetByEmailAsync(request.Email);
+            if (userLoginData is null)
+            {
+                return Result.Failure<string>(ForgotPasswordErrors.NotFound);
+            }
+            var recoveryToken = JWTGenerator.GenerateSecureToken();
+            var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
+            await userLoginDataRepository.UpdateRecoveryToken(userLoginData.ID, recoveryToken, recoveryTokenTime);
+
+            // TODO instead of returning recovery token need to send email to user
+            return Result.Success(recoveryToken);
+        }
+        public async Task<Result> ResetPassword(ResetPasswordRequest request)
+        {
+            var userLoginData = await userLoginDataRepository.GetByEmailAsync(request.Email);
+
+            if (userLoginData is null)
+            {
+                return Result.Failure(ResetPasswordErrors.NotFound);
+            }
+            if (userLoginData.PasswordRecoveryToken is null ||
+                userLoginData.PasswordRecoveryToken != request.RecoveryToken ||
+                userLoginData.RecoveryTokenTime < DateTime.Now)
+            {
+                return Result.Failure(ResetPasswordErrors.InvalidToken);
+            }
+
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+            await userLoginDataRepository.UpdateResetPasswordData(userLoginData.ID, hash, salt);
+
+            return Result.Success();
+        }
     }
 }
