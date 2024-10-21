@@ -22,9 +22,9 @@ namespace API.Controllers
         [Logging(LoggingType.ExceptBody)]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
-            await userAccountService.RegisterRequest(registerUserRequest);
+            Result result = await userAccountService.RegisterRequest(registerUserRequest);
 
-            return Ok();
+            return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
         [HttpPost]

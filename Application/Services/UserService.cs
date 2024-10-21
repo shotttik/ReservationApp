@@ -26,10 +26,13 @@ namespace Application.Services
             this.userLoginDataRepository = userLoginDataRepository;
         }
 
-        public async Task RegisterRequest(RegisterUserRequest request)
+        public async Task<Result> RegisterRequest(RegisterUserRequest request)
         {
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
-
+            if (await userLoginDataRepository.GetByEmailAsync(request.Email) != null)
+            {
+                return Result.Failure(RegisterErrors.AlreadyExists);
+            }
             var userAccount = new UserAccount
             {
                 FirstName = request.FirstName,
@@ -48,6 +51,8 @@ namespace Application.Services
             var userAccountID = await userAccountRepository.AddAsync(userAccount);
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
+
+            return Result.Success();
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
