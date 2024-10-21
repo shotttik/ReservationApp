@@ -31,12 +31,14 @@ namespace Application.Helpers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static string GenerateSecureToken()
+        public static string GenerateAndHashSecureToken()
         {
             var randomNumber = new byte [64];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
+            var secureToken = Convert.ToBase64String(randomNumber);
+
+            return HashToken(secureToken);
         }
 
         public static ClaimsPrincipal GetPrincipalFromExpiredToken(string token, IConfiguration configuration)
@@ -59,6 +61,7 @@ namespace Application.Helpers
             {
                 throw new SecurityTokenException("Invalid token");
             }
+
             return principal;
         }
         public static string HashToken(string token)

@@ -63,7 +63,7 @@ namespace Application.Services
             }
 
             var accessToken = JWTGenerator.GenerateAccessToken(userLoginData.Email, configuration);
-            var refreshToken = JWTGenerator.GenerateSecureToken();
+            var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, refreshToken, refreshTokenExpirationTime);
@@ -95,7 +95,7 @@ namespace Application.Services
             }
 
             var newAccessToken = JWTGenerator.GenerateAccessToken(email, configuration);
-            var newRefreshToken = JWTGenerator.GenerateSecureToken();
+            var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, newRefreshToken, refreshTokenExpirationTime);
@@ -141,7 +141,7 @@ namespace Application.Services
             {
                 return Result.Failure<string>(ForgotPasswordErrors.NotFound);
             }
-            var recoveryToken = JWTGenerator.GenerateSecureToken();
+            var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
             await userLoginDataRepository.UpdateRecoveryToken(userLoginData.ID, recoveryToken, recoveryTokenTime);
 
