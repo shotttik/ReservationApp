@@ -72,14 +72,23 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
+
         [HttpPost]
         [Authorize]
-        [Logging(LoggingType.ExceptBody)]
+        [Logging(LoggingType.Full)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
         {
             Result<UserAccountDTO> result = await userAccountService.GetUserAuthorizationDataAsync();
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Logging(LoggingType.ExceptBody)]
+        public async Task<IActionResult> Add()
+        {
+            return Ok();
         }
     }
 }

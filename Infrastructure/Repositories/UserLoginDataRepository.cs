@@ -45,5 +45,17 @@ namespace Infrastructure.Repositories
             userLoginData.RecoveryTokenTime = null;
             await context.SaveChangesAsync();
         }
+
+        public async Task<UserLoginData?> GetFullUserDataByEmailAsync(string email)
+        {
+            var userLoginData = await context.UserLoginDatas
+                .Where(uld => uld.Email == email)
+                .Include(u => u.UserAccount)
+                .ThenInclude(ua => ua.Role)
+                .ThenInclude(ur => ur.Permissions)
+                .FirstOrDefaultAsync();
+
+            return userLoginData;
+        }
     }
 }

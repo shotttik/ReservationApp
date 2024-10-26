@@ -9,11 +9,12 @@ namespace Application.Helpers
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(string email, IConfiguration configuration)
+        public static string GenerateAccessToken(string email, string role, IConfiguration configuration)
         {
             var claims = new []
             {
                 new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
 

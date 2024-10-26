@@ -66,22 +66,22 @@ namespace Application.Services
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(request.Email);
+            var user = await userLoginDataRepository.GetFullUserDataByEmailAsync(request.Email);
 
-            if (userLoginData == null)
+            if (user == null)
             {
                 return Result.Failure<LoginResponse>(LoginErrors.NotFound);
             }
-            if (!PasswordHasher.VerifyPassword(request.Password, userLoginData.PasswordHash, userLoginData.PasswordSalt))
+            if (!PasswordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return Result.Failure<LoginResponse>(LoginErrors.InvalidPassword);
             }
-
-            var accessToken = JWTGenerator.GenerateAccessToken(userLoginData.Email, configuration);
+            var role = user.UserAccount.Role.RoleDescription;
+            var accessToken = JWTGenerator.GenerateAccessToken(user.Email, role, configuration);
             var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, refreshToken, refreshTokenExpirationTime);
+            await userLoginDataRepository.UpdateRefreshToken(user.ID, refreshToken, refreshTokenExpirationTime);
 
             return Result.Success(new LoginResponse
             {
@@ -97,23 +97,24 @@ namespace Application.Services
             //return BadRequest("Invalid access token or refresh token");
 
             var email = principal.FindFirst(ClaimTypes.Email)?.Value;
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(email);
-            if (userLoginData is null)
+            var user = await userLoginDataRepository.GetFullUserDataByEmailAsync(email);
+            if (user is null)
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.NotFound);
             };
-            if (userLoginData.RefreshToken is null ||
-                userLoginData.RefreshToken != request.RefreshToken ||
-                userLoginData.RefreshTokenExpirationTime < DateTime.Now)
+            if (user.RefreshToken is null ||
+                user.RefreshToken != request.RefreshToken ||
+                user.RefreshTokenExpirationTime < DateTime.Now)
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
 
-            var newAccessToken = JWTGenerator.GenerateAccessToken(email, configuration);
+            var role = user.UserAccount.Role.RoleDescription;
+            var newAccessToken = JWTGenerator.GenerateAccessToken(email, role, configuration);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, newRefreshToken, refreshTokenExpirationTime);
+            await userLoginDataRepository.UpdateRefreshToken(user.ID, newRefreshToken, refreshTokenExpirationTime);
 
             var response = new RefreshResponse()
             {
