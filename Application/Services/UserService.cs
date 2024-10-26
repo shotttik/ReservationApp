@@ -5,8 +5,11 @@ using Application.Interfaces;
 using Application.Responses;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Application.Services
 {
@@ -15,15 +18,22 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
+        private readonly IDistributedCache cache;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
 
         public UserService(
             IConfiguration configuration,
             IUserAccountRepository userAccountRepository,
-            IUserLoginDataRepository userLoginDataRepository)
+            IUserLoginDataRepository userLoginDataRepository,
+            IDistributedCache cache,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
+            this.cache = cache;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result> RegisterRequest(RegisterUserRequest request)
@@ -172,6 +182,54 @@ namespace Application.Services
             await userLoginDataRepository.UpdateResetPasswordData(userLoginData.ID, hash, salt);
 
             return Result.Success();
+        }
+        public async Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync()
+        {
+            var userEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
+            if (userEmail == null)
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+            var userLoginData = await userLoginDataRepository.GetByEmailAsync(userEmail);
+            if (userLoginData == null)
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+            var userID = userLoginData.UserAccountID;
+            var cacheKey = $"UserAuthorization:{userID}";
+            var cachedData = await cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                return Result.Success(JsonSerializer.Deserialize<UserAccountDTO>(cachedData)!);
+            }
+            var user = await userAccountRepository.GetAuthorizationData(userID);
+
+            if (user == null)
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+
+            var userDTO = new UserAccountDTO
+            {
+                ID = user.ID,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Gender = user.Gender,
+                DateOfBirth = user.DateOfBirth,
+                Role = new UserRoleDTO
+                {
+                    ID = user.Role.ID,
+                    RoleDescription = user.Role.RoleDescription,
+                    Permissions = user.Role.Permissions.Select(p => new PermissionDTO
+                    {
+                        ID = p.ID,
+                        PermissionDescription = p.PermissionDescription
+                    }).ToList()
+                }
+            };
+
+            var serializedData = JsonSerializer.Serialize(userDTO);
+            await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = _cacheExpiration
+            });
+
+            return Result.Success(userDTO);
         }
     }
 }

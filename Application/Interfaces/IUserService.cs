@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<Result> Logout(TokenRequest logoutRequest);
         Task<Result<string>> ForgotPassword(ForgotPasswordRequest request);
         Task<Result> ResetPassword(ResetPasswordRequest request);
+        Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync();
     }
 }

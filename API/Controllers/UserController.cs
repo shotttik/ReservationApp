@@ -3,6 +3,7 @@ using Application.Common.ResultsErrors;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Application.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -70,6 +71,15 @@ namespace API.Controllers
             Result result = await userAccountService.ResetPassword(resetPasswordRequest);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+        }
+        [HttpPost]
+        [Authorize]
+        [Logging(LoggingType.ExceptBody)]
+        public async Task<IActionResult> GetUserAuthorizationDataAsync()
+        {
+            Result<UserAccountDTO> result = await userAccountService.GetUserAuthorizationDataAsync();
+
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
     }
 }

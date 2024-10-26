@@ -48,7 +48,12 @@ void ConfigureServices(IServiceCollection services)
     // services.AddDbContext<MyDbContext>();
     // services.AddScoped<IMyService, MyService>();
     // Register DbContext with SQL Server
-
+    services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = builder.Configuration.GetSection("Redis") ["ConnectionString"];
+        //options.InstanceName = builder.Configuration.GetSection("Redis") ["InstanceName"];
+    });
+    builder.Services.AddHttpContextAccessor();
 }
 
 void ConfigureMiddleware(WebApplication app)
@@ -68,6 +73,7 @@ void ConfigureMiddleware(WebApplication app)
 
     app.MapControllers();
     app.UseMiddleware<LoggingMiddleware>();
+    app.UseMiddleware<ExtractEmailMiddleware>();
     // Add any other middleware here, for example:
     // app.UseAuthentication();
     // app.UseCors("AllowSpecificOrigins");
