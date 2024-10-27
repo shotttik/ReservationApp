@@ -86,9 +86,11 @@ namespace API.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [Logging(LoggingType.ExceptBody)]
-        public async Task<IActionResult> Add()
+        public async Task<IActionResult> Add(AddRequest request)
         {
-            return Ok();
+            Result result = await userAccountService.AddUser(request);
+
+            return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
     }
 }

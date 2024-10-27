@@ -20,6 +20,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
+            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+
             return services;
         }
 

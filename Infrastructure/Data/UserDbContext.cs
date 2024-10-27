@@ -52,7 +52,7 @@ namespace Infrastructure.Data
                 {
                     entity.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
                     entity.Property(e => e.LastName).HasMaxLength(100).IsRequired();
-                    entity.Property(e => e.Gender).HasDefaultValue(4).ValueGeneratedOnAdd();
+                    entity.Property(e => e.Gender).HasDefaultValue((int)Application.Enums.Gender.PreferNotToSay).ValueGeneratedOnAdd();
                     entity.Property(e => e.RoleID).HasDefaultValue(1); // User
                     entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
                     entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();

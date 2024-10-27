@@ -18,6 +18,7 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
+        private readonly IUserRoleRepository userRoleRepository;
         private readonly IDistributedCache cache;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
@@ -26,12 +27,14 @@ namespace Application.Services
             IConfiguration configuration,
             IUserAccountRepository userAccountRepository,
             IUserLoginDataRepository userLoginDataRepository,
+            IUserRoleRepository userRoleRepository,
             IDistributedCache cache,
             IHttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
+            this.userRoleRepository = userRoleRepository;
             this.cache = cache;
             this.httpContextAccessor = httpContextAccessor;
         }
@@ -231,6 +234,41 @@ namespace Application.Services
             });
 
             return Result.Success(userDTO);
+        }
+        public async Task<Result> AddUser(AddRequest request)
+        {
+            if (await userLoginDataRepository.GetByEmailAsync(request.Email) is not null)
+            {
+                return Result.Failure(UserAddErrors.AlreadyExists);
+            }
+            var role = await userRoleRepository.GetUserRole(((int)request.Role));
+            if (role == null)
+            {
+                return Result.Failure(UserAddErrors.RoleNotFound);
+            }
+
+            var userAccount = new UserAccount()
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Gender = (int)request.Gender,
+                DateOfBirth = request.DateOfBirth,
+                RoleID = role.ID
+            };
+
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+
+            var userLoginData = new UserLoginData()
+            {
+                Email = request.Email,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+            };
+            var userAccountID = await userAccountRepository.AddAsync(userAccount);
+            userLoginData.UserAccountID = userAccountID;
+            await userLoginDataRepository.AddAsync(userLoginData);
+
+            return Result.Success();
         }
     }
 }
