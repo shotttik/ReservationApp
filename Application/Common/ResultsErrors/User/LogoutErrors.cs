@@ -1,4 +1,4 @@
-﻿namespace Application.Common.ResultsErrors
+﻿namespace Application.Common.ResultsErrors.User
 {
     public static class LogoutErrors
     {

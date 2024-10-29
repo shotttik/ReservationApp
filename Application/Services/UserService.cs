@@ -1,4 +1,5 @@
 ﻿using Application.Common.ResultsErrors;
+using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
 using Application.Helpers;
 using Application.Interfaces;
@@ -267,6 +268,28 @@ namespace Application.Services
             var userAccountID = await userAccountRepository.AddAsync(userAccount);
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
+
+            return Result.Success();
+        }
+        public async Task<Result> UpdateUser(UpdateRequest request)
+        {
+            if (request == null)
+            {
+                return Result.Failure(UserUpdateErrors.ArgumentNull);
+            }
+
+            var userAccount = await userAccountRepository.GetUserAccountByID(request.UserAccountID);
+            if (userAccount is null)
+            {
+                return Result.Failure(UserUpdateErrors.NotFound);
+            }
+            userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
+            userAccount.LastName = request.LastName ?? userAccount.LastName;
+            userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
+            userAccount.DateOfBirth ??= request.DateOfBirth;
+            userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
+            userAccount.RoleID = request.Role.HasValue ? (int)request.Role.Value : userAccount.RoleID;
+            await userAccountRepository.UpdateUserAccount(userAccount);
 
             return Result.Success();
         }

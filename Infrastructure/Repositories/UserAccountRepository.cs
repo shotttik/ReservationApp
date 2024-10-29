@@ -31,5 +31,19 @@ namespace Infrastructure.Repositories
 
             return user;
         }
+
+        public async Task<UserAccount?> GetUserAccountByID(int ID)
+        {
+            var user = await context.UserAccounts
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.ID == ID);
+
+            return user;
+        }
+        public async Task UpdateUserAccount(UserAccount userAccount)
+        {
+            context.UserAccounts.Update(userAccount);
+            await context.SaveChangesAsync();
+        }
     }
 }

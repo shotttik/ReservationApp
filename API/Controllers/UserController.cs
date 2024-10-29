@@ -92,5 +92,14 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Logging(LoggingType.Full)]
+        public async Task<IActionResult> Update(UpdateRequest request)
+        {
+            Result result = await userAccountService.UpdateUser(request);
+            
+            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+        }
     }
 }
