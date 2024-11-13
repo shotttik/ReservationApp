@@ -10,6 +10,6 @@ namespace Application.DTOs.User
         public DateTime? DateOfBirth { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
-        public required UserRole Role { get; set; }
+        public required Role Role { get; set; }
     }
 }

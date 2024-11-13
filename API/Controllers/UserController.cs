@@ -1,6 +1,7 @@
 ﻿using API.Attributes;
 using Application.Common.ResultsErrors;
 using Application.DTOs.User;
+using Application.Enums;
 using Application.Interfaces;
 using Application.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -84,7 +85,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(Role.SuperAdmin))]
         [Logging(LoggingType.ExceptBody)]
         public async Task<IActionResult> Add(AddRequest request)
         {
@@ -93,7 +94,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(Role.Admin))]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> Update(UpdateRequest request)
         {

@@ -1,6 +1,7 @@
 ﻿using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
+using Application.Enums;
 using Application.Helpers;
 using Application.Interfaces;
 using Application.Responses;
@@ -277,11 +278,22 @@ namespace Application.Services
             {
                 return Result.Failure(UserUpdateErrors.ArgumentNull);
             }
-
+            var authUserEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
+            if (authUserEmail == null)
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+            var authUserLoginData = await userLoginDataRepository.GetByEmailAsync(authUserEmail);
+            if (authUserLoginData == null)
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
             var userAccount = await userAccountRepository.GetUserAccountByID(request.UserAccountID);
             if (userAccount is null)
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
+            }
+            var updateUserIsAdmin = Enum.Parse(typeof(Role), userAccount.Role.RoleDescription) is Role.Admin;
+            var authUserIsSuperAdmin = Enum.Parse(typeof(Role), authUserLoginData.UserAccount.Role.RoleDescription) is Role.SuperAdmin;
+            if (updateUserIsAdmin && !authUserIsSuperAdmin)
+            {
+                return Result.Failure(UserUpdateErrors.PermissionError);
             }
             userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
             userAccount.LastName = request.LastName ?? userAccount.LastName;
