@@ -1,10 +1,13 @@
 using API.Middlewares;
+using Application.Options;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 // Configure services
 ConfigureServices(builder.Services);
 ConfigureAuthentication(builder);
+ConfigureRateLimit(builder);
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -70,7 +74,7 @@ void ConfigureMiddleware(WebApplication app)
     app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
-
+    app.UseRateLimiter();
     app.MapControllers();
     app.UseMiddleware<LoggingMiddleware>();
     app.UseMiddleware<ExtractEmailMiddleware>();
@@ -95,4 +99,30 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
             ClockSkew = TimeSpan.Zero
         };
     });
+}
+
+void ConfigureRateLimit(WebApplicationBuilder builder)
+{
+    builder.Services.Configure<FixedRateLimitOptions>(
+        builder.Configuration.GetSection(FixedRateLimitOptions.FixedRateLimit));
+
+    var fixedOptions = new FixedRateLimitOptions();
+    builder.Configuration.GetSection(FixedRateLimitOptions.FixedRateLimit).Bind(fixedOptions);
+    var fixedPolicy = "fixed";
+
+    builder.Services.AddRateLimiter(_ =>
+       {
+           _.AddFixedWindowLimiter(fixedPolicy, options =>
+        {
+            options.PermitLimit = fixedOptions.PermitLimit;
+            options.Window = TimeSpan.FromSeconds(fixedOptions.Window);
+            options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            options.QueueLimit = fixedOptions.QueueLimit;
+        });
+           _.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+           _.OnRejected = async (ctx, cancellationToken) =>
+           {
+               await ctx.HttpContext.Response.WriteAsync("Request slots exceeded, try again later", cancellationToken);
+           };
+       });
 }

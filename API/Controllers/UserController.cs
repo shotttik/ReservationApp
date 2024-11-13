@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Application.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -22,6 +23,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Logging(LoggingType.ExceptBody)]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
             Result result = await userAccountService.RegisterRequest(registerUserRequest);
@@ -31,6 +33,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Logging(LoggingType.ExceptBody)]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             Result<LoginResponse> result = await userAccountService.Login(loginRequest);
@@ -40,6 +43,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Refresh([FromBody] TokenRequest refreshTokenRequest)
         {
             Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
@@ -58,6 +62,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
         {
             Result<string> result = await userAccountService.ForgotPassword(forgotPasswordRequest);
