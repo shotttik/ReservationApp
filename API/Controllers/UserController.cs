@@ -79,7 +79,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
@@ -92,19 +92,20 @@ namespace API.Controllers
         [HttpPost]
         [Authorize(Roles = nameof(Role.SuperAdmin))]
         [Logging(LoggingType.ExceptBody)]
-        public async Task<IActionResult> Add(AddRequest request)
+        public async Task<IActionResult> Add([FromBody] AddRequest request)
         {
             Result result = await userAccountService.AddUser(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
-        [HttpPost]
+
+        [HttpPut]
         [Authorize(Roles = nameof(Role.Admin))]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> Update(UpdateRequest request)
+        public async Task<IActionResult> Update([FromBody] UpdateRequest request)
         {
             Result result = await userAccountService.UpdateUser(request);
-            
+
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
     }
