@@ -1,4 +1,5 @@
 using API.Middlewares;
+using Application.Extensions;
 using Application.Options;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,13 +26,12 @@ ConfigureServices(builder.Services);
 ConfigureAuthentication(builder);
 ConfigureRateLimit(builder);
 
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddUserDbContext(connectionString);
-
 
 // Add AutoMapper profiles and application services using the extension methods
 builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(connectionString);
+
 // Build the app
 var app = builder.Build();
 
@@ -48,16 +48,14 @@ void ConfigureServices(IServiceCollection services)
     // Add Swagger/OpenAPI services
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
-    // Add any other services here, for example:
-    // services.AddDbContext<MyDbContext>();
-    // services.AddScoped<IMyService, MyService>();
+
     // Register DbContext with SQL Server
     services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = builder.Configuration.GetSection("Redis") ["ConnectionString"];
-        //options.InstanceName = builder.Configuration.GetSection("Redis") ["InstanceName"];
     });
-    builder.Services.AddHttpContextAccessor();
+
+    services.AddHttpContextAccessor();
 }
 
 void ConfigureMiddleware(WebApplication app)
@@ -78,10 +76,8 @@ void ConfigureMiddleware(WebApplication app)
     app.MapControllers();
     app.UseMiddleware<LoggingMiddleware>();
     app.UseMiddleware<ExtractEmailMiddleware>();
-    // Add any other middleware here, for example:
-    // app.UseAuthentication();
-    // app.UseCors("AllowSpecificOrigins");
 }
+
 void ConfigureAuthentication(WebApplicationBuilder builder)
 {
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -111,18 +107,18 @@ void ConfigureRateLimit(WebApplicationBuilder builder)
     var fixedPolicy = "fixed";
 
     builder.Services.AddRateLimiter(_ =>
-       {
-           _.AddFixedWindowLimiter(fixedPolicy, options =>
+    {
+        _.AddFixedWindowLimiter(fixedPolicy, options =>
         {
             options.PermitLimit = fixedOptions.PermitLimit;
             options.Window = TimeSpan.FromSeconds(fixedOptions.Window);
             options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
             options.QueueLimit = fixedOptions.QueueLimit;
         });
-           _.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-           _.OnRejected = async (ctx, cancellationToken) =>
-           {
-               await ctx.HttpContext.Response.WriteAsync("Request slots exceeded, try again later", cancellationToken);
-           };
-       });
+        _.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        _.OnRejected = async (ctx, cancellationToken) =>
+        {
+            await ctx.HttpContext.Response.WriteAsync("Request slots exceeded, try again later", cancellationToken);
+        };
+    });
 }
