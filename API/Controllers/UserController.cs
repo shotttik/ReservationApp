@@ -88,25 +88,5 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
-
-        [HttpPost]
-        [Authorize(Roles = nameof(Role.SuperAdmin))]
-        [Logging(LoggingType.ExceptBody)]
-        public async Task<IActionResult> Add([FromBody] AddRequest request)
-        {
-            Result result = await userAccountService.AddUser(request);
-
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
-        }
-
-        [HttpPut]
-        [Authorize(Roles = nameof(Role.Admin))]
-        [Logging(LoggingType.Full)]
-        public async Task<IActionResult> Update([FromBody] UpdateRequest request)
-        {
-            Result result = await userAccountService.UpdateUser(request);
-
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
-        }
     }
 }
