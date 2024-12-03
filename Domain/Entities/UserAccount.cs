@@ -7,11 +7,11 @@
         public string LastName { get; set; }
         public int? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public int RoleID { get; set; }
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public UserRole Role { get; set; } = null!;
         public UserLoginData UserLoginData { get; set; } = null!;
+        public ICollection<Role> Roles { get; set; }
+
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Domain.Interfaces;
-using Infrastructure.Data;
+using Infrastructure.Configurations;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +16,8 @@ namespace Infrastructure.Extensions
             // Register DbContext with SQL Server
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
-            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
-            services.AddDbContext<UserDbContext>(options =>
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;
         }

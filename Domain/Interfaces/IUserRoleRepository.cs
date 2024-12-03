@@ -2,8 +2,8 @@
 
 namespace Domain.Interfaces
 {
-    public interface IUserRoleRepository
+    public interface IRoleRepository
     {
-        Task<UserRole?> GetUserRole(int ID);
+        Task<Role?> GetRole(int ID);
     }
 }

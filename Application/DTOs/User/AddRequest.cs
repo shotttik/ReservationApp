@@ -1,4 +1,5 @@
 ﻿using Application.Enums;
+using Domain.Entities;
 
 namespace Application.DTOs.User
 {
@@ -10,6 +11,6 @@ namespace Application.DTOs.User
         public DateTime? DateOfBirth { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
-        public required Role Role { get; set; }
+        public required HashSet<int> Roles { get; set; }
     }
 }

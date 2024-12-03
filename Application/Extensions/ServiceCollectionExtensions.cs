@@ -11,6 +11,7 @@ namespace Application.Extensions
             // Add any other services here, for example:
             // services.AddScoped<IMyService, MyService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAdminService, AdminService>();
 
 
             return services;

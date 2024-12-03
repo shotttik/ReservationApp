@@ -1,7 +1,7 @@
-﻿using Application.Common.ResultsErrors;
+﻿using Application.Authentication;
+using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
-using Application.Helpers;
 using Application.Interfaces;
 using Application.Responses;
 using Domain.Entities;
@@ -9,6 +9,8 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -19,7 +21,7 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
-        private readonly IUserRoleRepository userRoleRepository;
+        private readonly IRoleRepository roleRepository;
         private readonly IDistributedCache cache;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
@@ -28,14 +30,14 @@ namespace Application.Services
             IConfiguration configuration,
             IUserAccountRepository userAccountRepository,
             IUserLoginDataRepository userLoginDataRepository,
-            IUserRoleRepository userRoleRepository,
+            IRoleRepository roleRepository,
             IDistributedCache cache,
             IHttpContextAccessor httpContextAccessor)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
-            this.userRoleRepository = userRoleRepository;
+            this.roleRepository = roleRepository;
             this.cache = cache;
             this.httpContextAccessor = httpContextAccessor;
         }
@@ -47,12 +49,18 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
+            var roleUser = await roleRepository.GetRole(Role.User.ID);
+            if(roleUser is null)
+            {
+                return Result.Failure(RegisterErrors.RoleNotFound);
+            }
             var userAccount = new UserAccount
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
+                Roles = new List<Role>() { roleUser }
             };
 
             var userLoginData = new UserLoginData
@@ -61,10 +69,11 @@ namespace Application.Services
                 PasswordHash = hash,
                 PasswordSalt = salt,
             };
-
+            
             var userAccountID = await userAccountRepository.AddAsync(userAccount);
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
+            
 
             return Result.Success();
         }
@@ -80,8 +89,7 @@ namespace Application.Services
             {
                 return Result.Failure<LoginResponse>(LoginErrors.InvalidPassword);
             }
-            var role = user.UserAccount.Role.RoleDescription;
-            var accessToken = JWTGenerator.GenerateAccessToken(user.Email, role, configuration);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.Email, configuration);
             var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
@@ -97,10 +105,15 @@ namespace Application.Services
         public async Task<Result<RefreshResponse>> Refresh(TokenRequest request)
         {
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
-            //if (principal == null)
-            //return BadRequest("Invalid access token or refresh token");
-
+            if (principal == null)
+            {
+                Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
+            }
             var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+            if (email.IsNullOrEmpty())
+            {
+                return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
+            }
             var user = await userLoginDataRepository.GetFullUserDataByEmailAsync(email);
             if (user is null)
             {
@@ -113,8 +126,7 @@ namespace Application.Services
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
 
-            var role = user.UserAccount.Role.RoleDescription;
-            var newAccessToken = JWTGenerator.GenerateAccessToken(email, role, configuration);
+            var newAccessToken = JWTGenerator.GenerateAccessToken(user.ID, email, configuration);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
@@ -190,7 +202,8 @@ namespace Application.Services
         }
         public async Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync()
         {
-            var userEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
+            var userEmail = httpContextAccessor.HttpContext?.User.Claims
+                   .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             if (userEmail == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
             var userLoginData = await userLoginDataRepository.GetByEmailAsync(userEmail);
@@ -216,16 +229,16 @@ namespace Application.Services
                 LastName = user.LastName,
                 Gender = user.Gender,
                 DateOfBirth = user.DateOfBirth,
-                Role = new UserRoleDTO
+                Roles = user.Roles.Select(r => new RolesDTO
                 {
-                    ID = user.Role.ID,
-                    RoleDescription = user.Role.RoleDescription,
-                    Permissions = user.Role.Permissions.Select(p => new PermissionDTO
+                    ID = r.ID,
+                    Name = r.Name,
+                    Permissions = r.Permissions.Select(p => new PermissionDTO
                     {
                         ID = p.ID,
-                        PermissionDescription = p.PermissionDescription
+                        Name = p.Name
                     }).ToList()
-                }
+                }).ToList()
             };
 
             var serializedData = JsonSerializer.Serialize(userDTO);

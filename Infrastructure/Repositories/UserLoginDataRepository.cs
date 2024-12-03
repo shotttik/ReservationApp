@@ -1,15 +1,14 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
-using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
     public class UserLoginDataRepository :IUserLoginDataRepository
     {
-        private readonly UserDbContext context;
+        private readonly ApplicationDbContext context;
 
-        public UserLoginDataRepository(UserDbContext context)
+        public UserLoginDataRepository(ApplicationDbContext context)
         {
             this.context = context;
         }
@@ -51,7 +50,26 @@ namespace Infrastructure.Repositories
             var userLoginData = await context.UserLoginDatas
                 .Where(uld => uld.Email == email)
                 .Include(u => u.UserAccount)
-                .ThenInclude(ua => ua.Role)
+                .ThenInclude(ua => ua.Roles)
+                .ThenInclude(ur => ur.Permissions)
+                .FirstOrDefaultAsync();
+
+            return userLoginData;
+        }
+
+        public async Task<UserLoginData?> GetAsync(int ID)
+        {
+            var userLoginData = await context.UserLoginDatas.FindAsync(ID);
+
+            return userLoginData;
+        }
+
+        public async Task<UserLoginData?> GetFullUserDataAsync(int ID)
+        {
+            var userLoginData = await context.UserLoginDatas
+                .Where(uld => uld.ID == ID)
+                .Include(u => u.UserAccount)
+                .ThenInclude(ua => ua.Roles)
                 .ThenInclude(ur => ur.Permissions)
                 .FirstOrDefaultAsync();
 

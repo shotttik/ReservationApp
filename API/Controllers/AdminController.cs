@@ -1,9 +1,9 @@
 ﻿using API.Attributes;
+using Application.Authentication;
 using Application.Common.ResultsErrors;
 using Application.DTOs.User;
-using Application.Enums;
 using Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -19,7 +19,7 @@ namespace API.Controllers
             this.adminService = adminService;
         }
         [HttpPost]
-        [Authorize(Roles = nameof(Role.SuperAdmin))]
+        [HasPermission(Permission.AddUser)]
         [Logging(LoggingType.ExceptBody)]
         public async Task<IActionResult> Add([FromBody] AddRequest request)
         {
@@ -29,7 +29,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = nameof(Role.Admin))]
+        [HasPermission(Permission.UpdateUser)]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> Update([FromBody] UpdateRequest request)
         {

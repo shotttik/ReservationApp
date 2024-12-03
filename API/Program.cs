@@ -1,8 +1,10 @@
 using API.Middlewares;
+using Application.Authentication;
 using Application.Extensions;
 using Application.Options;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -56,6 +58,9 @@ void ConfigureServices(IServiceCollection services)
     });
 
     services.AddHttpContextAccessor();
+    services.AddAuthorization();
+    services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+    services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 }
 
 void ConfigureMiddleware(WebApplication app)

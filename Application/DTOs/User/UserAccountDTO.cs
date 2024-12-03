@@ -7,19 +7,19 @@
         public string LastName { get; set; }
         public int? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public UserRoleDTO Role { get; set; }
+        public List<RolesDTO> Roles { get; set; }
 
     }
 
-    public class UserRoleDTO
+    public class RolesDTO
     {
         public int ID { get; set; }
-        public string RoleDescription { get; set; }
+        public string Name { get; set; }
         public List<PermissionDTO> Permissions { get; set; }
     }
     public class PermissionDTO
     {
         public int ID { get; set; }
-        public string PermissionDescription { get; set; }
+        public string Name { get; set; }
     }
 }

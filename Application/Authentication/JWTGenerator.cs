@@ -5,16 +5,16 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Application.Helpers
+namespace Application.Authentication
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(string email, string role, IConfiguration configuration)
+        public static string GenerateAccessToken(int id, string email, IConfiguration configuration)
         {
             var claims = new []
             {
+                new Claim(ClaimTypes.PrimarySid, id.ToString()),
                 new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
 

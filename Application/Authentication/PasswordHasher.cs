@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-namespace Application.Helpers
+namespace Application.Authentication
 {
 
     public static class PasswordHasher
