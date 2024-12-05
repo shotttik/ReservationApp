@@ -1,14 +1,14 @@
 ﻿using API.Attributes;
 using Application.Authentication;
 using Application.Common.ResultsErrors;
-using Application.DTOs.User;
+using Application.DTOs.Admin;
 using Application.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("API/[controller]/[action]")]
+    [Route("api/admin")]
     [ApiController]
     public class AdminController :ControllerBase
     {
@@ -18,21 +18,23 @@ namespace API.Controllers
         {
             this.adminService = adminService;
         }
-        [HttpPost]
+
+        [HttpPost("users")]
         [HasPermission(Permission.AddUser)]
         [Logging(LoggingType.ExceptBody)]
-        public async Task<IActionResult> Add([FromBody] AddRequest request)
+        public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
         {
             Result result = await adminService.AddUser(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
-        [HttpPut]
+        [HttpPut("users/{userId}")]
         [HasPermission(Permission.UpdateUser)]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> Update([FromBody] UpdateRequest request)
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequest request)
         {
+            request.UserAccountID = userId;
             Result result = await adminService.UpdateUser(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();

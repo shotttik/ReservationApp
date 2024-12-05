@@ -1,6 +1,7 @@
 ﻿using Application.Authentication;
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
+using Application.DTOs.Admin;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Domain.Entities;
@@ -29,7 +30,7 @@ namespace Application.Services
             this.roleRepository = roleRepository;
         }
 
-        public async Task<Result> AddUser(AddRequest request)
+        public async Task<Result> AddUser(AddUserRequest request)
         {
             if (await userLoginDataRepository.GetByEmailAsync(request.Email) is not null)
             {
@@ -81,7 +82,7 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(UpdateRequest request)
+        public async Task<Result> UpdateUser(UpdateUserRequest request)
         {
             if (request == null)
             {

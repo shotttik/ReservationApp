@@ -10,7 +10,9 @@ namespace Application.DTOs.User
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public required string ConfirmPassword { get; set; }
+        [Required(AllowEmptyStrings = false)]
         public required string Email { get; set; }
+        [Required(AllowEmptyStrings = false)]
         public required string RecoveryToken { get; set; }
     }
 }

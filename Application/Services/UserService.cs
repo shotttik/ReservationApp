@@ -137,7 +137,7 @@ namespace Application.Services
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             };
-            return response;
+            return Result.Success(response);
 
         }
         public async Task<Result> Logout(TokenRequest request)

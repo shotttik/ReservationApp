@@ -1,8 +1,13 @@
-﻿namespace Application.DTOs.User
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Application.DTOs.User
 {
     public class TokenRequest
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public required string AccessToken { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public required string RefreshToken { get; set; }
     }
 }

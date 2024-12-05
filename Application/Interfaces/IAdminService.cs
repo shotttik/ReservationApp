@@ -1,11 +1,11 @@
 ﻿using Application.Common.ResultsErrors;
-using Application.DTOs.User;
+using Application.DTOs.Admin;
 
 namespace Application.Interfaces
 {
     public interface IAdminService
     {
-        Task<Result> AddUser(AddRequest request);
-        Task<Result> UpdateUser(UpdateRequest request);
+        Task<Result> AddUser(AddUserRequest request);
+        Task<Result> UpdateUser(UpdateUserRequest request);
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
-    [Route("API/[controller]/[action]")]
+    [Route("api/users")]
     [ApiController]
     public class UserController :ControllerBase
     {
@@ -21,7 +21,7 @@ namespace API.Controllers
             this.userAccountService = userAccountService;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
@@ -31,7 +31,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
@@ -41,17 +41,17 @@ namespace API.Controllers
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpPost("refresh-token")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        public async Task<IActionResult> Refresh([FromBody] TokenRequest refreshTokenRequest)
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRequest refreshTokenRequest)
         {
             Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpPost("logout")]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> Logout([FromBody] TokenRequest logoutRequest)
         {
@@ -60,7 +60,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpPost("forgot-password")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
@@ -70,7 +70,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
 
-        [HttpPost]
+        [HttpPost("reset-password")]
         [Logging(LoggingType.ExceptBody)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
@@ -79,7 +79,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
 
-        [HttpGet]
+        [HttpGet("authorization-data")]
         [Authorize]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()

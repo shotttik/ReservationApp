@@ -1,9 +1,9 @@
 ﻿using Application.Enums;
 using Domain.Entities;
 
-namespace Application.DTOs.User
+namespace Application.DTOs.Admin
 {
-    public class AddRequest
+    public class AddUserRequest
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }

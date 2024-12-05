@@ -1,8 +1,8 @@
 ﻿using Application.Enums;
 
-namespace Application.DTOs.User
+namespace Application.DTOs.Admin
 {
-    public class UpdateRequest
+    public class UpdateUserRequest
     {
         public int UserAccountID { get; set; }
         public string? FirstName { get; set; }
