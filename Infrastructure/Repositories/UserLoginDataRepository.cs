@@ -24,21 +24,21 @@ namespace Infrastructure.Repositories
         public async Task UpdateRefreshToken(int ID, string? refreshToken, DateTime refreshTokenExpirationTime)
         {
             var userLoginData = await context.UserLoginDatas.FindAsync(ID);
-            userLoginData.RefreshToken = refreshToken;
+            userLoginData!.RefreshToken = refreshToken;
             userLoginData.RefreshTokenExpirationTime = refreshTokenExpirationTime;
             await context.SaveChangesAsync();
         }
         public async Task UpdateRecoveryToken(int ID, string? recoveryToken, DateTime recoveryTokenTime)
         {
             var userLoginData = await context.UserLoginDatas.FindAsync(ID);
-            userLoginData.PasswordRecoveryToken = recoveryToken;
+            userLoginData!.PasswordRecoveryToken = recoveryToken;
             userLoginData.RecoveryTokenTime = recoveryTokenTime;
             await context.SaveChangesAsync();
         }
         public async Task UpdateResetPasswordData(int ID, byte [] passwordHash, byte [] passwordSalt)
         {
             var userLoginData = await context.UserLoginDatas.FindAsync(ID);
-            userLoginData.PasswordHash = passwordHash;
+            userLoginData!.PasswordHash = passwordHash;
             userLoginData.PasswordSalt = passwordSalt;
             userLoginData.PasswordRecoveryToken = null;
             userLoginData.RecoveryTokenTime = null;

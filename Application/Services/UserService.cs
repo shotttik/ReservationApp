@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -50,7 +49,7 @@ namespace Application.Services
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
             var roleUser = await roleRepository.GetRole(Role.User.ID);
-            if(roleUser is null)
+            if (roleUser is null)
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
             }
@@ -69,11 +68,11 @@ namespace Application.Services
                 PasswordHash = hash,
                 PasswordSalt = salt,
             };
-            
+
             var userAccountID = await userAccountRepository.AddAsync(userAccount);
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
-            
+
 
             return Result.Success();
         }
@@ -109,7 +108,7 @@ namespace Application.Services
             {
                 Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
-            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+            var email = principal!.FindFirst(ClaimTypes.Email)?.Value!;
             if (email.IsNullOrEmpty())
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
@@ -149,7 +148,8 @@ namespace Application.Services
                 return Result.Failure(LogoutErrors.SameUser);
             }
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
-            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+            var email = principal.FindFirst(ClaimTypes.Email)?.Value!;
+
             var userLoginData = await userLoginDataRepository.GetByEmailAsync(email);
 
             if (userLoginData is null)

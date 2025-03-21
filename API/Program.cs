@@ -32,7 +32,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Add AutoMapper profiles and application services using the extension methods
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(connectionString);
+builder.Services.AddInfrastructureServices(connectionString!);
 
 // Build the app
 var app = builder.Build();

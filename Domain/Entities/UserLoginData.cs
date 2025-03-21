@@ -5,9 +5,9 @@ namespace Domain.Entities
     public class UserLoginData
     {
         public int ID { get; set; }
-        public string Email { get; set; }
-        public byte [] PasswordHash { get; set; }
-        public byte [] PasswordSalt { get; set; }
+        public required string Email { get; set; }
+        public  required byte [] PasswordHash { get; set; }
+        public required byte [] PasswordSalt { get; set; }
         public string? ConfirmationToken { get; set; }
         public int UserAccountID { get; set; }
         public string? RefreshToken { get; set; }
