@@ -63,8 +63,7 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = role.ID,
-                Role = role
+                RoleID = role.ID
             };
 
             var userLoginData = new UserLoginData
@@ -152,7 +151,15 @@ namespace Application.Services
             {
                 return Result.Failure(LogoutErrors.SameUser);
             }
-            var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
+            }
+            catch (SecurityTokenMalformedException)
+            {
+                return Result.Failure(LogoutErrors.InvalidToken);
+            }
             var email = principal.FindFirst(ClaimTypes.Email)?.Value!;
 
             var userLoginData = await userLoginDataRepository.GetByEmailAsync(email);
@@ -165,9 +172,10 @@ namespace Application.Services
                 userLoginData.RefreshToken != request.RefreshToken ||
                 userLoginData.RefreshTokenExpirationTime < DateTime.Now)
             {
-                return Result.Failure(LogoutErrors.InvalidToken); // should result patterni
+                return Result.Failure(LogoutErrors.InvalidRefreshToken);
             }
             await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, null, DateTime.Now);
+            await cache.RemoveAsync(GetCacheKey(userLoginData.UserAccountID));
 
             return Result.Success();
         }
@@ -215,8 +223,7 @@ namespace Application.Services
             if (userLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
             var userID = userLoginData.UserAccountID;
-            var cacheKey = $"UserAuthorization:{userID}";
-            var cachedData = await cache.GetStringAsync(cacheKey);
+            var cachedData = await cache.GetStringAsync(GetCacheKey(userID));
 
             if (!string.IsNullOrEmpty(cachedData))
             {
@@ -236,7 +243,7 @@ namespace Application.Services
                 DateOfBirth = user.DateOfBirth,
                 Role = new RoleDTO
                 {
-                    ID = user.Role.ID,
+                    ID = user.Role!.ID,
                     Name = user.Role.Name,
                     Permissions = user.Role.Permissions.Select(p => new PermissionDTO
                     {
@@ -247,12 +254,13 @@ namespace Application.Services
             };
 
             var serializedData = JsonSerializer.Serialize(userDTO);
-            await cache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+            await cache.SetStringAsync(GetCacheKey(userID), serializedData, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = _cacheExpiration
             });
 
             return Result.Success(userDTO);
         }
+        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
     }
 }

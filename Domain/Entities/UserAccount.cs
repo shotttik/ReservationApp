@@ -13,7 +13,7 @@
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public virtual UserLoginData? UserLoginData { get; set; }
-        public virtual required Role Role { get; set; }
+        public virtual Role? Role { get; set; }
         public virtual Company? Company { get; set; }
 
         public void UpdateTimestamp() => UpdatedAt = DateTime.UtcNow;

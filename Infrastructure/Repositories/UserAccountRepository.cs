@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
         {
             var user = await context.UserAccounts
                     .Include(u => u.Role)
-                        .ThenInclude(r => r.Permissions)
+                        .ThenInclude(r => r!.Permissions)
                     .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
         {
             var user = await context.UserAccounts
                 .Include(u => u.Role)
-                    .ThenInclude(r => r.Permissions)
+                    .ThenInclude(r => r!.Permissions)
                 .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;

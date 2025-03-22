@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
                 .Where(uld => uld.Email == email)
                 .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
-                .ThenInclude(ur => ur.Permissions)
+                .ThenInclude(ur => ur!.Permissions)
                 .FirstOrDefaultAsync();
 
             return userLoginData;
@@ -70,7 +70,7 @@ namespace Infrastructure.Repositories
                 .Where(uld => uld.ID == ID)
                 .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
-                .ThenInclude(ur => ur.Permissions)
+                .ThenInclude(ur => ur!.Permissions)
                 .FirstOrDefaultAsync();
 
             return userLoginData;

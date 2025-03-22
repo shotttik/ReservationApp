@@ -7,6 +7,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Application.Services
 {
@@ -16,18 +17,24 @@ namespace Application.Services
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRoleRepository roleRepository;
+        private readonly IDistributedCache cache;
+        private readonly IUserService userService;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
             IHttpContextAccessor httpContextAccessor,
-            IRoleRepository roleRepository
+            IRoleRepository roleRepository,
+            IDistributedCache cache,
+            IUserService userService
         )
         {
             this.userLoginDataRepository = userLoginDataRepository;
             this.userAccountRepository = userAccountRepository;
             this.httpContextAccessor = httpContextAccessor;
             this.roleRepository = roleRepository;
+            this.cache = cache;
+            this.userService = userService;
         }
 
         public async Task<Result> AddUser(AddUserRequest request)
@@ -109,8 +116,12 @@ namespace Application.Services
 
 
             await userAccountRepository.UpdateUserAccount(userAccount);
+            await cache.RemoveAsync(GetCacheKey(userAccount.ID));
+            await userService.GetUserAuthorizationDataAsync();
 
             return Result.Success();
         }
+        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
+
     }
 }
