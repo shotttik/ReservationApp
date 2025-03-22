@@ -7,11 +7,11 @@
         public required string LastName { get; set; }
         public int? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public List<RolesDTO> Roles { get; set; } = [];
+        public required RoleDTO Role { get; set; }
 
     }
 
-    public class RolesDTO
+    public class RoleDTO
     {
         public int ID { get; set; }
         public required string Name { get; set; }

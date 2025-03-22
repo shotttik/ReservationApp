@@ -30,7 +30,7 @@ namespace Application.Authentication
                 return;
             }
 
-            var userPermissions = user.Value.Roles.SelectMany(r => r.Permissions);
+            var userPermissions = user.Value.Role.Permissions;
             if (userPermissions.Any(p => p.Name == requirement.Permission))
             {
                 context.Succeed(requirement);

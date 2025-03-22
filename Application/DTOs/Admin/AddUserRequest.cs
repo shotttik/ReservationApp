@@ -11,6 +11,6 @@ namespace Application.DTOs.Admin
         public DateTime? DateOfBirth { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
-        public required HashSet<int> Roles { get; set; }
+        public required int Role { get; set; }
     }
 }

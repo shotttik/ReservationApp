@@ -9,17 +9,18 @@ namespace Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Role> builder)
         {
 
-            builder.HasKey(x => x.ID);
+            builder.HasKey(e => e.ID);
 
-            builder.Property(x => x.Name)
+            builder.Property(e => e.Name)
                    .IsRequired();
 
-            builder.HasMany(x => x.Permissions)
+            builder.HasMany(e => e.Permissions)
                    .WithMany()
                    .UsingEntity<RolePermission>();
 
-            builder.HasMany(x => x.UserAccounts)
-                   .WithMany(x => x.Roles);
+            builder.HasMany(e => e.UserAccounts)
+                   .WithOne(e => e.Role)
+                   .HasForeignKey(e => e.RoleID);
 
             builder.HasData(Role.GetValues());
         }

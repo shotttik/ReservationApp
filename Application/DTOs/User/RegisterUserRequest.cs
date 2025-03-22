@@ -18,5 +18,7 @@ namespace Application.DTOs.User
         [PasswordComplexity]
         [Required(AllowEmptyStrings = false)]
         public required string Password { get; set; }
+        [Required]
+        public required int RoleID { get; set; }
     }
 }

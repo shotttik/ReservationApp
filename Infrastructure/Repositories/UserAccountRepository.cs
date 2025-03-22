@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
-using Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
@@ -25,8 +24,8 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetAuthorizationData(int ID)
         {
             var user = await context.UserAccounts
-                    .Include(u => u.Roles)
-                    .ThenInclude(r => r.Permissions)
+                    .Include(u => u.Role)
+                        .ThenInclude(r => r.Permissions)
                     .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
@@ -35,8 +34,8 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetUserAccountByID(int ID)
         {
             var user = await context.UserAccounts
-                .Include(u => u.Roles)
-                .ThenInclude(r => r.Permissions)
+                .Include(u => u.Role)
+                    .ThenInclude(r => r.Permissions)
                 .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;

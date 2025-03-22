@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             var userLoginData = await context.UserLoginDatas
                 .Where(uld => uld.Email == email)
                 .Include(u => u.UserAccount)
-                .ThenInclude(ua => ua.Roles)
+                .ThenInclude(ua => ua.Role)
                 .ThenInclude(ur => ur.Permissions)
                 .FirstOrDefaultAsync();
 
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
             var userLoginData = await context.UserLoginDatas
                 .Where(uld => uld.ID == ID)
                 .Include(u => u.UserAccount)
-                .ThenInclude(ua => ua.Roles)
+                .ThenInclude(ua => ua.Role)
                 .ThenInclude(ur => ur.Permissions)
                 .FirstOrDefaultAsync();
 

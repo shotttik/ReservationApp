@@ -48,10 +48,14 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
-            var roleUser = await roleRepository.GetRole(Role.User.ID);
-            if (roleUser is null)
+            var role = await roleRepository.GetRole(request.RoleID);
+            if (role is null)
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
+            }
+            if (!(role.ID == Role.User.ID || role.ID == Role.Company.ID))
+            {
+                return Result.Failure(RegisterErrors.RoleIsNotAccessable);
             }
             var userAccount = new UserAccount
             {
@@ -59,7 +63,8 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                Roles = new List<Role>() { roleUser }
+                RoleID = role.ID,
+                Role = role
             };
 
             var userLoginData = new UserLoginData
@@ -229,16 +234,16 @@ namespace Application.Services
                 LastName = user.LastName,
                 Gender = user.Gender,
                 DateOfBirth = user.DateOfBirth,
-                Roles = user.Roles.Select(r => new RolesDTO
+                Role = new RoleDTO
                 {
-                    ID = r.ID,
-                    Name = r.Name,
-                    Permissions = r.Permissions.Select(p => new PermissionDTO
+                    ID = user.Role.ID,
+                    Name = user.Role.Name,
+                    Permissions = user.Role.Permissions.Select(p => new PermissionDTO
                     {
                         ID = p.ID,
                         Name = p.Name
                     }).ToList()
-                }).ToList()
+                }
             };
 
             var serializedData = JsonSerializer.Serialize(userDTO);

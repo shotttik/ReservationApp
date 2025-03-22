@@ -28,7 +28,7 @@ namespace API.Controllers
         {
             Result result = await userAccountService.RegisterRequest(registerUserRequest);
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
 
         [HttpPost("login")]

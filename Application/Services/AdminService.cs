@@ -36,21 +36,13 @@ namespace Application.Services
             {
                 return Result.Failure(UserAddErrors.AlreadyExists);
             }
-            if (request.Roles == null || request.Roles.Count == 0)
-            {
-                return Result.Failure(UserUpdateErrors.RolesEmpty);
-            }
 
             // Validate roles first
-            var roles = new List<Role>();
-            foreach (var role in request.Roles)
+
+            var r = await roleRepository.GetRole(request.Role);
+            if (r is null)
             {
-                var r = await roleRepository.GetRole(role);
-                if (r is null)
-                {
-                    return Result.Failure(UserUpdateErrors.RoleNotFound);
-                }
-                roles.Add(r);
+                return Result.Failure(UserUpdateErrors.RoleNotFound);
             }
 
             // Create user account and login data
@@ -60,6 +52,8 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = (int)request.Gender,
                 DateOfBirth = request.DateOfBirth,
+                RoleID = request.Role,
+                Role = r
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -73,11 +67,6 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.AddAsync(userLoginData);
-
-            // Assign roles to user account
-            userAccount.Roles = roles;
-
-            await userAccountRepository.UpdateUserAccount(userAccount);
 
             return Result.Success();
         }
@@ -97,25 +86,20 @@ namespace Application.Services
             if (authUserLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
-            var userAccount = await userAccountRepository.GetUserAccountByID(request.UserAccountID);
+            var userAccount = await userAccountRepository.GetUserAccountByID((int)request.UserAccountID!);
             if (userAccount is null)
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
             }
 
-            // Validate roles first
-            var roles = new List<Role>();
-            if (request.Roles != null && request.Roles.Count > 0)
+            if (request.RoleID != null)
             {
-                foreach (var role in request.Roles)
+                var r = await roleRepository.GetRole((int)request.RoleID);
+                if (r is null)
                 {
-                    var r = await roleRepository.GetRole(role);
-                    if (r is null)
-                    {
-                        return Result.Failure(UserUpdateErrors.RoleNotFound);
-                    }
-                    roles.Add(r);
+                    return Result.Failure(UserUpdateErrors.RoleNotFound);
                 }
+                userAccount.RoleID = r.ID;
             }
 
             userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
@@ -123,9 +107,6 @@ namespace Application.Services
             userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
 
-            // Assign roles to user account
-            userAccount.Roles.Clear();
-            userAccount.Roles = roles;
 
             await userAccountRepository.UpdateUserAccount(userAccount);
 
