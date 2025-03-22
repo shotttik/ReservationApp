@@ -89,7 +89,7 @@ namespace Application.Services
             if (authUserEmail == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
-            var authUserLoginData = await userLoginDataRepository.GetByEmailAsync(authUserEmail);
+            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmailAsync(authUserEmail);
             if (authUserLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
@@ -98,7 +98,7 @@ namespace Application.Services
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
             }
-
+            
             if (request.RoleID != null)
             {
                 var r = await roleRepository.GetRole((int)request.RoleID);

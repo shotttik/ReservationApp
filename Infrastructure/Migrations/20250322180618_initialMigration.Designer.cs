@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250318201313_AddedCompanyEntity")]
-    partial class AddedCompanyEntity
+    [Migration("20250322180618_initialMigration")]
+    partial class initialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,10 +127,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -159,7 +156,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 4,
-                            Name = "Company"
+                            Name = "CompanyAdmin"
+                        },
+                        new
+                        {
+                            ID = 5,
+                            Name = "CompanyMember"
                         });
                 });
 
@@ -266,11 +268,6 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 5
-                        },
-                        new
-                        {
-                            RoleID = 4,
                             PermissionID = 6
                         },
                         new
@@ -314,6 +311,9 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2")
@@ -322,6 +322,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("CompanyID");
+
+                    b.HasIndex("RoleID");
 
                     b.ToTable("UserAccounts");
                 });
@@ -391,21 +393,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("UserLoginDatas");
                 });
 
-            modelBuilder.Entity("RoleUserAccount", b =>
-                {
-                    b.Property<int>("RolesID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserAccountsID")
-                        .HasColumnType("int");
-
-                    b.HasKey("RolesID", "UserAccountsID");
-
-                    b.HasIndex("UserAccountsID");
-
-                    b.ToTable("RoleUserAccount");
-                });
-
             modelBuilder.Entity("Domain.Entities.RolePermission", b =>
                 {
                     b.HasOne("Domain.Entities.Permission", null)
@@ -428,7 +415,15 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("CompanyID")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Domain.Entities.Role", "Role")
+                        .WithMany("UserAccounts")
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Company");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserLoginData", b =>
@@ -442,30 +437,19 @@ namespace Infrastructure.Migrations
                     b.Navigation("UserAccount");
                 });
 
-            modelBuilder.Entity("RoleUserAccount", b =>
+            modelBuilder.Entity("Domain.Entities.Company", b =>
                 {
-                    b.HasOne("Domain.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RolesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.UserAccount", null)
-                        .WithMany()
-                        .HasForeignKey("UserAccountsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("UserAccounts");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Company", b =>
+            modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Navigation("UserAccounts");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserAccount", b =>
                 {
-                    b.Navigation("UserLoginData")
-                        .IsRequired();
+                    b.Navigation("UserLoginData");
                 });
 #pragma warning restore 612, 618
         }

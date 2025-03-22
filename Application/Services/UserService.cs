@@ -53,7 +53,7 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
             }
-            if (!(role.ID == Role.User.ID || role.ID == Role.Company.ID))
+            if (role.ID == Role.SuperAdmin.ID || role.ID == Role.Admin.ID)
             {
                 return Result.Failure(RegisterErrors.RoleIsNotAccessable);
             }

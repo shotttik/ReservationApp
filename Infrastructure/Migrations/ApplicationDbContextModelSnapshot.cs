@@ -124,10 +124,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -156,7 +153,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 4,
-                            Name = "Company"
+                            Name = "CompanyAdmin"
+                        },
+                        new
+                        {
+                            ID = 5,
+                            Name = "CompanyMember"
                         });
                 });
 
@@ -259,11 +261,6 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 3,
                             PermissionID = 8
-                        },
-                        new
-                        {
-                            RoleID = 4,
-                            PermissionID = 5
                         },
                         new
                         {

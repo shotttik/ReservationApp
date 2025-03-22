@@ -8,11 +8,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    IN = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.ID);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Permissions",
                 columns: table => new
@@ -30,31 +47,12 @@ namespace Infrastructure.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserAccounts",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: true, defaultValue: 5),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAccounts", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,25 +80,33 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleUserAccount",
+                name: "UserAccounts",
                 columns: table => new
                 {
-                    RolesID = table.Column<int>(type: "int", nullable: false),
-                    UserAccountsID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: true, defaultValue: 5),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CompanyID = table.Column<int>(type: "int", nullable: true),
+                    RoleID = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoleUserAccount", x => new { x.RolesID, x.UserAccountsID });
+                    table.PrimaryKey("PK_UserAccounts", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_RoleUserAccount_Roles_RolesID",
-                        column: x => x.RolesID,
-                        principalTable: "Roles",
+                        name: "FK_UserAccounts_Companies_CompanyID",
+                        column: x => x.CompanyID,
+                        principalTable: "Companies",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RoleUserAccount_UserAccounts_UserAccountsID",
-                        column: x => x.UserAccountsID,
-                        principalTable: "UserAccounts",
+                        name: "FK_UserAccounts_Roles_RoleID",
+                        column: x => x.RoleID,
+                        principalTable: "Roles",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -143,11 +149,12 @@ namespace Infrastructure.Migrations
                     { 1, "AddUser" },
                     { 2, "EditUser" },
                     { 3, "DeleteUser" },
-                    { 4, "AddCompany" },
-                    { 5, "EditCompany" },
-                    { 6, "DeleteCompany" },
-                    { 7, "ViewReports" },
-                    { 8, "ManageSettings" }
+                    { 4, "UpdateUser" },
+                    { 5, "AddCompany" },
+                    { 6, "EditCompany" },
+                    { 7, "DeleteCompany" },
+                    { 8, "ViewReports" },
+                    { 9, "ManageSettings" }
                 });
 
             migrationBuilder.InsertData(
@@ -158,7 +165,8 @@ namespace Infrastructure.Migrations
                     { 1, "SuperAdmin" },
                     { 2, "Admin" },
                     { 3, "User" },
-                    { 4, "Company" }
+                    { 4, "CompanyAdmin" },
+                    { 5, "CompanyMember" }
                 });
 
             migrationBuilder.InsertData(
@@ -174,17 +182,17 @@ namespace Infrastructure.Migrations
                     { 6, 1 },
                     { 7, 1 },
                     { 8, 1 },
+                    { 9, 1 },
                     { 1, 2 },
                     { 2, 2 },
                     { 3, 2 },
-                    { 4, 2 },
                     { 5, 2 },
                     { 6, 2 },
                     { 7, 2 },
-                    { 7, 3 },
-                    { 4, 4 },
-                    { 5, 4 },
-                    { 6, 4 }
+                    { 8, 2 },
+                    { 8, 3 },
+                    { 6, 4 },
+                    { 7, 4 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -193,9 +201,14 @@ namespace Infrastructure.Migrations
                 column: "PermissionID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoleUserAccount_UserAccountsID",
-                table: "RoleUserAccount",
-                column: "UserAccountsID");
+                name: "IX_UserAccounts_CompanyID",
+                table: "UserAccounts",
+                column: "CompanyID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccounts_RoleID",
+                table: "UserAccounts",
+                column: "RoleID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLoginDatas_UserAccountID",
@@ -211,19 +224,19 @@ namespace Infrastructure.Migrations
                 name: "RolePermissions");
 
             migrationBuilder.DropTable(
-                name: "RoleUserAccount");
-
-            migrationBuilder.DropTable(
                 name: "UserLoginDatas");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "UserAccounts");
 
             migrationBuilder.DropTable(
-                name: "UserAccounts");
+                name: "Companies");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }

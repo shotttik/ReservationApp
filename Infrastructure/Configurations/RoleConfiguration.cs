@@ -9,7 +9,8 @@ namespace Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Role> builder)
         {
 
-            builder.HasKey(e => e.ID);
+            builder.Property(e => e.ID)
+                   .ValueGeneratedNever();
 
             builder.Property(e => e.Name)
                    .IsRequired();
