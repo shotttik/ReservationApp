@@ -6,7 +6,7 @@ namespace Application.Interfaces
 {
     public interface IUserService
     {
-        Task<Result> RegisterRequest(RegisterUserRequest registerUserRequest);
+        Task<Result> Register(RegisterUserRequest registerUserRequest);
         Task<Result<LoginResponse>> Login(LoginRequest loginRequest);
         Task<Result<RefreshResponse>> Refresh(TokenRequest refreshTokenRequest);
         Task<Result> Logout(TokenRequest logoutRequest);

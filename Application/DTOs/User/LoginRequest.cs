@@ -4,10 +4,12 @@ namespace Application.DTOs.User
 {
     public class LoginRequest
     {
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         [EmailAddress]
+        [MaxLength(255)]
         public required string Email { get; set; }
-        [Required(AllowEmptyStrings = false)]
+        [Required]
+        [MaxLength(255)]
         public required string Password { get; set; }
     }
 }

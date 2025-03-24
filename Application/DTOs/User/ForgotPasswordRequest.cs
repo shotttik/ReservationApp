@@ -4,8 +4,9 @@ namespace Application.DTOs.User
 {
     public record ForgotPasswordRequest
     {
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         [EmailAddress]
+        [MaxLength(255)]
         public required string Email { get; set; }
 
     }

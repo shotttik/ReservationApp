@@ -1,7 +1,6 @@
 ﻿using API.Attributes;
 using Application.Common.ResultsErrors;
 using Application.DTOs.User;
-using Application.Enums;
 using Application.Interfaces;
 using Application.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +25,7 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
-            Result result = await userAccountService.RegisterRequest(registerUserRequest);
+            Result result = await userAccountService.Register(registerUserRequest);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }

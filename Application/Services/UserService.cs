@@ -21,6 +21,7 @@ namespace Application.Services
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IRoleRepository roleRepository;
+        private readonly ICompanyRepository companyRepository;
         private readonly IDistributedCache cache;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(30);
@@ -30,6 +31,7 @@ namespace Application.Services
             IUserAccountRepository userAccountRepository,
             IUserLoginDataRepository userLoginDataRepository,
             IRoleRepository roleRepository,
+            ICompanyRepository companyRepository,
             IDistributedCache cache,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -37,11 +39,12 @@ namespace Application.Services
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.roleRepository = roleRepository;
+            this.companyRepository = companyRepository;
             this.cache = cache;
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Result> RegisterRequest(RegisterUserRequest request)
+        public async Task<Result> Register(RegisterUserRequest request)
         {
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
             if (await userLoginDataRepository.GetByEmailAsync(request.Email) != null)
@@ -53,10 +56,16 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
             }
-            if (role.ID == Role.SuperAdmin.ID || role.ID == Role.Admin.ID)
+            if (!(role.ID == Role.User.ID || role.ID == Role.CompanyAdmin.ID))
             {
                 return Result.Failure(RegisterErrors.RoleIsNotAccessable);
             }
+            if ((role.ID == Role.User.ID && request.Company != null) ||
+                (role.ID) == Role.CompanyAdmin.ID && request.Company == null)
+            {
+                return Result.Failure(RegisterErrors.RoleIncompatibility);
+            }
+
             var userAccount = new UserAccount
             {
                 FirstName = request.FirstName,
@@ -73,10 +82,22 @@ namespace Application.Services
                 PasswordSalt = salt,
             };
 
+            if (request.Company != null)
+            {
+                var company = new Company()
+                {
+                    Name = request.Company.Name,
+                    Description = request.Company.Description,
+                    IN = request.Company.IN,
+                    Email = request.Company.Email,
+                    Phone = request.Company.Phone
+                };
+                userAccount.CompanyID = await companyRepository.AddAsync(company);
+            }
+
             var userAccountID = await userAccountRepository.AddAsync(userAccount);
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
-
 
             return Result.Success();
         }

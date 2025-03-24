@@ -1,5 +1,4 @@
 ﻿using Domain.Interfaces;
-using Infrastructure.Configurations;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +16,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             return services;

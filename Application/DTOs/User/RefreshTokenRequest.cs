@@ -4,10 +4,10 @@ namespace Application.DTOs.User
 {
     public class TokenRequest
     {
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         public required string AccessToken { get; set; }
 
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         public required string RefreshToken { get; set; }
     }
 }
