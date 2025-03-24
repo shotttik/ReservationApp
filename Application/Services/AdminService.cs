@@ -98,7 +98,7 @@ namespace Application.Services
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
             }
-            
+
             if (request.RoleID != null)
             {
                 var r = await roleRepository.GetRole((int)request.RoleID);
@@ -107,6 +107,11 @@ namespace Application.Services
                     return Result.Failure(UserUpdateErrors.RoleNotFound);
                 }
                 userAccount.RoleID = r.ID;
+            }
+
+            if (authUserLoginData.UserAccount.RoleID == Role.Admin.ID && userAccount.RoleID == Role.SuperAdmin.ID)
+            {
+                return Result.Failure(UserUpdateErrors.PermissionError);
             }
 
             userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
