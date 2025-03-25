@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,9 +14,13 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.ConfirmationToken).HasMaxLength(150);
             builder.Property(e => e.PasswordRecoveryToken).HasMaxLength(150);
             builder.Property(e => e.UserAccountID).IsRequired();
-            builder.Property(e => e.EmailValidationStatus).HasDefaultValue(0); // deactivated
+            builder.Property(e => e.VerificationStatus)
+                    .HasConversion<int>()
+                    .HasDefaultValue(VerificationStatus.Unverified); ; // deactivated
             builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+
+            builder.HasIndex(e => e.Email).IsUnique();
         }
     }
 }

@@ -5,6 +5,7 @@ using Application.DTOs.User;
 using Application.Interfaces;
 using Application.Responses;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -78,6 +79,7 @@ namespace Application.Services
             var userLoginData = new UserLoginData
             {
                 Email = request.Email,
+                VerificationStatus = VerificationStatus.Pending,
                 PasswordHash = hash,
                 PasswordSalt = salt,
             };
@@ -108,6 +110,10 @@ namespace Application.Services
             if (user == null)
             {
                 return Result.Failure<LoginResponse>(LoginErrors.NotFound);
+            }
+            if (user.VerificationStatus != VerificationStatus.Verified)
+            {
+                return Result.Failure<LoginResponse>(LoginErrors.EmailNotVerified);
             }
             if (!PasswordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
             {

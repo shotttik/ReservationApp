@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
@@ -12,7 +13,7 @@ namespace Domain.Entities
         public int UserAccountID { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpirationTime { get; set; }
-        public int EmailValidationStatus { get; set; }
+        public VerificationStatus VerificationStatus { get; set; }
         public string? PasswordRecoveryToken { get; set; }
         public DateTime? RecoveryTokenTime { get; set; }
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
