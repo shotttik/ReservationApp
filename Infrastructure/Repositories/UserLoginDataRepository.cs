@@ -20,6 +20,7 @@ namespace Infrastructure.Repositories
 
         public async Task Update(UserLoginData userLoginData)
         {
+            userLoginData.UpdatedAt = DateTime.UtcNow;
             context.UserLoginDatas.Update(userLoginData);
             await context.SaveChangesAsync();
         }

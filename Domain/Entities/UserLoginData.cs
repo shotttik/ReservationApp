@@ -17,8 +17,8 @@ namespace Domain.Entities
         public VerificationStatus VerificationStatus { get; set; }
         public string? PasswordRecoveryToken { get; set; }
         public DateTime? RecoveryTokenTime { get; set; }
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         public UserAccount UserAccount { get; set; } = null!;
     }

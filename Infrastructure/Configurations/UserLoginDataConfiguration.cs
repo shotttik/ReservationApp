@@ -18,7 +18,6 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.VerificationStatus)
                     .HasConversion<int>()
                     .HasDefaultValue(VerificationStatus.Unverified); ; // deactivated
-            builder.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasIndex(e => e.Email).IsUnique();

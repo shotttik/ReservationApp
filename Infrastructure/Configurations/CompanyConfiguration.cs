@@ -14,6 +14,7 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.IN).HasMaxLength(9).IsRequired();
             builder.Property(e => e.Email).HasMaxLength(255);
             builder.Property(e => e.Phone).HasMaxLength(9);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasIndex(e => e.IN).IsUnique();
             builder.HasIndex(e => e.Email).IsUnique();
@@ -22,7 +23,7 @@ namespace Infrastructure.Configurations
             builder.HasMany(c => c.UserAccounts)
                 .WithOne(ua => ua.Company)
                 .HasForeignKey(ua => ua.CompanyID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

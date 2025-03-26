@@ -40,8 +40,9 @@ namespace Infrastructure.Repositories
 
             return user;
         }
-        public async Task UpdateUserAccount(UserAccount userAccount)
+        public async Task Update(UserAccount userAccount)
         {
+            userAccount.UpdatedAt = DateTime.UtcNow;
             context.UserAccounts.Update(userAccount);
             await context.SaveChangesAsync();
         }

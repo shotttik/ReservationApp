@@ -9,8 +9,8 @@
         public DateTime? DateOfBirth { get; set; }
         public int? CompanyID { get; set; }
         public required int RoleID { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual UserLoginData? UserLoginData { get; set; }
         public virtual Role? Role { get; set; }

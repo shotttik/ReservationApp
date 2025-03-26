@@ -120,7 +120,7 @@ namespace Application.Services
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
 
 
-            await userAccountRepository.UpdateUserAccount(userAccount);
+            await userAccountRepository.Update(userAccount);
             await cache.RemoveAsync(GetCacheKey(userAccount.ID));
             await userService.GetUserAuthorizationDataAsync();
 
