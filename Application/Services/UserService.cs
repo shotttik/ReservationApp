@@ -47,7 +47,6 @@ namespace Application.Services
 
         public async Task<Result> Register(RegisterUserRequest request)
         {
-            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
             if (await userLoginDataRepository.GetByEmailAsync(request.Email) != null)
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
@@ -67,6 +66,11 @@ namespace Application.Services
                 return Result.Failure(RegisterErrors.RoleIncompatibility);
             }
 
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+            var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
+            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var verificationTokenExpirationTime = DateTime.Now.AddDays(expDays);
+
             var userAccount = new UserAccount
             {
                 FirstName = request.FirstName,
@@ -82,6 +86,8 @@ namespace Application.Services
                 VerificationStatus = VerificationStatus.Pending,
                 PasswordHash = hash,
                 PasswordSalt = salt,
+                VerificationToken = verificationToken,
+                VerificationTokenExpirationTime = verificationTokenExpirationTime
             };
 
             if (request.Company != null)
@@ -101,7 +107,14 @@ namespace Application.Services
             userLoginData.UserAccountID = userAccountID;
             await userLoginDataRepository.AddAsync(userLoginData);
 
-            return Result.Success();
+            var response = new RegisterResponse()
+            {
+                Description = $"User registered successfully, Now You have to Verify your email, check inbox, you have {expDays} days.",
+                VerificationToken = verificationToken,
+                VerificationTokenExpirationTime = verificationTokenExpirationTime
+            };
+
+            return Result.Success(response);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
@@ -287,6 +300,25 @@ namespace Application.Services
             });
 
             return Result.Success(userDTO);
+        }
+        public async Task<Result> VerifyEmail(string token)
+        {
+            var userLoginData = await userLoginDataRepository.GetByVerificationToken(token);
+            if (userLoginData is null)
+            {
+                return Result.Failure(VerifyEmailErrors.NotFound);
+            }
+            if (userLoginData.VerificationTokenExpirationTime < DateTime.Now)
+            {
+                return Result.Failure(VerifyEmailErrors.ExpiredToken);
+            }
+
+            userLoginData.VerificationToken = null;
+            userLoginData.VerificationTokenExpirationTime = null;
+            userLoginData.VerificationStatus = VerificationStatus.Verified;
+            await userLoginDataRepository.Update(userLoginData);
+
+            return Result.Success();
         }
         private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
     }

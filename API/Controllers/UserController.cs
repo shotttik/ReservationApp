@@ -87,5 +87,12 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
+        [HttpGet("verify-email")]
+        [Logging(LoggingType.Full)]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            Result result = await userAccountService.VerifyEmail(token);
+            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+        }
     }
 }

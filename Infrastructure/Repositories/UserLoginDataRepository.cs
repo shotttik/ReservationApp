@@ -17,6 +17,12 @@ namespace Infrastructure.Repositories
             await context.UserLoginDatas.AddAsync(userLoginData);
             await context.SaveChangesAsync();
         }
+
+        public async Task Update(UserLoginData userLoginData)
+        {
+            context.UserLoginDatas.Update(userLoginData);
+            await context.SaveChangesAsync();
+        }
         public async Task<UserLoginData?> GetByEmailAsync(string email)
         {
             return await context.UserLoginDatas.Where(uld => uld.Email == email).FirstOrDefaultAsync();
@@ -74,6 +80,13 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync();
 
             return userLoginData;
+        }
+
+        public async Task<UserLoginData?> GetByVerificationToken(string verificationToken)
+        {
+            return await context.UserLoginDatas
+                .Where(uld => uld.VerificationToken == verificationToken)
+                .FirstOrDefaultAsync();
         }
     }
 }
