@@ -47,7 +47,7 @@ namespace Application.Services
 
         public async Task<Result> Register(RegisterUserRequest request)
         {
-            if (await userLoginDataRepository.GetByEmailAsync(request.Email) != null)
+            if (await userLoginDataRepository.GetByEmail(request.Email) != null)
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
@@ -100,12 +100,12 @@ namespace Application.Services
                     Email = request.Company.Email,
                     Phone = request.Company.Phone
                 };
-                userAccount.CompanyID = await companyRepository.AddAsync(company);
+                userAccount.CompanyID = await companyRepository.Add(company);
             }
 
-            var userAccountID = await userAccountRepository.AddAsync(userAccount);
+            var userAccountID = await userAccountRepository.Add(userAccount);
             userLoginData.UserAccountID = userAccountID;
-            await userLoginDataRepository.AddAsync(userLoginData);
+            await userLoginDataRepository.Add(userLoginData);
 
             var response = new RegisterResponse()
             {
@@ -118,7 +118,7 @@ namespace Application.Services
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
-            var user = await userLoginDataRepository.GetFullUserDataByEmailAsync(request.Email);
+            var user = await userLoginDataRepository.GetFullUserDataByEmail(request.Email);
 
             if (user == null)
             {
@@ -157,7 +157,7 @@ namespace Application.Services
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
-            var user = await userLoginDataRepository.GetFullUserDataByEmailAsync(email);
+            var user = await userLoginDataRepository.GetFullUserDataByEmail(email);
             if (user is null)
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.NotFound);
@@ -202,7 +202,7 @@ namespace Application.Services
             }
             var email = principal.FindFirst(ClaimTypes.Email)?.Value!;
 
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(email);
+            var userLoginData = await userLoginDataRepository.GetByEmail(email);
 
             if (userLoginData is null)
             {
@@ -221,7 +221,7 @@ namespace Application.Services
         }
         public async Task<Result<string>> ForgotPassword(ForgotPasswordRequest request)
         {
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(request.Email);
+            var userLoginData = await userLoginDataRepository.GetByEmail(request.Email);
             if (userLoginData is null)
             {
                 return Result.Failure<string>(ForgotPasswordErrors.NotFound);
@@ -235,7 +235,7 @@ namespace Application.Services
         }
         public async Task<Result> ResetPassword(ResetPasswordRequest request)
         {
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(request.Email);
+            var userLoginData = await userLoginDataRepository.GetByEmail(request.Email);
 
             if (userLoginData is null)
             {
@@ -259,7 +259,7 @@ namespace Application.Services
                    .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             if (userEmail == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
-            var userLoginData = await userLoginDataRepository.GetByEmailAsync(userEmail);
+            var userLoginData = await userLoginDataRepository.GetByEmail(userEmail);
             if (userLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
             var userID = userLoginData.UserAccountID;

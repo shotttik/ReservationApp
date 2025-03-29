@@ -39,7 +39,7 @@ namespace Application.Services
 
         public async Task<Result> AddUser(AddUserRequest request)
         {
-            if (await userLoginDataRepository.GetByEmailAsync(request.Email) is not null)
+            if (await userLoginDataRepository.GetByEmail(request.Email) is not null)
             {
                 return Result.Failure(UserAddErrors.AlreadyExists);
             }
@@ -70,10 +70,10 @@ namespace Application.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                UserAccountID = await userAccountRepository.AddAsync(userAccount)
+                UserAccountID = await userAccountRepository.Add(userAccount)
             };
 
-            await userLoginDataRepository.AddAsync(userLoginData);
+            await userLoginDataRepository.Add(userLoginData);
 
             return Result.Success();
         }
@@ -89,7 +89,7 @@ namespace Application.Services
             if (authUserEmail == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
-            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmailAsync(authUserEmail);
+            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmail(authUserEmail);
             if (authUserLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 

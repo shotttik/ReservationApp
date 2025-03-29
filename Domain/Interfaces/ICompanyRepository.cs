@@ -4,6 +4,6 @@ namespace Domain.Interfaces
 {
     public interface ICompanyRepository
     {
-        Task<int> AddAsync(Company company);
+        Task<int> Add(Company company);
     }
 }

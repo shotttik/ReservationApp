@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories
         {
             this.context = context;
         }
-        public async Task AddAsync(UserLoginData userLoginData)
+        public async Task Add(UserLoginData userLoginData)
         {
             await context.UserLoginDatas.AddAsync(userLoginData);
             await context.SaveChangesAsync();
@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
             context.UserLoginDatas.Update(userLoginData);
             await context.SaveChangesAsync();
         }
-        public async Task<UserLoginData?> GetByEmailAsync(string email)
+        public async Task<UserLoginData?> GetByEmail(string email)
         {
             return await context.UserLoginDatas.Where(uld => uld.Email == email).FirstOrDefaultAsync();
         }
@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<UserLoginData?> GetFullUserDataByEmailAsync(string email)
+        public async Task<UserLoginData?> GetFullUserDataByEmail(string email)
         {
             var userLoginData = await context.UserLoginDatas
                 .Where(uld => uld.Email == email)
@@ -64,14 +64,14 @@ namespace Infrastructure.Repositories
             return userLoginData;
         }
 
-        public async Task<UserLoginData?> GetAsync(int ID)
+        public async Task<UserLoginData?> Get(int ID)
         {
             var userLoginData = await context.UserLoginDatas.FindAsync(ID);
 
             return userLoginData;
         }
 
-        public async Task<UserLoginData?> GetFullUserDataAsync(int ID)
+        public async Task<UserLoginData?> GetFullUserData(int ID)
         {
             var userLoginData = await context.UserLoginDatas
                 .Where(uld => uld.ID == ID)

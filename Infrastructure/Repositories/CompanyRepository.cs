@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
         {
             this.context = context;
         }
-        public async Task<int> AddAsync(Company company)
+        public async Task<int> Add(Company company)
         {
             await context.Companies.AddAsync(company);
             await context.SaveChangesAsync();
