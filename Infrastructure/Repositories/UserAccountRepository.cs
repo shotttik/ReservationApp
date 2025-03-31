@@ -4,21 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class UserAccountRepository :IUserAccountRepository
+    public class UserAccountRepository :BaseRepository<UserAccount>, IUserAccountRepository
     {
         private readonly ApplicationDbContext context;
 
-        public UserAccountRepository(ApplicationDbContext context)
+        public UserAccountRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
-        }
-
-        public async Task<int> Add(UserAccount userAccount)
-        {
-            await context.UserAccounts.AddAsync(userAccount);
-            await context.SaveChangesAsync();
-
-            return userAccount.ID;
         }
 
         public async Task<UserAccount?> GetAuthorizationData(int ID)
@@ -39,12 +31,6 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
-        }
-        public async Task Update(UserAccount userAccount)
-        {
-            userAccount.UpdatedAt = DateTime.UtcNow;
-            context.UserAccounts.Update(userAccount);
-            await context.SaveChangesAsync();
         }
     }
 }

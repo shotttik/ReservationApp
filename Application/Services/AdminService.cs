@@ -65,12 +65,13 @@ namespace Application.Services
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
 
+            userAccount = await userAccountRepository.Add(userAccount);
             var userLoginData = new UserLoginData()
             {
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                UserAccountID = await userAccountRepository.Add(userAccount)
+                UserAccountID = userAccount.ID
             };
 
             await userLoginDataRepository.Add(userLoginData);
@@ -118,7 +119,7 @@ namespace Application.Services
             userAccount.LastName = request.LastName ?? userAccount.LastName;
             userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
-
+            userAccount.UpdatedAt = DateTime.Now;
 
             await userAccountRepository.Update(userAccount);
             await cache.RemoveAsync(GetCacheKey(userAccount.ID));

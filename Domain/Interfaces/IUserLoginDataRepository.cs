@@ -2,12 +2,9 @@
 
 namespace Domain.Interfaces
 {
-    public interface IUserLoginDataRepository
+    public interface IUserLoginDataRepository :IBaseRepository<UserLoginData>
     {
-        Task Add(UserLoginData userLoginData);
-        Task Update(UserLoginData userLoginData);
         Task<UserLoginData?> GetByEmail(string email);
-        Task<UserLoginData?> Get(int ID);
         Task<UserLoginData?> GetFullUserDataByEmail(string email);
         Task<UserLoginData?> GetFullUserData(int ID);
         Task UpdateRefreshToken(int ID, string? refreshToken, DateTime refreshTokenExpirationTime);

@@ -100,11 +100,11 @@ namespace Application.Services
                     Email = request.Company.Email,
                     Phone = request.Company.Phone
                 };
-                userAccount.CompanyID = await companyRepository.Add(company);
+                await companyRepository.Add(company);
             }
 
-            var userAccountID = await userAccountRepository.Add(userAccount);
-            userLoginData.UserAccountID = userAccountID;
+            userAccount = await userAccountRepository.Add(userAccount);
+            userLoginData.UserAccountID = userAccount.ID;
             await userLoginDataRepository.Add(userLoginData);
 
             var response = new RegisterResponse()

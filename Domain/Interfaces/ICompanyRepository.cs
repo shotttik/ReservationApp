@@ -2,8 +2,7 @@
 
 namespace Domain.Interfaces
 {
-    public interface ICompanyRepository
+    public interface ICompanyRepository :IBaseRepository<Company>
     {
-        Task<int> Add(Company company);
     }
 }

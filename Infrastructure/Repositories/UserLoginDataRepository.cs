@@ -4,25 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class UserLoginDataRepository :IUserLoginDataRepository
+    public class UserLoginDataRepository :BaseRepository<UserLoginData>, IUserLoginDataRepository
     {
         private readonly ApplicationDbContext context;
 
-        public UserLoginDataRepository(ApplicationDbContext context)
+        public UserLoginDataRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
-        }
-        public async Task Add(UserLoginData userLoginData)
-        {
-            await context.UserLoginDatas.AddAsync(userLoginData);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Update(UserLoginData userLoginData)
-        {
-            userLoginData.UpdatedAt = DateTime.UtcNow;
-            context.UserLoginDatas.Update(userLoginData);
-            await context.SaveChangesAsync();
         }
         public async Task<UserLoginData?> GetByEmail(string email)
         {
@@ -60,13 +48,6 @@ namespace Infrastructure.Repositories
                 .ThenInclude(ua => ua.Role)
                 .ThenInclude(ur => ur!.Permissions)
                 .FirstOrDefaultAsync();
-
-            return userLoginData;
-        }
-
-        public async Task<UserLoginData?> Get(int ID)
-        {
-            var userLoginData = await context.UserLoginDatas.FindAsync(ID);
 
             return userLoginData;
         }
