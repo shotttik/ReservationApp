@@ -8,6 +8,7 @@ namespace Infrastructure.Repositories
     {
         private readonly ApplicationDbContext context;
 
+
         public UserAccountRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
@@ -15,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public async Task<UserAccount?> GetAuthorizationData(int ID)
         {
-            var user = await context.UserAccounts
+            var user = await _dbSet
                     .Include(u => u.Role)
                         .ThenInclude(r => r!.Permissions)
                     .FirstOrDefaultAsync(u => u.ID == ID);
@@ -23,9 +24,9 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task<UserAccount?> GetUserAccountByID(int ID)
+        public override async Task<UserAccount?> Get(int ID)
         {
-            var user = await context.UserAccounts
+            var user = await _dbSet
                 .Include(u => u.Role)
                     .ThenInclude(r => r!.Permissions)
                 .FirstOrDefaultAsync(u => u.ID == ID);

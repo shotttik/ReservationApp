@@ -2,9 +2,8 @@
 
 namespace Domain.Interfaces
 {
-    public interface IUserAccountRepository:IBaseRepository<UserAccount>
+    public interface IUserAccountRepository :IBaseRepository<UserAccount>
     {
         Task<UserAccount?> GetAuthorizationData(int ID);
-        Task<UserAccount?> GetUserAccountByID(int ID);
     }
 }

@@ -94,7 +94,7 @@ namespace Application.Services
             if (authUserLoginData == null)
                 return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
-            var userAccount = await userAccountRepository.GetUserAccountByID((int)request.UserAccountID!);
+            var userAccount = await userAccountRepository.Get((int)request.UserAccountID!);
             if (userAccount is null)
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
