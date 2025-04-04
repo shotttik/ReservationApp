@@ -87,7 +87,7 @@ namespace Application.Services
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 VerificationToken = verificationToken,
-                VerificationTokenExpirationTime = verificationTokenExpirationTime
+                VerificationTokenExpTime = verificationTokenExpirationTime
             };
 
             if (request.Company != null)
@@ -111,7 +111,7 @@ namespace Application.Services
             {
                 Description = $"User registered successfully, Now You have to Verify your email, check inbox, you have {expDays} days.",
                 VerificationToken = verificationToken,
-                VerificationTokenExpirationTime = verificationTokenExpirationTime
+                VerificationTokenExpTime = verificationTokenExpirationTime
             };
 
             return Result.Success(response);
@@ -137,7 +137,7 @@ namespace Application.Services
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpirationTime = refreshTokenExpirationTime;
+            user.RefreshTokenExpTime = refreshTokenExpirationTime;
             user.UpdateTimestamp();
             await userLoginDataRepository.Update(user);
 
@@ -145,7 +145,7 @@ namespace Application.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                AccessTokenExpirationTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
+                AccessTokenExpTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
             });
         }
         public async Task<Result<RefreshResponse>> Refresh(TokenRequest request)
@@ -167,7 +167,7 @@ namespace Application.Services
             };
             if (user.RefreshToken is null ||
                 user.RefreshToken != request.RefreshToken ||
-                user.RefreshTokenExpirationTime < DateTime.Now)
+                user.RefreshTokenExpTime < DateTime.Now)
             {
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
@@ -177,7 +177,7 @@ namespace Application.Services
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpirationTime = refreshTokenExpirationTime;
+            user.RefreshTokenExpTime = refreshTokenExpirationTime;
             user.UpdateTimestamp();
             await userLoginDataRepository.Update(user);
 
@@ -217,12 +217,12 @@ namespace Application.Services
             }
             if (userLoginData.RefreshToken is null ||
                 userLoginData.RefreshToken != request.RefreshToken ||
-                userLoginData.RefreshTokenExpirationTime < DateTime.Now)
+                userLoginData.RefreshTokenExpTime < DateTime.Now)
             {
                 return Result.Failure(LogoutErrors.InvalidRefreshToken);
             }
             userLoginData.RefreshToken = null;
-            userLoginData.RefreshTokenExpirationTime = null;
+            userLoginData.RefreshTokenExpTime = null;
             userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
@@ -239,8 +239,8 @@ namespace Application.Services
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
-            userLoginData.PasswordRecoveryToken = recoveryToken;
-            userLoginData.RecoveryTokenTime = recoveryTokenTime;
+            userLoginData.RecoveryToken = recoveryToken;
+            userLoginData.RecoveryTokenExpTime = recoveryTokenTime;
             userLoginData.UpdateTimestamp();
             await userLoginDataRepository.Update(userLoginData);
 
@@ -255,9 +255,9 @@ namespace Application.Services
             {
                 return Result.Failure(ResetPasswordErrors.NotFound);
             }
-            if (userLoginData.PasswordRecoveryToken is null ||
-                userLoginData.PasswordRecoveryToken != request.RecoveryToken ||
-                userLoginData.RecoveryTokenTime < DateTime.Now)
+            if (userLoginData.RecoveryToken is null ||
+                userLoginData.RecoveryToken != request.RecoveryToken ||
+                userLoginData.RecoveryTokenExpTime < DateTime.Now)
             {
                 return Result.Failure(ResetPasswordErrors.InvalidToken);
             }
@@ -265,8 +265,8 @@ namespace Application.Services
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
             userLoginData!.PasswordHash = hash;
             userLoginData.PasswordSalt = salt;
-            userLoginData.PasswordRecoveryToken = null;
-            userLoginData.RecoveryTokenTime = null;
+            userLoginData.RecoveryToken = null;
+            userLoginData.RecoveryTokenExpTime = null;
             userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
@@ -328,13 +328,13 @@ namespace Application.Services
             {
                 return Result.Failure(VerifyEmailErrors.NotFound);
             }
-            if (userLoginData.VerificationTokenExpirationTime < DateTime.Now)
+            if (userLoginData.VerificationTokenExpTime < DateTime.Now)
             {
                 return Result.Failure(VerifyEmailErrors.ExpiredToken);
             }
 
             userLoginData.VerificationToken = null;
-            userLoginData.VerificationTokenExpirationTime = null;
+            userLoginData.VerificationTokenExpTime = null;
             userLoginData.VerificationStatus = VerificationStatus.Verified;
             userLoginData.UpdateTimestamp();
             await userLoginDataRepository.Update(userLoginData);

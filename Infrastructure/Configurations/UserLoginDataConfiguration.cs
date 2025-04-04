@@ -12,7 +12,7 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.Email).IsRequired().HasMaxLength(255);
             builder.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255);
             builder.Property(e => e.ConfirmationToken).HasMaxLength(150);
-            builder.Property(e => e.PasswordRecoveryToken).HasMaxLength(150);
+            builder.Property(e => e.RecoveryToken).HasMaxLength(150);
             builder.Property(e => e.VerificationToken).HasMaxLength(150);
             builder.Property(e => e.UserAccountID).IsRequired();
             builder.Property(e => e.VerificationStatus)
