@@ -1,6 +1,6 @@
 ﻿using API.Attributes;
 using Application.Common.ResultsErrors;
-using Application.DTOs.User;
+using Application.DTOs.Company;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
