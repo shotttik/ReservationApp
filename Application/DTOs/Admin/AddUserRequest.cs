@@ -14,7 +14,7 @@ namespace Application.DTOs.Admin
         [Required]
         public Gender Gender { get; set; }
         [Required]
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         [Required]
         [MaxLength(255)]
         public required string Email { get; set; }

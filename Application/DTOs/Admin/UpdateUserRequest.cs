@@ -11,7 +11,7 @@ namespace Application.DTOs.Admin
         [MaxLength(200)]
         public string? LastName { get; set; }
         public Gender? Gender { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         public int? RoleID { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace Application.DTOs.User
         [Required]
         public int? Gender { get; set; }
         [Required]
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         [EmailAddress]
         [Required]
         [MaxLength(255)]

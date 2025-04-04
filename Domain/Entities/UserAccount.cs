@@ -6,7 +6,7 @@
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public int? Gender { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
         public int? CompanyID { get; set; }
         public required int RoleID { get; set; }
         public DateTime? CreatedAt { get; set; }
