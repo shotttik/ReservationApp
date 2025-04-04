@@ -136,7 +136,10 @@ namespace Application.Services
             var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            await userLoginDataRepository.UpdateRefreshToken(user.ID, refreshToken, refreshTokenExpirationTime);
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpirationTime = refreshTokenExpirationTime;
+            user.UpdateTimestamp();
+            await userLoginDataRepository.Update(user);
 
             return Result.Success(new LoginResponse
             {
@@ -173,13 +176,17 @@ namespace Application.Services
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            await userLoginDataRepository.UpdateRefreshToken(user.ID, newRefreshToken, refreshTokenExpirationTime);
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpirationTime = refreshTokenExpirationTime;
+            user.UpdateTimestamp();
+            await userLoginDataRepository.Update(user);
 
             var response = new RefreshResponse()
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
             };
+
             return Result.Success(response);
 
         }
@@ -214,7 +221,11 @@ namespace Application.Services
             {
                 return Result.Failure(LogoutErrors.InvalidRefreshToken);
             }
-            await userLoginDataRepository.UpdateRefreshToken(userLoginData.ID, null, DateTime.Now);
+            userLoginData.RefreshToken = null;
+            userLoginData.RefreshTokenExpirationTime = null;
+            userLoginData.UpdateTimestamp();
+
+            await userLoginDataRepository.Update(userLoginData);
             await cache.RemoveAsync(GetCacheKey(userLoginData.UserAccountID));
 
             return Result.Success();
@@ -228,7 +239,10 @@ namespace Application.Services
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
-            await userLoginDataRepository.UpdateRecoveryToken(userLoginData.ID, recoveryToken, recoveryTokenTime);
+            userLoginData.PasswordRecoveryToken = recoveryToken;
+            userLoginData.RecoveryTokenTime = recoveryTokenTime;
+            userLoginData.UpdateTimestamp();
+            await userLoginDataRepository.Update(userLoginData);
 
             // TODO instead of returning recovery token need to send email to user
             return Result.Success(recoveryToken);
@@ -249,7 +263,13 @@ namespace Application.Services
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
-            await userLoginDataRepository.UpdateResetPasswordData(userLoginData.ID, hash, salt);
+            userLoginData!.PasswordHash = hash;
+            userLoginData.PasswordSalt = salt;
+            userLoginData.PasswordRecoveryToken = null;
+            userLoginData.RecoveryTokenTime = null;
+            userLoginData.UpdateTimestamp();
+
+            await userLoginDataRepository.Update(userLoginData);
 
             return Result.Success();
         }
@@ -316,6 +336,7 @@ namespace Application.Services
             userLoginData.VerificationToken = null;
             userLoginData.VerificationTokenExpirationTime = null;
             userLoginData.VerificationStatus = VerificationStatus.Verified;
+            userLoginData.UpdateTimestamp();
             await userLoginDataRepository.Update(userLoginData);
 
             return Result.Success();

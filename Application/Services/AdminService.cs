@@ -119,8 +119,7 @@ namespace Application.Services
             userAccount.LastName = request.LastName ?? userAccount.LastName;
             userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
-            userAccount.UpdatedAt = DateTime.Now;
-
+            userAccount.UpdateTimestamp();
             await userAccountRepository.Update(userAccount);
             await cache.RemoveAsync(GetCacheKey(userAccount.ID));
             await userService.GetUserAuthorizationDataAsync();

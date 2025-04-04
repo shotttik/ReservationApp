@@ -12,5 +12,6 @@
         public DateTime? UpdatedAt { get; set; }
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
+        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
     }
 }

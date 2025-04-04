@@ -11,5 +11,6 @@
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public Company Company { get; set; } = null!;
+        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
     }
 }

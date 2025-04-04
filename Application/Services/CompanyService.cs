@@ -95,12 +95,13 @@ namespace Application.Services
             }
 
             invitation.IsAccepted = true;
-            invitation.UpdatedAt = DateTime.Now;
             invitation.Token = string.Empty;
+            invitation.UpdateTimestamp();
             await companyInvitationRepository.Update(invitation);
 
             authUserLoginData.UserAccount.CompanyID = invitation.CompanyId;
             authUserLoginData.UserAccount.RoleID = Role.CompanyMember.ID;
+            authUserLoginData.UserAccount.UpdateTimestamp();
             await userAccountRepository.Update(authUserLoginData.UserAccount);
 
             return Result.Success();

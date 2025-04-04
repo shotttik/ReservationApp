@@ -21,5 +21,7 @@ namespace Domain.Entities
         public DateTime? CreatedAt { get; set; }
 
         public UserAccount UserAccount { get; set; } = null!;
+        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
+
     }
 }
