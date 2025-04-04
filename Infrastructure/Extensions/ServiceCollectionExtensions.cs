@@ -17,8 +17,10 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<ICompanyInvitationRepository, CompanyInvitationRepository>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
             return services;
         }
     }

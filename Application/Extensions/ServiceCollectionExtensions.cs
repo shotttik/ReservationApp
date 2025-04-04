@@ -8,11 +8,9 @@ namespace Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            // Add any other services here, for example:
-            // services.AddScoped<IMyService, MyService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAdminService, AdminService>();
-
+            services.AddScoped<ICompanyService, CompanyService>();
 
             return services;
         }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    public class UserAccountConfiguration :IEntityTypeConfiguration<UserAccount>
+    internal sealed class UserAccountConfiguration :IEntityTypeConfiguration<UserAccount>
     {
         public void Configure(EntityTypeBuilder<UserAccount> builder)
         {
