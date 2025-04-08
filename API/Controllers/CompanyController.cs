@@ -24,7 +24,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
         {
-            var result = await companyService.InviteMember(request.MemberID);
+            var result = await companyService.InviteMember(request.UserAccountID);
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }

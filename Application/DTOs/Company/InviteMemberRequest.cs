@@ -5,6 +5,6 @@ namespace Application.DTOs.Company
     public class InviteMemberRequest
     {
         [Required]
-        public int MemberID { get; set; }
+        public int UserAccountID { get; set; }
     }
 }

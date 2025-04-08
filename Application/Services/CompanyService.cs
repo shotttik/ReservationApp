@@ -47,8 +47,8 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
             {
-                CompanyId = AuthUser.Company!.ID,
-                MemberID = member.ID,
+                CompanyID = AuthUser.Company!.ID,
+                UserAccountID = member.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.Now.AddDays(expDays),
                 IsAccepted = false
@@ -66,7 +66,7 @@ namespace Application.Services
             {
                 return Result.Failure(AcceptInviteErrors.NotFound);
             }
-            if (invitation.MemberID != AuthUser.ID)
+            if (invitation.UserAccountID != AuthUser.ID)
             {
                 return Result.Failure(AcceptInviteErrors.InvalidUser);
             }
@@ -81,7 +81,7 @@ namespace Application.Services
             await companyInvitationRepository.Update(invitation);
 
             var authUserEntity = await userAccountRepository.Get(AuthUser.ID);
-            authUserEntity!.CompanyID = invitation.CompanyId;
+            authUserEntity!.CompanyID = invitation.CompanyID;
             authUserEntity.RoleID = Role.CompanyMember.ID;
             authUserEntity.UpdateTimestamp();
 

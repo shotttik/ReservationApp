@@ -8,15 +8,15 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<CompanyInvitation> builder)
         {
-            builder.HasKey(e => e.Id);
+            builder.HasKey(e => e.ID);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
-            builder.Property(e => e.MemberID).IsRequired();
+            builder.Property(e => e.UserAccountID).IsRequired();
             builder.Property(e => e.Token).IsRequired().HasMaxLength(150);
             builder.HasIndex(e => e.Token).IsUnique();
 
             builder.HasOne(e => e.Company)
                 .WithMany(e => e.Invitations)
-                .HasForeignKey(e => e.CompanyId)
+                .HasForeignKey(e => e.CompanyID)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
