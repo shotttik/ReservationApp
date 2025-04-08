@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Application.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.User
 {
@@ -6,6 +7,7 @@ namespace Application.DTOs.User
     {
         [Required]
         [DataType(DataType.Password)]
+        [PasswordComplexity]
         [MaxLength(255)]
         public required string Password { get; set; }
         [DataType(DataType.Password)]
