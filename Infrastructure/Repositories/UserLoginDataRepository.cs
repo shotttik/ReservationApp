@@ -47,5 +47,11 @@ namespace Infrastructure.Repositories
                 .Where(uld => uld.VerificationToken == verificationToken)
                 .FirstOrDefaultAsync();
         }
+        public async Task<UserLoginData?> GetByUserAccountID(int userAccountID)
+        {
+            return await _dbSet
+                .Where(uld => uld.UserAccountID == userAccountID)
+                .FirstOrDefaultAsync();
+        }
     }
 }

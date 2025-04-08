@@ -182,7 +182,7 @@ namespace Application.Services
                 return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
             }
 
-            var newAccessToken = JWTGenerator.GenerateAccessToken(user.ID,user.UserAccountID, email, configuration);
+            var newAccessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, email, configuration);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
@@ -200,37 +200,23 @@ namespace Application.Services
             return Result.Success(response);
 
         }
-        public async Task<Result> Logout(TokenRequest request)
+        public async Task<Result> Logout()
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var refreshToken = request.RefreshToken;
-            var accessToken = request.AccessToken;
-            if (refreshToken is null || accessToken is null)
-            {
-                return Result.Failure(LogoutErrors.SameUser);
-            }
-            ClaimsPrincipal principal;
+            UserAccountDTO AuthUser;
             try
             {
-                principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
+                AuthUser = await authService.GetCurrentUser();
             }
-            catch (SecurityTokenMalformedException)
+            catch (AuthorizationException)
             {
-                return Result.Failure(LogoutErrors.InvalidToken);
-            }
-            var id = int.Parse(principal.FindFirst(ClaimTypes.PrimarySid)?.Value!);
 
-            var userLoginData = await userLoginDataRepository.Get(id);
+                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+            }
+            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
 
             if (userLoginData is null)
             {
                 return Result.Failure(LogoutErrors.NotFound);
-            }
-            if (userLoginData.RefreshToken is null ||
-                userLoginData.RefreshToken != request.RefreshToken ||
-                userLoginData.RefreshTokenExpTime < DateTime.Now)
-            {
-                return Result.Failure(LogoutErrors.InvalidRefreshToken);
             }
             userLoginData.RefreshToken = null;
             userLoginData.RefreshTokenExpTime = null;

@@ -52,9 +52,9 @@ namespace API.Controllers
 
         [HttpPost("logout")]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> Logout([FromBody] TokenRequest logoutRequest)
+        public async Task<IActionResult> Logout()
         {
-            var result = await userAccountService.Logout(logoutRequest);
+            var result = await userAccountService.Logout();
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }

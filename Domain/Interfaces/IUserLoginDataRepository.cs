@@ -8,5 +8,6 @@ namespace Domain.Interfaces
         Task<UserLoginData?> GetFullUserDataByEmail(string email);
         Task<UserLoginData?> GetFullUserData(int ID);
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
+        Task<UserLoginData?> GetByUserAccountID(int userAccountID);
     }
 }
