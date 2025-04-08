@@ -1,7 +1,6 @@
 ﻿using Application.Authentication;
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.Company;
-using Application.Common.ResultsErrors.User;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -12,12 +11,10 @@ namespace Application.Services
 {
     public class CompanyService :ICompanyService
     {
-        private readonly ICompanyRepository companyRepository;
         private readonly IUserAccountRepository userAccountRepository;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly ICompanyInvitationRepository companyInvitationRepository;
         private readonly IConfiguration configuration;
+        private readonly IAuthService authService;
 
         public CompanyService(
             ICompanyRepository companyRepository,
@@ -25,33 +22,24 @@ namespace Application.Services
             IHttpContextAccessor httpContextAccessor,
             IUserLoginDataRepository userLoginDataRepository,
             ICompanyInvitationRepository companyInvitationRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IAuthService authService)
         {
-            this.companyRepository = companyRepository;
             this.userAccountRepository = userAccountRepository;
-            this.httpContextAccessor = httpContextAccessor;
-            this.userLoginDataRepository = userLoginDataRepository;
             this.companyInvitationRepository = companyInvitationRepository;
             this.configuration = configuration;
+            this.authService = authService;
         }
 
         public async Task<Result<string>> InviteMember(int memberID)
         {
-
-            var authUserEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
-            if (authUserEmail == null)
-                return Result.Failure<string>(AuthorizationDataErrors.NotFound);
-
-            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmail(authUserEmail);
-            if (authUserLoginData == null)
-                return Result.Failure<string>(AuthorizationDataErrors.NotFound);
-
+            var AuthUser = await authService.GetCurrentUser();
             var member = await userAccountRepository.Get(memberID);
             if (member is null)
             {
                 return Result.Failure<string>(InviteMemberErrors.NotFound);
             }
-            if (authUserLoginData.UserAccount.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.User.ID)
+            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.User.ID)
             {
                 return Result.Failure<string>(InviteMemberErrors.NotValidRole);
             }
@@ -59,7 +47,7 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
             {
-                CompanyId = (int)authUserLoginData.UserAccount.CompanyID!,
+                CompanyId = AuthUser.Company!.ID,
                 MemberID = member.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.Now.AddDays(expDays),
@@ -72,20 +60,13 @@ namespace Application.Services
         }
         public async Task<Result> AcceptInvite(string token)
         {
-            var authUserEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
-            if (authUserEmail == null)
-                return Result.Failure(AuthorizationDataErrors.NotFound);
-
-            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmail(authUserEmail);
-            if (authUserLoginData == null)
-                return Result.Failure(AuthorizationDataErrors.NotFound);
-
+            var AuthUser = await authService.GetCurrentUser();
             var invitation = await companyInvitationRepository.Get(token);
             if (invitation == null)
             {
                 return Result.Failure(AcceptInviteErrors.NotFound);
             }
-            if (invitation.MemberID != authUserLoginData.UserAccountID)
+            if (invitation.MemberID != AuthUser.ID)
             {
                 return Result.Failure(AcceptInviteErrors.InvalidUser);
             }
@@ -99,10 +80,12 @@ namespace Application.Services
             invitation.UpdateTimestamp();
             await companyInvitationRepository.Update(invitation);
 
-            authUserLoginData.UserAccount.CompanyID = invitation.CompanyId;
-            authUserLoginData.UserAccount.RoleID = Role.CompanyMember.ID;
-            authUserLoginData.UserAccount.UpdateTimestamp();
-            await userAccountRepository.Update(authUserLoginData.UserAccount);
+            var authUserEntity = await userAccountRepository.Get(AuthUser.ID);
+            authUserEntity!.CompanyID = invitation.CompanyId;
+            authUserEntity.RoleID = Role.CompanyMember.ID;
+            authUserEntity.UpdateTimestamp();
+
+            await userAccountRepository.Update(authUserEntity);
 
             return Result.Success();
         }

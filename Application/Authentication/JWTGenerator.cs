@@ -9,12 +9,13 @@ namespace Application.Authentication
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(int id, string email, IConfiguration configuration)
+        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, IConfiguration configuration)
         {
             var claims = new []
             {
-                new Claim(ClaimTypes.PrimarySid, id.ToString()),
+                new Claim(ClaimTypes.PrimarySid, userLoginDataID.ToString()),
                 new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Sid, userAccountID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
 
@@ -65,13 +66,18 @@ namespace Application.Authentication
 
             return principal;
         }
+
         public static string HashToken(string token)
         {
             using var sha256 = SHA256.Create();
             var tokenBytes = Encoding.UTF8.GetBytes(token);
             var hashedBytes = sha256.ComputeHash(tokenBytes);
 
-            return Convert.ToBase64String(hashedBytes);
+            // Use URL-safe Base64 encoding for the hash
+            return Convert.ToBase64String(hashedBytes)
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .TrimEnd('=');
         }
     }
 }

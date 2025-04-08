@@ -2,6 +2,6 @@
 {
     public class AuthorizationDataErrors
     {
-        public static readonly Error NotFound = Error.NotFound("AuthorizationData.NotFound", "User not found");
+        public static readonly Error NotFound = Error.Forbidden("AuthorizationData.NotFound", "User is not authenticated.");
     }
 }

@@ -25,6 +25,10 @@
             new Error(code, description, ErrorType.Conflict);
         public static Error Failure(string code, string description) =>
             new Error(code, description, ErrorType.Failure);
+        public static Error Unauthorized(string code, string description) =>
+            new Error(code, description, ErrorType.Unauthorized);
+        public static Error Forbidden(string code, string description) =>
+            new Error(code, description, ErrorType.Forbidden);
     };
 
     public enum ErrorType
@@ -32,6 +36,8 @@
         Failure = 0,
         Validation = 1,
         NotFound = 2,
-        Conflict = 3
+        Conflict = 3,
+        Unauthorized = 4,
+        Forbidden = 5
     }
 }

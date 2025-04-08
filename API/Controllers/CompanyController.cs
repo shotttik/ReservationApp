@@ -1,7 +1,9 @@
 ﻿using API.Attributes;
+using Application.Authentication;
 using Application.Common.ResultsErrors;
 using Application.DTOs.Company;
 using Application.Interfaces;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +20,7 @@ namespace API.Controllers
             this.companyService = companyService;
         }
         [HttpPost("invite")]
-        [Authorize]
+        [HasPermission(Permission.EditCompany)]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
         {
@@ -27,7 +29,6 @@ namespace API.Controllers
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
         [HttpGet("accept-invite")]
-        [Authorize]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> AcceptInvite([FromQuery] string token)
         {

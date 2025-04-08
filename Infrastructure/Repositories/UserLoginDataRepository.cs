@@ -21,9 +21,11 @@ namespace Infrastructure.Repositories
             var userLoginData = await _dbSet
                 .Where(uld => uld.Email == email)
                 .Include(u => u.UserAccount)
-                .ThenInclude(ua => ua.Role)
-                .ThenInclude(ur => ur!.Permissions)
-                .FirstOrDefaultAsync();
+                    .ThenInclude(ua => ua.Role)
+                        .ThenInclude(ur => ur!.Permissions)
+                .Include(u => u.UserAccount)
+                    .ThenInclude(e => e.Company)
+                 .FirstOrDefaultAsync();
 
             return userLoginData;
         }
@@ -32,8 +34,8 @@ namespace Infrastructure.Repositories
             var userLoginData = await _dbSet
                 .Where(uld => uld.ID == ID)
                 .Include(u => u.UserAccount)
-                .ThenInclude(ua => ua.Role)
-                .ThenInclude(ur => ur!.Permissions)
+                    .ThenInclude(ua => ua.Role)
+                        .ThenInclude(ur => ur!.Permissions)
                 .FirstOrDefaultAsync();
 
             return userLoginData;

@@ -80,7 +80,6 @@ void ConfigureMiddleware(WebApplication app)
     app.UseRateLimiter();
     app.MapControllers();
     app.UseMiddleware<LoggingMiddleware>();
-    app.UseMiddleware<ExtractEmailMiddleware>();
 }
 
 void ConfigureAuthentication(WebApplicationBuilder builder)

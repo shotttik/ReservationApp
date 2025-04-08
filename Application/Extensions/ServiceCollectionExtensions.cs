@@ -8,6 +8,7 @@ namespace Application.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICompanyService, CompanyService>();

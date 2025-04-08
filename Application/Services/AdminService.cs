@@ -2,12 +2,13 @@
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.Admin;
-using Application.DTOs.User;
+using Application.Extensions;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Application.Services
 {
@@ -15,26 +16,26 @@ namespace Application.Services
     {
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserAccountRepository userAccountRepository;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRoleRepository roleRepository;
         private readonly IDistributedCache cache;
-        private readonly IUserService userService;
+        private readonly IAuthService authService;
+        private TimeSpan _cacheExpiration;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
-            IHttpContextAccessor httpContextAccessor,
             IRoleRepository roleRepository,
             IDistributedCache cache,
-            IUserService userService
+            IAuthService authService,
+            IConfiguration configuration
         )
         {
             this.userLoginDataRepository = userLoginDataRepository;
             this.userAccountRepository = userAccountRepository;
-            this.httpContextAccessor = httpContextAccessor;
             this.roleRepository = roleRepository;
             this.cache = cache;
-            this.userService = userService;
+            this.authService = authService;
+            _cacheExpiration = TimeSpan.FromMinutes(Convert.ToDouble(configuration ["Redis:CacheExpirationMinutes"]));
         }
 
         public async Task<Result> AddUser(AddUserRequest request)
@@ -81,18 +82,11 @@ namespace Application.Services
 
         public async Task<Result> UpdateUser(UpdateUserRequest request)
         {
+            var AuthUser = await authService.GetCurrentUser();
             if (request == null)
             {
                 return Result.Failure(UserUpdateErrors.ArgumentNull);
             }
-
-            var authUserEmail = httpContextAccessor.HttpContext?.Items ["Email"] as string;
-            if (authUserEmail == null)
-                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
-
-            var authUserLoginData = await userLoginDataRepository.GetFullUserDataByEmail(authUserEmail);
-            if (authUserLoginData == null)
-                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
 
             var userAccount = await userAccountRepository.Get((int)request.UserAccountID!);
             if (userAccount is null)
@@ -110,7 +104,7 @@ namespace Application.Services
                 userAccount.RoleID = r.ID;
             }
 
-            if (authUserLoginData.UserAccount.RoleID == Role.Admin.ID && userAccount.RoleID == Role.SuperAdmin.ID)
+            if (AuthUser.Role.ID == Role.Admin.ID && userAccount.RoleID == Role.SuperAdmin.ID)
             {
                 return Result.Failure(UserUpdateErrors.PermissionError);
             }
@@ -121,8 +115,11 @@ namespace Application.Services
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
             userAccount.UpdateTimestamp();
             await userAccountRepository.Update(userAccount);
-            await cache.RemoveAsync(GetCacheKey(userAccount.ID));
-            await userService.GetUserAuthorizationDataAsync();
+            var serializedData = JsonSerializer.Serialize(userAccount.MapToAuthorizationData());
+            await cache.SetStringAsync(GetCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = _cacheExpiration
+            });
 
             return Result.Success();
         }
