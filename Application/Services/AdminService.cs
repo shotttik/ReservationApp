@@ -50,7 +50,7 @@ namespace Application.Services
             var r = await roleRepository.GetRole(request.Role);
             if (r is null)
             {
-                return Result.Failure(UserUpdateErrors.RoleNotFound);
+                return Result.Failure(UserAddErrors.RoleNotFound);
             }
 
             // Create user account and login data
