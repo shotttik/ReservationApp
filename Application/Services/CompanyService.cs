@@ -43,6 +43,7 @@ namespace Application.Services
             {
                 return Result.Failure<string>(InviteMemberErrors.NotValidRole);
             }
+            await companyInvitationRepository.RevokePreviousInvite(memberID);
 
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
@@ -76,7 +77,8 @@ namespace Application.Services
             }
 
             invitation.IsAccepted = true;
-            invitation.Token = string.Empty;
+            invitation.Token = null;
+            invitation.ExpirationTime = null;
             invitation.UpdateTimestamp();
             await companyInvitationRepository.Update(invitation);
 

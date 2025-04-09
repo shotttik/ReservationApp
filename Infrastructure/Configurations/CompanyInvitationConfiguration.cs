@@ -11,7 +11,7 @@ namespace Infrastructure.Configurations
             builder.HasKey(e => e.ID);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
             builder.Property(e => e.UserAccountID).IsRequired();
-            builder.Property(e => e.Token).IsRequired().HasMaxLength(150);
+            builder.Property(e => e.Token).HasMaxLength(150);
             builder.HasIndex(e => e.Token).IsUnique();
 
             builder.HasOne(e => e.Company)
