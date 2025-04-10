@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Shared.Utilities;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -31,7 +32,7 @@ namespace Application.Services
             if (!int.TryParse(userIDClaim, out var userID))
                 throw new AuthorizationException("Invalid or missing user ID in token.");
 
-            var cachedData = await cache.GetStringAsync(GetCacheKey(userID));
+            var cachedData = await cache.GetStringAsync(RedisUtils.AuthorizationCacheKey(userID));
 
             if (string.IsNullOrEmpty(cachedData))
             {
@@ -41,7 +42,5 @@ namespace Application.Services
 
             return JsonSerializer.Deserialize<UserAccountDTO>(cachedData)!;
         }
-        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
-
     }
 }

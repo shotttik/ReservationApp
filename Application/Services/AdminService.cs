@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Shared.Utilities;
 using System.Text.Json;
 
 namespace Application.Services
@@ -116,14 +117,12 @@ namespace Application.Services
             userAccount.UpdateTimestamp();
             await userAccountRepository.Update(userAccount);
             var serializedData = JsonSerializer.Serialize(userAccount.MapToAuthorizationData());
-            await cache.SetStringAsync(GetCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
+            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = _cacheExpiration
             });
 
             return Result.Success();
         }
-        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
-
     }
 }

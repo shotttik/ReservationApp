@@ -4,6 +4,7 @@ using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Shared.Utilities;
 using System.Text.Json;
 
 namespace Infrastructure.Repositories
@@ -29,13 +30,12 @@ namespace Infrastructure.Repositories
         {
             _dbSet.Update(userAccount);
             var serializedData = JsonSerializer.Serialize(userAccount.MapToAuthorizationData());
-            await cache.SetStringAsync(GetCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
+            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = _cacheExpiration
             });
             await context.SaveChangesAsync();
         }
-        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
 
         public async Task<UserAccount?> GetAuthorizationData(int ID)
         {

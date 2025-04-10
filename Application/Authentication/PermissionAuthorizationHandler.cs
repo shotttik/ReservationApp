@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
+using Shared.Utilities;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -26,7 +27,7 @@ namespace Application.Authentication
                 return;
             }
 
-            var cachedData = await cache.GetStringAsync(GetCacheKey(parsedUserID));
+            var cachedData = await cache.GetStringAsync(RedisUtils.AuthorizationCacheKey(parsedUserID));
 
             if (string.IsNullOrEmpty(cachedData))
             {
@@ -39,9 +40,6 @@ namespace Application.Authentication
             {
                 context.Succeed(requirement);
             }
-
         }
-        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
-
     }
 }

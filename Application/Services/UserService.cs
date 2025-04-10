@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Utilities;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -145,7 +146,7 @@ namespace Application.Services
 
             var userDTO = user.UserAccount.MapToAuthorizationData();
             var serializedData = JsonSerializer.Serialize(userDTO);
-            await cache.SetStringAsync(GetCacheKey(user.UserAccountID), serializedData, new DistributedCacheEntryOptions
+            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(user.UserAccountID), serializedData, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = _cacheExpiration
             });
@@ -223,7 +224,7 @@ namespace Application.Services
             userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
-            await cache.RemoveAsync(GetCacheKey(AuthUser.ID));
+            await cache.RemoveAsync(RedisUtils.AuthorizationCacheKey(AuthUser.ID));
 
             return Result.Success();
         }
@@ -304,6 +305,5 @@ namespace Application.Services
 
             return Result.Success();
         }
-        private string GetCacheKey(int userID) => $"UserAuthorization:{userID}";
     }
 }
