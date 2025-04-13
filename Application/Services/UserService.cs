@@ -10,12 +10,10 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace Application.Services
 {
@@ -26,27 +24,26 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IRoleRepository roleRepository;
         private readonly ICompanyRepository companyRepository;
-        private readonly IDistributedCache cache;
         private readonly IAuthService authService;
-        private readonly TimeSpan _cacheExpiration;
+        private readonly ICacheService cacheService;
+
         public UserService(
             IConfiguration configuration,
             IUserAccountRepository userAccountRepository,
             IUserLoginDataRepository userLoginDataRepository,
             IRoleRepository roleRepository,
             ICompanyRepository companyRepository,
-            IDistributedCache cache,
             IHttpContextAccessor httpContextAccessor,
-            IAuthService authService)
+            IAuthService authService,
+            ICacheService cacheService)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.roleRepository = roleRepository;
             this.companyRepository = companyRepository;
-            this.cache = cache;
             this.authService = authService;
-            _cacheExpiration = TimeSpan.FromMinutes(Convert.ToDouble(configuration ["Redis:CacheExpirationMinutes"]));
+            this.cacheService = cacheService;
         }
 
         public async Task<Result> Register(RegisterUserRequest request)
@@ -145,11 +142,7 @@ namespace Application.Services
             user.UpdateTimestamp();
 
             var userDTO = user.UserAccount.MapToAuthorizationData();
-            var serializedData = JsonSerializer.Serialize(userDTO);
-            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(user.UserAccountID), serializedData, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = _cacheExpiration
-            });
+            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(user.UserAccountID), userDTO);
             await userLoginDataRepository.Update(user);
 
             return Result.Success(new LoginResponse
@@ -224,7 +217,7 @@ namespace Application.Services
             userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
-            await cache.RemoveAsync(RedisUtils.AuthorizationCacheKey(AuthUser.ID));
+            await cacheService.RemoveAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID));
 
             return Result.Success();
         }

@@ -2,38 +2,27 @@
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Shared.Utilities;
-using System.Text.Json;
 
 namespace Infrastructure.Repositories
 {
     public class UserAccountRepository :BaseRepository<UserAccount>, IUserAccountRepository
     {
         private readonly ApplicationDbContext context;
-        private readonly IDistributedCache cache;
-        private TimeSpan _cacheExpiration;
+        private readonly ICacheService cache;
 
         public UserAccountRepository(
             ApplicationDbContext context,
-            IDistributedCache cache,
-            IConfiguration configuration
+            ICacheService cache
             ) : base(context)
         {
             this.context = context;
             this.cache = cache;
-            _cacheExpiration = TimeSpan.FromMinutes(Convert.ToDouble(configuration ["Redis:CacheExpirationMinutes"]));
-
         }
         public override async Task Update(UserAccount userAccount)
         {
             _dbSet.Update(userAccount);
-            var serializedData = JsonSerializer.Serialize(userAccount.MapToAuthorizationData());
-            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = _cacheExpiration
-            });
+            await cache.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
             await context.SaveChangesAsync();
         }
 

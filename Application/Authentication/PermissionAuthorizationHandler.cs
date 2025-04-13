@@ -1,21 +1,20 @@
 ﻿using Application.DTOs.User;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Caching.Distributed;
 using Shared.Utilities;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace Application.Authentication
 {
     public class PermissionAuthorizationHandler
         :AuthorizationHandler<PermissionRequirement>
     {
-        private readonly IDistributedCache cache;
+        private readonly ICacheService cacheService;
 
         public PermissionAuthorizationHandler(
-            IDistributedCache cache)
+            ICacheService cacheService)
         {
-            this.cache = cache;
+            this.cacheService = cacheService;
         }
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
@@ -27,13 +26,12 @@ namespace Application.Authentication
                 return;
             }
 
-            var cachedData = await cache.GetStringAsync(RedisUtils.AuthorizationCacheKey(parsedUserID));
+            var user = await cacheService.GetAsync<UserAccountDTO>(CacheUtils.AuthorizationCacheKey(parsedUserID));
 
-            if (string.IsNullOrEmpty(cachedData))
+            if (user == null)
             {
                 return;
             }
-            var user = JsonSerializer.Deserialize<UserAccountDTO>(cachedData)!;
             var userPermissions = user.Role.Permissions;
 
             if (userPermissions.Any(p => p.Name == requirement.Permission))

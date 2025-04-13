@@ -4,7 +4,6 @@ using Application.Common.ResultsErrors.Company;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
@@ -17,10 +16,7 @@ namespace Application.Services
         private readonly IAuthService authService;
 
         public CompanyService(
-            ICompanyRepository companyRepository,
             IUserAccountRepository userAccountRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IUserLoginDataRepository userLoginDataRepository,
             ICompanyInvitationRepository companyInvitationRepository,
             IConfiguration configuration,
             IAuthService authService)

@@ -6,10 +6,7 @@ using Application.Extensions;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Shared.Utilities;
-using System.Text.Json;
 
 namespace Application.Services
 {
@@ -18,25 +15,22 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IRoleRepository roleRepository;
-        private readonly IDistributedCache cache;
         private readonly IAuthService authService;
-        private TimeSpan _cacheExpiration;
+        private readonly ICacheService cacheService;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
             IRoleRepository roleRepository,
-            IDistributedCache cache,
             IAuthService authService,
-            IConfiguration configuration
-        )
+            ICacheService cacheService
+            )
         {
             this.userLoginDataRepository = userLoginDataRepository;
             this.userAccountRepository = userAccountRepository;
             this.roleRepository = roleRepository;
-            this.cache = cache;
             this.authService = authService;
-            _cacheExpiration = TimeSpan.FromMinutes(Convert.ToDouble(configuration ["Redis:CacheExpirationMinutes"]));
+            this.cacheService = cacheService;
         }
 
         public async Task<Result> AddUser(AddUserRequest request)
@@ -116,11 +110,7 @@ namespace Application.Services
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
             userAccount.UpdateTimestamp();
             await userAccountRepository.Update(userAccount);
-            var serializedData = JsonSerializer.Serialize(userAccount.MapToAuthorizationData());
-            await cache.SetStringAsync(RedisUtils.AuthorizationCacheKey(userAccount.ID), serializedData, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = _cacheExpiration
-            });
+            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
 
             return Result.Success();
         }
