@@ -16,6 +16,7 @@ namespace Infrastructure
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<CompanyInvitation> CompanyInvitations { get; set; }
+        public DbSet<Service> Services { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserAccountConfiguration());
@@ -25,6 +26,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new RolePermissionConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyInvitationConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceConfiguration());
         }
     }
 }

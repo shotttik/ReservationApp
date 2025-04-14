@@ -16,6 +16,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyInvitationRepository, CompanyInvitationRepository>();
+            services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddSingleton<ICacheService, CacheService>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
