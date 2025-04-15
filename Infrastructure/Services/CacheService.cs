@@ -37,6 +37,5 @@ namespace Infrastructure.Services
         {
             await _cache.RemoveAsync(key);
         }
-        public static string AuthorizationCacheKey(int userID) => $"UserAuthorization:{userID}";
     }
 }
