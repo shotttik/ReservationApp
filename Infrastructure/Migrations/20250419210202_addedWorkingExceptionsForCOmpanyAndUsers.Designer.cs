@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250419210202_addedWorkingExceptionsForCOmpanyAndUsers")]
+    partial class addedWorkingExceptionsForCOmpanyAndUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -599,7 +602,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserAccountID");
 
-                    b.ToTable("WorkingExceptions");
+                    b.ToTable("WorkingException");
                 });
 
             modelBuilder.Entity("Domain.Entities.WorkingSchedule", b =>
@@ -634,7 +637,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("WorkingSchedules");
+                    b.ToTable("WorkingSchedule");
                 });
 
             modelBuilder.Entity("Domain.Entities.Appointment", b =>
@@ -739,8 +742,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entities.UserAccount", "UserAccount")
                         .WithMany("WorkingExceptions")
-                        .HasForeignKey("UserAccountID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserAccountID");
 
                     b.Navigation("Company");
 
@@ -757,8 +759,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entities.UserAccount", "User")
                         .WithMany("WorkingSchedules")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserID");
 
                     b.Navigation("Company");
 

@@ -15,9 +15,10 @@
         public virtual UserLoginData? UserLoginData { get; set; }
         public virtual Role? Role { get; set; }
         public virtual Company? Company { get; set; }
-        public ICollection<Appointment> AppointmentsAsClient { get; set; } = new List<Appointment>();
-        public ICollection<Appointment> AppointmentsAsEmployee { get; set; } = new List<Appointment>();
-
+        public ICollection<Appointment> AppointmentsAsClient { get; set; } = [];
+        public ICollection<Appointment> AppointmentsAsEmployee { get; set; } = [];
+        public ICollection<WorkingSchedule> WorkingSchedules { get; set; } = [];
+        public ICollection<WorkingException> WorkingExceptions { get; set; } = [];
         public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
 
     }
