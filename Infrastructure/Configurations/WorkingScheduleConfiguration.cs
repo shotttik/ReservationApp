@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class WorkingScheduleConfiguration :IEntityTypeConfiguration<WorkingSchedule>
+    internal sealed class WorkingScheduleConfiguration :IEntityTypeConfiguration<WorkSchedule>
     {
-        public void Configure(EntityTypeBuilder<WorkingSchedule> builder)
+        public void Configure(EntityTypeBuilder<WorkSchedule> builder)
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.DayOfWeek)
@@ -18,11 +18,11 @@ namespace Infrastructure.Configurations
             //        v => TimeOnly.Parse(v))
             //    .IsRequired(false);
             builder.HasOne(e => e.Company)
-                .WithMany(e => e.WorkingSchedules)
+                .WithMany(e => e.WorkSchedules)
                 .HasForeignKey(e => e.CompanyID)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(e => e.User)
-                .WithMany(e => e.WorkingSchedules)
+                .WithMany(e => e.WorkSchedules)
                 .HasForeignKey(e => e.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
         }

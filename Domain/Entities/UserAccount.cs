@@ -17,8 +17,8 @@
         public virtual Company? Company { get; set; }
         public ICollection<Appointment> AppointmentsAsClient { get; set; } = [];
         public ICollection<Appointment> AppointmentsAsEmployee { get; set; } = [];
-        public ICollection<WorkingSchedule> WorkingSchedules { get; set; } = [];
-        public ICollection<WorkingException> WorkingExceptions { get; set; } = [];
+        public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
+        public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
         public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
 
     }

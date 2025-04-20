@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class WorkingSchedule
+    public class WorkSchedule
     {
         public int ID { get; set; }
         public int CompanyID { get; set; }

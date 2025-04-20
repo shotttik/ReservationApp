@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    internal sealed class WorkingExceptionConfiguration :IEntityTypeConfiguration<WorkingException>
+    internal sealed class WorkingExceptionConfiguration :IEntityTypeConfiguration<WorkScheduleException>
     {
-        public void Configure(EntityTypeBuilder<WorkingException> builder)
+        public void Configure(EntityTypeBuilder<WorkScheduleException> builder)
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.StartDateTime).IsRequired();
@@ -14,12 +14,12 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.IsFullDay).IsRequired();
 
             builder.HasOne(e => e.Company)
-                .WithMany(e => e.WorkingExceptions)
+                .WithMany(e => e.WorkScheduleExceptions)
                 .HasForeignKey(e => e.CompanyID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(e => e.UserAccount)
-                .WithMany(e => e.WorkingExceptions)
+                .WithMany(e => e.WorkScheduleExceptions)
                 .HasForeignKey(e => e.UserAccountID)
                 .OnDelete(DeleteBehavior.Cascade);
         }

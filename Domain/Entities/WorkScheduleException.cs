@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public class WorkingException
+    public class WorkScheduleException
     {
         public int ID { get; set; }
         public int CompanyID { get; set; }

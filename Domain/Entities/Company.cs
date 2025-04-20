@@ -14,8 +14,8 @@
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];
         public ICollection<Appointment> Appointments { get; set; } = [];
-        public ICollection<WorkingSchedule> WorkingSchedules { get; set; } = [];
-        public ICollection<WorkingException> WorkingExceptions { get; set; } = [];
+        public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
+        public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
 
         public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
     }

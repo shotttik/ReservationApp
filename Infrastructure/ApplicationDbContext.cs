@@ -18,8 +18,8 @@ namespace Infrastructure
         public DbSet<CompanyInvitation> CompanyInvitations { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
-        public DbSet<WorkingSchedule> WorkingSchedules { get; set; }
-        public DbSet<WorkingException> WorkingExceptions { get; set; }
+        public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<WorkScheduleException> WorkScheduleExceptions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserAccountConfiguration());
