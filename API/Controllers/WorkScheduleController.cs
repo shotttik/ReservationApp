@@ -19,24 +19,45 @@ namespace API.Controllers
         {
             this.workScheduleService = workScheduleService;
         }
-        [HttpPost]
+        [HttpPost("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ManageCompanyWorkSchedule)]
         public async Task<IActionResult> AddCompanyWorkSchedules([FromBody] AddWorkSchedulesRequest request)
         {
-            Result result = await workScheduleService.AddCompanyWorkSchedules(request);
+            Result result = await workScheduleService.AddWorkSchedules(request, isForEmployee: false);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
 
-        [HttpPut]
+        [HttpPut("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ManageCompanyWorkSchedule)]
         public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] UpdateWorkSchedulesRequest request)
         {
-            Result result = await workScheduleService.UpdateCompanyWorkSchedules(request);
+            Result result = await workScheduleService.UpdateWorkSchedules(request, isForEmployee: false);
+
+            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+        }
+        [HttpPost("employee")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [HasPermission(Permission.ManageUserWorkSchedule)]
+        public async Task<IActionResult> AddEmployeeWorkSchedules([FromBody] AddWorkSchedulesRequest request)
+        {
+            Result result = await workScheduleService.AddWorkSchedules(request, isForEmployee: true);
+
+            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+        }
+
+        [HttpPut("employee")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [HasPermission(Permission.ManageUserWorkSchedule)]
+        public async Task<IActionResult> UpdateEmployeeWorkSchedules([FromBody] UpdateWorkSchedulesRequest request)
+        {
+            Result result = await workScheduleService.UpdateWorkSchedules(request, isForEmployee: true);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }

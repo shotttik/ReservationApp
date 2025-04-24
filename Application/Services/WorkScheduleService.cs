@@ -28,7 +28,7 @@ namespace Application.Services
             this.cacheService = cacheService;
             this.userAccountRepository = userAccountRepository;
         }
-        public async Task<Result> AddCompanyWorkSchedules(AddWorkSchedulesRequest request)
+        public async Task<Result> AddWorkSchedules(AddWorkSchedulesRequest request, bool isForEmployee)
         {
             var AuthUser = await authService.GetCurrentUser();
 
@@ -36,22 +36,27 @@ namespace Application.Services
             if (request.WorkSchedules.IsNullOrEmpty()
                 || request.WorkSchedules.Select(i => i.DayOfWeek).Distinct().Count() != Enum.GetValues<DayOfWeek>().Length)
             {
-                return Result.Failure(AddCompanyWorkSchedulesErrors.InvalidWorkScheduleCount);
+                return Result.Failure(AddWorkSchedulesErrors.InvalidWorkScheduleCount);
             }
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
                 return validationResult;
 
-            var existsSchedules = AuthUser.Company!.WorkSchedules.Count != 0;
+
+            bool existsSchedules = isForEmployee ? AuthUser.WorkSchedules.Count != 0 : AuthUser.Company!.WorkSchedules.Count != 0;
             if (existsSchedules)
             {
-                return Result.Failure(AddCompanyWorkSchedulesErrors.AlreadyExists);
+                return Result.Failure(AddWorkSchedulesErrors.AlreadyExists);
             }
             var workSchedules = new List<WorkSchedule>();
             foreach (var schedule in request.WorkSchedules)
             {
                 var workSchedule = schedule.MapToEntity();
-                workSchedule.CompanyID = AuthUser.Company.ID;
+                workSchedule.CompanyID = AuthUser.Company!.ID;
+                if (isForEmployee)
+                {
+                    workSchedule.UserID = AuthUser.ID;
+                }
                 workSchedules.Add(workSchedule);
             }
 
@@ -62,19 +67,24 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateCompanyWorkSchedules(UpdateWorkSchedulesRequest request)
+        public async Task<Result> UpdateWorkSchedules(UpdateWorkSchedulesRequest request, bool isForEmployee)
         {
             var AuthUser = await authService.GetCurrentUser();
 
             var existsSchedules = AuthUser.Company!.WorkSchedules.Count != 0;
             if (!existsSchedules)
             {
-                return Result.Failure(UpdateCompanyWorkSchedulesErrors.NotExists);
+                return Result.Failure(UpdateWorkSchedulesErrors.NotExists);
             }
-            var scheduleNotExistsInCompany = request.WorkSchedules.Any(i => !AuthUser.Company.WorkSchedules.Select(e => e.ID).Contains(i.ID));
-            if (scheduleNotExistsInCompany)
+            bool scheduleNotExists =
+                request.WorkSchedules.Any(i =>
+                    isForEmployee ?
+                    !AuthUser.WorkSchedules.Select(e => e.ID).Contains(i.ID) :
+                    !AuthUser.Company.WorkSchedules.Select(e => e.ID).Contains(i.ID)
+                );
+            if (scheduleNotExists)
             {
-                return Result.Failure(UpdateCompanyWorkSchedulesErrors.Mismatch);
+                return Result.Failure(UpdateWorkSchedulesErrors.Mismatch);
             }
 
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
@@ -85,6 +95,10 @@ namespace Application.Services
             {
                 var entity = schedule.MapToEntity();
                 entity.CompanyID = AuthUser.Company.ID;
+                if (isForEmployee)
+                {
+                    entity.UserID = AuthUser.ID;
+                }
                 return entity;
             }
             ).ToList();

@@ -5,7 +5,7 @@ namespace Application.Interfaces
 {
     public interface IWorkScheduleService
     {
-        Task<Result> AddCompanyWorkSchedules(AddWorkSchedulesRequest request);
-        Task<Result> UpdateCompanyWorkSchedules(UpdateWorkSchedulesRequest request);
+        Task<Result> AddWorkSchedules(AddWorkSchedulesRequest request, bool isForEmployee);
+        Task<Result> UpdateWorkSchedules(UpdateWorkSchedulesRequest request, bool isForEmployee);
     }
 }

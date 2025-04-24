@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +11,7 @@ namespace Infrastructure.Configurations
         {
             builder.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
             builder.Property(e => e.LastName).HasMaxLength(100).IsRequired();
-            builder.Property(e => e.Gender).HasDefaultValue((int)Application.Enums.Gender.PreferNotToSay).ValueGeneratedOnAdd();
+            builder.Property(e => e.Gender).HasDefaultValue((int)Gender.PreferNotToSay).ValueGeneratedOnAdd();
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasOne(ua => ua.UserLoginData)
