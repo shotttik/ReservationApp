@@ -1,4 +1,6 @@
-﻿namespace Application.DTOs.User
+﻿using Application.DTOs.WorkSchedule;
+
+namespace Application.DTOs.User
 {
     public class UserAccountDTO
     {
@@ -9,6 +11,7 @@
         public DateOnly? DateOfBirth { get; set; }
         public required RoleDTO Role { get; set; }
         public CompanyDTO? Company { get; set; }
+        public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
     }
 
     public class RoleDTO
@@ -30,5 +33,6 @@
         public required string IN { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
     }
 }

@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250423080556_AddedPermissionForWorkSchedule")]
+    partial class AddedPermissionForWorkSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,13 +417,13 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 4,
-                            PermissionID = 10
+                            RoleID = 3,
+                            PermissionID = 11
                         },
                         new
                         {
-                            RoleID = 5,
-                            PermissionID = 11
+                            RoleID = 4,
+                            PermissionID = 10
                         });
                 });
 

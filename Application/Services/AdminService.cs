@@ -2,7 +2,7 @@
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.Admin;
-using Application.Extensions;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;

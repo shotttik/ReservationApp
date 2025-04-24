@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Interfaces;
+﻿using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
@@ -42,6 +41,18 @@ namespace Infrastructure.Repositories
         public virtual async Task Delete(T entity)
         {
             _dbSet.Remove(entity);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public virtual async Task AddRange(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public virtual async Task UpdateRange(IEnumerable<T> entities)
+        {
+            _dbSet.UpdateRange(entities);
             await dbContext.SaveChangesAsync();
         }
     }

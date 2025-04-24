@@ -1,4 +1,4 @@
-﻿using Application.Extensions;
+﻿using Application.Extensions.Mappers;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +31,9 @@ namespace Infrastructure.Repositories
             var user = await _dbSet
                     .Include(u => u.Role)
                         .ThenInclude(r => r!.Permissions)
+                    .Include(e => e.Company)
+                        .ThenInclude(e => e!.WorkSchedules)
+                    .Include(e => e.WorkSchedules)
                     .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;

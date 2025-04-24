@@ -25,6 +25,9 @@ namespace Infrastructure.Repositories
                         .ThenInclude(ur => ur!.Permissions)
                 .Include(u => u.UserAccount)
                     .ThenInclude(e => e.Company)
+                        .ThenInclude(e => e!.WorkSchedules)
+                .Include(u => u.UserAccount)
+                    .ThenInclude(e => e.WorkSchedules)
                  .FirstOrDefaultAsync();
 
             return userLoginData;

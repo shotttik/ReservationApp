@@ -17,6 +17,10 @@
         ViewReports = 8,
 
         // Settings Management Permissions
-        ManageSettings = 9
+        ManageSettings = 9,
+
+        // WorkSchedule Management Permissions
+        ManageCompanyWorkSchedule = 10,
+        ManageUserWorkSchedule = 11
     }
 }

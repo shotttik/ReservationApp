@@ -31,7 +31,9 @@ namespace Infrastructure.Configurations
                 Create(Role.Admin, Permission.ViewReports),
                 Create(Role.User, Permission.ViewReports),
                 Create(Role.CompanyAdmin, Permission.EditCompany),
-                Create(Role.CompanyAdmin, Permission.DeleteCompany)
+                Create(Role.CompanyAdmin, Permission.DeleteCompany),
+                Create(Role.CompanyAdmin, Permission.ManageCompanyWorkSchedule),
+                Create(Role.CompanyMember, Permission.ManageUserWorkSchedule)
                 );
         }
 

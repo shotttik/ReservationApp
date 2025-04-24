@@ -17,6 +17,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyInvitationRepository, CompanyInvitationRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
+            services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
+            services.AddScoped<IWorkScheduleExceptionRepository, WorkScheduleExceptionRepository>();
             services.AddSingleton<ICacheService, CacheService>();
 
             services.AddDbContext<ApplicationDbContext>(options =>

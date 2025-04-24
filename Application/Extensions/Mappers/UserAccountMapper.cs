@@ -1,7 +1,8 @@
 ﻿using Application.DTOs.User;
+using Application.DTOs.WorkSchedule;
 using Domain.Entities;
 
-namespace Application.Extensions
+namespace Application.Extensions.Mappers
 {
     public static class UserAccountMapper
     {
@@ -31,8 +32,28 @@ namespace Application.Extensions
                     Description = user.Company.Description,
                     IN = user.Company.IN,
                     Email = user.Company.Email,
-                    Phone = user.Company.Phone
-                } : null
+                    Phone = user.Company.Phone,
+                    WorkSchedules = user.Company.WorkSchedules.Select(e => new WorkScheduleDTO
+                    {
+                        ID = e.ID,
+                        CompanyID = e.CompanyID,
+                        UserID = e.UserID,
+                        DayOfWeek = e.DayOfWeek,
+                        StartTime = e.StartTime,
+                        EndTime = e.EndTime,
+                        IsWorkingDay = e.IsWorkingDay
+                    }).ToList()
+                } : null,
+                WorkSchedules = user.WorkSchedules.Select(e => new WorkScheduleDTO
+                {
+                    ID = e.ID,
+                    CompanyID = e.CompanyID,
+                    UserID = e.UserID,
+                    DayOfWeek = e.DayOfWeek,
+                    StartTime = e.StartTime,
+                    EndTime = e.EndTime,
+                    IsWorkingDay = e.IsWorkingDay
+                }).ToList()
             };
 
             return userDTO;

@@ -3,7 +3,7 @@ using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
 using Application.Exceptions;
-using Application.Extensions;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Application.Responses;
 using Domain.Entities;

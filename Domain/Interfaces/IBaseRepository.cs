@@ -7,5 +7,7 @@
         Task<IEnumerable<T>> GetAll();
         Task Update(T entity);
         Task Delete(T entity);
+        Task AddRange(IEnumerable<T> entities);
+        Task UpdateRange(IEnumerable<T> entities);
     }
 }
