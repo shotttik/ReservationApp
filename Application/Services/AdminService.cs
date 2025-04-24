@@ -83,7 +83,7 @@ namespace Application.Services
                 return Result.Failure(UserUpdateErrors.ArgumentNull);
             }
 
-            var userAccount = await userAccountRepository.Get((int)request.UserAccountID!);
+            var userAccount = await userAccountRepository.Get(request.UserAccountID);
             if (userAccount is null)
             {
                 return Result.Failure(UserUpdateErrors.NotFound);
