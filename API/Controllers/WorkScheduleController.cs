@@ -23,7 +23,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ManageCompanyWorkSchedule)]
-        public async Task<IActionResult> AddCompanyWorkSchedules([FromBody] WorkSchedulesRequest request)
+        public async Task<IActionResult> AddCompanyWorkSchedules([FromBody] AddWorkSchedulesRequest request)
         {
             Result result = await workScheduleService.AddCompanyWorkSchedules(request);
 
@@ -34,7 +34,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ManageCompanyWorkSchedule)]
-        public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] WorkSchedulesRequest request)
+        public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] UpdateWorkSchedulesRequest request)
         {
             Result result = await workScheduleService.UpdateCompanyWorkSchedules(request);
 

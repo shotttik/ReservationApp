@@ -7,7 +7,6 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
-using static Application.Common.ResultsErrors.WorkSchedule.WorkSchedulesErrors;
 
 namespace Application.Services
 {
@@ -29,21 +28,17 @@ namespace Application.Services
             this.cacheService = cacheService;
             this.userAccountRepository = userAccountRepository;
         }
-        public async Task<Result> AddCompanyWorkSchedules(WorkSchedulesRequest request)
+        public async Task<Result> AddCompanyWorkSchedules(AddWorkSchedulesRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
 
             // mxolod company unda ikos mititebuli roca companys samushao cxrilis damatebaa
-            if (request.WorkSchedules.Any(i => i.UserID.HasValue))
-            {
-                return Result.Failure(AddCompanyWorkSchedulesErrors.UserMentioned);
-            }
             if (request.WorkSchedules.IsNullOrEmpty()
-                || request.WorkSchedules.Select(i => i.DayOfWeek).Distinct().Count() != 7)
+                || request.WorkSchedules.Select(i => i.DayOfWeek).Distinct().Count() != Enum.GetValues<DayOfWeek>().Length)
             {
                 return Result.Failure(AddCompanyWorkSchedulesErrors.InvalidWorkScheduleCount);
             }
-            var validationResult = ValidateWorkSchedulesRequest(request);
+            var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
                 return validationResult;
 
@@ -56,6 +51,7 @@ namespace Application.Services
             foreach (var schedule in request.WorkSchedules)
             {
                 var workSchedule = schedule.MapToEntity();
+                workSchedule.CompanyID = AuthUser.Company.ID;
                 workSchedules.Add(workSchedule);
             }
 
@@ -66,32 +62,32 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateCompanyWorkSchedules(WorkSchedulesRequest request)
+        public async Task<Result> UpdateCompanyWorkSchedules(UpdateWorkSchedulesRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-
-            if (request.WorkSchedules.Any(i => i.UserID.HasValue))
-            {
-                return Result.Failure(UpdateCompanyWorkSchedulesErrors.UserMentioned);
-            }
 
             var existsSchedules = AuthUser.Company!.WorkSchedules.Count != 0;
             if (!existsSchedules)
             {
                 return Result.Failure(UpdateCompanyWorkSchedulesErrors.NotExists);
             }
-            var scheduleNotExistsInCompany = request.WorkSchedules.Any(i => !AuthUser.Company.WorkSchedules.Select(e => e.ID).Contains(i.ID)
-                || i.CompanyID != AuthUser.Company.ID);
+            var scheduleNotExistsInCompany = request.WorkSchedules.Any(i => !AuthUser.Company.WorkSchedules.Select(e => e.ID).Contains(i.ID));
             if (scheduleNotExistsInCompany)
             {
                 return Result.Failure(UpdateCompanyWorkSchedulesErrors.Mismatch);
             }
 
-            var validationResult = ValidateWorkSchedulesRequest(request);
+            var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
                 return validationResult;
 
-            var updatedSchedules = request.WorkSchedules.Select(schedule => schedule.MapToEntity()).ToList();
+            var updatedSchedules = request.WorkSchedules.Select(schedule =>
+            {
+                var entity = schedule.MapToEntity();
+                entity.CompanyID = AuthUser.Company.ID;
+                return entity;
+            }
+            ).ToList();
 
             await workScheduleRepository.UpdateRange(updatedSchedules);
 
@@ -101,25 +97,16 @@ namespace Application.Services
             return Result.Success();
         }
 
-        private Result? ValidateWorkSchedulesRequest(WorkSchedulesRequest request)
+        private Result? ValidateWorkSchedules(IEnumerable<BaseWorkScheduleDTO> schedules)
         {
-            if (request.WorkSchedules.Any(i => i.StartTime >= i.EndTime))
-            {
+            if (schedules.Any(i => i.StartTime >= i.EndTime))
                 return Result.Failure(WorkSchedulesErrors.InvalidStartEndTime);
-            }
 
-            if (request.WorkSchedules.Any(i =>
-                i.IsWorkingDay == false && (i.StartTime != null || i.EndTime != null))
-                )
-            {
+            if (schedules.Any(i => !i.IsWorkingDay && (i.StartTime != null || i.EndTime != null)))
                 return Result.Failure(WorkSchedulesErrors.NonWorkingDay);
-            }
-            if (request.WorkSchedules.Any(i =>
-                i.IsWorkingDay == true && (i.StartTime == null || i.EndTime == null))
-                )
-            {
+
+            if (schedules.Any(i => i.IsWorkingDay && (i.StartTime == null || i.EndTime == null)))
                 return Result.Failure(WorkSchedulesErrors.NonWorkingDay);
-            }
 
             return null;
         }
