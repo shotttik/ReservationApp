@@ -9,8 +9,11 @@
         public DateTime EndDateTime { get; set; }
         public string? Reason { get; set; }
         public bool IsFullDay { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public Company Company { get; set; } = null!;
         public UserAccount? UserAccount { get; set; }
+        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
 
     }
 }

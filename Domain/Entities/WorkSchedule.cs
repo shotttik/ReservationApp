@@ -9,8 +9,11 @@
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }
         public bool IsWorkingDay { get; set; }
-
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public Company Company { get; set; } = null!;
         public UserAccount? User { get; set; }
+        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
+
     }
 }

@@ -17,6 +17,8 @@ namespace Infrastructure.Configurations
             //        v => v!.ToString(),
             //        v => TimeOnly.Parse(v))
             //    .IsRequired(false);
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+
             builder.HasOne(e => e.Company)
                 .WithMany(e => e.WorkSchedules)
                 .HasForeignKey(e => e.CompanyID)

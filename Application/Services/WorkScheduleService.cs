@@ -1,5 +1,6 @@
 ﻿using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.WorkSchedule;
+using Application.DTOs.User;
 using Application.DTOs.WorkSchedule;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
@@ -48,6 +49,12 @@ namespace Application.Services
             {
                 return Result.Failure(AddWorkSchedulesErrors.AlreadyExists);
             }
+
+            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
+            {
+                return Result.Failure(AddWorkSchedulesErrors.EmployeeWorkingTimesOutOfBounds);
+            }
+
             var workSchedules = new List<WorkSchedule>();
             foreach (var schedule in request.WorkSchedules)
             {
@@ -61,8 +68,7 @@ namespace Application.Services
             }
 
             await workScheduleRepository.AddRange(workSchedules);
-            var userAccount = await userAccountRepository.GetAuthorizationData(AuthUser.ID);
-            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID), userAccount!.MapToAuthorizationData());
+            await RefreshCache(AuthUser.ID);
 
             return Result.Success();
         }
@@ -91,6 +97,11 @@ namespace Application.Services
             if (validationResult != null)
                 return validationResult;
 
+            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
+            {
+                return Result.Failure(AddWorkSchedulesErrors.EmployeeWorkingTimesOutOfBounds);
+            }
+
             var updatedSchedules = request.WorkSchedules.Select(schedule =>
             {
                 var entity = schedule.MapToEntity();
@@ -105,12 +116,35 @@ namespace Application.Services
 
             await workScheduleRepository.UpdateRange(updatedSchedules);
 
-            var userAccount = await userAccountRepository.GetAuthorizationData(AuthUser.ID);
-            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID), userAccount!.MapToAuthorizationData());
+            await RefreshCache(AuthUser.ID);
 
             return Result.Success();
         }
+        private bool IsEmployeeOutOfBounds(IEnumerable<BaseWorkScheduleDTO> requestSchedules, UserAccountDTO authUser)
+        {
+            foreach (var employeeSchedule in requestSchedules)
+            {
+                var companySchedule = authUser.Company!.WorkSchedules
+                    .FirstOrDefault(cs => cs.DayOfWeek == employeeSchedule.DayOfWeek);
 
+                if (companySchedule == null)
+                    return true;
+
+                if (!companySchedule.IsWorkingDay && employeeSchedule.IsWorkingDay)
+                    return true; 
+
+                if (companySchedule.IsWorkingDay && employeeSchedule.IsWorkingDay)
+                {
+                    if (employeeSchedule.StartTime < companySchedule.StartTime ||
+                        employeeSchedule.EndTime > companySchedule.EndTime)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
         private Result? ValidateWorkSchedules(IEnumerable<BaseWorkScheduleDTO> schedules)
         {
             if (schedules.Any(i => i.StartTime >= i.EndTime))
@@ -123,6 +157,14 @@ namespace Application.Services
                 return Result.Failure(WorkSchedulesErrors.NonWorkingDay);
 
             return null;
+        }
+        private async Task RefreshCache(int userId)
+        {
+            var userAccount = await userAccountRepository.GetAuthorizationData(userId);
+            if (userAccount != null)
+            {
+                await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userId), userAccount.MapToAuthorizationData());
+            }
         }
     }
 }

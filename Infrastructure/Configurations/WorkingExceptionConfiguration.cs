@@ -12,6 +12,7 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.StartDateTime).IsRequired();
             builder.Property(e => e.EndDateTime).IsRequired();
             builder.Property(e => e.IsFullDay).IsRequired();
+            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasOne(e => e.Company)
                 .WithMany(e => e.WorkScheduleExceptions)
