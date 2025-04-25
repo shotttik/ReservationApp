@@ -56,6 +56,13 @@ namespace Application.Extensions.Mappers
                 }).ToList()
             };
 
+            if (userDTO.Company != null)
+            {
+                userDTO.Company.WorkSchedules = userDTO.Company.WorkSchedules
+                    .Where(w => w.UserID == null)
+                    .ToList();
+            }
+
             return userDTO;
         }
     }

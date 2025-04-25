@@ -33,7 +33,6 @@ namespace Infrastructure.Repositories
                         .ThenInclude(r => r!.Permissions)
                     .Include(e => e.Company)
                         .ThenInclude(e => e!.WorkSchedules)
-                    .Include(e => e.WorkSchedules)
                     .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
