@@ -1,0 +1,47 @@
+﻿using Application.DTOs.Company;
+using Domain.Entities;
+
+namespace Application.Extensions.Mappers
+{
+    public static class ServiceMapper
+    {
+
+        public static Service MapToEntity(this BaseServiceDTO service, int companyID)
+        {
+            return new Service
+            {
+                Name = service.Name,
+                Description = service.Description,
+                Price = service.Price,
+                Duration = service.Duration,
+                IsActive = service.IsActive,
+                CompanyID = companyID
+            };
+        }
+        public static Service MapToEntity(this UpdateServiceDTO service, int companyID)
+        {
+            return new Service
+            {
+                ID = service.ID,
+                Name = service.Name,
+                Description = service.Description,
+                Price = service.Price,
+                Duration = service.Duration,
+                IsActive = service.IsActive,
+                CompanyID = companyID
+            };
+        }
+        public static ServiceDTO MapToDTO(this Service service)
+        {
+            return new ServiceDTO
+            {
+                ID = service.ID,
+                Name = service.Name,
+                Description = service.Description,
+                Price = service.Price,
+                Duration = service.Duration,
+                IsActive = service.IsActive,
+            };
+        }
+    }
+}

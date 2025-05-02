@@ -1,6 +1,8 @@
 ﻿using Application.Authentication;
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.Company;
+using Application.DTOs.Company;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -14,17 +16,20 @@ namespace Application.Services
         private readonly ICompanyInvitationRepository companyInvitationRepository;
         private readonly IConfiguration configuration;
         private readonly IAuthService authService;
+        private readonly IServiceRepository serviceRepository;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
             ICompanyInvitationRepository companyInvitationRepository,
             IConfiguration configuration,
-            IAuthService authService)
+            IAuthService authService,
+            IServiceRepository serviceRepository)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
             this.configuration = configuration;
             this.authService = authService;
+            this.serviceRepository = serviceRepository;
         }
 
         public async Task<Result<string>> InviteMember(int memberID)
@@ -84,6 +89,34 @@ namespace Application.Services
             authUserEntity.UpdateTimestamp();
 
             await userAccountRepository.Update(authUserEntity);
+
+            return Result.Success();
+        }
+        public async Task<Result> CreateServices(CreateServicesRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
+            await serviceRepository.AddRange(services);
+
+            return Result.Success();
+        }
+        public async Task<Result> UpdateServices(UpdateServicesRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
+            await serviceRepository.UpdateRange(services);
+
+            return Result.Success();
+        }
+        public async Task<Result> DeleteServices(int ID)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var service = await serviceRepository.Get(ID);
+            if (service == null || service.CompanyID != AuthUser.Company!.ID)
+            {
+                return Result.Failure(DeleteServicesError.NotFound);
+            }
+            await serviceRepository.Delete(service);
 
             return Result.Success();
         }

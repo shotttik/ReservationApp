@@ -21,6 +21,11 @@
 
         // WorkSchedule Management Permissions
         ManageCompanyWorkSchedule = 10,
-        ManageUserWorkSchedule = 11
+        ManageUserWorkSchedule = 11,
+
+        // Company Service Management Permissions
+        AddService = 12,
+        UpdateService= 13,
+        DeleteService = 14,
     }
 }

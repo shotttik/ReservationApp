@@ -29,7 +29,7 @@ namespace Application.Services
             this.cacheService = cacheService;
             this.userAccountRepository = userAccountRepository;
         }
-        public async Task<Result> AddWorkSchedules(AddWorkSchedulesRequest request, bool isForEmployee)
+        public async Task<Result> AddWorkSchedules(CreateWorkSchedulesRequest request, bool isForEmployee)
         {
             var AuthUser = await authService.GetCurrentUser();
 

@@ -16,7 +16,7 @@ namespace Application.Extensions.Mappers
                 IsWorkingDay = workSchedule.IsWorkingDay
             };
         }
-        public static WorkSchedule MapToEntity(this AddWorkScheduleDTO workSchedule)
+        public static WorkSchedule MapToEntity(this CreateWorkScheduleDTO workSchedule)
         {
             return new WorkSchedule
             {
