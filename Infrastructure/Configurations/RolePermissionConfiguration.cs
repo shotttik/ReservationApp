@@ -34,7 +34,10 @@ namespace Infrastructure.Configurations
                 Create(Role.CompanyAdmin, Permission.DeleteCompany),
                 Create(Role.CompanyAdmin, Permission.ManageCompanyWorkSchedule),
                 Create(Role.CompanyAdmin, Permission.ManageUserWorkSchedule),
-                Create(Role.CompanyMember, Permission.ManageUserWorkSchedule)
+                Create(Role.CompanyMember, Permission.ManageUserWorkSchedule),
+                Create(Role.CompanyAdmin, Permission.AddService),
+                Create(Role.CompanyAdmin, Permission.UpdateService),
+                Create(Role.CompanyAdmin, Permission.DeleteService)
                 );
         }
 
