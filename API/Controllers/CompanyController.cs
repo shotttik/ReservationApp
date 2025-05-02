@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [Route("api/company")]
-    [Controller]
+    [ApiController]
     public class CompanyController :ControllerBase
     {
         private readonly ICompanyService companyService;
