@@ -70,6 +70,16 @@ void ConfigureServices(IServiceCollection services)
     services.AddAuthorization();
     services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
     services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+    // Add CORS services
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 }
 
 void ConfigureMiddleware(WebApplication app)
@@ -80,6 +90,8 @@ void ConfigureMiddleware(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+    // Enable CORS
+    app.UseCors("AllowAll");
 
     // Other middleware
     app.UseHttpsRedirection();
@@ -109,7 +121,7 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
         };
     });
 }
-
+    
 void ConfigureRateLimit(WebApplicationBuilder builder)
 {
     builder.Services.Configure<FixedRateLimitOptions>(
