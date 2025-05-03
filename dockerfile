@@ -1,4 +1,3 @@
-# Build stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
@@ -10,5 +9,7 @@ RUN dotnet publish -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+COPY wait-for-it.sh .
+RUN chmod +x wait-for-it.sh
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "API.dll"]
+ENTRYPOINT ["./wait-for-it.sh", "sqlserver:1433", "--", "dotnet", "API.dll"]

@@ -2,6 +2,7 @@ using API.Middlewares;
 using Application.Authentication;
 using Application.Extensions;
 using Application.Options;
+using Infrastructure;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,14 @@ builder.Services.AddInfrastructureServices(connectionString!);
 
 // Build the app
 var app = builder.Build();
+
+// Configure Database -  Auto apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    // Inside the existing code
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Configure the middleware pipeline
 ConfigureMiddleware(app);
