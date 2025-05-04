@@ -111,10 +111,11 @@ namespace Application.Services
 
             var response = new RegisterResponse()
             {
-                Description = $"User registered successfully, Now You have to Verify your email, check inbox, you have {expDays} days.",
+                //Description = $"User registered successfully, Now You have to Verify your email, check inbox, you have {expDays} days.",
                 VerificationToken = verificationToken,
                 VerificationTokenExpTime = verificationTokenExpirationTime
             };
+            response.SetDefaultDescription(expDays);
 
             return Result.Success(response);
         }
