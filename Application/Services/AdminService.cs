@@ -18,13 +18,15 @@ namespace Application.Services
         private readonly IRoleRepository roleRepository;
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
+        private readonly ICompanyRepository companyRepository;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
             IRoleRepository roleRepository,
             IAuthService authService,
-            ICacheService cacheService
+            ICacheService cacheService,
+            ICompanyRepository companyRepository
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -32,6 +34,7 @@ namespace Application.Services
             this.roleRepository = roleRepository;
             this.authService = authService;
             this.cacheService = cacheService;
+            this.companyRepository = companyRepository;
         }
 
         public async Task<Result> AddUser(AddUserRequest request)
@@ -41,14 +44,6 @@ namespace Application.Services
                 return Result.Failure(UserAddErrors.AlreadyExists);
             }
 
-            // Validate roles first
-
-            var r = await roleRepository.GetRole(request.Role);
-            if (r is null)
-            {
-                return Result.Failure(UserAddErrors.RoleNotFound);
-            }
-
             // Create user account and login data
             var userAccount = new UserAccount()
             {
@@ -56,8 +51,7 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = (int)request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = request.Role,
-                Role = r
+                RoleID = Role.FromID((int)request.Role)!.ID,
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -106,6 +100,27 @@ namespace Application.Services
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
             await userAccountRepository.Update(userAccount);
             await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
+
+            return Result.Success();
+        }
+
+        public async Task<Result> RegisterCompany(CreateCompanyRequest request)
+        {
+            // unda shemowmdes bazashi unikalur fieldebze arsebobs tuara ukve e skompania tu arrsebobs mashin dabrundes alreadyexists
+            //if (await companyRepository.GetByIN(request.IN) is not null)
+            //{
+            //return Result.Failure(CompanyRegisterErrors.AlreadyExists);
+            //}
+
+            var company = new Company()
+            {
+                Name = request.Name,
+                Description = request.Description,
+                IN = request.IN,
+                Email = request.Email,
+                Phone = request.Phone
+            };
+            await companyRepository.Add(company);
 
             return Result.Success();
         }

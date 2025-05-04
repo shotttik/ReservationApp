@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task<Result> AddUser(AddUserRequest request);
         Task<Result> UpdateUser(UpdateUserRequest request);
+        Task<Result> RegisterCompany(CreateCompanyRequest request);
     }
 }

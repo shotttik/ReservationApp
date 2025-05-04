@@ -21,6 +21,6 @@ namespace Application.DTOs.Admin
         [Required]
         public required string Password { get; set; }
         [Required]
-        public required int Role { get; set; }
+        public required Role Role { get; set; }
     }
 }

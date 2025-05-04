@@ -39,5 +39,15 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
+
+        [HttpPost("company")]
+        [HasPermission(Permission.AddCompany)]
+        [Logging(LoggingType.Full)]
+        public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest request)
+        {
+            Result result = await adminService.RegisterCompany(request);
+
+            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+        }
     }
 }

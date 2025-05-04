@@ -24,8 +24,6 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
-        private readonly IRoleRepository roleRepository;
-        private readonly ICompanyRepository companyRepository;
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
 
@@ -33,8 +31,6 @@ namespace Application.Services
             IConfiguration configuration,
             IUserAccountRepository userAccountRepository,
             IUserLoginDataRepository userLoginDataRepository,
-            IRoleRepository roleRepository,
-            ICompanyRepository companyRepository,
             IHttpContextAccessor httpContextAccessor,
             IAuthService authService,
             ICacheService cacheService)
@@ -42,31 +38,15 @@ namespace Application.Services
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
-            this.roleRepository = roleRepository;
-            this.companyRepository = companyRepository;
             this.authService = authService;
             this.cacheService = cacheService;
         }
 
-        public async Task<Result> Register(RegisterUserRequest request)
+        public async Task<Result<RegisterResponse>> Register(RegisterUserRequest request)
         {
             if (await userLoginDataRepository.GetByEmail(request.Email) != null)
             {
-                return Result.Failure(RegisterErrors.AlreadyExists);
-            }
-            var role = Role.FromName(nameof(request.Role));
-            if (role is null)
-            {
-                return Result.Failure(RegisterErrors.RoleNotFound);
-            }
-            if (!(role.ID == Role.PublicUser.ID || role.ID == Role.CompanyAdmin.ID))
-            {
-                return Result.Failure(RegisterErrors.RoleIsNotAccessable);
-            }
-            if ((role.ID == Role.PublicUser.ID && request.Company != null) ||
-                (role.ID) == Role.CompanyAdmin.ID && request.Company == null)
-            {
-                return Result.Failure(RegisterErrors.RoleIncompatibility);
+                return Result.Failure<RegisterResponse>(RegisterErrors.AlreadyExists);
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -80,7 +60,7 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = (int?)request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = role.ID
+                RoleID = Role.PublicUser.ID,
             };
 
             var userLoginData = new UserLoginData
@@ -93,26 +73,12 @@ namespace Application.Services
                 VerificationTokenExpTime = verificationTokenExpirationTime
             };
 
-            if (request.Company != null)
-            {
-                var company = new Company()
-                {
-                    Name = request.Company.Name,
-                    Description = request.Company.Description,
-                    IN = request.Company.IN,
-                    Email = request.Company.Email,
-                    Phone = request.Company.Phone
-                };
-                await companyRepository.Add(company);
-            }
-
             userAccount = await userAccountRepository.Add(userAccount);
             userLoginData.UserAccountID = userAccount.ID;
             await userLoginDataRepository.Add(userLoginData);
 
             var response = new RegisterResponse()
             {
-                //Description = $"User registered successfully, Now You have to Verify your email, check inbox, you have {expDays} days.",
                 VerificationToken = verificationToken,
                 VerificationTokenExpTime = verificationTokenExpirationTime
             };

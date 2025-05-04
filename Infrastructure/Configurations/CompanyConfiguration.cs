@@ -16,6 +16,7 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.Phone).HasMaxLength(9);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
+            builder.HasIndex(e => e.Name).IsUnique();
             builder.HasIndex(e => e.IN).IsUnique();
             builder.HasIndex(e => e.Email).IsUnique();
             builder.HasIndex(e => e.Phone).IsUnique();
