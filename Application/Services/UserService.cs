@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 using System.Security.Claims;
+using Role = Domain.Entities.Role;
 
 namespace Application.Services
 {
@@ -53,16 +54,16 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
-            var role = Role.FromName(request.Role);
+            var role = Role.FromName(nameof(request.Role));
             if (role is null)
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
             }
-            if (!(role.ID == Role.User.ID || role.ID == Role.CompanyAdmin.ID))
+            if (!(role.ID == Role.PublicUser.ID || role.ID == Role.CompanyAdmin.ID))
             {
                 return Result.Failure(RegisterErrors.RoleIsNotAccessable);
             }
-            if ((role.ID == Role.User.ID && request.Company != null) ||
+            if ((role.ID == Role.PublicUser.ID && request.Company != null) ||
                 (role.ID) == Role.CompanyAdmin.ID && request.Company == null)
             {
                 return Result.Failure(RegisterErrors.RoleIncompatibility);

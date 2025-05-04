@@ -40,7 +40,7 @@ namespace Application.Services
             {
                 return Result.Failure<string>(InviteMemberErrors.NotFound);
             }
-            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.User.ID)
+            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.PublicUser.ID)
             {
                 return Result.Failure<string>(InviteMemberErrors.NotValidRole);
             }

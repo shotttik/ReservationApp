@@ -100,11 +100,6 @@ namespace Application.Services
                 userAccount.RoleID = r.ID;
             }
 
-            if (AuthUser.Role.ID == Role.Admin.ID && userAccount.RoleID == Role.SuperAdmin.ID)
-            {
-                return Result.Failure(UserUpdateErrors.PermissionError);
-            }
-
             userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
             userAccount.LastName = request.LastName ?? userAccount.LastName;
             userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;

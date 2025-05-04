@@ -13,7 +13,7 @@ namespace Infrastructure.Configurations
             builder.HasKey(x => new { x.RoleID, x.PermissionID });
 
             builder.HasData(
-                   Create(Role.SuperAdmin, Permission.AddUser),
+                Create(Role.SuperAdmin, Permission.AddUser),
                 Create(Role.SuperAdmin, Permission.EditUser),
                 Create(Role.SuperAdmin, Permission.DeleteUser),
                 Create(Role.SuperAdmin, Permission.AddCompany),
@@ -22,14 +22,7 @@ namespace Infrastructure.Configurations
                 Create(Role.SuperAdmin, Permission.DeleteCompany),
                 Create(Role.SuperAdmin, Permission.ViewReports),
                 Create(Role.SuperAdmin, Permission.ManageSettings),
-                Create(Role.Admin, Permission.AddUser),
-                Create(Role.Admin, Permission.EditUser),
-                Create(Role.Admin, Permission.DeleteUser),
-                Create(Role.Admin, Permission.AddCompany),
-                Create(Role.Admin, Permission.EditCompany),
-                Create(Role.Admin, Permission.DeleteCompany),
-                Create(Role.Admin, Permission.ViewReports),
-                Create(Role.User, Permission.ViewReports),
+                Create(Role.PublicUser, Permission.ViewReports),
                 Create(Role.CompanyAdmin, Permission.EditCompany),
                 Create(Role.CompanyAdmin, Permission.DeleteCompany),
                 Create(Role.CompanyAdmin, Permission.ManageCompanyWorkSchedule),

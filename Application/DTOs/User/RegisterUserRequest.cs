@@ -24,7 +24,7 @@ namespace Application.DTOs.User
         [MaxLength(255)]
         public required string Password { get; set; }
         [Required]
-        public required string Role { get; set; }
+        public required Role Role { get; set; }
         public RegisterCompany? Company { get; set; }
     }
 
