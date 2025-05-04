@@ -5,7 +5,7 @@ using Application.DTOs.Company;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
@@ -80,13 +80,11 @@ namespace Application.Services
             invitation.IsAccepted = true;
             invitation.Token = null;
             invitation.ExpirationTime = null;
-            invitation.UpdateTimestamp();
             await companyInvitationRepository.Update(invitation);
 
             var authUserEntity = await userAccountRepository.Get(AuthUser.ID);
             authUserEntity!.CompanyID = invitation.CompanyID;
             authUserEntity.RoleID = Role.CompanyMember.ID;
-            authUserEntity.UpdateTimestamp();
 
             await userAccountRepository.Update(authUserEntity);
 

@@ -1,7 +1,7 @@
 ﻿using Application.DTOs.User;
 using Application.Exceptions;
 using Application.Interfaces;
-using Domain.Interfaces;
+using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Shared.Utilities;
 using System.Security.Claims;

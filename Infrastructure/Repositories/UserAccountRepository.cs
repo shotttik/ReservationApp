@@ -1,6 +1,7 @@
 ﻿using Application.Extensions.Mappers;
 using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 using Shared.Utilities;
 

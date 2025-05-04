@@ -5,7 +5,8 @@ using Application.DTOs.WorkSchedule;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 

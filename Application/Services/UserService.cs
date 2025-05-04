@@ -8,7 +8,8 @@ using Application.Interfaces;
 using Application.Responses;
 using Domain.Entities;
 using Domain.Enums;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -139,7 +140,6 @@ namespace Application.Services
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpTime = refreshTokenExpirationTime;
-            user.UpdateTimestamp();
 
             var userDTO = user.UserAccount.MapToAuthorizationData();
             await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(user.UserAccountID), userDTO);
@@ -182,7 +182,6 @@ namespace Application.Services
             var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpTime = refreshTokenExpirationTime;
-            user.UpdateTimestamp();
             await userLoginDataRepository.Update(user);
 
             var response = new RefreshResponse()
@@ -214,7 +213,6 @@ namespace Application.Services
             }
             userLoginData.RefreshToken = null;
             userLoginData.RefreshTokenExpTime = null;
-            userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
             await cacheService.RemoveAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID));
@@ -232,7 +230,6 @@ namespace Application.Services
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
             userLoginData.RecoveryToken = recoveryToken;
             userLoginData.RecoveryTokenExpTime = recoveryTokenTime;
-            userLoginData.UpdateTimestamp();
             await userLoginDataRepository.Update(userLoginData);
 
             // TODO instead of returning recovery token need to send email to user
@@ -258,7 +255,6 @@ namespace Application.Services
             userLoginData.PasswordSalt = salt;
             userLoginData.RecoveryToken = null;
             userLoginData.RecoveryTokenExpTime = null;
-            userLoginData.UpdateTimestamp();
 
             await userLoginDataRepository.Update(userLoginData);
 
@@ -293,7 +289,6 @@ namespace Application.Services
             userLoginData.VerificationToken = null;
             userLoginData.VerificationTokenExpTime = null;
             userLoginData.VerificationStatus = VerificationStatus.Verified;
-            userLoginData.UpdateTimestamp();
             await userLoginDataRepository.Update(userLoginData);
 
             return Result.Success();

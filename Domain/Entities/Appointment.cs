@@ -2,9 +2,8 @@
 
 namespace Domain.Entities
 {
-    public class Appointment
+    public class Appointment :BaseEntity
     {
-        public int ID { get; set; }
         public int ClientID { get; set; }
         public UserAccount Client { get; set; } = null!;
         public int EmployeeID { get; set; }
@@ -20,8 +19,5 @@ namespace Domain.Entities
         public decimal? PriceFinal { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public string? CancellationReason { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public void UpdateTimestamp() => UpdatedAt = DateTime.Now;
     }
 }

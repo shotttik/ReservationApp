@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.User;
-using Domain.Interfaces;
+using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Utilities;
 using System.Security.Claims;

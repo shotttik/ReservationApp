@@ -5,7 +5,8 @@ using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Interfaces;
+using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
 using Shared.Utilities;
 
 namespace Application.Services
@@ -108,7 +109,6 @@ namespace Application.Services
             userAccount.LastName = request.LastName ?? userAccount.LastName;
             userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
             userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
-            userAccount.UpdateTimestamp();
             await userAccountRepository.Update(userAccount);
             await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
 

@@ -1,6 +1,8 @@
-﻿namespace Domain.Interfaces
+﻿using Domain.Interfaces.Entities;
+
+namespace Domain.Interfaces.Repositories
 {
-    public interface IBaseRepository<T> where T : class
+    public interface IBaseRepository<T> where T : class, IBaseEntity
     {
         Task<T> Add(T entity);
         Task<T?> Get(int id);

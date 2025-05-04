@@ -1,9 +1,10 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Interfaces.Entities;
+using Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class BaseRepository<T> :IBaseRepository<T> where T : class
+    public class BaseRepository<T> :IBaseRepository<T> where T : class, IBaseEntity
     {
         protected readonly ApplicationDbContext dbContext;
         protected readonly DbSet<T> _dbSet;
@@ -34,6 +35,7 @@ namespace Infrastructure.Repositories
 
         public virtual async Task Update(T entity)
         {
+            entity.UpdateTimestamp();
             _dbSet.Update(entity);
             await dbContext.SaveChangesAsync();
         }
