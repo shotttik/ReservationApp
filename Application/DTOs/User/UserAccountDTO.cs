@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.WorkSchedule;
+using Domain.Enums;
 
 namespace Application.DTOs.User
 {
@@ -7,7 +8,7 @@ namespace Application.DTOs.User
         public int ID { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
-        public int? Gender { get; set; }
+        public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public required RoleDTO Role { get; set; }
         public CompanyDTO? Company { get; set; }

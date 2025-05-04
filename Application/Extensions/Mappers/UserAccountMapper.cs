@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.User;
 using Application.DTOs.WorkSchedule;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Extensions.Mappers
 {
@@ -13,7 +14,7 @@ namespace Application.Extensions.Mappers
                 ID = user.ID,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Gender = user.Gender,
+                Gender = user.Gender.HasValue ? (Gender?)user.Gender : null,
                 DateOfBirth = user.DateOfBirth,
                 Role = new RoleDTO
                 {

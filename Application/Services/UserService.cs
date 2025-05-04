@@ -53,7 +53,7 @@ namespace Application.Services
             {
                 return Result.Failure(RegisterErrors.AlreadyExists);
             }
-            var role = await roleRepository.GetRole(request.RoleID);
+            var role = Role.FromName(request.Role);
             if (role is null)
             {
                 return Result.Failure(RegisterErrors.RoleNotFound);
@@ -77,7 +77,7 @@ namespace Application.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Gender = request.Gender,
+                Gender = (int?)request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 RoleID = role.ID
             };

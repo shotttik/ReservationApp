@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,7 +55,11 @@ app.Run();
 void ConfigureServices(IServiceCollection services)
 {
     // Add controllers
-    services.AddControllers();
+    services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }); ;
 
     // Add Swagger/OpenAPI services
     services.AddEndpointsApiExplorer();
@@ -121,7 +126,7 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
         };
     });
 }
-    
+
 void ConfigureRateLimit(WebApplicationBuilder builder)
 {
     builder.Services.Configure<FixedRateLimitOptions>(

@@ -1,4 +1,5 @@
 ﻿using Application.Attributes;
+using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 namespace Application.DTOs.User
 {
@@ -11,7 +12,7 @@ namespace Application.DTOs.User
         [MaxLength(200)]
         public required string LastName { get; set; }
         [Required]
-        public int? Gender { get; set; }
+        public Gender? Gender { get; set; }
         [Required]
         public DateOnly? DateOfBirth { get; set; }
         [EmailAddress]
@@ -23,7 +24,7 @@ namespace Application.DTOs.User
         [MaxLength(255)]
         public required string Password { get; set; }
         [Required]
-        public required int RoleID { get; set; }
+        public required string Role { get; set; }
         public RegisterCompany? Company { get; set; }
     }
 
