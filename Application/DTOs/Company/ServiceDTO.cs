@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Company
 {
-    public class ServiceDTO :UpdateServiceDTO
+    public class ServiceDTO :ServiceUpdateDTO
     {
     }
 }

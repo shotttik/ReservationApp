@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/admin")]
+    [Route("api/super-admin")]
     [ApiController]
     public class AdminController :ControllerBase
     {
@@ -20,32 +20,32 @@ namespace API.Controllers
         }
 
         [HttpPost("users")]
-        [HasPermission(Permission.AddUser)]
+        [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]
-        public async Task<IActionResult> AddUser([FromBody] AddUserRequest request)
+        public async Task<IActionResult> UserCreate([FromBody] UserCreateRequest request)
         {
-            Result result = await adminService.AddUser(request);
+            Result result = await adminService.UserCreate(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
         [HttpPut("users/{userId}")]
-        [HasPermission(Permission.UpdateUser)]
+        [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequest request)
+        public async Task<IActionResult> UserUpdate(int userId, [FromBody] UserUpdateRequest request)
         {
             request.UserAccountID = userId;
-            Result result = await adminService.UpdateUser(request);
+            Result result = await adminService.UserUpdate(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
         [HttpPost("company")]
-        [HasPermission(Permission.AddCompany)]
+        [HasPermission(Permission.CompanyCreate)]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest request)
+        public async Task<IActionResult> CompanyCreate([FromBody] CompanyCreateRequest request)
         {
-            Result result = await adminService.RegisterCompany(request);
+            Result result = await adminService.CompanyCreate(request);
 
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }

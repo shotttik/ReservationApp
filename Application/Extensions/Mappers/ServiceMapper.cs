@@ -18,7 +18,7 @@ namespace Application.Extensions.Mappers
                 CompanyID = companyID
             };
         }
-        public static Service MapToEntity(this UpdateServiceDTO service, int companyID)
+        public static Service MapToEntity(this ServiceUpdateDTO service, int companyID)
         {
             return new Service
             {

@@ -2,30 +2,32 @@
 {
     public enum Permission
     {
-        // User Management Permissions
-        AddUser = 1,
-        EditUser = 2,
-        DeleteUser = 3,
-        UpdateUser = 4,
+        // User Permissions
+        UserCreate = 1,
+        UserRead = 2,
+        UserUpdate = 3,
+        UserDelete = 4,
 
-        // Company Management Permissions
-        AddCompany = 5,
-        EditCompany = 6,
-        DeleteCompany = 7,
+        // Company Permissions
+        CompanyCreate = 5,
+        CompanyRead = 6,
+        CompanyUpdate = 7,
+        CompanyDelete = 8,
 
-        // Report Viewing Permissions
-        ViewReports = 8,
+        // Report Permissions
+        ReportView = 9,
 
-        // Settings Management Permissions
-        ManageSettings = 9,
+        // Settings Permissions
+        SettingsManage = 10,
 
-        // WorkSchedule Management Permissions
-        ManageCompanyWorkSchedule = 10,
-        ManageUserWorkSchedule = 11,
+        // WorkSchedule Permissions
+        WorkScheduleManageCompany = 11,
+        WorkScheduleManageUser = 12,
 
-        // Company Service Management Permissions
-        AddService = 12,
-        UpdateService= 13,
-        DeleteService = 14,
+        // Service Permissions
+        ServiceCreate = 13,
+        ServiceRead = 14,
+        ServiceUpdate = 15,
+        ServiceDelete = 16,
     }
 }

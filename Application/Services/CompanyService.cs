@@ -60,21 +60,21 @@ namespace Application.Services
 
             return Result.Success(invitation.Token);
         }
-        public async Task<Result> AcceptInvite(string token)
+        public async Task<Result> InviteAccept(string token)
         {
             var AuthUser = await authService.GetCurrentUser();
             var invitation = await companyInvitationRepository.Get(token);
             if (invitation == null)
             {
-                return Result.Failure(AcceptInviteErrors.NotFound);
+                return Result.Failure(InviteAcceptErrors.NotFound);
             }
             if (invitation.UserAccountID != AuthUser.ID)
             {
-                return Result.Failure(AcceptInviteErrors.InvalidUser);
+                return Result.Failure(InviteAcceptErrors.InvalidUser);
             }
             if (invitation.ExpirationTime < DateTime.Now)
             {
-                return Result.Failure(AcceptInviteErrors.TokenExpired);
+                return Result.Failure(InviteAcceptErrors.TokenExpired);
             }
 
             invitation.IsAccepted = true;
@@ -90,7 +90,7 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> CreateServices(CreateServicesRequest request)
+        public async Task<Result> ServicesCreate(ServicesCreateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
             var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
@@ -98,7 +98,7 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> UpdateServices(UpdateServicesRequest request)
+        public async Task<Result> ServicesUpdate(ServicesUpdateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
             var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
@@ -106,13 +106,13 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> DeleteServices(int ID)
+        public async Task<Result> ServicesDelete(int ID)
         {
             var AuthUser = await authService.GetCurrentUser();
             var service = await serviceRepository.Get(ID);
             if (service == null || service.CompanyID != AuthUser.Company!.ID)
             {
-                return Result.Failure(DeleteServicesError.NotFound);
+                return Result.Failure(ServicesDeleteError.NotFound);
             }
             await serviceRepository.Delete(service);
 

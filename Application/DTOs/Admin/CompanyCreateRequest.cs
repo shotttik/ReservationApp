@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Application.DTOs.Admin
 {
-    public class CreateCompanyRequest()
+    public class CompanyCreateRequest()
     {
         [Required]
         [MaxLength(200)]

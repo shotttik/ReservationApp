@@ -6,6 +6,7 @@ using Application.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
@@ -23,11 +24,12 @@ namespace API.Controllers
         [HttpPost("register")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
+        [SwaggerResponse(StatusCodes.Status200OK, "User registered successfully", typeof(RegisterResponse))]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
-            Result result = await userAccountService.Register(registerUserRequest);
+            Result<RegisterResponse> result = await userAccountService.Register(registerUserRequest);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
 
         [HttpPost("login")]

@@ -6,9 +6,9 @@ namespace Application.Interfaces
     public interface ICompanyService
     {
         Task<Result<string>> InviteMember(int memberID);
-        Task<Result> AcceptInvite(string token);
-        Task<Result> CreateServices(CreateServicesRequest request);
-        Task<Result> UpdateServices(UpdateServicesRequest request);
-        Task<Result> DeleteServices(int ID);
+        Task<Result> InviteAccept(string token);
+        Task<Result> ServicesCreate(ServicesCreateRequest request);
+        Task<Result> ServicesUpdate(ServicesUpdateRequest request);
+        Task<Result> ServicesDelete(int ID);
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.Common.ResultsErrors.Company
 {
-    internal class DeleteServicesError
+    internal class ServicesDeleteError
     {
         public static readonly Error NotFound = Error.NotFound("DeleteServicesError.NotFound", "Company service not found.");
     }

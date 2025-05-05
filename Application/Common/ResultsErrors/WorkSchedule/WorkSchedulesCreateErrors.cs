@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.ResultsErrors.WorkSchedule
 {
-    internal class AddWorkSchedulesErrors :WorkSchedulesErrors
+    internal class WorkSchedulesCreateErrors :WorkSchedulesErrors
     {
         public static readonly Error InvalidWorkScheduleCount = Error.Validation(
                 code: "AddWorkSchedulesErrors.InvalidCount",

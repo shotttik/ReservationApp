@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.Admin
 {
-    public class AddUserRequest
+    public class UserCreateRequest
     {
         [Required]
         [MaxLength(100)]

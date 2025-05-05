@@ -5,8 +5,8 @@ namespace Application.Interfaces
 {
     public interface IAdminService
     {
-        Task<Result> AddUser(AddUserRequest request);
-        Task<Result> UpdateUser(UpdateUserRequest request);
-        Task<Result> RegisterCompany(CreateCompanyRequest request);
+        Task<Result> UserCreate(UserCreateRequest request);
+        Task<Result> UserUpdate(UserUpdateRequest request);
+        Task<Result> CompanyCreate(CompanyCreateRequest request);
     }
 }

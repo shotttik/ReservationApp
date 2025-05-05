@@ -7,8 +7,8 @@ namespace Application.DTOs.WorkSchedule
         [Required]
         public List<T> WorkSchedules { get; set; } = [];
     }
-    public class CreateWorkSchedulesRequest :WorkSchedulesRequest<CreateWorkScheduleDTO> { }
+    public class WorkSchedulesCreateRequest :WorkSchedulesRequest<WorkScheduleCreateDTO> { }
 
-    public class UpdateWorkSchedulesRequest :WorkSchedulesRequest<UpdateWorkScheduleDTO> { }
+    public class WorkSchedulesUpdateRequest :WorkSchedulesRequest<WorkScheduleUpdateDTO> { }
 
 }

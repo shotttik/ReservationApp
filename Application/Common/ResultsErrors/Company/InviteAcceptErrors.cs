@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.ResultsErrors.Company
 {
-    internal class AcceptInviteErrors
+    internal class InviteAcceptErrors
     {
         public static readonly Error NotFound = Error.NotFound("AcceptInvite.NotFound", "Invite not found by given token.");
         public static readonly Error TokenExpired = Error.Validation("AcceptInvite.TokenExpired", "Token is already expired.");

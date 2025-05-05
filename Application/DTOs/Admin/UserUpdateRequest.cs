@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.Admin
 {
-    public class UpdateUserRequest
+    public class UserUpdateRequest
     {
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
         public int UserAccountID { get; set; }
@@ -13,6 +13,6 @@ namespace Application.DTOs.Admin
         public string? LastName { get; set; }
         public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
-        public int? RoleID { get; set; }
+        public Role? Role { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.WorkSchedule
 {
-    public class WorkScheduleDTO :UpdateWorkScheduleDTO
+    public class WorkScheduleDTO :WorkScheduleUpdateDTO
     {
         public int CompanyID { get; set; }
         public int? UserID { get; set; }

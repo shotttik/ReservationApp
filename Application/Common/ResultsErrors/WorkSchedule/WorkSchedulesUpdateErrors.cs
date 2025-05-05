@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.ResultsErrors.WorkSchedule
 {
-    internal class UpdateWorkSchedulesErrors :WorkSchedulesErrors
+    internal class WorkSchedulesUpdateErrors :WorkSchedulesErrors
     {
         public static readonly Error NotExists = Error.Validation(
             code: "UpdateCompanyWorkScheduleErrors.NotExists",

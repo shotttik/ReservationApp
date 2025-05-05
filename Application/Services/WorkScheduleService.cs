@@ -30,7 +30,7 @@ namespace Application.Services
             this.cacheService = cacheService;
             this.userAccountRepository = userAccountRepository;
         }
-        public async Task<Result> AddWorkSchedules(CreateWorkSchedulesRequest request, bool isForEmployee)
+        public async Task<Result> WorkSchedulesCreate(WorkSchedulesCreateRequest request, bool isForEmployee)
         {
             var AuthUser = await authService.GetCurrentUser();
 
@@ -38,7 +38,7 @@ namespace Application.Services
             if (request.WorkSchedules.IsNullOrEmpty()
                 || request.WorkSchedules.Select(i => i.DayOfWeek).Distinct().Count() != Enum.GetValues<DayOfWeek>().Length)
             {
-                return Result.Failure(AddWorkSchedulesErrors.InvalidWorkScheduleCount);
+                return Result.Failure(WorkSchedulesCreateErrors.InvalidWorkScheduleCount);
             }
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
@@ -48,12 +48,12 @@ namespace Application.Services
             bool existsSchedules = isForEmployee ? AuthUser.WorkSchedules.Count != 0 : AuthUser.Company!.WorkSchedules.Count != 0;
             if (existsSchedules)
             {
-                return Result.Failure(AddWorkSchedulesErrors.AlreadyExists);
+                return Result.Failure(WorkSchedulesCreateErrors.AlreadyExists);
             }
 
             if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
             {
-                return Result.Failure(AddWorkSchedulesErrors.EmployeeWorkingTimesOutOfBounds);
+                return Result.Failure(WorkSchedulesCreateErrors.EmployeeWorkingTimesOutOfBounds);
             }
 
             var workSchedules = new List<WorkSchedule>();
@@ -74,14 +74,14 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateWorkSchedules(UpdateWorkSchedulesRequest request, bool isForEmployee)
+        public async Task<Result> WorkSchedulesUpdate(WorkSchedulesUpdateRequest request, bool isForEmployee)
         {
             var AuthUser = await authService.GetCurrentUser();
 
             var existsSchedules = AuthUser.Company!.WorkSchedules.Count != 0;
             if (!existsSchedules)
             {
-                return Result.Failure(UpdateWorkSchedulesErrors.NotExists);
+                return Result.Failure(WorkSchedulesUpdateErrors.NotExists);
             }
             bool scheduleNotExists =
                 request.WorkSchedules.Any(i =>
@@ -91,7 +91,7 @@ namespace Application.Services
                 );
             if (scheduleNotExists)
             {
-                return Result.Failure(UpdateWorkSchedulesErrors.Mismatch);
+                return Result.Failure(WorkSchedulesUpdateErrors.Mismatch);
             }
 
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
@@ -100,7 +100,7 @@ namespace Application.Services
 
             if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
             {
-                return Result.Failure(AddWorkSchedulesErrors.EmployeeWorkingTimesOutOfBounds);
+                return Result.Failure(WorkSchedulesCreateErrors.EmployeeWorkingTimesOutOfBounds);
             }
 
             var updatedSchedules = request.WorkSchedules.Select(schedule =>

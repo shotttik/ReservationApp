@@ -1,5 +1,6 @@
 ﻿using Application.Authentication;
 using Application.Common.ResultsErrors;
+using Application.Common.ResultsErrors.Company;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
@@ -37,11 +38,11 @@ namespace Application.Services
             this.companyRepository = companyRepository;
         }
 
-        public async Task<Result> AddUser(AddUserRequest request)
+        public async Task<Result> UserCreate(UserCreateRequest request)
         {
             if (await userLoginDataRepository.GetByEmail(request.Email) is not null)
             {
-                return Result.Failure(UserAddErrors.AlreadyExists);
+                return Result.Failure(UserCreateErrors.AlreadyExists);
             }
 
             // Create user account and login data
@@ -70,7 +71,7 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(UpdateUserRequest request)
+        public async Task<Result> UserUpdate(UserUpdateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
             if (request == null)
@@ -84,9 +85,9 @@ namespace Application.Services
                 return Result.Failure(UserUpdateErrors.NotFound);
             }
 
-            if (request.RoleID != null)
+            if (request.Role != null)
             {
-                var r = await roleRepository.GetRole((int)request.RoleID);
+                var r = Role.FromID((int)request.Role);
                 if (r is null)
                 {
                     return Result.Failure(UserUpdateErrors.RoleNotFound);
@@ -104,13 +105,12 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> RegisterCompany(CreateCompanyRequest request)
+        public async Task<Result> CompanyCreate(CompanyCreateRequest request)
         {
-            // unda shemowmdes bazashi unikalur fieldebze arsebobs tuara ukve e skompania tu arrsebobs mashin dabrundes alreadyexists
-            //if (await companyRepository.GetByIN(request.IN) is not null)
-            //{
-            //return Result.Failure(CompanyRegisterErrors.AlreadyExists);
-            //}
+            if (await companyRepository.ExistsByDetailsAsync(request.IN, request.Name, request.Email, request.Phone))
+            {
+                return Result.Failure(CompanyCreateErrors.AlreadyExists);
+            }
 
             var company = new Company()
             {

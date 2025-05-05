@@ -22,10 +22,10 @@ namespace API.Controllers
         [HttpPost("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ManageCompanyWorkSchedule)]
-        public async Task<IActionResult> AddCompanyWorkSchedules([FromBody] CreateWorkSchedulesRequest request)
+        [HasPermission(Permission.WorkScheduleManageCompany)]
+        public async Task<IActionResult> CreateCompanyWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
         {
-            Result result = await workScheduleService.AddWorkSchedules(request, isForEmployee: false);
+            Result result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: false);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
@@ -33,20 +33,20 @@ namespace API.Controllers
         [HttpPut("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ManageCompanyWorkSchedule)]
-        public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] UpdateWorkSchedulesRequest request)
+        [HasPermission(Permission.WorkScheduleManageCompany)]
+        public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
         {
-            Result result = await workScheduleService.UpdateWorkSchedules(request, isForEmployee: false);
+            Result result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: false);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
         [HttpPost("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ManageUserWorkSchedule)]
-        public async Task<IActionResult> AddEmployeeWorkSchedules([FromBody] CreateWorkSchedulesRequest request)
+        [HasPermission(Permission.WorkScheduleManageUser)]
+        public async Task<IActionResult> CreateEmployeeWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
         {
-            Result result = await workScheduleService.AddWorkSchedules(request, isForEmployee: true);
+            Result result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: true);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
@@ -54,10 +54,10 @@ namespace API.Controllers
         [HttpPut("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ManageUserWorkSchedule)]
-        public async Task<IActionResult> UpdateEmployeeWorkSchedules([FromBody] UpdateWorkSchedulesRequest request)
+        [HasPermission(Permission.WorkScheduleManageUser)]
+        public async Task<IActionResult> UpdateEmployeeWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
         {
-            Result result = await workScheduleService.UpdateWorkSchedules(request, isForEmployee: true);
+            Result result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: true);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }

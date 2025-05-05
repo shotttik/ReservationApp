@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs.Company
 {
-    public class CreateServiceDTO :BaseServiceDTO
+    public class ServiceCreateDTO :BaseServiceDTO
     {
     }
 }

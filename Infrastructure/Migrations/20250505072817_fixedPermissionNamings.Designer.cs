@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505072817_fixedPermissionNamings")]
+    partial class fixedPermissionNamings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,82 +213,82 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 1,
-                            Name = "UserCreate"
+                            Name = "CreateUser"
                         },
                         new
                         {
                             ID = 2,
-                            Name = "UserRead"
+                            Name = "ReadUser"
                         },
                         new
                         {
                             ID = 3,
-                            Name = "UserUpdate"
+                            Name = "DeleteUser"
                         },
                         new
                         {
                             ID = 4,
-                            Name = "UserDelete"
+                            Name = "UpdateUser"
                         },
                         new
                         {
                             ID = 5,
-                            Name = "CompanyCreate"
+                            Name = "CreateCompany"
                         },
                         new
                         {
                             ID = 6,
-                            Name = "CompanyRead"
+                            Name = "ReadCompany"
                         },
                         new
                         {
                             ID = 7,
-                            Name = "CompanyUpdate"
+                            Name = "UpdateCompany"
                         },
                         new
                         {
                             ID = 8,
-                            Name = "CompanyDelete"
+                            Name = "DeleteCompany"
                         },
                         new
                         {
                             ID = 9,
-                            Name = "ReportView"
+                            Name = "ViewReports"
                         },
                         new
                         {
                             ID = 10,
-                            Name = "SettingsManage"
+                            Name = "ManageSettings"
                         },
                         new
                         {
                             ID = 11,
-                            Name = "WorkScheduleManageCompany"
+                            Name = "ManageCompanyWorkSchedule"
                         },
                         new
                         {
                             ID = 12,
-                            Name = "WorkScheduleManageUser"
+                            Name = "ManageUserWorkSchedule"
                         },
                         new
                         {
                             ID = 13,
-                            Name = "ServiceCreate"
+                            Name = "CreateService"
                         },
                         new
                         {
                             ID = 14,
-                            Name = "ServiceRead"
+                            Name = "ReadService"
                         },
                         new
                         {
                             ID = 15,
-                            Name = "ServiceUpdate"
+                            Name = "UpdateService"
                         },
                         new
                         {
                             ID = 16,
-                            Name = "ServiceDelete"
+                            Name = "DeleteService"
                         });
                 });
 
@@ -353,12 +356,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 4
+                            PermissionID = 3
                         },
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 3
+                            PermissionID = 4
                         },
                         new
                         {
@@ -408,6 +411,16 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
+                            PermissionID = 12
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            PermissionID = 12
+                        },
+                        new
+                        {
+                            RoleID = 3,
                             PermissionID = 13
                         },
                         new
@@ -417,23 +430,13 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 3,
-                            PermissionID = 14
+                            RoleID = 2,
+                            PermissionID = 9
                         },
                         new
                         {
                             RoleID = 3,
                             PermissionID = 16
-                        },
-                        new
-                        {
-                            RoleID = 3,
-                            PermissionID = 12
-                        },
-                        new
-                        {
-                            RoleID = 4,
-                            PermissionID = 12
                         });
                 });
 

@@ -5,7 +5,7 @@ namespace Application.Extensions.Mappers
 {
     public static class WorkScheduleMapper
     {
-        public static WorkSchedule MapToEntity(this UpdateWorkScheduleDTO workSchedule)
+        public static WorkSchedule MapToEntity(this WorkScheduleUpdateDTO workSchedule)
         {
             return new WorkSchedule
             {
@@ -16,7 +16,7 @@ namespace Application.Extensions.Mappers
                 IsWorkingDay = workSchedule.IsWorkingDay
             };
         }
-        public static WorkSchedule MapToEntity(this CreateWorkScheduleDTO workSchedule)
+        public static WorkSchedule MapToEntity(this WorkScheduleCreateDTO workSchedule)
         {
             return new WorkSchedule
             {

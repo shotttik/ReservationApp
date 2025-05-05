@@ -13,24 +13,25 @@ namespace Infrastructure.Configurations
             builder.HasKey(x => new { x.RoleID, x.PermissionID });
 
             builder.HasData(
-                Create(Role.SuperAdmin, Permission.AddUser),
-                Create(Role.SuperAdmin, Permission.EditUser),
-                Create(Role.SuperAdmin, Permission.DeleteUser),
-                Create(Role.SuperAdmin, Permission.AddCompany),
-                Create(Role.SuperAdmin, Permission.UpdateUser),
-                Create(Role.SuperAdmin, Permission.EditCompany),
-                Create(Role.SuperAdmin, Permission.DeleteCompany),
-                Create(Role.SuperAdmin, Permission.ViewReports),
-                Create(Role.SuperAdmin, Permission.ManageSettings),
-                Create(Role.PublicUser, Permission.ViewReports),
-                Create(Role.CompanyAdmin, Permission.EditCompany),
-                Create(Role.CompanyAdmin, Permission.DeleteCompany),
-                Create(Role.CompanyAdmin, Permission.ManageCompanyWorkSchedule),
-                Create(Role.CompanyAdmin, Permission.ManageUserWorkSchedule),
-                Create(Role.CompanyMember, Permission.ManageUserWorkSchedule),
-                Create(Role.CompanyAdmin, Permission.AddService),
-                Create(Role.CompanyAdmin, Permission.UpdateService),
-                Create(Role.CompanyAdmin, Permission.DeleteService)
+                Create(Role.SuperAdmin, Permission.UserCreate),
+                Create(Role.SuperAdmin, Permission.UserRead),
+                Create(Role.SuperAdmin, Permission.UserDelete),
+                Create(Role.SuperAdmin, Permission.UserUpdate),
+                Create(Role.SuperAdmin, Permission.CompanyCreate),
+                Create(Role.SuperAdmin, Permission.CompanyUpdate),
+                Create(Role.SuperAdmin, Permission.CompanyRead),
+                Create(Role.SuperAdmin, Permission.CompanyDelete),
+                Create(Role.SuperAdmin, Permission.ReportView),
+                Create(Role.SuperAdmin, Permission.SettingsManage),
+                Create(Role.CompanyAdmin, Permission.CompanyUpdate),
+                Create(Role.CompanyAdmin, Permission.CompanyDelete),
+                Create(Role.CompanyAdmin, Permission.WorkScheduleManageCompany),
+                Create(Role.CompanyAdmin, Permission.ServiceCreate),
+                Create(Role.CompanyAdmin, Permission.ServiceUpdate),
+                Create(Role.CompanyAdmin, Permission.ServiceRead),
+                Create(Role.CompanyAdmin, Permission.ServiceDelete),
+                Create(Role.CompanyAdmin, Permission.WorkScheduleManageUser),
+                Create(Role.CompanyMember, Permission.WorkScheduleManageUser)
                 );
         }
 

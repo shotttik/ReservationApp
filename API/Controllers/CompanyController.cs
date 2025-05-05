@@ -21,7 +21,7 @@ namespace API.Controllers
 
         }
         [HttpPost("invite")]
-        [HasPermission(Permission.EditCompany)]
+        [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
         {
@@ -29,41 +29,41 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
         }
-        [HttpGet("accept-invite")]
+        [HttpGet("invite-accept")]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> AcceptInvite([FromQuery] string token)
+        public async Task<IActionResult> InviteAccept([FromQuery] string token)
         {
-            var result = await companyService.AcceptInvite(token);
+            var result = await companyService.InviteAccept(token);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
         [HttpPost("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.AddService)]
-        public async Task<IActionResult> AddCompanyServices([FromBody] CreateServicesRequest request)
+        [HasPermission(Permission.ServiceCreate)]
+        public async Task<IActionResult> CompanyServicesSCreate([FromBody] ServicesCreateRequest request)
         {
-            Result result = await companyService.CreateServices(request);
+            Result result = await companyService.ServicesCreate(request);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
         [HttpPut("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.AddService)]
-        public async Task<IActionResult> UpdateCompanyService([FromBody] UpdateServicesRequest request)
+        [HasPermission(Permission.ServiceUpdate)]
+        public async Task<IActionResult> CompanyServicesUpdate([FromBody] ServicesUpdateRequest request)
         {
-            Result result = await companyService.UpdateServices(request);
+            Result result = await companyService.ServicesUpdate(request);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
         [HttpDelete("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.AddService)]
-        public async Task<IActionResult> DeleteCompanyService([FromQuery] int ID)
+        [HasPermission(Permission.ServiceDelete)]
+        public async Task<IActionResult> CompanyServiceDelete([FromQuery] int ID)
         {
-            Result result = await companyService.DeleteServices(ID);
+            Result result = await companyService.ServicesDelete(ID);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
