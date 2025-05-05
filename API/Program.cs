@@ -1,11 +1,14 @@
 using API.Middlewares;
 using Application.Authentication;
+using Application.Common.Results;
 using Application.Extensions;
 using Application.Options;
 using Infrastructure;
 using Infrastructure.Extensions;
+using Infrastructure.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -49,17 +52,30 @@ using (var scope = app.Services.CreateScope())
 
 // Configure the middleware pipeline
 ConfigureMiddleware(app);
+// Configure Swagger
+app.UseSwaggerDocumentation();
 
 app.Run();
 
 void ConfigureServices(IServiceCollection services)
 {
     // Add controllers
-    services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            }); ;
+    builder.Services.AddControllers()
+     .AddJsonOptions(options =>
+     {
+         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+     })
+     .ConfigureApiBehaviorOptions(options =>
+     {
+         options.InvalidModelStateResponseFactory = context =>
+         {
+             var problemDetails = new CustomValidationProblemDetails(context.ModelState);
+             return new BadRequestObjectResult(problemDetails)
+             {
+                 ContentTypes = { "application/problem+json" }
+             };
+         };
+     });
 
     // Add Swagger/OpenAPI services
     services.AddEndpointsApiExplorer();

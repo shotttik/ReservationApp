@@ -1,4 +1,5 @@
 ﻿using Application.Authentication;
+using Application.Common.Results.Auth;
 using Application.Common.ResultsErrors;
 using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
@@ -82,9 +83,8 @@ namespace Application.Services
                 VerificationToken = verificationToken,
                 VerificationTokenExpTime = verificationTokenExpirationTime
             };
-            response.SetDefaultDescription(expDays);
 
-            return Result.Success(response);
+            return Result.Success(response, AuthSuccess.Login);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
@@ -118,7 +118,7 @@ namespace Application.Services
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 AccessTokenExpTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
-            });
+            }, AuthSuccess.Login);
         }
         public async Task<Result<RefreshResponse>> Refresh(TokenRequest request)
         {

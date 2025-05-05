@@ -6,7 +6,6 @@ using Application.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
@@ -20,16 +19,21 @@ namespace API.Controllers
         {
             this.userAccountService = userAccountService;
         }
-
+        /// <summary>
+        /// Registers a new user
+        /// </summary>
+        /// <param name="registerUserRequest">The registration details</param>
+        /// <returns>Registration result</returns>
         [HttpPost("register")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
-        [SwaggerResponse(StatusCodes.Status200OK, "User registered successfully", typeof(RegisterResponse))]
+        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
-            Result<RegisterResponse> result = await userAccountService.Register(registerUserRequest);
+            var result = await userAccountService.Register(registerUserRequest);
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("login")]
@@ -39,7 +43,7 @@ namespace API.Controllers
         {
             Result<LoginResponse> result = await userAccountService.Login(loginRequest);
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("refresh-token")]

@@ -1,10 +1,57 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Serialization;
 
 namespace Application.Common.ResultsErrors
 {
     public static class ResultExtensions
     {
+        public static IActionResult ToResponse(this Result result)
+        {
+            if (result.IsSuccess)
+            {
+                return ToSuccessResponse(result);
+            }
+
+            return ToProblemDetails(result);
+        }
+
+        public static IActionResult ToResponse<TValue>(this Result<TValue> result)
+        {
+            if (result.IsSuccess)
+            {
+                return ToSuccessResponse(result, result.Value);
+            }
+
+            return ToProblemDetails(result);
+        }
+
+        private static IActionResult ToSuccessResponse(Result result)
+        {
+            var response = new SuccessResponse
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Success = true,
+                Code = result.SuccessInfo?.Code ?? "Operation.Successful",
+                Message = result.SuccessInfo?.Message ?? "Operation completed successfully"
+            };
+
+            return new OkObjectResult(response);
+        }
+
+        private static IActionResult ToSuccessResponse<TValue>(Result result, TValue value)
+        {
+            var response = new SuccessResponse<TValue>
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Success = true,
+                Code = result.SuccessInfo?.Code ?? "Operation.Successful",
+                Message = result.SuccessInfo?.Message ?? "Operation completed successfully",
+                Data = value
+            };
+
+            return new OkObjectResult(response);
+        }
         public static IActionResult ToProblemDetails(this Result result)
         {
             if (result.IsSuccess)
@@ -58,4 +105,20 @@ namespace Application.Common.ResultsErrors
                 };
         }
     }
+    public class SuccessResponse
+    {
+        public int StatusCode { get; set; }
+        public bool Success { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public object? Metadata { get; set; }
+    }
+
+    public class SuccessResponse<TValue> :SuccessResponse
+    {
+        public TValue? Data { get; set; }
+    }
+
 }
