@@ -1,7 +1,6 @@
 ﻿using Application.Authentication;
+using Application.Common.Results;
 using Application.Common.ResultsErrors;
-using Application.Common.ResultsErrors.Company;
-using Application.Common.ResultsErrors.User;
 using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
@@ -42,7 +41,7 @@ namespace Application.Services
         {
             if (await userLoginDataRepository.GetByEmail(request.Email) is not null)
             {
-                return Result.Failure(UserCreateErrors.AlreadyExists);
+                return Result.Failure(AuthResults.EmailAlreadyExists);
             }
 
             // Create user account and login data
@@ -76,13 +75,13 @@ namespace Application.Services
             var AuthUser = await authService.GetCurrentUser();
             if (request == null)
             {
-                return Result.Failure(UserUpdateErrors.ArgumentNull);
+                return Result.Failure(AuthResults.ArgumentNull);
             }
 
             var userAccount = await userAccountRepository.Get(request.UserAccountID);
             if (userAccount is null)
             {
-                return Result.Failure(UserUpdateErrors.NotFound);
+                return Result.Failure(AuthResults.UserNotFound);
             }
 
             if (request.Role != null)
@@ -90,7 +89,7 @@ namespace Application.Services
                 var r = Role.FromID((int)request.Role);
                 if (r is null)
                 {
-                    return Result.Failure(UserUpdateErrors.RoleNotFound);
+                    return Result.Failure(AuthResults.RoleNotFound);
                 }
                 userAccount.RoleID = r.ID;
             }
@@ -109,7 +108,7 @@ namespace Application.Services
         {
             if (await companyRepository.ExistsByDetailsAsync(request.IN, request.Name, request.Email, request.Phone))
             {
-                return Result.Failure(CompanyCreateErrors.AlreadyExists);
+                return Result.Failure(CompanyResults.AlreadyExists);
             }
 
             var company = new Company()

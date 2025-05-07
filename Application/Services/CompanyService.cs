@@ -1,6 +1,6 @@
 ﻿using Application.Authentication;
+using Application.Common.Results;
 using Application.Common.ResultsErrors;
-using Application.Common.ResultsErrors.Company;
 using Application.DTOs.Company;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
@@ -38,11 +38,11 @@ namespace Application.Services
             var member = await userAccountRepository.Get(memberID);
             if (member is null)
             {
-                return Result.Failure<string>(InviteMemberErrors.NotFound);
+                return Result.Failure<string>(CompanyResults.InviteMemberNotFound);
             }
             if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.PublicUser.ID)
             {
-                return Result.Failure<string>(InviteMemberErrors.NotValidRole);
+                return Result.Failure<string>(CompanyResults.InviteInvalidRole);
             }
             await companyInvitationRepository.RevokePreviousInvite(memberID);
 
@@ -66,15 +66,15 @@ namespace Application.Services
             var invitation = await companyInvitationRepository.Get(token);
             if (invitation == null)
             {
-                return Result.Failure(InviteAcceptErrors.NotFound);
+                return Result.Failure(CompanyResults.InviteNotFound);
             }
             if (invitation.UserAccountID != AuthUser.ID)
             {
-                return Result.Failure(InviteAcceptErrors.InvalidUser);
+                return Result.Failure(CompanyResults.InviteInvalidUser);
             }
             if (invitation.ExpirationTime < DateTime.Now)
             {
-                return Result.Failure(InviteAcceptErrors.TokenExpired);
+                return Result.Failure(CompanyResults.InviteTokenExpired);
             }
 
             invitation.IsAccepted = true;
@@ -112,7 +112,7 @@ namespace Application.Services
             var service = await serviceRepository.Get(ID);
             if (service == null || service.CompanyID != AuthUser.Company!.ID)
             {
-                return Result.Failure(ServicesDeleteError.NotFound);
+                return Result.Failure(CompanyResults.ServiceNotFound);
             }
             await serviceRepository.Delete(service);
 

@@ -1,5 +1,5 @@
-﻿using Application.Common.ResultsErrors;
-using Application.Common.ResultsErrors.WorkSchedule;
+﻿using Application.Common.Results;
+using Application.Common.ResultsErrors;
 using Application.DTOs.User;
 using Application.DTOs.WorkSchedule;
 using Application.Extensions.Mappers;
@@ -38,7 +38,7 @@ namespace Application.Services
             if (request.WorkSchedules.IsNullOrEmpty()
                 || request.WorkSchedules.Select(i => i.DayOfWeek).Distinct().Count() != Enum.GetValues<DayOfWeek>().Length)
             {
-                return Result.Failure(WorkSchedulesCreateErrors.InvalidWorkScheduleCount);
+                return Result.Failure(WorkScheduleResults.InvalidWorkScheduleCount);
             }
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
@@ -48,12 +48,12 @@ namespace Application.Services
             bool existsSchedules = isForEmployee ? AuthUser.WorkSchedules.Count != 0 : AuthUser.Company!.WorkSchedules.Count != 0;
             if (existsSchedules)
             {
-                return Result.Failure(WorkSchedulesCreateErrors.AlreadyExists);
+                return Result.Failure(WorkScheduleResults.AlreadyExists);
             }
 
             if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
             {
-                return Result.Failure(WorkSchedulesCreateErrors.EmployeeWorkingTimesOutOfBounds);
+                return Result.Failure(WorkScheduleResults.EmployeeWorkingTimesOutOfBounds);
             }
 
             var workSchedules = new List<WorkSchedule>();
@@ -81,7 +81,7 @@ namespace Application.Services
             var existsSchedules = AuthUser.Company!.WorkSchedules.Count != 0;
             if (!existsSchedules)
             {
-                return Result.Failure(WorkSchedulesUpdateErrors.NotExists);
+                return Result.Failure(WorkScheduleResults.NotExists);
             }
             bool scheduleNotExists =
                 request.WorkSchedules.Any(i =>
@@ -91,7 +91,7 @@ namespace Application.Services
                 );
             if (scheduleNotExists)
             {
-                return Result.Failure(WorkSchedulesUpdateErrors.Mismatch);
+                return Result.Failure(WorkScheduleResults.Mismatch);
             }
 
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
@@ -100,7 +100,7 @@ namespace Application.Services
 
             if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser))
             {
-                return Result.Failure(WorkSchedulesCreateErrors.EmployeeWorkingTimesOutOfBounds);
+                return Result.Failure(WorkScheduleResults.EmployeeWorkingTimesOutOfBounds);
             }
 
             var updatedSchedules = request.WorkSchedules.Select(schedule =>
@@ -132,7 +132,7 @@ namespace Application.Services
                     return true;
 
                 if (!companySchedule.IsWorkingDay && employeeSchedule.IsWorkingDay)
-                    return true; 
+                    return true;
 
                 if (companySchedule.IsWorkingDay && employeeSchedule.IsWorkingDay)
                 {
@@ -149,13 +149,13 @@ namespace Application.Services
         private Result? ValidateWorkSchedules(IEnumerable<BaseWorkScheduleDTO> schedules)
         {
             if (schedules.Any(i => i.StartTime >= i.EndTime))
-                return Result.Failure(WorkSchedulesErrors.InvalidStartEndTime);
+                return Result.Failure(WorkScheduleResults.InvalidStartEndTime);
 
             if (schedules.Any(i => !i.IsWorkingDay && (i.StartTime != null || i.EndTime != null)))
-                return Result.Failure(WorkSchedulesErrors.NonWorkingDay);
+                return Result.Failure(WorkScheduleResults.NonWorkingDay);
 
             if (schedules.Any(i => i.IsWorkingDay && (i.StartTime == null || i.EndTime == null)))
-                return Result.Failure(WorkSchedulesErrors.NonWorkingDay);
+                return Result.Failure(WorkScheduleResults.NonWorkingDay);
 
             return null;
         }

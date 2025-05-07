@@ -1,7 +1,6 @@
 ﻿using Application.Authentication;
-using Application.Common.Results.Auth;
+using Application.Common.Results;
 using Application.Common.ResultsErrors;
-using Application.Common.ResultsErrors.User;
 using Application.DTOs.User;
 using Application.Exceptions;
 using Application.Extensions.Mappers;
@@ -47,7 +46,7 @@ namespace Application.Services
         {
             if (await userLoginDataRepository.GetByEmail(request.Email) != null)
             {
-                return Result.Failure<RegisterResponse>(RegisterErrors.AlreadyExists);
+                return Result.Failure<RegisterResponse>(AuthResults.EmailAlreadyExists);
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -84,7 +83,7 @@ namespace Application.Services
                 VerificationTokenExpTime = verificationTokenExpirationTime
             };
 
-            return Result.Success(response, AuthSuccess.Login);
+            return Result.Success(response, AuthResults.Registered);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
@@ -92,15 +91,15 @@ namespace Application.Services
 
             if (user == null)
             {
-                return Result.Failure<LoginResponse>(LoginErrors.NotFound);
+                return Result.Failure<LoginResponse>(AuthResults.UserNotFound);
             }
             if (user.VerificationStatus != VerificationStatus.Verified)
             {
-                return Result.Failure<LoginResponse>(LoginErrors.EmailNotVerified);
+                return Result.Failure<LoginResponse>(AuthResults.EmailNotVerified);
             }
             if (!PasswordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return Result.Failure<LoginResponse>(LoginErrors.InvalidPassword);
+                return Result.Failure<LoginResponse>(AuthResults.InvalidPassword);
             }
             var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, user.Email, configuration);
             var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
@@ -118,30 +117,30 @@ namespace Application.Services
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 AccessTokenExpTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
-            }, AuthSuccess.Login);
+            }, AuthResults.Success);
         }
         public async Task<Result<RefreshResponse>> Refresh(TokenRequest request)
         {
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
             if (principal == null)
             {
-                Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
+                Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
             var email = principal!.FindFirst(ClaimTypes.Email)?.Value!;
             if (email.IsNullOrEmpty())
             {
-                return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
+                return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
             var user = await userLoginDataRepository.GetFullUserDataByEmail(email);
             if (user is null)
             {
-                return Result.Failure<RefreshResponse>(RefreshTokenErrors.NotFound);
+                return Result.Failure<RefreshResponse>(AuthResults.UserNotFound);
             };
             if (user.RefreshToken is null ||
                 user.RefreshToken != request.RefreshToken ||
                 user.RefreshTokenExpTime < DateTime.Now)
             {
-                return Result.Failure<RefreshResponse>(RefreshTokenErrors.InvalidToken);
+                return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
 
             var newAccessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, email, configuration);
@@ -171,13 +170,13 @@ namespace Application.Services
             catch (AuthorizationException)
             {
 
-                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+                return Result.Failure<UserAccountDTO>(AuthResults.NotAuthenticated);
             }
             var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
 
             if (userLoginData is null)
             {
-                return Result.Failure(LogoutErrors.NotFound);
+                return Result.Failure(AuthResults.UserNotFound);
             }
             userLoginData.RefreshToken = null;
             userLoginData.RefreshTokenExpTime = null;
@@ -192,7 +191,7 @@ namespace Application.Services
             var userLoginData = await userLoginDataRepository.GetByEmail(request.Email);
             if (userLoginData is null)
             {
-                return Result.Failure<string>(ForgotPasswordErrors.NotFound);
+                return Result.Failure<string>(AuthResults.UserNotFound);
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
@@ -209,13 +208,13 @@ namespace Application.Services
 
             if (userLoginData is null)
             {
-                return Result.Failure(ResetPasswordErrors.NotFound);
+                return Result.Failure(AuthResults.UserNotFound);
             }
             if (userLoginData.RecoveryToken is null ||
                 userLoginData.RecoveryToken != request.RecoveryToken ||
                 userLoginData.RecoveryTokenExpTime < DateTime.Now)
             {
-                return Result.Failure(ResetPasswordErrors.InvalidToken);
+                return Result.Failure(AuthResults.InvalidToken);
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -239,7 +238,7 @@ namespace Application.Services
             catch (AuthorizationException)
             {
 
-                return Result.Failure<UserAccountDTO>(AuthorizationDataErrors.NotFound);
+                return Result.Failure<UserAccountDTO>(AuthResults.NotAuthenticated);
             }
         }
         public async Task<Result> VerifyEmail(string token)
@@ -247,11 +246,11 @@ namespace Application.Services
             var userLoginData = await userLoginDataRepository.GetByVerificationToken(token);
             if (userLoginData is null)
             {
-                return Result.Failure(VerifyEmailErrors.NotFound);
+                return Result.Failure(AuthResults.UserNotFound);
             }
             if (userLoginData.VerificationTokenExpTime < DateTime.Now)
             {
-                return Result.Failure(VerifyEmailErrors.ExpiredToken);
+                return Result.Failure(AuthResults.TokenExpired);
             }
 
             userLoginData.VerificationToken = null;

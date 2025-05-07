@@ -4,10 +4,10 @@
     {
         private static readonly Dictionary<(string Field, string Message), string> ErrorCodeMap = new()
     {
-        { ("Email", "The Email field is not a valid e-mail address."), "Auth.InvalidEmail" },
-        { ("Password", "Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character."), "Auth.PasswordComplexity" },
-        { ("Email", "The Email field is required."), "Auth.EmailRequired" },
-        { ("Password", "The Password field is required."), "Auth.PasswordRequired" }
+        { ("Email", "The Email field is not a valid e-mail address."), "User.InvalidEmail" },
+        { ("Password", "Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character."), "User.PasswordComplexity" },
+        { ("Email", "The Email field is required."), "User.EmailRequired" },
+        { ("Password", "The Password field is required."), "User.PasswordRequired" }
     };
 
         public static string GetErrorCode(string field, string message)
