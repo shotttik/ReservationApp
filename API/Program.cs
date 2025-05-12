@@ -96,7 +96,8 @@ void ConfigureServices(IServiceCollection services)
     {
         options.AddPolicy("AllowAll", builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("http://localhost:5173")
+                    .AllowAnyOrigin()
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
