@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.WorkSchedule;
+using Domain.DTO;
 using Domain.Enums;
 
 namespace Application.DTOs.User
@@ -11,7 +12,7 @@ namespace Application.DTOs.User
         public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public required RoleDTO Role { get; set; }
-        public CompanyDTO? Company { get; set; }
+        public UserCompanyDTO? Company { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
     }
 
@@ -26,14 +27,8 @@ namespace Application.DTOs.User
         public int ID { get; set; }
         public required string Name { get; set; }
     }
-    public class CompanyDTO
+    public class UserCompanyDTO :CompanyDTO
     {
-        public int ID { get; set; }
-        public required string Name { get; set; }
-        public string? Description { get; set; }
-        public required string IN { get; set; }
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
     }
 }

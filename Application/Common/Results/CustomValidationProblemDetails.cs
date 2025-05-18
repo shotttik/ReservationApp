@@ -1,5 +1,4 @@
-﻿using Application.Common.ResultsErrors;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace Application.Common.Results
 {

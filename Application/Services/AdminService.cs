@@ -1,6 +1,5 @@
 ﻿using Application.Authentication;
 using Application.Common.Results;
-using Application.Common.ResultsErrors;
 using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
 using Application.Interfaces;

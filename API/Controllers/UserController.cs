@@ -1,5 +1,5 @@
 ﻿using API.Attributes;
-using Application.Common.ResultsErrors;
+using Application.Common.Results;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Application.Responses;

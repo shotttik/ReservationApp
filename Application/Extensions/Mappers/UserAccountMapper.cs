@@ -26,7 +26,7 @@ namespace Application.Extensions.Mappers
                         Name = p.Name
                     }).ToList()
                 },
-                Company = user.Company != null ? new CompanyDTO
+                Company = user.Company != null ? new UserCompanyDTO
                 {
                     ID = user.Company.ID,
                     Name = user.Company.Name,

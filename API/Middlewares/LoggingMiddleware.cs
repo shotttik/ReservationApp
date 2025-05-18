@@ -1,5 +1,5 @@
 ﻿using API.Attributes;
-using Application.Common.ResultsErrors;
+using Application.Common.Results;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

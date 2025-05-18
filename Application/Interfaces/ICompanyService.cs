@@ -1,5 +1,7 @@
-﻿using Application.Common.ResultsErrors;
+﻿using Application.Common.Results;
 using Application.DTOs.Company;
+using Domain.Abstractions;
+using Domain.DTO;
 
 namespace Application.Interfaces
 {
@@ -10,5 +12,8 @@ namespace Application.Interfaces
         Task<Result> ServicesCreate(ServicesCreateRequest request);
         Task<Result> ServicesUpdate(ServicesUpdateRequest request);
         Task<Result> ServicesDelete(int ID);
+        Task<Result<PagedList<CompanyDTO>>> GetPaged(
+           PagedParameters parameters,
+           CancellationToken cancellationToken);
     }
 }

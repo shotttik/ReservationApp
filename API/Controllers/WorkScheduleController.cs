@@ -1,6 +1,6 @@
 ﻿using API.Attributes;
 using Application.Authentication;
-using Application.Common.ResultsErrors;
+using Application.Common.Results;
 using Application.DTOs.WorkSchedule;
 using Application.Interfaces;
 using Domain.Enums;

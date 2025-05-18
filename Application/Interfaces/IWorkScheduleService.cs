@@ -1,4 +1,4 @@
-﻿using Application.Common.ResultsErrors;
+﻿using Application.Common.Results;
 using Application.DTOs.WorkSchedule;
 
 namespace Application.Interfaces

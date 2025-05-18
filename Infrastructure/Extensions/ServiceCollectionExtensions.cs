@@ -1,5 +1,6 @@
 ﻿using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Infrastructure.Profiles;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Swagger;
@@ -27,7 +28,8 @@ namespace Infrastructure.Extensions
                 options.UseSqlServer(connectionString));
 
             services.AddSwaggerDocumentation();
-
+            // AutoMappers
+            services.AddAutoMapper(typeof(CompanyProfile));
 
             return services;
         }

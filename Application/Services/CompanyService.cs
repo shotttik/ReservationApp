@@ -1,9 +1,10 @@
 ﻿using Application.Authentication;
 using Application.Common.Results;
-using Application.Common.ResultsErrors;
 using Application.DTOs.Company;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Domain.Abstractions;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
@@ -17,19 +18,22 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IAuthService authService;
         private readonly IServiceRepository serviceRepository;
+        private readonly ICompanyRepository companyRepository;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
             ICompanyInvitationRepository companyInvitationRepository,
             IConfiguration configuration,
             IAuthService authService,
-            IServiceRepository serviceRepository)
+            IServiceRepository serviceRepository,
+            ICompanyRepository companyRepository)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
             this.configuration = configuration;
             this.authService = authService;
             this.serviceRepository = serviceRepository;
+            this.companyRepository = companyRepository;
         }
 
         public async Task<Result<string>> InviteMember(int memberID)
@@ -117,6 +121,22 @@ namespace Application.Services
             await serviceRepository.Delete(service);
 
             return Result.Success();
+        }
+        public async Task<Result<PagedList<CompanyDTO>>> GetPaged(
+           PagedParameters parameters,
+           CancellationToken cancellationToken)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var errors = parameters.Validate<CompanyDTO>();
+            if (errors.Any())
+            {
+                return Result.Failure<PagedList<CompanyDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+            }
+            var companies = await companyRepository.RetrievePaged(
+                parameters,
+                cancellationToken);
+
+            return companies;
         }
     }
 }

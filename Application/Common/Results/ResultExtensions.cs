@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
-namespace Application.Common.ResultsErrors
+namespace Application.Common.Results
 {
     public static class ResultExtensions
     {
@@ -13,7 +13,7 @@ namespace Application.Common.ResultsErrors
                 return ToSuccessResponse(result);
             }
 
-            return ToProblemDetails(result);
+            return result.ToProblemDetails();
         }
 
         public static IActionResult ToResponse<TValue>(this Result<TValue> result)
@@ -23,7 +23,7 @@ namespace Application.Common.ResultsErrors
                 return ToSuccessResponse(result, result.Value);
             }
 
-            return ToProblemDetails(result);
+            return result.ToProblemDetails();
         }
 
         private static IActionResult ToSuccessResponse(Result result)

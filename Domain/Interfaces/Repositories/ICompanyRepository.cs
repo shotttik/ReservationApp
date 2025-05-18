@@ -1,9 +1,14 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstractions;
+using Domain.DTO;
+using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories
 {
     public interface ICompanyRepository :IBaseRepository<Company>
     {
         Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone);
+        Task<PagedList<CompanyDTO>> RetrievePaged(
+            PagedParameters parameters,
+            CancellationToken cancellationToken);
     }
 }

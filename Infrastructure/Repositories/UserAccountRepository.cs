@@ -9,22 +9,21 @@ namespace Infrastructure.Repositories
 {
     public class UserAccountRepository :BaseRepository<UserAccount>, IUserAccountRepository
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext dbContext;
         private readonly ICacheService cache;
 
         public UserAccountRepository(
-            ApplicationDbContext context,
-            ICacheService cache
-            ) : base(context)
+            ApplicationDbContext dbContext,
+            ICacheService cache) : base(dbContext)
         {
-            this.context = context;
+            this.dbContext = dbContext;
             this.cache = cache;
         }
         public override async Task Update(UserAccount userAccount)
         {
             _dbSet.Update(userAccount);
             await cache.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
-            await context.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<UserAccount?> GetAuthorizationData(int ID)

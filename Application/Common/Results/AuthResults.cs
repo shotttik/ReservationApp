@@ -1,6 +1,4 @@
-﻿using Application.Common.ResultsErrors;
-
-namespace Application.Common.Results
+﻿namespace Application.Common.Results
 {
     public class AuthResults
     {

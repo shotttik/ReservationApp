@@ -1,8 +1,10 @@
 ﻿using API.Attributes;
 using Application.Authentication;
-using Application.Common.ResultsErrors;
+using Application.Common.Results;
 using Application.DTOs.Company;
 using Application.Interfaces;
+using Domain.Abstractions;
+using Domain.DTO;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -66,6 +68,23 @@ namespace API.Controllers
             Result result = await companyService.ServicesDelete(ID);
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+        }
+        [HttpGet("paged")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [HasPermission(Permission.CompanyRead)]
+        public async Task<IActionResult> GetPagedCompanies([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var result = await companyService.GetPaged(parameters, cancellationToken);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return result.ToProblemDetails();
+            }
         }
     }
 }

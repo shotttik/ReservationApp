@@ -1,4 +1,9 @@
-﻿using Domain.Entities;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Domain.Abstractions;
+using Domain.DTO;
+using Domain.Entities;
+using Domain.Extensions;
 using Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,8 +11,11 @@ namespace Infrastructure.Repositories
 {
     public class CompanyRepository :BaseRepository<Company>, ICompanyRepository
     {
-        public CompanyRepository(ApplicationDbContext context) : base(context)
+        private readonly IMapper mapper;
+
+        public CompanyRepository(ApplicationDbContext context, IMapper mapper) : base(context)
         {
+            this.mapper = mapper;
         }
 
         public async Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone)
@@ -17,6 +25,25 @@ namespace Infrastructure.Repositories
                 || c.IN == IN ||
                 (email == null || c.Email == email) ||
                 (phone == null || c.Phone == phone));
+        }
+        public async Task<PagedList<CompanyDTO>> RetrievePaged(
+            PagedParameters parameters,
+            CancellationToken cancellationToken)
+        {
+            var query = _dbSet.AsQueryable();
+
+            var projectedQuery = query.ProjectTo<CompanyDTO>(mapper.ConfigurationProvider);
+            
+            projectedQuery = projectedQuery.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await projectedQuery.CountAsync();
+
+            var companies = await projectedQuery.
+                Skip((parameters.PageNumber - 1) * parameters.PageSize).
+                Take(parameters.PageSize).
+                ToListAsync();
+
+            return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
         }
     }
 }
