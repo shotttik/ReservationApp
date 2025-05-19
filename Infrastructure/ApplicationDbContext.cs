@@ -20,6 +20,8 @@ namespace Infrastructure
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<WorkScheduleException> WorkScheduleExceptions { get; set; }
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<City> Cities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserAccountConfiguration());
@@ -33,6 +35,9 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new WorkingScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new WorkingExceptionConfiguration());
+
+            modelBuilder.ApplyConfiguration(new CountryConfiguration());
+            modelBuilder.ApplyConfiguration(new CityConfiguration());
         }
     }
 }
