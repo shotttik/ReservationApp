@@ -39,6 +39,8 @@ namespace API.Controllers
         [HttpPost("login")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<LoginResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             Result<LoginResponse> result = await userAccountService.Login(loginRequest);
@@ -49,6 +51,8 @@ namespace API.Controllers
         [HttpPost("refresh-token")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<RefreshResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequest refreshTokenRequest)
         {
             Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
@@ -58,6 +62,8 @@ namespace API.Controllers
 
         [HttpPost("logout")]
         [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Logout()
         {
             var result = await userAccountService.Logout();
@@ -68,6 +74,8 @@ namespace API.Controllers
         [HttpPost("forgot-password")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
         {
             Result<string> result = await userAccountService.ForgotPassword(forgotPasswordRequest);
@@ -77,6 +85,9 @@ namespace API.Controllers
 
         [HttpPost("reset-password")]
         [Logging(LoggingType.ExceptBody)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
             Result result = await userAccountService.ResetPassword(resetPasswordRequest);
@@ -87,6 +98,8 @@ namespace API.Controllers
         [HttpGet("authorization-data")]
         [Authorize]
         [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<UserAccountDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
         {
             Result<UserAccountDTO> result = await userAccountService.GetUserAuthorizationDataAsync();
@@ -95,6 +108,8 @@ namespace API.Controllers
         }
         [HttpGet("verify-email")]
         [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
             Result result = await userAccountService.VerifyEmail(token);

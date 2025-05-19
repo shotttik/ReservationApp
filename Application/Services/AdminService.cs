@@ -44,7 +44,7 @@ namespace Application.Services
             }
 
             // Create user account and login data
-            var userAccount = new UserAccount()
+                var userAccount = new UserAccount()
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,

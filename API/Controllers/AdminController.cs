@@ -3,8 +3,10 @@ using Application.Authentication;
 using Application.Common.Results;
 using Application.DTOs.Admin;
 using Application.Interfaces;
+using Application.Responses;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -19,9 +21,11 @@ namespace API.Controllers
             this.adminService = adminService;
         }
 
-        [HttpPost("users")]
+        [HttpPost("user")]
         [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]
+        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserCreate([FromBody] UserCreateRequest request)
         {
             Result result = await adminService.UserCreate(request);
@@ -29,7 +33,7 @@ namespace API.Controllers
             return result.IsSuccess ? Ok() : result.ToProblemDetails();
         }
 
-        [HttpPut("users/{userId}")]
+        [HttpPut("user/{userId}")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> UserUpdate(int userId, [FromBody] UserUpdateRequest request)

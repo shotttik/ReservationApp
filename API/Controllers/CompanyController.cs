@@ -3,6 +3,7 @@ using Application.Authentication;
 using Application.Common.Results;
 using Application.DTOs.Company;
 using Application.Interfaces;
+using Application.Responses;
 using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Enums;
@@ -25,6 +26,9 @@ namespace API.Controllers
         [HttpPost("invite")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result<string>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
         {
             var result = await companyService.InviteMember(request.UserAccountID);
@@ -33,6 +37,8 @@ namespace API.Controllers
         }
         [HttpGet("invite-accept")]
         [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteAccept([FromQuery] string token)
         {
             var result = await companyService.InviteAccept(token);
@@ -43,6 +49,8 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ServiceCreate)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServicesSCreate([FromBody] ServicesCreateRequest request)
         {
             Result result = await companyService.ServicesCreate(request);
@@ -53,6 +61,8 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ServiceUpdate)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServicesUpdate([FromBody] ServicesUpdateRequest request)
         {
             Result result = await companyService.ServicesUpdate(request);
@@ -63,6 +73,8 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ServiceDelete)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServiceDelete([FromQuery] int ID)
         {
             Result result = await companyService.ServicesDelete(ID);
@@ -73,6 +85,8 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.CompanyRead)]
+        [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<CompanyDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetPagedCompanies([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
             var result = await companyService.GetPaged(parameters, cancellationToken);
