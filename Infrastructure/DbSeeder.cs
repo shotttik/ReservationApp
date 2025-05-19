@@ -1,8 +1,7 @@
-﻿using Domain.Entities;
+﻿using Application.Authentication;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Infrastructure
 {
@@ -21,23 +20,22 @@ namespace Infrastructure
                         FirstName = "Super",
                         LastName = "Admin",
                         RoleID = Role.SuperAdmin.ID,
+
                     };
                     context.UserAccounts.Add(superAdmin);
                     await context.SaveChangesAsync();
 
                     // Create password hash and salt
                     var password = "SuperAdminPassword123!"; // Change this in production
-                    using var hmac = new HMACSHA256();
-                    var passwordSalt = hmac.Key;
-                    var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
 
                     var superAdminLogin = new UserLoginData
                     {
                         Email = "superadmin@example.com",
                         UserAccountID = superAdmin.ID,
-                        VerificationStatus = 0, // Set as needed
-                        PasswordHash = passwordHash,
-                        PasswordSalt = passwordSalt,
+                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
+                        PasswordHash = hash,
+                        PasswordSalt = salt
                     };
                     context.UserLoginDatas.Add(superAdminLogin);
                     await context.SaveChangesAsync();
