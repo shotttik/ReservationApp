@@ -48,6 +48,14 @@ using (var scope = app.Services.CreateScope())
     // Inside the existing code
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate();
+    await dbContext.Database.MigrateAsync();
+
+    // Seed data
+    if (app.Environment.IsDevelopment())
+    {
+        await DbSeeder.SeedAsync(dbContext);
+    }
+
 }
 
 // Configure the middleware pipeline
