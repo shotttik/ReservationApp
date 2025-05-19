@@ -200,7 +200,7 @@ namespace Infrastructure
                        StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                        EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
                        IsWorkingDay = true,
-                       CompanyID = 1
+                       CompanyID = companyDict["123456789"]
                    },
                    new WorkSchedule
                    {
@@ -290,7 +290,7 @@ namespace Infrastructure
                 };
                     foreach (var workSchedule in workSchedulesToSeed)
                     {
-                        if (!await context.WorkSchedules.AnyAsync(ws => ws.DayOfWeek == workSchedule.DayOfWeek && ws.CompanyID == workSchedule.CompanyID))
+                        if (!await context.WorkSchedules.AnyAsync())
                         {
                             context.WorkSchedules.Add(workSchedule);
                         }
