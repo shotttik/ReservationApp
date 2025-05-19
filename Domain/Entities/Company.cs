@@ -7,6 +7,7 @@
         public required string IN { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public bool IsActive { get; set; }
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];

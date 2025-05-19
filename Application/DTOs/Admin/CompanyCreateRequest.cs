@@ -18,5 +18,6 @@ namespace Application.DTOs.Admin
         [Length(1, 30)]
         [RegularExpression(@"^\d+$", ErrorMessage = "Phone must be only numbers.")]
         public string? Phone { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

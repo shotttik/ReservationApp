@@ -34,6 +34,7 @@ namespace Application.Extensions.Mappers
                     IN = user.Company.IN,
                     Email = user.Company.Email,
                     Phone = user.Company.Phone,
+                    IsActive = user.Company.IsActive,
                     WorkSchedules = user.Company.WorkSchedules.Select(e => new WorkScheduleDTO
                     {
                         ID = e.ID,

@@ -116,7 +116,8 @@ namespace Application.Services
                 Description = request.Description,
                 IN = request.IN,
                 Email = request.Email,
-                Phone = request.Phone
+                Phone = request.Phone,
+                IsActive = request.IsActive,
             };
             await companyRepository.Add(company);
 
