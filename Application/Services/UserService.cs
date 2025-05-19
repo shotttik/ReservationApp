@@ -183,7 +183,7 @@ namespace Application.Services
             await userLoginDataRepository.Update(userLoginData);
             await cacheService.RemoveAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID));
 
-            return Result.Success();
+            return Result.Success(AuthResults.Logouted);
         }
         public async Task<Result<string>> ForgotPassword(ForgotPasswordRequest request)
         {
@@ -199,7 +199,7 @@ namespace Application.Services
             await userLoginDataRepository.Update(userLoginData);
 
             // TODO instead of returning recovery token need to send email to user
-            return Result.Success(recoveryToken);
+            return Result.Success(recoveryToken, AuthResults.CheckEmail);
         }
         public async Task<Result> ResetPassword(ResetPasswordRequest request)
         {
@@ -224,7 +224,7 @@ namespace Application.Services
 
             await userLoginDataRepository.Update(userLoginData);
 
-            return Result.Success();
+            return Result.Success(AuthResults.PasswordReseted);
         }
         public async Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync()
         {
@@ -257,7 +257,7 @@ namespace Application.Services
             userLoginData.VerificationStatus = VerificationStatus.Verified;
             await userLoginDataRepository.Update(userLoginData);
 
-            return Result.Success();
+            return Result.Success(AuthResults.EmailVerified);
         }
     }
 }

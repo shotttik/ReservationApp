@@ -24,6 +24,10 @@
         #region Success
         public static readonly SuccessInfo Success = new("Auth.Success", "User authenticated successfully.");
         public static readonly SuccessInfo Registered = new("Auth.Registered", "User registered successfully.");
+        public static readonly SuccessInfo Logouted = new("Auth.Logouted", "User logouted successfully.");
+        public static readonly SuccessInfo CheckEmail = new("Auth.CheckEmail", "Check your email for further instructions.");
+        public static readonly SuccessInfo PasswordReseted = new("Auth.PasswordReseted", "Password reseted successfully.");
+        public static readonly SuccessInfo EmailVerified = new("Auth.EmailVerified", "Email verified successfully.");
         #endregion
     }
 }

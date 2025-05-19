@@ -53,7 +53,7 @@ namespace API.Controllers
         {
             Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("logout")]
@@ -62,7 +62,7 @@ namespace API.Controllers
         {
             var result = await userAccountService.Logout();
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("forgot-password")]
@@ -72,7 +72,7 @@ namespace API.Controllers
         {
             Result<string> result = await userAccountService.ForgotPassword(forgotPasswordRequest);
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("reset-password")]
@@ -81,7 +81,7 @@ namespace API.Controllers
         {
             Result result = await userAccountService.ResetPassword(resetPasswordRequest);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpGet("authorization-data")]
@@ -91,14 +91,14 @@ namespace API.Controllers
         {
             Result<UserAccountDTO> result = await userAccountService.GetUserAuthorizationDataAsync();
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpGet("verify-email")]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
             Result result = await userAccountService.VerifyEmail(token);
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
     }
 }
