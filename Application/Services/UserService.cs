@@ -190,7 +190,7 @@ namespace Application.Services
             var userLoginData = await userLoginDataRepository.GetByEmail(request.Email);
             if (userLoginData is null)
             {
-                return Result.Failure<string>(AuthResults.UserNotFound);
+                return Result.Success<string>(string.Empty, AuthResults.CheckEmail);
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
             var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
@@ -203,17 +203,15 @@ namespace Application.Services
         }
         public async Task<Result> ResetPassword(ResetPasswordRequest request)
         {
-            var userLoginData = await userLoginDataRepository.GetByEmail(request.Email);
+            var userLoginData = await userLoginDataRepository.GetByRecoveryToken(request.RecoveryToken);
 
             if (userLoginData is null)
             {
-                return Result.Failure(AuthResults.UserNotFound);
-            }
-            if (userLoginData.RecoveryToken is null ||
-                userLoginData.RecoveryToken != request.RecoveryToken ||
-                userLoginData.RecoveryTokenExpTime < DateTime.Now)
-            {
                 return Result.Failure(AuthResults.InvalidToken);
+            }
+            if (userLoginData.RecoveryTokenExpTime < DateTime.Now)
+            {
+                return Result.Failure(AuthResults.TokenExpired);
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);

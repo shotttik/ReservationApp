@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             var userLoginData = await _dbSet
                 .Where(uld => uld.ID == ID)
                 .Include(u => u.UserAccount)
-                    .ThenInclude(ua => ua.Role) 
+                    .ThenInclude(ua => ua.Role)
                         .ThenInclude(ur => ur!.Permissions)
                 .FirstOrDefaultAsync();
 
@@ -53,6 +53,13 @@ namespace Infrastructure.Repositories
         {
             return await _dbSet
                 .Where(uld => uld.UserAccountID == userAccountID)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<UserLoginData?> GetByRecoveryToken(string recoveryToken)
+        {
+            return await _dbSet.
+                Where(uld => uld.RecoveryToken == recoveryToken)
                 .FirstOrDefaultAsync();
         }
     }

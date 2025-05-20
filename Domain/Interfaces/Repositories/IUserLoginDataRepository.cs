@@ -9,5 +9,6 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetFullUserData(int ID);
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
         Task<UserLoginData?> GetByUserAccountID(int userAccountID);
+        Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
     }
 }

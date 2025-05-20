@@ -15,9 +15,6 @@ namespace Application.DTOs.User
         [MaxLength(255)]
         public required string ConfirmPassword { get; set; }
         [Required(AllowEmptyStrings = false)]
-        [MaxLength(255)]
-        public required string Email { get; set; }
-        [Required(AllowEmptyStrings = false)]
         public required string RecoveryToken { get; set; }
     }
 }
