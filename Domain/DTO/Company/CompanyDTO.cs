@@ -1,4 +1,4 @@
-﻿namespace Domain.DTO
+﻿namespace Domain.DTO.Company
 {
     public class CompanyDTO
     {

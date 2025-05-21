@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.Company
+namespace Domain.DTO.Company
 {
-    public class ServiceUpdateDTO:BaseServiceDTO
+    public class ServiceUpdateDTO :BaseServiceDTO
     {
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
         public int ID { get; set; }

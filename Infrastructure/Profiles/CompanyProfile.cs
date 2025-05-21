@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Domain.DTO;
+using Domain.DTO.Company;
 using Domain.Entities;
 
 namespace Infrastructure.Profiles

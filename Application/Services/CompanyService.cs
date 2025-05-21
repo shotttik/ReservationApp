@@ -1,10 +1,10 @@
 ﻿using Application.Authentication;
+using Application.Common.Requests.Company;
 using Application.Common.Results;
-using Application.DTOs.Company;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
-using Domain.DTO;
+using Domain.DTO.Company;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;

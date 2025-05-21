@@ -1,7 +1,7 @@
 ﻿using API.Attributes;
 using Application.Authentication;
+using Application.Common.Requests.WorkSchedule;
 using Application.Common.Results;
-using Application.DTOs.WorkSchedule;
 using Application.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;

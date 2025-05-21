@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.DTO.Company;
+using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.Company
+namespace Application.Common.Requests.Company
 {
     public class ServicesRequest<T> where T : BaseServiceDTO
     {

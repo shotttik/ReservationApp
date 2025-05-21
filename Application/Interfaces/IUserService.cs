@@ -1,6 +1,6 @@
-﻿using Application.Common.Results;
-using Application.DTOs.User;
-using Application.Responses;
+﻿using Application.Common.Requests.User;
+using Application.Common.Responses;
+using Application.Common.Results;
 using Domain.DTO;
 
 namespace Application.Interfaces

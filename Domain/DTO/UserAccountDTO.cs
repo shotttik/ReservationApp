@@ -1,4 +1,5 @@
-﻿using Domain.DTO.WorkSchedule;
+﻿using Domain.DTO.Company;
+using Domain.DTO.WorkSchedule;
 using Domain.Enums;
 
 namespace Domain.DTO

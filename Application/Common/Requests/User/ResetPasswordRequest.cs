@@ -1,7 +1,7 @@
 ﻿using Application.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.User
+namespace Application.Common.Requests.User
 {
     public record ResetPasswordRequest
     {

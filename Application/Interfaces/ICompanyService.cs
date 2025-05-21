@@ -1,7 +1,7 @@
-﻿using Application.Common.Results;
-using Application.DTOs.Company;
+﻿using Application.Common.Requests.Company;
+using Application.Common.Results;
 using Domain.Abstractions;
-using Domain.DTO;
+using Domain.DTO.Company;
 
 namespace Application.Interfaces
 {

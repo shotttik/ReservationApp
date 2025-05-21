@@ -1,4 +1,4 @@
-﻿namespace Application.Responses
+﻿namespace Application.Common.Responses
 {
     public class RefreshResponse
     {

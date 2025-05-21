@@ -1,11 +1,11 @@
 ﻿using API.Attributes;
 using Application.Authentication;
+using Application.Common.Requests.Company;
+using Application.Common.Responses;
 using Application.Common.Results;
-using Application.DTOs.Company;
 using Application.Interfaces;
-using Application.Responses;
 using Domain.Abstractions;
-using Domain.DTO;
+using Domain.DTO.Company;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;

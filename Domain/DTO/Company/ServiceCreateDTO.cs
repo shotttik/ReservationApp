@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.Company
+﻿namespace Domain.DTO.Company
 {
     public class ServiceCreateDTO :BaseServiceDTO
     {

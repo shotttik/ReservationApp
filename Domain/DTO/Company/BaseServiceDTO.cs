@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.Company
+namespace Domain.DTO.Company
 {
     public class BaseServiceDTO
     {
-        [Required(AllowEmptyStrings =false)]
+        [Required(AllowEmptyStrings = false)]
         public required string Name { get; set; }
         public string? Description { get; set; }
         [Required]

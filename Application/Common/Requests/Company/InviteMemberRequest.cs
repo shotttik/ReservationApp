@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.Company
+namespace Application.Common.Requests.Company
 {
     public class InviteMemberRequest
     {

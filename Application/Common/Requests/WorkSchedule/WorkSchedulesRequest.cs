@@ -1,7 +1,7 @@
 ﻿using Domain.DTO.WorkSchedule;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.WorkSchedule
+namespace Application.Common.Requests.WorkSchedule
 {
     public class WorkSchedulesRequest<T> where T : BaseWorkScheduleDTO
     {

@@ -1,6 +1,6 @@
 ﻿using Application.Authentication;
+using Application.Common.Requests.Admin;
 using Application.Common.Results;
-using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;

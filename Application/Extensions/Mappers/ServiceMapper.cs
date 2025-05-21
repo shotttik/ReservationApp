@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Company;
+﻿using Domain.DTO.Company;
 using Domain.Entities;
 
 namespace Application.Extensions.Mappers

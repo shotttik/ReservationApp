@@ -1,8 +1,8 @@
 ﻿using API.Attributes;
+using Application.Common.Requests.User;
+using Application.Common.Responses;
 using Application.Common.Results;
-using Application.DTOs.User;
 using Application.Interfaces;
-using Application.Responses;
 using Domain.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

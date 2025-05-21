@@ -1,5 +1,5 @@
-﻿using Application.Common.Results;
-using Application.DTOs.WorkSchedule;
+﻿using Application.Common.Requests.WorkSchedule;
+using Application.Common.Results;
 
 namespace Application.Interfaces
 {

@@ -1,5 +1,5 @@
-﻿using Application.Common.Results;
-using Application.DTOs.Admin;
+﻿using Application.Common.Requests.Admin;
+using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO;
 

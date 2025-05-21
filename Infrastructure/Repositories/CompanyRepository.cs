@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Abstractions;
-using Domain.DTO;
+using Domain.DTO.Company;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Extensions;

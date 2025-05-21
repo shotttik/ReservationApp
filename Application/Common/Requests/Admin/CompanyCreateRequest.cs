@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace Application.DTOs.Admin
+namespace Application.Common.Requests.Admin
 {
     public class CompanyCreateRequest()
     {

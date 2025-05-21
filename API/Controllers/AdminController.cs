@@ -1,9 +1,9 @@
 ﻿using API.Attributes;
 using Application.Authentication;
+using Application.Common.Requests.Admin;
+using Application.Common.Responses;
 using Application.Common.Results;
-using Application.DTOs.Admin;
 using Application.Interfaces;
-using Application.Responses;
 using Domain.Abstractions;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
