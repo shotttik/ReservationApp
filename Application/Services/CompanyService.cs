@@ -122,11 +122,10 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result<PagedList<CompanyDTO>>> GetPaged(
+        public async Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
            CancellationToken cancellationToken)
         {
-            var AuthUser = await authService.GetCurrentUser();
             var errors = parameters.Validate<CompanyDTO>();
             if (errors.Any())
             {
@@ -135,8 +134,7 @@ namespace Application.Services
 
             var companies = await companyRepository.RetrievePaged(
                 parameters,
-                cancellationToken,
-                AuthUser.IsPublicUser);
+                cancellationToken);
 
             return companies;
         }

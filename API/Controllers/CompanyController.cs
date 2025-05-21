@@ -84,12 +84,11 @@ namespace API.Controllers
         [HttpGet("paged")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.CompanyRead)]
         [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<CompanyDTO>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetPagedCompanies([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.GetPaged(parameters, cancellationToken);
+            var result = await companyService.RetrievePaged(parameters, cancellationToken);
 
             if (result.IsSuccess)
             {
