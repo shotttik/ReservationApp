@@ -33,7 +33,7 @@ namespace API.Controllers
             return result.ToResponse();
         }
 
-        [HttpPut("user/{userId}")]
+        [HttpPatch("user/{userId}")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> UserUpdate(int userId, [FromBody] UserUpdateRequest request)
