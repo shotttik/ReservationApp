@@ -10,5 +10,6 @@
         public string? Phone { get; set; }
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public IEnumerable<ServiceDTO> Services { get; set; } = [];
     }
 }

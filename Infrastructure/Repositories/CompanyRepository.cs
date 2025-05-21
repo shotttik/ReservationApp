@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
+﻿using Application.Extensions.Mappers;
 using Domain.Abstractions;
 using Domain.DTO.Company;
 using Domain.Entities;
@@ -11,11 +10,9 @@ namespace Infrastructure.Repositories
 {
     public class CompanyRepository :BaseRepository<Company>, ICompanyRepository
     {
-        private readonly IMapper mapper;
 
-        public CompanyRepository(ApplicationDbContext context, IMapper mapper) : base(context)
+        public CompanyRepository(ApplicationDbContext context) : base(context)
         {
-            this.mapper = mapper;
         }
 
         public async Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone)
@@ -33,13 +30,12 @@ namespace Infrastructure.Repositories
         {
             var query = _dbSet.AsQueryable();
 
-            var projectedQuery = query.ProjectTo<CompanyDTO>(mapper.ConfigurationProvider);
+            query = query.ApplyQueryParamsAsync(parameters);
 
-            projectedQuery = projectedQuery.ApplyQueryParamsAsync(parameters);
-
-            var totalCount = await projectedQuery.CountAsync();
-
-            var companies = await projectedQuery.
+            var totalCount = await query.CountAsync();
+            var companies = await query.
+                Include(e => e.Services).
+                Select(e => e.MapToDTO()).
                 Skip((parameters.PageNumber - 1) * parameters.PageSize).
                 Take(parameters.PageSize).
                 ToListAsync(cancellationToken);
