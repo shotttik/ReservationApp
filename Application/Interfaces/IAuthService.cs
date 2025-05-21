@@ -1,4 +1,4 @@
-﻿using Application.DTOs.User;
+﻿using Domain.DTO;
 
 namespace Application.Interfaces
 {

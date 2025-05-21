@@ -4,9 +4,9 @@ using Application.Common.Results;
 using Application.DTOs.Admin;
 using Application.Interfaces;
 using Application.Responses;
+using Domain.Abstractions;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -28,9 +28,9 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserCreate([FromBody] UserCreateRequest request)
         {
-            Result result = await adminService.UserCreate(request);
+            var result = await adminService.UserCreate(request);
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPut("user/{userId}")]
@@ -39,9 +39,9 @@ namespace API.Controllers
         public async Task<IActionResult> UserUpdate(int userId, [FromBody] UserUpdateRequest request)
         {
             request.UserAccountID = userId;
-            Result result = await adminService.UserUpdate(request);
+            var result = await adminService.UserUpdate(request);
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.ToResponse();
         }
 
         [HttpPost("company")]
@@ -49,9 +49,18 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         public async Task<IActionResult> CompanyCreate([FromBody] CompanyCreateRequest request)
         {
-            Result result = await adminService.CompanyCreate(request);
+            var result = await adminService.CompanyCreate(request);
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.ToResponse();
+        }
+        [HttpGet("users/paged")]
+        [HasPermission(Permission.UserRead)]
+        [Logging(LoggingType.Full)]
+        public async Task<IActionResult> RetrievePagedUsers([FromQuery] PagedParameters request, CancellationToken cancellationToken)
+        {
+            var result = await adminService.RetrievePagedUsers(request, cancellationToken);
+
+            return result.ToResponse();
         }
     }
 }

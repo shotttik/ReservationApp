@@ -1,6 +1,7 @@
 ﻿using Application.Common.Results;
 using Application.DTOs.User;
 using Application.Responses;
+using Domain.DTO;
 
 namespace Application.Interfaces
 {

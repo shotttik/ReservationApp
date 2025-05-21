@@ -3,8 +3,8 @@ using AutoMapper.QueryableExtensions;
 using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Entities;
-using Domain.Extensions;
 using Domain.Interfaces.Repositories;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             var query = _dbSet.AsQueryable();
 
             var projectedQuery = query.ProjectTo<CompanyDTO>(mapper.ConfigurationProvider);
-            
+
             projectedQuery = projectedQuery.ApplyQueryParamsAsync(parameters);
 
             var totalCount = await projectedQuery.CountAsync();
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
             var companies = await projectedQuery.
                 Skip((parameters.PageNumber - 1) * parameters.PageSize).
                 Take(parameters.PageSize).
-                ToListAsync();
+                ToListAsync(cancellationToken);
 
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
         }

@@ -1,8 +1,9 @@
 ﻿using Application.Common.Results;
-using Application.DTOs.User;
 using Application.DTOs.WorkSchedule;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Domain.DTO;
+using Domain.DTO.WorkSchedule;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;

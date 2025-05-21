@@ -1,7 +1,10 @@
 ﻿using Application.Extensions.Mappers;
+using Domain.Abstractions;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Shared.Utilities;
 
@@ -47,6 +50,29 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
+        }
+
+        public async Task<PagedList<UserAccountDTO>> RetrievePaged(
+            PagedParameters parameters,
+            CancellationToken cancellationToken,
+            int authUserID)
+        {
+            var query = _dbSet.AsQueryable();
+
+            query = query.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .Include(u => u.Role)
+                .Include(c => c.Company)
+                .Where(u => u.ID != authUserID)
+                .Select(e => e.MapToAuthorizationData())
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return new PagedList<UserAccountDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
         }
     }
 }

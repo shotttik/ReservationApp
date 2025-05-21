@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Application.DTOs.WorkSchedule
+﻿namespace Domain.DTO.WorkSchedule
 {
     public abstract class BaseWorkScheduleDTO
     {

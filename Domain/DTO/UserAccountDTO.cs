@@ -1,8 +1,7 @@
-﻿using Application.DTOs.WorkSchedule;
-using Domain.DTO;
+﻿using Domain.DTO.WorkSchedule;
 using Domain.Enums;
 
-namespace Application.DTOs.User
+namespace Domain.DTO
 {
     public class UserAccountDTO
     {

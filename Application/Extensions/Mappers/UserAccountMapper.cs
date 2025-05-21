@@ -1,5 +1,5 @@
-﻿using Application.DTOs.User;
-using Application.DTOs.WorkSchedule;
+﻿using Domain.DTO;
+using Domain.DTO.WorkSchedule;
 using Domain.Entities;
 using Domain.Enums;
 

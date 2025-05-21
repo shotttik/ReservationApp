@@ -5,6 +5,7 @@ using Application.Exceptions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Application.Responses;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs.WorkSchedule
+namespace Domain.DTO.WorkSchedule
 {
     public class WorkScheduleUpdateDTO :BaseWorkScheduleDTO
     {

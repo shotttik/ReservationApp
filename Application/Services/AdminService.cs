@@ -3,6 +3,8 @@ using Application.Common.Results;
 using Application.DTOs.Admin;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Domain.Abstractions;
+using Domain.DTO;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -44,13 +46,13 @@ namespace Application.Services
             }
 
             // Create user account and login data
-                var userAccount = new UserAccount()
+            var userAccount = new UserAccount()
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Gender = (int)request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = Role.FromID((int)request.Role)!.ID,
+                RoleID = Role.FromID((int)request.Role)!.ID
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -93,10 +95,10 @@ namespace Application.Services
                 userAccount.RoleID = r.ID;
             }
 
-            userAccount.FirstName = request.FirstName ?? userAccount.FirstName;
-            userAccount.LastName = request.LastName ?? userAccount.LastName;
-            userAccount.Gender = request.Gender.HasValue ? (int)request.Gender.Value : userAccount.Gender;
-            userAccount.DateOfBirth = request.DateOfBirth ?? userAccount.DateOfBirth;
+            if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
+            if (request.LastName is not null) userAccount.LastName = request.LastName;
+            if (request.Gender.HasValue) userAccount.Gender = (int)request.Gender.Value;
+            if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
             await userAccountRepository.Update(userAccount);
             await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
 
@@ -122,6 +124,19 @@ namespace Application.Services
             await companyRepository.Add(company);
 
             return Result.Success();
+        }
+
+        public async Task<Result<PagedList<UserAccountDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var errors = parameters.Validate<UserAccountDTO>();
+            if (errors.Any())
+            {
+                return Result.Failure<PagedList<UserAccountDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+            }
+            var users = await userAccountRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
+
+            return Result.Success(users);
         }
     }
 }

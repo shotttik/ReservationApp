@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.DTO.WorkSchedule;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.WorkSchedule
 {

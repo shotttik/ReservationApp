@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.WorkSchedule
+﻿namespace Domain.DTO.WorkSchedule
 {
     public class WorkScheduleDTO :WorkScheduleUpdateDTO
     {

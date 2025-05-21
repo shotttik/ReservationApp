@@ -1,7 +1,7 @@
 ﻿using Domain.Abstractions;
 using System.Linq.Dynamic.Core;
 
-namespace Domain.Extensions
+namespace Infrastructure.Extensions
 {
     public static class QueryableExtensions
     {
@@ -43,7 +43,7 @@ namespace Domain.Extensions
                         "~=" => $"{field}.Contains(@0)",
                         _ => null
                     };
-                   
+
                     if (expression != null)
                     {
                         query = query.Where(expression, value);

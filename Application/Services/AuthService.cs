@@ -1,6 +1,6 @@
-﻿using Application.DTOs.User;
-using Application.Exceptions;
+﻿using Application.Exceptions;
 using Application.Interfaces;
+using Domain.DTO;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Shared.Utilities;

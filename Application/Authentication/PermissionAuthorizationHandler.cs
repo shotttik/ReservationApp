@@ -1,4 +1,4 @@
-﻿using Application.DTOs.User;
+﻿using Domain.DTO;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Utilities;
