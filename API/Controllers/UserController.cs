@@ -44,7 +44,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            Result<LoginResponse> result = await userAccountService.Login(loginRequest);
+            var result = await userAccountService.Login(loginRequest);
 
             return result.ToResponse();
         }
@@ -56,7 +56,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRequest refreshTokenRequest)
         {
-            Result<RefreshResponse> result = await userAccountService.Refresh(refreshTokenRequest);
+            var result = await userAccountService.Refresh(refreshTokenRequest);
 
             return result.ToResponse();
         }
@@ -79,7 +79,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
         {
-            Result<string> result = await userAccountService.ForgotPassword(forgotPasswordRequest);
+            var result = await userAccountService.ForgotPassword(forgotPasswordRequest);
 
             return result.ToResponse();
         }
@@ -91,7 +91,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
-            Result result = await userAccountService.ResetPassword(resetPasswordRequest);
+            var result = await userAccountService.ResetPassword(resetPasswordRequest);
 
             return result.ToResponse();
         }
@@ -103,7 +103,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
         {
-            Result<UserAccountDTO> result = await userAccountService.GetUserAuthorizationDataAsync();
+            var result = await userAccountService.GetUserAuthorizationDataAsync();
 
             return result.ToResponse();
         }
@@ -113,7 +113,18 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
-            Result result = await userAccountService.VerifyEmail(token);
+            var result = await userAccountService.VerifyEmail(token);
+            return result.ToResponse();
+        }
+        [HttpPost("change-email")]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<Result<RegisterResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+        {
+            var result = await userAccountService.ChangeEmail(request);
+
             return result.ToResponse();
         }
     }

@@ -15,5 +15,6 @@ namespace Application.Interfaces
         Task<Result> ResetPassword(ResetPasswordRequest request);
         Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync();
         Task<Result> VerifyEmail(string token);
+        Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
     }
 }

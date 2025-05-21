@@ -19,6 +19,8 @@
 
         public static readonly Error ArgumentNull = Error.Conflict("Auth.ArgumentNull", "Nothing to update.");
         public static readonly Error PermissionError = Error.Conflict("Auth.PermissionError", "You don't have permission to update this user.");
+        public static readonly Error EmailChangeAlreadyRequested = Error.Conflict("Auth.EmailChangeAlreadyRequested", "You have already requested email change, please wait until token expired.");
+
         #endregion
 
         #region Success

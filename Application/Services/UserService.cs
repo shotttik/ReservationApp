@@ -258,5 +258,40 @@ namespace Application.Services
 
             return Result.Success(AuthResults.EmailVerified);
         }
+        public async Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            if (await userLoginDataRepository.GetByEmail(request.Email) != null)
+            {
+                return Result.Failure<RegisterResponse>(AuthResults.EmailAlreadyExists);
+            }
+            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
+            if (userLoginData is null)
+            {
+                return Result.Failure<RegisterResponse>(AuthResults.UserNotFound);
+            }
+            if (userLoginData.VerificationStatus != VerificationStatus.Verified)
+            {
+                return Result.Failure<RegisterResponse>(AuthResults.EmailNotVerified);
+            }
+            if (userLoginData.VerificationTokenExpTime != null && userLoginData.VerificationTokenExpTime > DateTime.Now)
+            {
+                return Result.Failure<RegisterResponse>(AuthResults.EmailChangeAlreadyRequested);
+            }
+            var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
+            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var verificationTokenExpirationTime = DateTime.Now.AddDays(expDays);
+
+            userLoginData.VerificationToken = verificationToken;
+            userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
+
+            await userLoginDataRepository.Update(userLoginData);
+
+            return Result.Success(new RegisterResponse()
+            {
+                VerificationToken = verificationToken,
+                VerificationTokenExpTime = verificationTokenExpirationTime
+            }, AuthResults.CheckEmail);
+        }
     }
 }
