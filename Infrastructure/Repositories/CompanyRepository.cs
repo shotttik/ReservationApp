@@ -28,7 +28,8 @@ namespace Infrastructure.Repositories
         }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool IsPublicUser)
         {
             var query = _dbSet.AsQueryable();
 
@@ -36,6 +37,12 @@ namespace Infrastructure.Repositories
 
             projectedQuery = projectedQuery.ApplyQueryParamsAsync(parameters);
 
+
+            if (IsPublicUser)
+            {
+                projectedQuery = projectedQuery.Where(c => c.IsActive);
+            }
+            
             var totalCount = await projectedQuery.CountAsync();
 
             var companies = await projectedQuery.

@@ -14,6 +14,7 @@ namespace Domain.DTO
         public required RoleDTO Role { get; set; }
         public UserCompanyDTO? Company { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
+        public bool IsPublicUser => Role.ID == Domain.Entities.Role.PublicUser.ID;
     }
 
     public class RoleDTO

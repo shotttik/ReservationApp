@@ -31,7 +31,8 @@ namespace Infrastructure.Configurations
                 Create(Role.CompanyAdmin, Permission.ServiceRead),
                 Create(Role.CompanyAdmin, Permission.ServiceDelete),
                 Create(Role.CompanyAdmin, Permission.WorkScheduleManageUser),
-                Create(Role.CompanyMember, Permission.WorkScheduleManageUser)
+                Create(Role.CompanyMember, Permission.WorkScheduleManageUser),
+                Create(Role.PublicUser, Permission.CompanyRead)
                 );
         }
 

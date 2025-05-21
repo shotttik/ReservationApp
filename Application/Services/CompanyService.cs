@@ -132,9 +132,11 @@ namespace Application.Services
             {
                 return Result.Failure<PagedList<CompanyDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
+
             var companies = await companyRepository.RetrievePaged(
                 parameters,
-                cancellationToken);
+                cancellationToken,
+                AuthUser.IsPublicUser);
 
             return companies;
         }

@@ -9,6 +9,7 @@ namespace Domain.Interfaces.Repositories
         Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone);
         Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken,
+            bool isPublicUser);
     }
 }
