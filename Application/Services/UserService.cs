@@ -293,5 +293,21 @@ namespace Application.Services
                 VerificationTokenExpTime = verificationTokenExpirationTime
             }, AuthResults.CheckEmail);
         }
+
+        public async Task<Result> ChangePassword(ChangePasswordRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
+            if (!PasswordHasher.VerifyPassword(request.CurrentPassword, userLoginData!.PasswordHash, userLoginData.PasswordSalt))
+            {
+                return Result.Failure(AuthResults.InvalidPassword);
+            }
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+            userLoginData.PasswordHash = hash;
+            userLoginData.PasswordSalt = salt;
+            await userLoginDataRepository.Update(userLoginData);
+
+            return Result.Success(AuthResults.PasswordChanged);
+        }
     }
 }

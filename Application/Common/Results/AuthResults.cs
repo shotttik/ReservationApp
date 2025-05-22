@@ -30,6 +30,7 @@
         public static readonly SuccessInfo CheckEmail = new("Auth.CheckEmail", "Check your email for further instructions.");
         public static readonly SuccessInfo PasswordReseted = new("Auth.PasswordReseted", "Password reseted successfully.");
         public static readonly SuccessInfo EmailVerified = new("Auth.EmailVerified", "Email verified successfully.");
+        public static readonly SuccessInfo PasswordChanged = new("Auth.PasswordChanged", "Password changed successfully.");
         #endregion
     }
 }

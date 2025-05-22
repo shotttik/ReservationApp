@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
-    [Route("api/users")]
+    [Route("api/user")]
     [ApiController]
     public class UserController :ControllerBase
     {
@@ -124,6 +124,17 @@ namespace API.Controllers
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
         {
             var result = await userAccountService.ChangeEmail(request);
+
+            return result.ToResponse();
+        }
+        [HttpPost("change-password")]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<Result<RegisterResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var result = await userAccountService.ChangePassword(request);
 
             return result.ToResponse();
         }
