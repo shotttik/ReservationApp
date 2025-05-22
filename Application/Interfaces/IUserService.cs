@@ -17,6 +17,6 @@ namespace Application.Interfaces
         Task<Result> VerifyEmail(string token);
         Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
         Task<Result> ChangePassword(ChangePasswordRequest request);
-
+        Task<Result> Update(UpdateUserRequest request);
     }
 }

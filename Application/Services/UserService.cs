@@ -58,7 +58,7 @@ namespace Application.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Gender = (int?)request.Gender,
+                Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 RoleID = Role.PublicUser.ID,
             };
@@ -308,6 +308,19 @@ namespace Application.Services
             await userLoginDataRepository.Update(userLoginData);
 
             return Result.Success(AuthResults.PasswordChanged);
+        }
+
+        public async Task<Result> Update(UpdateUserRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var userAccount = await userAccountRepository.Get(AuthUser.ID);
+            userAccount!.FirstName = request.FirstName;
+            userAccount!.LastName = request.LastName;
+            userAccount.DateOfBirth = request.DateOfBirth;
+            userAccount.Gender = request.Gender;
+            await userAccountRepository.Update(userAccount);
+
+            return Result.Success(AuthResults.UserUpdated);
         }
     }
 }

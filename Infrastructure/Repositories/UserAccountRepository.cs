@@ -24,6 +24,7 @@ namespace Infrastructure.Repositories
         }
         public override async Task Update(UserAccount userAccount)
         {
+            userAccount.UpdateTimestamp();
             _dbSet.Update(userAccount);
             await cache.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
             await dbContext.SaveChangesAsync();

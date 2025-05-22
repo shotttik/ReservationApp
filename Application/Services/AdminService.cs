@@ -50,7 +50,7 @@ namespace Application.Services
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Gender = (int)request.Gender,
+                Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 RoleID = Role.FromID((int)request.Role)!.ID
             };
@@ -97,7 +97,7 @@ namespace Application.Services
 
             if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
             if (request.LastName is not null) userAccount.LastName = request.LastName;
-            if (request.Gender.HasValue) userAccount.Gender = (int)request.Gender.Value;
+            if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
             await userAccountRepository.Update(userAccount);
             await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());

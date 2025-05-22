@@ -1,10 +1,12 @@
-﻿namespace Domain.Entities
+﻿using Domain.Enums;
+
+namespace Domain.Entities
 {
     public class UserAccount :BaseEntity
     {
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
-        public int? Gender { get; set; }
+        public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public int? CompanyID { get; set; }
         public required int RoleID { get; set; }

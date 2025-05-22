@@ -11,9 +11,10 @@ namespace Infrastructure.Configurations
         {
             builder.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
             builder.Property(e => e.LastName).HasMaxLength(100).IsRequired();
-            builder.Property(e => e.Gender).HasDefaultValue((int)Gender.PreferNotToSay).ValueGeneratedOnAdd();
+            builder.Property(e => e.Gender)
+                .HasConversion<int>()
+                .HasDefaultValue(Gender.PreferNotToSay);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
-
             builder.HasOne(ua => ua.UserLoginData)
                    .WithOne(uld => uld.UserAccount)
                    .HasForeignKey<UserLoginData>(uld => uld.UserAccountID)

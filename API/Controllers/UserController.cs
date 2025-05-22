@@ -130,12 +130,22 @@ namespace API.Controllers
         [HttpPost("change-password")]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result<RegisterResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             var result = await userAccountService.ChangePassword(request);
 
+            return result.ToResponse();
+        }
+        [HttpPut]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+        {
+            var result = await userAccountService.Update(request);
             return result.ToResponse();
         }
     }
