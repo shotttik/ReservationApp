@@ -15,12 +15,14 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.RecoveryToken).HasMaxLength(150);
             builder.Property(e => e.VerificationToken).HasMaxLength(150);
             builder.Property(e => e.UserAccountID).IsRequired();
+            builder.Property(e => e.PendingNewEmail).HasMaxLength(255);
             builder.Property(e => e.VerificationStatus)
                     .HasConversion<int>()
                     .HasDefaultValue(VerificationStatus.Unverified);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasIndex(e => e.Email).IsUnique();
+            builder.HasIndex(e => e.PendingNewEmail).IsUnique();
         }
     }
 }

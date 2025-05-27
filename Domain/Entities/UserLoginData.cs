@@ -14,6 +14,7 @@ namespace Domain.Entities
         public VerificationStatus VerificationStatus { get; set; }
         public string? RecoveryToken { get; set; }
         public DateTime? RecoveryTokenExpTime { get; set; }
+        public string? PendingNewEmail { get; set; }
         public UserAccount UserAccount { get; set; } = null!;
     }
 }

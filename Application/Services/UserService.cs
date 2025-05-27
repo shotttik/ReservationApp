@@ -273,10 +273,19 @@ namespace Application.Services
                 return Result.Failure(AuthResults.TokenExpired);
             }
 
+            if (!string.IsNullOrEmpty(userLoginData.PendingNewEmail))
+            {
+                userLoginData.Email = userLoginData.PendingNewEmail;
+                userLoginData.PendingNewEmail = null;
+            }
+            else
+            {
+                userLoginData.VerificationStatus = VerificationStatus.Verified;
+            }
             userLoginData.VerificationToken = null;
             userLoginData.VerificationTokenExpTime = null;
-            userLoginData.VerificationStatus = VerificationStatus.Verified;
             await userLoginDataRepository.Update(userLoginData);
+            await DeleteAllActiveSessions(UserID: userLoginData.ID);
 
             return Result.Success(AuthResults.EmailVerified);
         }
@@ -304,6 +313,7 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
+            userLoginData.PendingNewEmail = request.Email;
             userLoginData.VerificationToken = verificationToken;
             userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
 
@@ -389,11 +399,11 @@ namespace Application.Services
             return Result.Success(AuthResults.SessionRemoved);
         }
 
-        // delete all active sessions for user
-        public async Task<Result> DeleteAllActiveSessions()
+        public async Task<Result> DeleteAllActiveSessions(int? UserID = null)
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.ID));
+            UserID ??= authService.GetUserLoginDataID();
+            var activeSessionsKey = CacheUtils.ActiveSessionsKey((int)UserID);
+            var sessionIds = await cacheService.GetAsync<List<string>>(activeSessionsKey);
             if (sessionIds == null || sessionIds.Count == 0)
             {
                 return Result.Success(AuthResults.NoActiveSessions);
@@ -402,7 +412,7 @@ namespace Application.Services
             {
                 await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionId));
             }
-            await cacheService.RemoveAsync(CacheUtils.ActiveSessionsKey(AuthUser.ID));
+            await cacheService.RemoveAsync(CacheUtils.ActiveSessionsKey((int)UserID));
 
             return Result.Success(AuthResults.AllSessionsRemoved);
         }
