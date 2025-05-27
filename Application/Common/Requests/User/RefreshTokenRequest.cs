@@ -2,7 +2,7 @@
 
 namespace Application.Common.Requests.User
 {
-    public class TokenRequest
+    public class RefreshTokenRequest
     {
         [Required]
         public required string AccessToken { get; set; }

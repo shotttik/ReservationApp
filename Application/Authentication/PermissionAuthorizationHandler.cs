@@ -2,7 +2,6 @@
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Utilities;
-using System.Security.Claims;
 
 namespace Application.Authentication
 {
@@ -18,21 +17,21 @@ namespace Application.Authentication
         }
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            string? userID = context.User.Claims.FirstOrDefault(
-                x => x.Type == ClaimTypes.Sid)?.Value;
+            string? sessionID = context.User.Claims.FirstOrDefault(
+                x => x.Type == "SessionID")?.Value;
 
-            if (!int.TryParse(userID, out int parsedUserID))
+            if (sessionID == null)
             {
                 return;
             }
 
-            var user = await cacheService.GetAsync<UserAccountDTO>(CacheUtils.AuthorizationCacheKey(parsedUserID));
+            var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionID));
 
-            if (user == null)
+            if (sessionInfo == null)
             {
                 return;
             }
-            var userPermissions = user.Role.Permissions;
+            var userPermissions = sessionInfo.Authuser.Role.Permissions;
 
             if (userPermissions.Any(p => p.Name == requirement.Permission))
             {

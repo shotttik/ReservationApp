@@ -7,9 +7,6 @@ namespace Domain.Interfaces.Repositories
     public interface IUserAccountRepository :IBaseRepository<UserAccount>
     {
         Task<UserAccount?> GetAuthorizationData(int ID);
-        Task<PagedList<UserAccountDTO>> RetrievePaged(
-            PagedParameters parameters,
-            CancellationToken cancellationToken,
-            int authUserID);
+        Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID);
     }
 }

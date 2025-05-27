@@ -56,7 +56,7 @@ namespace Application.Services
                 CompanyID = AuthUser.Company!.ID,
                 UserAccountID = member.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
-                ExpirationTime = DateTime.Now.AddDays(expDays),
+                ExpirationTime = DateTime.UtcNow.AddDays(expDays),
                 IsAccepted = false
             };
 
@@ -72,11 +72,11 @@ namespace Application.Services
             {
                 return Result.Failure(CompanyResults.InviteNotFound);
             }
-            if (invitation.UserAccountID != AuthUser.ID)
+            if (invitation.UserAccountID != authService.GetUserAccountID())
             {
                 return Result.Failure(CompanyResults.InviteInvalidUser);
             }
-            if (invitation.ExpirationTime < DateTime.Now)
+            if (invitation.ExpirationTime < DateTime.UtcNow)
             {
                 return Result.Failure(CompanyResults.InviteTokenExpired);
             }
@@ -86,7 +86,7 @@ namespace Application.Services
             invitation.ExpirationTime = null;
             await companyInvitationRepository.Update(invitation);
 
-            var authUserEntity = await userAccountRepository.Get(AuthUser.ID);
+            var authUserEntity = await userAccountRepository.GetByUserLoginDataID(AuthUser.ID);
             authUserEntity!.CompanyID = invitation.CompanyID;
             authUserEntity.RoleID = Role.CompanyMember.ID;
 

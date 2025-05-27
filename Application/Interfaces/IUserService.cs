@@ -1,7 +1,7 @@
 ﻿using Application.Common.Requests.User;
 using Application.Common.Responses;
 using Application.Common.Results;
-using Domain.DTO;
+using Domain.DTO.User;
 
 namespace Application.Interfaces
 {
@@ -9,11 +9,11 @@ namespace Application.Interfaces
     {
         Task<Result<RegisterResponse>> Register(RegisterUserRequest registerUserRequest);
         Task<Result<LoginResponse>> Login(LoginRequest loginRequest);
-        Task<Result<RefreshResponse>> Refresh(TokenRequest refreshTokenRequest);
+        Task<Result<RefreshResponse>> Refresh(RefreshTokenRequest refreshTokenRequest);
         Task<Result> Logout();
         Task<Result<string>> ForgotPassword(ForgotPasswordRequest request);
         Task<Result> ResetPassword(ResetPasswordRequest request);
-        Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync();
+        Task<Result<AuthUser>> GetUserAuthorizationDataAsync();
         Task<Result> VerifyEmail(string token);
         Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
         Task<Result> ChangePassword(ChangePasswordRequest request);

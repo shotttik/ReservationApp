@@ -1,4 +1,6 @@
-﻿using Domain.Entities;
+﻿using Domain.Abstractions;
+using Domain.DTO.User;
+using Domain.Entities;
 
 namespace Domain.Interfaces.Repositories
 {
@@ -10,5 +12,9 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
         Task<UserLoginData?> GetByUserAccountID(int userAccountID);
         Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
+        Task<PagedList<AuthUser>> RetrievePaged(
+            PagedParameters parameters,
+            CancellationToken cancellationToken,
+            int authUserID);
     }
 }

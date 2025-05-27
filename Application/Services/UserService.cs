@@ -4,17 +4,17 @@ using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Exceptions;
 using Application.Extensions.Mappers;
+using Application.Helpers;
 using Application.Interfaces;
 using Domain.DTO;
+using Domain.DTO.User;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
-using System.Security.Claims;
 using Role = Domain.Entities.Role;
 
 namespace Application.Services
@@ -26,20 +26,22 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public UserService(
-            IConfiguration configuration,
-            IUserAccountRepository userAccountRepository,
-            IUserLoginDataRepository userLoginDataRepository,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthService authService,
-            ICacheService cacheService)
+           IConfiguration configuration,
+           IUserAccountRepository userAccountRepository,
+           IUserLoginDataRepository userLoginDataRepository,
+           IHttpContextAccessor httpContextAccessor,
+           IAuthService authService,
+           ICacheService cacheService)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.authService = authService;
             this.cacheService = cacheService;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<Result<RegisterResponse>> Register(RegisterUserRequest request)
@@ -52,7 +54,7 @@ namespace Application.Services
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
-            var verificationTokenExpirationTime = DateTime.Now.AddDays(expDays);
+            var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             var userAccount = new UserAccount
             {
@@ -101,64 +103,79 @@ namespace Application.Services
             {
                 return Result.Failure<LoginResponse>(AuthResults.InvalidPassword);
             }
-            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, user.Email, configuration);
-            var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
 
-            var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpTime = refreshTokenExpirationTime;
+            var AuthUser = user.MapToAuthorizationData();
+            var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, user.Email, sessionInfo.SessionID, configuration);
 
-            var userDTO = user.UserAccount.MapToAuthorizationData();
-            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(user.UserAccountID), userDTO);
-            await userLoginDataRepository.Update(user);
+            await cacheService.SetAsync(
+               CacheUtils.SessionKey(sessionInfo.SessionID),
+               sessionInfo,
+               sessionInfo.RefreshTokenExpTime - DateTime.UtcNow
+            );
+
+            var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(user.ID))
+                ?? new List<string>();
+
+            if (!sessions.Contains(sessionInfo.SessionID))
+            {
+                sessions.Add(sessionInfo.SessionID);
+            }
+
+            var expDays = Convert.ToDouble(configuration ["Jwt:UserActiveSessionsExpirationDays"]);
+            var userActiveSessionsTTL = TimeSpan.FromDays(expDays);
+
+            await cacheService.SetAsync(
+                CacheUtils.ActiveSessionsKey(user.ID),
+                sessions,
+                userActiveSessionsTTL
+            );
 
             return Result.Success(new LoginResponse
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                AccessTokenExpTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
+                RefreshToken = sessionInfo.RefreshToken,
+                AccessTokenExpTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
             }, AuthResults.Success);
         }
-        public async Task<Result<RefreshResponse>> Refresh(TokenRequest request)
+        public async Task<Result<RefreshResponse>> Refresh(RefreshTokenRequest request)
         {
+            // get access token from bearer
             var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
             if (principal == null)
             {
-                Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
-            }
-            var email = principal!.FindFirst(ClaimTypes.Email)?.Value!;
-            if (email.IsNullOrEmpty())
-            {
-                return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
-            }
-            var user = await userLoginDataRepository.GetFullUserDataByEmail(email);
-            if (user is null)
-            {
-                return Result.Failure<RefreshResponse>(AuthResults.UserNotFound);
-            };
-            if (user.RefreshToken is null ||
-                user.RefreshToken != request.RefreshToken ||
-                user.RefreshTokenExpTime < DateTime.Now)
-            {
                 return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
 
-            var newAccessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, email, configuration);
+            (string email, int userLoginDataID, int userAccountID, string sessionId) = JWTGenerator.ParseValuesFromPrincipal(principal);
+
+            var session = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionId));
+
+            if (session is null ||
+                session.RefreshToken is null ||
+                session.RefreshToken != request.RefreshToken ||
+                session.RefreshTokenExpTime < DateTime.UtcNow)
+            {
+                return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
+            }
+            var newAccessToken = JWTGenerator.GenerateAccessToken(userLoginDataID, userAccountID, email, sessionId, configuration);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
+            var refreshTokenExpirationTime = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
 
-            var refreshTokenExpirationTime = DateTime.Now.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpTime = refreshTokenExpirationTime;
-            await userLoginDataRepository.Update(user);
+            // Update session info
+            session.LastAccessedAt = DateTime.UtcNow;
+            session.RefreshToken = newRefreshToken;
+            session.RefreshTokenExpTime = refreshTokenExpirationTime;
+
+            await cacheService.SetAsync(CacheUtils.SessionKey(sessionId), session, refreshTokenExpirationTime - DateTime.UtcNow);
 
             var response = new RefreshResponse()
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
+                RefreshToken = newRefreshToken,
             };
 
             return Result.Success(response);
-
         }
         public async Task<Result> Logout()
         {
@@ -169,20 +186,25 @@ namespace Application.Services
             }
             catch (AuthorizationException)
             {
-
                 return Result.Failure<UserAccountDTO>(AuthResults.NotAuthenticated);
             }
-            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
+            var sessionID = authService.GetSessionID();
 
-            if (userLoginData is null)
+            if (string.IsNullOrWhiteSpace(sessionID))
+                return Result.Failure(AuthResults.NotAuthenticated);
+
+            var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionID));
+            if (sessionInfo == null)
+                return Result.Failure(AuthResults.NotAuthenticated);
+
+            var userId = sessionInfo.Authuser.ID;
+            await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionID));
+
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId)) ?? new List<string>();
+            if (sessionIds.Remove(sessionID))
             {
-                return Result.Failure(AuthResults.UserNotFound);
+                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(userId), sessionIds);
             }
-            userLoginData.RefreshToken = null;
-            userLoginData.RefreshTokenExpTime = null;
-
-            await userLoginDataRepository.Update(userLoginData);
-            await cacheService.RemoveAsync(CacheUtils.AuthorizationCacheKey(AuthUser.ID));
 
             return Result.Success(AuthResults.Logouted);
         }
@@ -194,7 +216,7 @@ namespace Application.Services
                 return Result.Success<string>(string.Empty, AuthResults.CheckEmail);
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
-            var recoveryTokenTime = DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
+            var recoveryTokenTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
             userLoginData.RecoveryToken = recoveryToken;
             userLoginData.RecoveryTokenExpTime = recoveryTokenTime;
             await userLoginDataRepository.Update(userLoginData);
@@ -210,7 +232,7 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.InvalidToken);
             }
-            if (userLoginData.RecoveryTokenExpTime < DateTime.Now)
+            if (userLoginData.RecoveryTokenExpTime < DateTime.UtcNow)
             {
                 return Result.Failure(AuthResults.TokenExpired);
             }
@@ -225,7 +247,7 @@ namespace Application.Services
 
             return Result.Success(AuthResults.PasswordReseted);
         }
-        public async Task<Result<UserAccountDTO>> GetUserAuthorizationDataAsync()
+        public async Task<Result<AuthUser>> GetUserAuthorizationDataAsync()
         {
             try
             {
@@ -236,7 +258,7 @@ namespace Application.Services
             catch (AuthorizationException)
             {
 
-                return Result.Failure<UserAccountDTO>(AuthResults.NotAuthenticated);
+                return Result.Failure<AuthUser>(AuthResults.NotAuthenticated);
             }
         }
         public async Task<Result> VerifyEmail(string token)
@@ -246,7 +268,7 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserNotFound);
             }
-            if (userLoginData.VerificationTokenExpTime < DateTime.Now)
+            if (userLoginData.VerificationTokenExpTime < DateTime.UtcNow)
             {
                 return Result.Failure(AuthResults.TokenExpired);
             }
@@ -265,7 +287,7 @@ namespace Application.Services
             {
                 return Result.Failure<RegisterResponse>(AuthResults.EmailAlreadyExists);
             }
-            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
+            var userLoginData = await userLoginDataRepository.Get(AuthUser.ID);
             if (userLoginData is null)
             {
                 return Result.Failure<RegisterResponse>(AuthResults.UserNotFound);
@@ -274,13 +296,13 @@ namespace Application.Services
             {
                 return Result.Failure<RegisterResponse>(AuthResults.EmailNotVerified);
             }
-            if (userLoginData.VerificationTokenExpTime != null && userLoginData.VerificationTokenExpTime > DateTime.Now)
+            if (userLoginData.VerificationTokenExpTime != null && userLoginData.VerificationTokenExpTime > DateTime.UtcNow)
             {
                 return Result.Failure<RegisterResponse>(AuthResults.EmailChangeAlreadyRequested);
             }
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
-            var verificationTokenExpirationTime = DateTime.Now.AddDays(expDays);
+            var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             userLoginData.VerificationToken = verificationToken;
             userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
@@ -297,7 +319,7 @@ namespace Application.Services
         public async Task<Result> ChangePassword(ChangePasswordRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var userLoginData = await userLoginDataRepository.GetByUserAccountID(AuthUser.ID);
+            var userLoginData = await userLoginDataRepository.Get(AuthUser.ID);
             if (!PasswordHasher.VerifyPassword(request.CurrentPassword, userLoginData!.PasswordHash, userLoginData.PasswordSalt))
             {
                 return Result.Failure(AuthResults.InvalidPassword);
@@ -312,13 +334,15 @@ namespace Application.Services
 
         public async Task<Result> Update(UpdateUserRequest request)
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var userAccount = await userAccountRepository.Get(AuthUser.ID);
+            var userAccountID = authService.GetUserAccountID();
+            var userAccount = await userAccountRepository.Get(userAccountID);
+
             userAccount!.FirstName = request.FirstName;
             userAccount!.LastName = request.LastName;
             userAccount.DateOfBirth = request.DateOfBirth;
             userAccount.Gender = request.Gender;
             await userAccountRepository.Update(userAccount);
+            await authService.RefreshAuthUserCache();
 
             return Result.Success(AuthResults.UserUpdated);
         }

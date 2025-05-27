@@ -3,12 +3,12 @@ using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO;
+using Domain.DTO.User;
 using Domain.DTO.WorkSchedule;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Utilities;
 
 namespace Application.Services
 {
@@ -18,17 +18,20 @@ namespace Application.Services
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
         private readonly IUserAccountRepository userAccountRepository;
+        private readonly IUserLoginDataRepository userLoginDataRepository;
 
         public WorkScheduleService(
             IWorkScheduleRepository workScheduleRepository,
             IAuthService authService,
             ICacheService cacheService,
-            IUserAccountRepository userAccountRepository)
+            IUserAccountRepository userAccountRepository,
+            IUserLoginDataRepository userLoginDataRepository)
         {
             this.workScheduleRepository = workScheduleRepository;
             this.authService = authService;
             this.cacheService = cacheService;
             this.userAccountRepository = userAccountRepository;
+            this.userLoginDataRepository = userLoginDataRepository;
         }
         public async Task<Result> WorkSchedulesCreate(WorkSchedulesCreateRequest request, bool isForEmployee)
         {
@@ -69,7 +72,7 @@ namespace Application.Services
             }
 
             await workScheduleRepository.AddRange(workSchedules);
-            await RefreshCache(AuthUser.ID);
+            await authService.RefreshAuthUserCache();
 
             return Result.Success();
         }
@@ -117,7 +120,7 @@ namespace Application.Services
 
             await workScheduleRepository.UpdateRange(updatedSchedules);
 
-            await RefreshCache(AuthUser.ID);
+            await authService.RefreshAuthUserCache();
 
             return Result.Success();
         }
@@ -158,14 +161,6 @@ namespace Application.Services
                 return Result.Failure(WorkScheduleResults.NonWorkingDay);
 
             return null;
-        }
-        private async Task RefreshCache(int userId)
-        {
-            var userAccount = await userAccountRepository.GetAuthorizationData(userId);
-            if (userAccount != null)
-            {
-                await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userId), userAccount.MapToAuthorizationData());
-            }
         }
     }
 }

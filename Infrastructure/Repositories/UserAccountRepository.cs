@@ -1,12 +1,7 @@
-﻿using Application.Extensions.Mappers;
-using Domain.Abstractions;
-using Domain.DTO;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Shared.Utilities;
 
 namespace Infrastructure.Repositories
 {
@@ -26,7 +21,7 @@ namespace Infrastructure.Repositories
         {
             userAccount.UpdateTimestamp();
             _dbSet.Update(userAccount);
-            await cache.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
+            //await cache.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
             await dbContext.SaveChangesAsync();
         }
 
@@ -53,27 +48,13 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task<PagedList<UserAccountDTO>> RetrievePaged(
-            PagedParameters parameters,
-            CancellationToken cancellationToken,
-            int authUserID)
+        public async Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID)
         {
-            var query = _dbSet.AsQueryable();
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData != null && e.UserLoginData.ID == userLoginDataID)
+                .FirstOrDefaultAsync();
 
-            query = query.ApplyQueryParamsAsync(parameters);
-
-            var totalCount = await query.CountAsync();
-
-            var users = await query
-                .Include(u => u.Role)
-                .Include(c => c.Company)
-                .Where(u => u.ID != authUserID)
-                .Select(e => e.MapToAuthorizationData())
-                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
-                .Take(parameters.PageSize)
-                .ToListAsync(cancellationToken);
-
-            return new PagedList<UserAccountDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
+            return userAccount;
         }
     }
 }

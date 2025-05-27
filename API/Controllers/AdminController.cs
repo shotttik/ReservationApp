@@ -33,12 +33,12 @@ namespace API.Controllers
             return result.ToResponse();
         }
 
-        [HttpPatch("user/{userId}")]
+        [HttpPatch("user/{id}")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
-        public async Task<IActionResult> UserUpdate(int userId, [FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> UserUpdate(int id, [FromBody] UserUpdateRequest request)
         {
-            request.UserAccountID = userId;
+            request.ID = id;
             var result = await adminService.UserUpdate(request);
 
             return result.ToResponse();

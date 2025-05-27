@@ -3,7 +3,7 @@ using Application.Common.Requests.User;
 using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
-using Domain.DTO;
+using Domain.DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -54,7 +54,7 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<RefreshResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenRequest refreshTokenRequest)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
             var result = await userAccountService.Refresh(refreshTokenRequest);
 

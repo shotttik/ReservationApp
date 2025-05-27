@@ -1,8 +1,13 @@
 ﻿using Application.Exceptions;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO;
+using Domain.DTO.User;
+using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 using System.Security.Claims;
 
@@ -12,25 +17,90 @@ namespace Application.Services
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ICacheService cacheService;
+        private readonly IUserLoginDataRepository userLoginDataRepository;
+        private readonly IConfiguration configuration;
 
         public AuthService(IHttpContextAccessor httpContextAccessor,
-            ICacheService cacheService
+            ICacheService cacheService,
+            IUserLoginDataRepository userLoginDataRepository, IConfiguration configuration
             )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.cacheService = cacheService;
+            this.userLoginDataRepository = userLoginDataRepository;
+            this.configuration = configuration;
         }
 
-        public async Task<UserAccountDTO> GetCurrentUser()
+        public async Task<AuthUser> GetCurrentUser()
         {
-            var userIDClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Sid)?.Value;
+            var sessionID = httpContextAccessor.HttpContext?.User?.FindFirst("SessionID")?.Value;
 
-            if (!int.TryParse(userIDClaim, out var userID))
+            if (sessionID.IsNullOrEmpty())
                 throw new AuthorizationException("Invalid or missing user ID in token.");
 
-            var userAccountDTO = await cacheService.GetAsync<UserAccountDTO>(CacheUtils.AuthorizationCacheKey(userID));
+            var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionID!));
+            return sessionInfo == null ? throw new AuthorizationException("Authenticated user not found.") : sessionInfo.Authuser;
+        }
 
-            return userAccountDTO ?? throw new AuthorizationException("Authenticated user not found.");
+        public string GetEmail() => GetClaim(ClaimTypes.Email);
+        public string GetSessionID() => GetClaim("SessionID");
+        public int GetUserAccountID() => GetIntClaim(ClaimTypes.Sid);
+        public int GetUserLoginDataID() => GetIntClaim(ClaimTypes.PrimarySid);
+        public string? GetAccessToken()
+        {
+            var accessToken = httpContextAccessor.HttpContext?.Request.Headers ["Authorization"].ToString()?.Replace("Bearer ", "");
+            return accessToken;
+        }
+
+        // refresh AuthUser cache
+        public async Task RefreshUserCache(int? userLoginDataID = null)
+        {
+            var userId = userLoginDataID ?? GetUserLoginDataID();
+            var user = await userLoginDataRepository.GetFullUserData(userId);
+            if (user == null) return;
+
+            var authUser = user.MapToAuthorizationData();
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId));
+
+            if (sessionIds == null) return;
+
+            foreach (var sessionId in sessionIds)
+            {
+                var sessionKey = CacheUtils.SessionKey(sessionId);
+                var session = await cacheService.GetAsync<SessionInfoDTO>(sessionKey);
+                if (session != null)
+                {
+                    session.Authuser = authUser;
+                    await ResetSessionAsync(sessionKey, session);
+                }
+            }
+        }
+        public Task RefreshAuthUserCache() => RefreshUserCache();
+
+        private async Task ResetSessionAsync(string sessionKey, SessionInfoDTO session)
+        {
+            // Reset TTL (optional — can be kept same or re-applied)
+            var ttl = session.RefreshTokenExpTime - DateTime.UtcNow;
+            if (ttl <= TimeSpan.Zero)
+            {
+                var expDays = Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]);
+                ttl = TimeSpan.FromDays(expDays);
+            }
+            await cacheService.SetAsync(sessionKey, session, ttl);
+        }
+        private string GetClaim(string type)
+        {
+            var value = httpContextAccessor.HttpContext?.User?.FindFirst(type)?.Value;
+            if (string.IsNullOrEmpty(value))
+                throw new AuthorizationException($"{type} claim is not available.");
+            return value;
+        }
+        private int GetIntClaim(string type)
+        {
+            var claimValue = GetClaim(type);
+            if (!int.TryParse(claimValue, out var result))
+                throw new AuthorizationException($"{type} claim is not a valid integer.");
+            return result;
         }
     }
 }

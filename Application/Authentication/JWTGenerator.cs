@@ -9,13 +9,14 @@ namespace Application.Authentication
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, IConfiguration configuration)
+        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, string sessionID, IConfiguration configuration)
         {
             var claims = new []
             {
-                new Claim(ClaimTypes.PrimarySid, userLoginDataID.ToString()),
+                new Claim(ClaimTypes.PrimarySid, userAccountID.ToString()),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Sid, userAccountID.ToString()),
+                new Claim("SessionID", sessionID), // custom claim for session ID
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
 
@@ -26,7 +27,7 @@ namespace Application.Authentication
                 issuer: configuration ["Jwt:Issuer"],
                 audience: configuration ["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
                 signingCredentials: creds
             );
 
@@ -78,6 +79,17 @@ namespace Application.Authentication
                 .Replace('+', '-')
                 .Replace('/', '_')
                 .TrimEnd('=');
+        }
+
+        public static (string email, int userLoginDataID, int userAccountID, string sessionId) ParseValuesFromPrincipal(ClaimsPrincipal principal)
+        {
+            var email = principal!.FindFirst(ClaimTypes.Email)?.Value!;
+            var userLoginDataID = Convert.ToInt32(principal.FindFirst(ClaimTypes.PrimarySid)?.Value!);
+            var userAccountID = Convert.ToInt32(principal.FindFirst(ClaimTypes.Sid)?.Value!);
+
+            var sessionId = principal.FindFirst("SessionID")?.Value!;
+
+            return (email, userLoginDataID, userAccountID, sessionId);
         }
     }
 }

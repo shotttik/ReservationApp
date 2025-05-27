@@ -6,7 +6,7 @@ namespace Application.Common.Requests.Admin
     public class UserUpdateRequest
     {
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
-        public int UserAccountID { get; set; }
+        public int ID { get; set; } // UserLoginDataID
         [MaxLength(100)]
         public string? FirstName { get; set; }
         [MaxLength(200)]

@@ -9,8 +9,6 @@ namespace Domain.Entities
         public required byte [] PasswordSalt { get; set; }
         public string? ConfirmationToken { get; set; }
         public int UserAccountID { get; set; }
-        public string? RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpTime { get; set; }
         public string? VerificationToken { get; set; }
         public DateTime? VerificationTokenExpTime { get; set; }
         public VerificationStatus VerificationStatus { get; set; }

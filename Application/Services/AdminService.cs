@@ -1,14 +1,12 @@
 ﻿using Application.Authentication;
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
-using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
-using Domain.DTO;
+using Domain.DTO.User;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Shared.Utilities;
 
 namespace Application.Services
 {
@@ -79,7 +77,7 @@ namespace Application.Services
                 return Result.Failure(AuthResults.ArgumentNull);
             }
 
-            var userAccount = await userAccountRepository.Get(request.UserAccountID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.ID);
             if (userAccount is null)
             {
                 return Result.Failure(AuthResults.UserNotFound);
@@ -100,9 +98,9 @@ namespace Application.Services
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
             await userAccountRepository.Update(userAccount);
-            await cacheService.SetAsync(CacheUtils.AuthorizationCacheKey(userAccount.ID), userAccount.MapToAuthorizationData());
+            await authService.RefreshUserCache(request.ID);
 
-            return Result.Success();
+            return Result.Success(AuthResults.UserUpdated);
         }
 
         public async Task<Result> CompanyCreate(CompanyCreateRequest request)
@@ -126,15 +124,15 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result<PagedList<UserAccountDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<AuthUser>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var errors = parameters.Validate<UserAccountDTO>();
+            var errors = parameters.Validate<AuthUser>();
             if (errors.Any())
             {
-                return Result.Failure<PagedList<UserAccountDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+                return Result.Failure<PagedList<AuthUser>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
-            var users = await userAccountRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
+            var users = await userLoginDataRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
 
             return Result.Success(users);
         }

@@ -2,6 +2,7 @@
 {
     public static class CacheUtils
     {
-        public static string AuthorizationCacheKey(int userID) => $"UserAuthorization:{userID}";
+        public static string SessionKey(string sessionID) => $"Session:{sessionID}";
+        public static string ActiveSessionsKey(int userID) => $"UserSessions:{userID}";
     }
 }
