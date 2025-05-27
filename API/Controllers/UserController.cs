@@ -160,5 +160,16 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        [HttpDelete("session/{sessionId}")]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteActiveSession(string sessionId)
+        {
+            var result = await userService.DeleteActiveSession(sessionId);
+
+            return result.ToResponse();
+        }
     }
 }

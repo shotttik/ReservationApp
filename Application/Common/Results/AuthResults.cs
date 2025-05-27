@@ -20,6 +20,7 @@
         public static readonly Error ArgumentNull = Error.Conflict("Auth.ArgumentNull", "Nothing to update.");
         public static readonly Error PermissionError = Error.Conflict("Auth.PermissionError", "You don't have permission to update this user.");
         public static readonly Error EmailChangeAlreadyRequested = Error.Conflict("Auth.EmailChangeAlreadyRequested", "You have already requested email change, please wait until token expired.");
+        public static readonly Error SessionNotFound = Error.NotFound("Auth.SessionNotFound", "Session not found.");
         // no active sessions
         #endregion
 
@@ -32,6 +33,7 @@
         public static readonly SuccessInfo EmailVerified = new("Auth.EmailVerified", "Email verified successfully.");
         public static readonly SuccessInfo PasswordChanged = new("Auth.PasswordChanged", "Password changed successfully.");
         public static readonly SuccessInfo UserUpdated = new("Auth.UserUpdated", "User updated successfully.");
+        public static readonly SuccessInfo SessionRemoved = new("Auth.SessionRemoved", "Session removed successfully.");
         #endregion
     }
 }

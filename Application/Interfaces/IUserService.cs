@@ -20,5 +20,6 @@ namespace Application.Interfaces
         Task<Result> ChangePassword(ChangePasswordRequest request);
         Task<Result> Update(UpdateUserRequest request);
         Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions();
+        Task<Result> DeleteActiveSession(string sessionId);
     }
 }

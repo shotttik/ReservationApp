@@ -369,5 +369,23 @@ namespace Application.Services
 
             return Result.Success(sessions);
         }
+
+        public async Task<Result> DeleteActiveSession(string sessionId)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var sessionKey = CacheUtils.SessionKey(sessionId);
+            var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(sessionKey);
+            if (sessionInfo == null || sessionInfo.AuthUser.ID != AuthUser.ID)
+            {
+                return Result.Failure(AuthResults.SessionNotFound);
+            }
+            await cacheService.RemoveAsync(sessionKey);
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.ID)) ?? new List<string>();
+            if (sessionIds.Remove(sessionId))
+            {
+                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(AuthUser.ID), sessionIds);
+            }
+            return Result.Success(AuthResults.SessionRemoved);
+        }
     }
 }
