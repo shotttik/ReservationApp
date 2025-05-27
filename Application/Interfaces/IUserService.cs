@@ -21,5 +21,6 @@ namespace Application.Interfaces
         Task<Result> Update(UpdateUserRequest request);
         Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions();
         Task<Result> DeleteActiveSession(string sessionId);
+        Task<Result> DeleteAllActiveSessions();
     }
 }

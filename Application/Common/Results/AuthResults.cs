@@ -21,7 +21,7 @@
         public static readonly Error PermissionError = Error.Conflict("Auth.PermissionError", "You don't have permission to update this user.");
         public static readonly Error EmailChangeAlreadyRequested = Error.Conflict("Auth.EmailChangeAlreadyRequested", "You have already requested email change, please wait until token expired.");
         public static readonly Error SessionNotFound = Error.NotFound("Auth.SessionNotFound", "Session not found.");
-        // no active sessions
+        public static readonly Error NoActiveSessions = Error.NotFound("Auth.NoActiveSessions", "No active sessions found for this user.");
         #endregion
 
         #region Success
@@ -34,6 +34,8 @@
         public static readonly SuccessInfo PasswordChanged = new("Auth.PasswordChanged", "Password changed successfully.");
         public static readonly SuccessInfo UserUpdated = new("Auth.UserUpdated", "User updated successfully.");
         public static readonly SuccessInfo SessionRemoved = new("Auth.SessionRemoved", "Session removed successfully.");
+        public static readonly SuccessInfo AllSessionsRemoved = new("Auth.AllSessionsRemoved", "All sessions removed successfully, and logged out.");
+
         #endregion
     }
 }
