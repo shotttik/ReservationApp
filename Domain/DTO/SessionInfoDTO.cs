@@ -5,7 +5,7 @@ namespace Domain.DTO
     public class SessionInfoDTO
     {
         public string SessionID { get; set; } = default!;
-        public AuthUser Authuser { get; set; } = default!;
+        public AuthUser AuthUser { get; set; } = default!;
         public DeviceInfo DeviceInfo { get; set; } = default!;
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime RefreshTokenExpTime { get; set; }
@@ -19,5 +19,14 @@ namespace Domain.DTO
         public string OS { get; set; } = string.Empty;
         public string IP { get; set; } = string.Empty;
         public string UserAgent { get; set; } = string.Empty;
+    }
+
+    public class SessionInfoSummaryDTO
+    {
+        public string SessionID { get; set; } = default!;
+        public DeviceInfo DeviceInfo { get; set; } = default!;
+        public DateTime CreatedAt { get; set; }
+        public DateTime LastAccessedAt { get; set; }
+        public bool IsCurrentSession { get; set; } = false;
     }
 }

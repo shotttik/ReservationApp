@@ -39,7 +39,7 @@ namespace Application.Services
                 throw new AuthorizationException("Invalid or missing user ID in token.");
 
             var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionID!));
-            return sessionInfo == null ? throw new AuthorizationException("Authenticated user not found.") : sessionInfo.Authuser;
+            return sessionInfo == null ? throw new AuthorizationException("Authenticated user not found.") : sessionInfo.AuthUser;
         }
 
         public string GetEmail() => GetClaim(ClaimTypes.Email);
@@ -70,7 +70,7 @@ namespace Application.Services
                 var session = await cacheService.GetAsync<SessionInfoDTO>(sessionKey);
                 if (session != null)
                 {
-                    session.Authuser = authUser;
+                    session.AuthUser = authUser;
                     await ResetSessionAsync(sessionKey, session);
                 }
             }

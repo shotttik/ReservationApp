@@ -3,6 +3,7 @@ using Application.Common.Requests.User;
 using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
+using Domain.DTO;
 using Domain.DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,11 @@ namespace API.Controllers
     [ApiController]
     public class UserController :ControllerBase
     {
-        private readonly IUserService userAccountService;
+        private readonly IUserService userService;
 
-        public UserController(IUserService userAccountService)
+        public UserController(IUserService userService)
         {
-            this.userAccountService = userAccountService;
+            this.userService = userService;
         }
         /// <summary>
         /// Registers a new user
@@ -32,7 +33,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
-            var result = await userAccountService.Register(registerUserRequest);
+            var result = await userService.Register(registerUserRequest);
 
             return result.ToResponse();
         }
@@ -44,7 +45,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var result = await userAccountService.Login(loginRequest);
+            var result = await userService.Login(loginRequest);
 
             return result.ToResponse();
         }
@@ -56,7 +57,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
-            var result = await userAccountService.Refresh(refreshTokenRequest);
+            var result = await userService.Refresh(refreshTokenRequest);
 
             return result.ToResponse();
         }
@@ -67,7 +68,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Logout()
         {
-            var result = await userAccountService.Logout();
+            var result = await userService.Logout();
 
             return result.ToResponse();
         }
@@ -79,7 +80,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
         {
-            var result = await userAccountService.ForgotPassword(forgotPasswordRequest);
+            var result = await userService.ForgotPassword(forgotPasswordRequest);
 
             return result.ToResponse();
         }
@@ -91,7 +92,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
-            var result = await userAccountService.ResetPassword(resetPasswordRequest);
+            var result = await userService.ResetPassword(resetPasswordRequest);
 
             return result.ToResponse();
         }
@@ -103,7 +104,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
         {
-            var result = await userAccountService.GetUserAuthorizationDataAsync();
+            var result = await userService.GetUserAuthorizationDataAsync();
 
             return result.ToResponse();
         }
@@ -113,7 +114,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
-            var result = await userAccountService.VerifyEmail(token);
+            var result = await userService.VerifyEmail(token);
             return result.ToResponse();
         }
         [HttpPost("change-email")]
@@ -123,7 +124,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
         {
-            var result = await userAccountService.ChangeEmail(request);
+            var result = await userService.ChangeEmail(request);
 
             return result.ToResponse();
         }
@@ -134,7 +135,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            var result = await userAccountService.ChangePassword(request);
+            var result = await userService.ChangePassword(request);
 
             return result.ToResponse();
         }
@@ -145,7 +146,18 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {
-            var result = await userAccountService.Update(request);
+            var result = await userService.Update(request);
+            return result.ToResponse();
+        }
+
+        [HttpGet("sessions")]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<Result<List<SessionInfoSummaryDTO>>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetActiveSessions()
+        {
+            var result = await userService.GetActiveSessions();
+
             return result.ToResponse();
         }
     }

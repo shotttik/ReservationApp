@@ -1,6 +1,7 @@
 ﻿using Application.Common.Requests.User;
 using Application.Common.Responses;
 using Application.Common.Results;
+using Domain.DTO;
 using Domain.DTO.User;
 
 namespace Application.Interfaces
@@ -18,5 +19,6 @@ namespace Application.Interfaces
         Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
         Task<Result> ChangePassword(ChangePasswordRequest request);
         Task<Result> Update(UpdateUserRequest request);
+        Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions();
     }
 }

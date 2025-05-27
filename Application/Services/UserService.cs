@@ -197,7 +197,7 @@ namespace Application.Services
             if (sessionInfo == null)
                 return Result.Failure(AuthResults.NotAuthenticated);
 
-            var userId = sessionInfo.Authuser.ID;
+            var userId = sessionInfo.AuthUser.ID;
             await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionID));
 
             var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId)) ?? new List<string>();
@@ -345,6 +345,29 @@ namespace Application.Services
             await authService.RefreshAuthUserCache();
 
             return Result.Success(AuthResults.UserUpdated);
+        }
+
+        public async Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions()
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.ID));
+
+            var sessions = new List<SessionInfoSummaryDTO>();
+            foreach (var sessionId in sessionIds!)
+            {
+                var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionId));
+                if (sessionInfo != null)
+                {
+                    var sessionSummary = sessionInfo.MapToSummaryDTO();
+                    if (sessionSummary.SessionID == authService.GetSessionID())
+                    {
+                        sessionSummary.IsCurrentSession = true;
+                    }
+                    sessions.Add(sessionSummary);
+                }
+            }
+
+            return Result.Success(sessions);
         }
     }
 }
