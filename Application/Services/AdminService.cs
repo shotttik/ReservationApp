@@ -42,6 +42,19 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.EmailAlreadyExists);
             }
+            // company - role compatibility check
+            if (request.CompanyID.HasValue)
+            {
+                if (request.Role != Domain.Enums.Role.CompanyAdmin && request.Role != Domain.Enums.Role.CompanyMember)
+                {
+                    return Result.Failure(AuthResults.RoleIncompatibility);
+                }
+                var company = await companyRepository.Get(request.CompanyID.Value);
+                if (company is null)
+                {
+                    return Result.Failure(CompanyResults.CompanyDoesNotExists);
+                }
+            }
 
             // Create user account and login data
             var userAccount = new UserAccount()
@@ -50,7 +63,8 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = Role.FromID((int)request.Role)!.ID
+                RoleID = (int)request.Role,
+                CompanyID = request.CompanyID
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -66,7 +80,7 @@ namespace Application.Services
 
             await userLoginDataRepository.Add(userLoginData);
 
-            return Result.Success();
+            return Result.Success(AuthResults.UserCreated);
         }
 
         public async Task<Result> UserUpdate(UserUpdateRequest request)
@@ -83,16 +97,7 @@ namespace Application.Services
                 return Result.Failure(AuthResults.UserNotFound);
             }
 
-            if (request.Role != null)
-            {
-                var r = Role.FromID((int)request.Role);
-                if (r is null)
-                {
-                    return Result.Failure(AuthResults.RoleNotFound);
-                }
-                userAccount.RoleID = r.ID;
-            }
-
+            if (request.Role.HasValue) userAccount.RoleID = (int)request.Role;
             if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
             if (request.LastName is not null) userAccount.LastName = request.LastName;
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
@@ -135,6 +140,33 @@ namespace Application.Services
             var users = await userLoginDataRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
 
             return Result.Success(users);
+        }
+        public async Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request)
+        {
+            var user = await userAccountRepository.GetByUserLoginDataID(request.UserID);
+            if (user is null)
+            {
+                return Result.Failure(AuthResults.UserDoesntExists);
+            }
+            if (!request.IsRoleValid)
+            {
+                return Result.Failure(AuthResults.RoleIncompatibility);
+            }
+            var company = await companyRepository.Get(request.CompanyID);
+            if (company is null)
+            {
+                return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            }
+            if (user.CompanyID == request.CompanyID && user.RoleID == (int)request.Role)
+            {
+                return Result.Failure(AuthResults.UserAlreadyAssignedToCompany);
+            }
+            user.CompanyID = request.CompanyID;
+            user.RoleID = (int)request.Role;
+            await userAccountRepository.Update(user);
+            await authService.RefreshUserCache(request.UserID);
+
+            return Result.Success(AuthResults.UserAssignedToCompany);
         }
     }
 }

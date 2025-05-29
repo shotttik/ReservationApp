@@ -22,5 +22,6 @@ namespace Application.Common.Requests.Admin
         public required string Password { get; set; }
         [Required]
         public required Role Role { get; set; }
+        public int? CompanyID { get; set; }
     }
 }

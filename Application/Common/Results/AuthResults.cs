@@ -5,6 +5,7 @@
         #region Errors
         public static readonly Error NotAuthenticated = Error.Forbidden("Auth.NotAuthenticated", "User is not authenticated.");
         public static readonly Error UserNotFound = Error.NotFound("Auth.UserNotFound", "User not found");
+        public static readonly Error UserDoesntExists = Error.Validation("Auth.UserDoesntExists", "User does not exist");
         public static readonly Error InvalidPassword = Error.Validation("Auth.InvalidPassword", "Invalid password");
         public static readonly Error EmailNotVerified = Error.Validation("Auth.EmailNotVerified", "Email is not verified");
 
@@ -22,6 +23,7 @@
         public static readonly Error EmailChangeAlreadyRequested = Error.Conflict("Auth.EmailChangeAlreadyRequested", "You have already requested email change, please wait until token expired.");
         public static readonly Error SessionNotFound = Error.NotFound("Auth.SessionNotFound", "Session not found.");
         public static readonly Error NoActiveSessions = Error.NotFound("Auth.NoActiveSessions", "No active sessions found for this user.");
+        public static readonly Error UserAlreadyAssignedToCompany = Error.Conflict("Auth.UserAlreadyAssignedToCompany", "User already assigned to this company with specific role.");
         #endregion
 
         #region Success
@@ -35,6 +37,8 @@
         public static readonly SuccessInfo UserUpdated = new("Auth.UserUpdated", "User updated successfully.");
         public static readonly SuccessInfo SessionRemoved = new("Auth.SessionRemoved", "Session removed successfully.");
         public static readonly SuccessInfo AllSessionsRemoved = new("Auth.AllSessionsRemoved", "All sessions removed successfully, and logged out.");
+        public static readonly SuccessInfo UserCreated = new("Auth.UserCreated", "User created successfully.");
+        public static readonly SuccessInfo UserAssignedToCompany = new("Auth.UserAssignedToCompany", "User assigned to company successfully.");
 
         #endregion
     }
