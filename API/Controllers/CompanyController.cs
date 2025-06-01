@@ -33,7 +33,7 @@ namespace API.Controllers
         {
             var result = await companyService.InviteMember(request.UserAccountID);
 
-            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpGet("invite-accept")]
         [Logging(LoggingType.Full)]
@@ -43,7 +43,7 @@ namespace API.Controllers
         {
             var result = await companyService.InviteAccept(token);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpPost("service")]
         [Logging(LoggingType.Full)]
@@ -55,7 +55,7 @@ namespace API.Controllers
         {
             Result result = await companyService.ServicesCreate(request);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpPut("service")]
         [Logging(LoggingType.Full)]
@@ -67,7 +67,7 @@ namespace API.Controllers
         {
             Result result = await companyService.ServicesUpdate(request);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpDelete("service")]
         [Logging(LoggingType.Full)]
@@ -79,7 +79,7 @@ namespace API.Controllers
         {
             Result result = await companyService.ServicesDelete(ID);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         [HttpGet("paged")]
         [Logging(LoggingType.Full)]
@@ -90,14 +90,7 @@ namespace API.Controllers
         {
             var result = await companyService.RetrievePaged(parameters, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            else
-            {
-                return result.ToProblemDetails();
-            }
+            return result.ToResponse();
         }
     }
 }
