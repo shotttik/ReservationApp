@@ -1,21 +1,15 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
     public class UserAccountRepository :BaseRepository<UserAccount>, IUserAccountRepository
     {
-        private readonly ApplicationDbContext dbContext;
-        private readonly ICacheService cache;
 
         public UserAccountRepository(
-            ApplicationDbContext dbContext,
-            ICacheService cache) : base(dbContext)
+            ApplicationDbContext dbContext) : base(dbContext)
         {
-            this.dbContext = dbContext;
-            this.cache = cache;
         }
         public override async Task Update(UserAccount userAccount)
         {

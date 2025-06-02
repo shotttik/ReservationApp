@@ -13,6 +13,8 @@ namespace Application.Extensions.Mappers
                 DayOfWeek = workSchedule.DayOfWeek,
                 StartTime = workSchedule.StartTime,
                 EndTime = workSchedule.EndTime,
+                BreakStartTime = workSchedule.BreakStartTime,
+                BreakEndTime = workSchedule.BreakEndTime,
                 IsWorkingDay = workSchedule.IsWorkingDay
             };
         }
@@ -23,6 +25,8 @@ namespace Application.Extensions.Mappers
                 DayOfWeek = workSchedule.DayOfWeek,
                 StartTime = workSchedule.StartTime,
                 EndTime = workSchedule.EndTime,
+                BreakStartTime = workSchedule.BreakStartTime,
+                BreakEndTime = workSchedule.BreakEndTime,
                 IsWorkingDay = workSchedule.IsWorkingDay
             };
         }

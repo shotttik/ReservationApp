@@ -13,7 +13,7 @@ namespace Application.Authentication
         {
             var claims = new []
             {
-                new Claim(ClaimTypes.PrimarySid, userAccountID.ToString()),
+                new Claim(ClaimTypes.PrimarySid, userLoginDataID.ToString()),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Sid, userAccountID.ToString()),
                 new Claim("SessionID", sessionID), // custom claim for session ID

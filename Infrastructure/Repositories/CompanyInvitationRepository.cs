@@ -7,12 +7,10 @@ namespace Infrastructure.Repositories
 {
     public class CompanyInvitationRepository :BaseRepository<CompanyInvitation>, ICompanyInvitationRepository
     {
-        private readonly ApplicationDbContext dbContext;
         private readonly DbSet<CompanyInvitation> dbSet;
 
         public CompanyInvitationRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
-            this.dbContext = dbContext;
             this.dbSet = dbContext.CompanyInvitations;
         }
 

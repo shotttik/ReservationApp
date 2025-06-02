@@ -7,6 +7,7 @@ using Domain.DTO.User;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
 {
@@ -18,6 +19,7 @@ namespace Application.Services
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
         private readonly ICompanyRepository companyRepository;
+        private readonly IConfiguration configuration;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
@@ -25,7 +27,8 @@ namespace Application.Services
             IRoleRepository roleRepository,
             IAuthService authService,
             ICacheService cacheService,
-            ICompanyRepository companyRepository
+            ICompanyRepository companyRepository,
+            IConfiguration configuration
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -34,6 +37,7 @@ namespace Application.Services
             this.authService = authService;
             this.cacheService = cacheService;
             this.companyRepository = companyRepository;
+            this.configuration = configuration;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -55,6 +59,9 @@ namespace Application.Services
                     return Result.Failure(CompanyResults.CompanyDoesNotExists);
                 }
             }
+            var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
+            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             // Create user account and login data
             var userAccount = new UserAccount()
@@ -75,7 +82,9 @@ namespace Application.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                UserAccountID = userAccount.ID
+                UserAccountID = userAccount.ID,
+                VerificationToken = verificationToken,
+                VerificationTokenExpTime = verificationTokenExpirationTime,
             };
 
             await userLoginDataRepository.Add(userLoginData);

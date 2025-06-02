@@ -38,6 +38,22 @@
             code: "WorkSchedule.Mismatch",
             description: "Work schedules does not match with existed work schedules."
         );
+        public static readonly Error InvalidBreakTime = Error.Validation(
+            code: "WorkSchedule.InvalidBreakTime",
+            description: "Break time must be less than working time."
+        );
+        public static readonly Error BreakTimeOutOfRange = Error.Validation(
+            code: "WorkSchedule.BreakTimeOutOfRange",
+            description: "Break time must be between 0 and 60 minutes."
+        );
+        public static readonly Error InsufficientWorkingHours = Error.Validation(
+            code: "WorkSchedule.InsufficientWorkingHours",
+            description: "Insufficient working hours detected. Please review the work schedule."
+        );
+        public static readonly Error ExcessiveWorkingHours = Error.Validation(
+            code: "WorkSchedule.ExcessiveWorkingHours",
+            description: "Excessive working hours detected. Please review the work schedule."
+        );
         #endregion
     }
 }
