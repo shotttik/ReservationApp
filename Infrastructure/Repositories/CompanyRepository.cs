@@ -32,12 +32,18 @@ namespace Infrastructure.Repositories
         }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            bool forPublic // only active companies
             )
         {
-            var query = _dbSet.AsQueryable();
 
+            var query = _dbSet.AsQueryable();
             query = query.ApplyQueryParamsAsync(parameters);
+
+            if (!forPublic)
+            {
+                query = query.Where(c => c.IsActive);
+            }
 
             var totalCount = await query.CountAsync();
             var companies = await query.

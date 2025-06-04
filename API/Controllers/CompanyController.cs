@@ -88,7 +88,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken);
+            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic:false);
 
             return result.ToResponse();
         }

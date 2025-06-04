@@ -5,9 +5,11 @@ using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
+using Domain.DTO.Company;
 using Domain.DTO.User;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -16,10 +18,14 @@ namespace API.Controllers
     public class AdminController :ControllerBase
     {
         private readonly IAdminService adminService;
+        private readonly ICompanyService companyService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(
+            IAdminService adminService,
+            ICompanyService companyService)
         {
             this.adminService = adminService;
+            this.companyService = companyService;
         }
 
         [HttpPost("user")]
@@ -80,6 +86,18 @@ namespace API.Controllers
         public async Task<IActionResult> AssignUserToCompany([FromBody] AssignUserToCompanyRequest request)
         {
             var result = await adminService.AssignUserToCompany(request);
+
+            return result.ToResponse();
+        }
+        [HttpGet("company/paged")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanyRead)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<CompanyDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
 
             return result.ToResponse();
         }

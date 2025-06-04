@@ -14,6 +14,7 @@ namespace Application.Interfaces
         Task<Result> ServicesDelete(int ID);
         Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
-           CancellationToken cancellationToken);
+           CancellationToken cancellationToken,
+           bool forPublic);
     }
 }

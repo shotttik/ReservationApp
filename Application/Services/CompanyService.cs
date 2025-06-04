@@ -124,7 +124,8 @@ namespace Application.Services
         }
         public async Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
-           CancellationToken cancellationToken)
+           CancellationToken cancellationToken,
+           bool forPublic)
         {
             var errors = parameters.Validate<CompanyDTO>();
             if (errors.Any())
@@ -134,7 +135,9 @@ namespace Application.Services
 
             var companies = await companyRepository.RetrievePaged(
                 parameters,
-                cancellationToken);
+                cancellationToken,
+                forPublic
+                );
 
             return companies;
         }
