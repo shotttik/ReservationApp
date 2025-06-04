@@ -88,7 +88,18 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic:false);
+            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
+
+            return result.ToResponse();
+        }
+        [HttpGet("{id:int}")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAction(int id)
+        {
+            var result = await companyService.Get(id, forPublic: true);
 
             return result.ToResponse();
         }

@@ -16,5 +16,6 @@ namespace Application.Interfaces
            PagedParameters parameters,
            CancellationToken cancellationToken,
            bool forPublic);
+        Task<Result<CompanyDTO>> Get(int id, bool forPublic);
     }
 }

@@ -141,5 +141,16 @@ namespace Application.Services
 
             return companies;
         }
+
+        public async Task<Result<CompanyDTO>> Get(int id, bool forPublic)
+        {
+            var company = await companyRepository.GetFullData(id);
+            if (company is null || (forPublic && !company.IsActive))
+            {
+                return Result.Failure<CompanyDTO>(CompanyResults.CompanyNotFound);
+            }
+
+            return Result.Success(company.MapToDTO());
+        }
     }
 }

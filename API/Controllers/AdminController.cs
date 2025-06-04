@@ -101,5 +101,17 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+
+        [HttpGet("company/{id:int}")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAction(int id)
+        {
+            var result = await companyService.Get(id, forPublic: false);
+
+            return result.ToResponse();
+        }
     }
 }

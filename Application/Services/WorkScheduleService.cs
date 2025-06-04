@@ -2,7 +2,6 @@
 using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
-using Domain.DTO.Company;
 using Domain.DTO.User;
 using Domain.DTO.WorkSchedule;
 using Domain.Entities;
@@ -44,6 +43,10 @@ namespace Application.Services
             if (validationResult != null)
                 return validationResult;
             var company = await companyRepository.GetFullData(AuthUser.CompanyID!.Value);
+            if (company == null)
+            {
+                return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            }
             // Check if schedules already exist
             bool existsSchedules = isForEmployee ?
                 AuthUser.WorkSchedules.Count != 0 :
@@ -83,7 +86,10 @@ namespace Application.Services
         {
             var AuthUser = await authService.GetCurrentUser();
             var company = await companyRepository.GetFullData(AuthUser.CompanyID!.Value);
-
+            if (company == null)
+            {
+                return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            }
             // Check if schedules exist
             var existsSchedules = isForEmployee ?
                 AuthUser.WorkSchedules.Count != 0 :
