@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using Domain.Enums;
+
+namespace Domain.Entities
 {
     public class Company :BaseEntity
     {
@@ -7,6 +9,7 @@
         public required string IN { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public CompanyType Type { get; set; }
         public bool IsActive { get; set; }
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];

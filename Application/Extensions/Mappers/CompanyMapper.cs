@@ -1,4 +1,6 @@
-﻿using Domain.DTO.Company;
+﻿using Application.Common.Requests.Admin;
+using Domain.DTO.Company;
+using Domain.Entities;
 
 namespace Application.Extensions.Mappers
 {
@@ -14,6 +16,7 @@ namespace Application.Extensions.Mappers
                 IN = company.IN,
                 Email = company.Email,
                 Phone = company.Phone,
+                Type = company.Type,
                 IsActive = company.IsActive,
                 CreatedAt = company.CreatedAt,
                 Services = company.Services.Select(s => new ServiceDTO
@@ -27,6 +30,17 @@ namespace Application.Extensions.Mappers
                 }).ToList()
             };
         }
+        public static Company MapToEntity(this CompanyCreateRequest request) => new()
+        {
+            Name = request.Name,
+            Description = request.Description,
+            IN = request.IN,
+            Email = request.Email,
+            Phone = request.Phone,
+            Type = request.Type,
+            IsActive = request.IsActive
+        };
+
         public static Domain.Entities.Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)
         {
             return new Domain.Entities.Company
@@ -37,6 +51,7 @@ namespace Application.Extensions.Mappers
                 IN = companyDTO.IN,
                 Email = companyDTO.Email,
                 Phone = companyDTO.Phone,
+                Type = companyDTO.Type,
                 IsActive = companyDTO.IsActive,
                 CreatedAt = companyDTO.CreatedAt
             };

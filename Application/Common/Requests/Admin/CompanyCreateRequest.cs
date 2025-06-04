@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 namespace Application.Common.Requests.Admin
 {
     public class CompanyCreateRequest()
@@ -18,6 +19,8 @@ namespace Application.Common.Requests.Admin
         [Length(1, 30)]
         [RegularExpression(@"^\d+$", ErrorMessage = "Phone must be only numbers.")]
         public string? Phone { get; set; }
+        [Required]
+        public CompanyType Type { get; set; }
         public bool IsActive { get; set; } = true;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Domain.DTO.Company
+﻿using Domain.Enums;
+
+namespace Domain.DTO.Company
 {
     public class CompanyDTO
     {
@@ -8,6 +10,7 @@
         public required string IN { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }
+        public CompanyType Type { get; set; } = CompanyType.None;
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public IEnumerable<ServiceDTO> Services { get; set; } = [];

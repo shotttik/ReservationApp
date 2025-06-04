@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,6 +16,10 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.Email).HasMaxLength(255);
             builder.Property(e => e.Phone).HasMaxLength(9);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+
+            builder.Property(e => e.Type)
+                .HasConversion<int>()
+                .HasDefaultValue(CompanyType.None);
 
             builder.HasIndex(e => e.Name).IsUnique();
             builder.HasIndex(e => e.IN).IsUnique();

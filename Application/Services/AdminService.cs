@@ -1,6 +1,7 @@
 ﻿using Application.Authentication;
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.User;
@@ -124,15 +125,7 @@ namespace Application.Services
                 return Result.Failure(CompanyResults.AlreadyExists);
             }
 
-            var company = new Company()
-            {
-                Name = request.Name,
-                Description = request.Description,
-                IN = request.IN,
-                Email = request.Email,
-                Phone = request.Phone,
-                IsActive = request.IsActive,
-            };
+            var company = request.MapToEntity();
             await companyRepository.Add(company);
 
             return Result.Success();
