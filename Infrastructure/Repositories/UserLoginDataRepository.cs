@@ -28,9 +28,6 @@ namespace Infrastructure.Repositories
                     .ThenInclude(ua => ua.Role)
                         .ThenInclude(ur => ur!.Permissions)
                 .Include(u => u.UserAccount)
-                    .ThenInclude(e => e.Company)
-                        .ThenInclude(c => c.WorkSchedules)
-                .Include(u => u.UserAccount)
                 .FirstOrDefaultAsync();
 
             return userLoginData;
@@ -42,9 +39,6 @@ namespace Infrastructure.Repositories
                 .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.Role)
                         .ThenInclude(ur => ur!.Permissions)
-                  .Include(u => u.UserAccount)
-                    .ThenInclude(e => e.Company)
-                        .ThenInclude(c => c.WorkSchedules)
                 .Include(u => u.UserAccount)
                    .ThenInclude(u => u.WorkSchedules)
                 .FirstOrDefaultAsync();

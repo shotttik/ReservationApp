@@ -23,6 +23,13 @@ namespace Infrastructure.Repositories
                 (email == null || c.Email == email) ||
                 (phone == null || c.Phone == phone));
         }
+        public async Task<Company> GetFullData(int id)
+        {
+            return await _dbSet
+                .Include(c => c.Services)
+                .Include(c => c.WorkSchedules)
+                .FirstOrDefaultAsync(c => c.ID == id) ?? throw new KeyNotFoundException($"Company with ID {id} not found.");
+        }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,
             CancellationToken cancellationToken

@@ -53,7 +53,7 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
             {
-                CompanyID = AuthUser.Company!.ID,
+                CompanyID = AuthUser.CompanyID!.Value,
                 UserAccountID = member.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.UtcNow.AddDays(expDays),
@@ -97,7 +97,7 @@ namespace Application.Services
         public async Task<Result> ServicesCreate(ServicesCreateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
+            var services = request.Services.Select(service => service.MapToEntity(AuthUser.CompanyID!.Value));
             await serviceRepository.AddRange(services);
 
             return Result.Success();
@@ -105,7 +105,7 @@ namespace Application.Services
         public async Task<Result> ServicesUpdate(ServicesUpdateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var services = request.Services.Select(service => service.MapToEntity(AuthUser.Company!.ID)).ToList();
+            var services = request.Services.Select(service => service.MapToEntity(AuthUser.CompanyID!.Value)).ToList();
             await serviceRepository.UpdateRange(services);
 
             return Result.Success();
@@ -114,7 +114,7 @@ namespace Application.Services
         {
             var AuthUser = await authService.GetCurrentUser();
             var service = await serviceRepository.Get(ID);
-            if (service == null || service.CompanyID != AuthUser.Company!.ID)
+            if (service == null || service.CompanyID != AuthUser.CompanyID!.Value)
             {
                 return Result.Failure(CompanyResults.ServiceNotFound);
             }

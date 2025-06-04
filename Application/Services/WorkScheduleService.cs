@@ -2,11 +2,11 @@
 using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Domain.DTO.Company;
 using Domain.DTO.User;
 using Domain.DTO.WorkSchedule;
 using Domain.Entities;
 using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services
@@ -15,19 +15,22 @@ namespace Application.Services
     {
         private readonly IWorkScheduleRepository workScheduleRepository;
         private readonly IAuthService authService;
+        private readonly ICompanyRepository companyRepository;
 
         public WorkScheduleService(
             IWorkScheduleRepository workScheduleRepository,
-            IAuthService authService
+            IAuthService authService,
+            ICompanyRepository companyRepository
             )
         {
             this.workScheduleRepository = workScheduleRepository;
             this.authService = authService;
+            this.companyRepository = companyRepository;
         }
 
         public async Task<Result> WorkSchedulesCreate(WorkSchedulesCreateRequest request, bool isForEmployee)
         {
-            var authUser = await authService.GetCurrentUser();
+            var AuthUser = await authService.GetCurrentUser();
 
             // Validate request has all days of week
             if (request.WorkSchedules.IsNullOrEmpty() ||
@@ -40,11 +43,11 @@ namespace Application.Services
             var validationResult = ValidateWorkSchedules(request.WorkSchedules);
             if (validationResult != null)
                 return validationResult;
-
+            var company = await companyRepository.GetFullData(AuthUser.CompanyID!.Value);
             // Check if schedules already exist
             bool existsSchedules = isForEmployee ?
-                authUser.WorkSchedules.Count != 0 :
-                authUser.Company!.WorkSchedules.Count != 0;
+                AuthUser.WorkSchedules.Count != 0 :
+                company!.WorkSchedules.Count != 0;
 
             if (existsSchedules)
             {
@@ -52,7 +55,7 @@ namespace Application.Services
             }
 
             // Validate employee schedules are within company bounds
-            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, authUser))
+            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser, company))
             {
                 return Result.Failure(WorkScheduleResults.EmployeeWorkingTimesOutOfBounds);
             }
@@ -62,7 +65,7 @@ namespace Application.Services
             foreach (var schedule in request.WorkSchedules)
             {
                 var workSchedule = schedule.MapToEntity();
-                workSchedule.CompanyID = authUser.Company!.ID;
+                workSchedule.CompanyID = company.ID;
                 if (isForEmployee)
                 {
                     workSchedule.UserID = authService.GetUserAccountID();
@@ -78,12 +81,13 @@ namespace Application.Services
 
         public async Task<Result> WorkSchedulesUpdate(WorkSchedulesUpdateRequest request, bool isForEmployee)
         {
-            var authUser = await authService.GetCurrentUser();
+            var AuthUser = await authService.GetCurrentUser();
+            var company = await companyRepository.GetFullData(AuthUser.CompanyID!.Value);
 
             // Check if schedules exist
             var existsSchedules = isForEmployee ?
-                authUser.WorkSchedules.Count != 0 :
-                authUser.Company!.WorkSchedules.Count != 0;
+                AuthUser.WorkSchedules.Count != 0 :
+                company!.WorkSchedules.Count != 0;
 
             if (!existsSchedules)
             {
@@ -93,8 +97,8 @@ namespace Application.Services
             // Validate schedule IDs match existing schedules
             bool scheduleNotExists = request.WorkSchedules.Any(i =>
                 isForEmployee ?
-                !authUser.WorkSchedules.Select(e => e.ID).Contains(i.ID) :
-                !authUser.Company!.WorkSchedules.Select(e => e.ID).Contains(i.ID)
+                !AuthUser.WorkSchedules.Select(e => e.ID).Contains(i.ID) :
+                !company!.WorkSchedules.Select(e => e.ID).Contains(i.ID)
             );
 
             if (scheduleNotExists)
@@ -108,7 +112,7 @@ namespace Application.Services
                 return validationResult;
 
             // Validate employee schedules are within company bounds
-            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, authUser))
+            if (isForEmployee && IsEmployeeOutOfBounds(request.WorkSchedules, AuthUser, company))
             {
                 return Result.Failure(WorkScheduleResults.EmployeeWorkingTimesOutOfBounds);
             }
@@ -117,7 +121,7 @@ namespace Application.Services
             var updatedSchedules = request.WorkSchedules.Select(schedule =>
             {
                 var entity = schedule.MapToEntity();
-                entity.CompanyID = authUser.Company!.ID;
+                entity.CompanyID = company.ID;
                 if (isForEmployee)
                 {
                     entity.UserID = authService.GetUserAccountID();
@@ -131,11 +135,11 @@ namespace Application.Services
             return Result.Success();
         }
 
-        private static bool IsEmployeeOutOfBounds(IEnumerable<BaseWorkScheduleDTO> requestSchedules, UserAccountDTO authUser)
+        private static bool IsEmployeeOutOfBounds(IEnumerable<BaseWorkScheduleDTO> requestSchedules, UserAccountDTO authUser, Company company)
         {
             foreach (var employeeSchedule in requestSchedules)
             {
-                var companySchedule = authUser.Company!.WorkSchedules
+                var companySchedule = company!.WorkSchedules
                     .FirstOrDefault(cs => cs.DayOfWeek == employeeSchedule.DayOfWeek);
 
                 if (companySchedule == null)
@@ -156,7 +160,7 @@ namespace Application.Services
             return false;
         }
 
-        private static bool IsScheduleWithinBounds(BaseWorkScheduleDTO employeeSchedule, BaseWorkScheduleDTO companySchedule)
+        private static bool IsScheduleWithinBounds(BaseWorkScheduleDTO employeeSchedule, WorkSchedule companySchedule)
         {
             // If company works 24 hours, employee can work any schedule
             if (companySchedule.Is24HourShift)
