@@ -129,5 +129,17 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+
+        [HttpGet("user/{id:int}")]
+        [HasPermission(Permission.UserRead)]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var result = await adminService.GetUser(id);
+
+            return result.ToResponse();
+        }
     }
 }

@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<Result> CompanyCreate(CompanyCreateRequest request);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request);
+        Task<Result<UserLoginDataDTO>> GetUser(int id);
     }
 }

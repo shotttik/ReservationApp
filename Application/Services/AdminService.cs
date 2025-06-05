@@ -170,5 +170,15 @@ namespace Application.Services
 
             return Result.Success(AuthResults.UserAssignedToCompany);
         }
+
+        public async Task<Result<UserLoginDataDTO>> GetUser(int id)
+        {
+            var user = await userLoginDataRepository.GetFullUserData(id);
+            if (user is null)
+            {
+                return Result.Failure<UserLoginDataDTO>(AuthResults.UserNotFound);
+            }
+            return Result.Success(user.MapToDTO());
+        }
     }
 }
