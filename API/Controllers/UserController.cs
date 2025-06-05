@@ -13,6 +13,7 @@ namespace API.Controllers
 {
     [Route("api/user")]
     [ApiController]
+    [Tags("User Account")]
     public class UserController :ControllerBase
     {
         private readonly IUserService userService;
@@ -22,10 +23,10 @@ namespace API.Controllers
             this.userService = userService;
         }
         /// <summary>
-        /// Registers a new user
+        /// Registers a new user account.
         /// </summary>
-        /// <param name="registerUserRequest">The registration details</param>
-        /// <returns>Registration result</returns>
+        /// <param name="registerUserRequest">User registration details including email, password, and profile info.</param>
+        /// <returns>Success with a verification token or error if registration fails.</returns>
         [HttpPost("register")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
@@ -37,7 +38,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Authenticates a user and returns an access/refresh token pair.
+        /// </summary>
+        /// <param name="loginRequest">Login credentials (email and password).</param>
+        /// <returns>Access and refresh tokens if successful.</returns>
         [HttpPost("login")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
@@ -49,7 +54,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Refreshes a JWT using a valid refresh token.
+        /// </summary>
+        /// <param name="refreshTokenRequest">Request containing expired access token and valid refresh token.</param>
+        /// <returns>New access and refresh tokens.</returns>
         [HttpPost("refresh-token")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -61,7 +70,10 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Logs the current user out and invalidates their session.
+        /// </summary>
+        /// <returns>Success if session was removed.</returns>
         [HttpPost("logout")]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
@@ -72,7 +84,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Initiates password recovery by sending a recovery token to the user's email.
+        /// </summary>
+        /// <param name="forgotPasswordRequest">User email to send the token to.</param>
+        /// <returns>Token (for dev/testing) or email notification trigger.</returns>
         [HttpPost("forgot-password")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -84,7 +100,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Resets the user's password using a valid recovery token.
+        /// </summary>
+        /// <param name="resetPasswordRequest">New password and recovery token.</param>
+        /// <returns>Success if password was changed.</returns>
         [HttpPost("reset-password")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
@@ -96,7 +116,10 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Gets the authorization data for the current logged-in user.
+        /// </summary>
+        /// <returns>Basic profile and role info of the current user.</returns>
         [HttpGet("authorization-data")]
         [Authorize]
         [Logging(LoggingType.Full)]
@@ -108,6 +131,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Verifies a user's email using a token from the registration or email change process.
+        /// </summary>
+        /// <param name="token">Email verification token.</param>
+        /// <returns>Success if email is verified.</returns>
         [HttpGet("verify-email")]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
@@ -117,6 +145,11 @@ namespace API.Controllers
             var result = await userService.VerifyEmail(token);
             return result.ToResponse();
         }
+        /// <summary>
+        /// Requests to change the user's email. Sends a verification token to the new email.
+        /// </summary>
+        /// <param name="request">New email address.</param>
+        /// <returns>Success with a verification token (dev/testing) or email sent.</returns>
         [HttpPost("change-email")]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -128,6 +161,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Changes the user's current password.
+        /// </summary>
+        /// <param name="request">Current and new password.</param>
+        /// <returns>Success if password is updated.</returns>
         [HttpPost("change-password")]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -139,6 +177,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Updates basic user profile data like name, birthdate, or gender.
+        /// </summary>
+        /// <param name="request">Updated profile information.</param>
+        /// <returns>Success if update was saved.</returns>
         [HttpPut]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -149,7 +192,10 @@ namespace API.Controllers
             var result = await userService.Update(request);
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Retrieves all active sessions for the current user.
+        /// </summary>
+        /// <returns>List of active sessions including current one.</returns>
         [HttpGet("sessions")]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -160,6 +206,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Deletes a specific active session by ID.
+        /// </summary>
+        /// <param name="sessionId">ID of the session to terminate.</param>
+        /// <returns>Success if the session was removed.</returns>
         [HttpDelete("session/{sessionId}")]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -171,7 +222,10 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Deletes all active sessions for the current user.
+        /// </summary>
+        /// <returns>Success if all sessions were removed.</returns>
         [HttpDelete("sessions")]
         [Logging(LoggingType.Full)]
         [Authorize]
@@ -182,6 +236,10 @@ namespace API.Controllers
             var result = await userService.DeleteAllActiveSessions();
             return result.ToResponse();
         }
+        /// <summary>
+        /// Soft deletes the current user account (deactivation).
+        /// </summary>
+        /// <returns>Success if user is marked as deleted.</returns>
         [HttpDelete("user")]
         [Authorize]
         [Logging(LoggingType.Full)]

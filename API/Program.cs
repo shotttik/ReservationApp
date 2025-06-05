@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -113,6 +114,16 @@ void ConfigureServices(IServiceCollection services)
             Array.Empty<string>()
         }
     });
+        // Get the path to the generated XML file
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+        // Add the XML comments file to Swagger
+        options.IncludeXmlComments(xmlPath);
+
+        // optional: use method summaries in schema descriptions
+        options.UseInlineDefinitionsForEnums();
+
     });
     // Register DbContext with SQL Server
     services.AddStackExchangeRedisCache(options =>

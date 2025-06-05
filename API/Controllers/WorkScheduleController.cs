@@ -11,6 +11,7 @@ namespace API.Controllers
 {
     [Route("api/work-schedule")]
     [ApiController]
+    [Tags("Work Schedules")]
     public class WorkScheduleController :ControllerBase
     {
         private readonly IWorkScheduleService workScheduleService;
@@ -19,6 +20,14 @@ namespace API.Controllers
         {
             this.workScheduleService = workScheduleService;
         }
+        /// <summary>
+        /// Creates a full work schedule for the company.
+        /// </summary>
+        /// <remarks>
+        /// The schedule must include all 7 days of the week. Can only be created if it doesn't already exist.
+        /// </remarks>
+        /// <param name="request">List of work schedule entries for the company.</param>
+        /// <returns>Success if creation is successful, or validation errors otherwise.</returns>
         [HttpPost("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -31,7 +40,14 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
-
+        /// <summary>
+        /// Updates the existing company work schedule.
+        /// </summary>
+        /// <remarks>
+        /// All schedule entries must reference existing work schedule IDs.
+        /// </remarks>
+        /// <param name="request">Updated schedule entries for the company.</param>
+        /// <returns>Success if update is applied.</returns>
         [HttpPut("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -44,6 +60,14 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
+        /// <summary>
+        /// Creates the employee's personal work schedule.
+        /// </summary>
+        /// <remarks>
+        /// Must conform to the company's defined schedule boundaries (e.g., hours, days).
+        /// </remarks>
+        /// <param name="request">Schedule entries for all 7 days of the week.</param>
+        /// <returns>Success if creation is valid and within company constraints.</returns>
         [HttpPost("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -54,7 +78,14 @@ namespace API.Controllers
 
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
         }
-
+        /// <summary>
+        /// Updates the employee's personal work schedule.
+        /// </summary>
+        /// <remarks>
+        /// All updated entries must match existing employee schedule IDs.
+        /// </remarks>
+        /// <param name="request">Updated work schedule entries.</param>
+        /// <returns>Success if update passes validation and is within company-defined limits.</returns>
         [HttpPut("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]

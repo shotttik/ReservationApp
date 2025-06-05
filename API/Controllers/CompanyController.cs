@@ -14,6 +14,7 @@ namespace API.Controllers
 {
     [Route("api/company")]
     [ApiController]
+    [Tags("Company Management")]
     public class CompanyController :ControllerBase
     {
         private readonly ICompanyService companyService;
@@ -23,6 +24,15 @@ namespace API.Controllers
             this.companyService = companyService;
 
         }
+        /// <summary>
+        /// Sends a company membership invitation to a user.
+        /// </summary>
+        /// <remarks>
+        /// Only company admins can invite users to join their company. 
+        /// The user must currently be a public user.
+        /// </remarks>
+        /// <param name="request">Contains the user account ID to invite.</param>
+        /// <returns>A secure token (for dev/testing) or email notification result.</returns>
         [HttpPost("invite")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
@@ -35,6 +45,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Accepts a company invitation using a secure token.
+        /// </summary>
+        /// <param name="token">The invitation token received by email.</param>
+        /// <returns>Success result if invitation is valid and accepted.</returns>
         [HttpGet("invite-accept")]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
@@ -45,6 +60,14 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Creates a list of services offered by the company.
+        /// </summary>
+        /// <remarks>
+        /// Can only be done once if services do not already exist for the company.
+        /// </remarks>
+        /// <param name="request">List of service details to create.</param>
+        /// <returns>Success if services are saved.</returns>
         [HttpPost("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -57,6 +80,14 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Updates existing services for the company.
+        /// </summary>
+        /// <remarks>
+        /// The provided service list must match existing service IDs.
+        /// </remarks>
+        /// <param name="request">List of service updates.</param>
+        /// <returns>Success if updates are applied.</returns>
         [HttpPut("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -69,6 +100,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Deletes a specific service from the company's service list.
+        /// </summary>
+        /// <param name="ID">The unique ID of the service to delete.</param>
+        /// <returns>Success if deletion is successful.</returns>
         [HttpDelete("service")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -81,6 +117,12 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Retrieves a paginated list of companies.
+        /// </summary>
+        /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Paged list of company records.</returns>
         [HttpGet("paged")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -92,6 +134,11 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Retrieves detailed information about a specific company.
+        /// </summary>
+        /// <param name="id">The ID of the company to retrieve.</param>
+        /// <returns>Returns the company details if found.</returns>
         [HttpGet("{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
