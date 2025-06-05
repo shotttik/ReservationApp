@@ -95,7 +95,6 @@ namespace Application.Services
 
         public async Task<Result> UserUpdate(UserUpdateRequest request)
         {
-            var AuthUser = await authService.GetCurrentUser();
             if (request == null)
             {
                 return Result.Failure(AuthResults.ArgumentNull);
@@ -179,6 +178,23 @@ namespace Application.Services
                 return Result.Failure<UserLoginDataDTO>(AuthResults.UserNotFound);
             }
             return Result.Success(user.MapToDTO());
+        }
+
+        public async Task<Result> ReactivateUser(int userID)
+        {
+            var userLoginData = await userLoginDataRepository.Get(userID);
+            if (userLoginData == null)
+            {
+                return Result.Failure(AuthResults.UserDoesntExists);
+            }
+            if (userLoginData.DeletedAt == null)
+            {
+                return Result.Failure(AuthResults.UserNotDeactivated);
+            }
+            userLoginData.DeletedAt = null;
+            await userLoginDataRepository.Update(userLoginData);
+
+            return Result.Success(AuthResults.UserReactivated);
         }
     }
 }

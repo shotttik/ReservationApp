@@ -13,5 +13,6 @@ namespace Application.Interfaces
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request);
         Task<Result<UserLoginDataDTO>> GetUser(int id);
+        Task<Result> ReactivateUser(int userID);
     }
 }
