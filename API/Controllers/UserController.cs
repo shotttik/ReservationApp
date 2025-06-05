@@ -182,5 +182,17 @@ namespace API.Controllers
             var result = await userService.DeleteAllActiveSessions();
             return result.ToResponse();
         }
+        [HttpDelete("user")]
+        [Authorize]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> UserDelete()
+        {
+            var result = await userService.Delete(null, false);
+
+            return result.ToResponse();
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Domain.Entities
         public string? RecoveryToken { get; set; }
         public DateTime? RecoveryTokenExpTime { get; set; }
         public string? PendingNewEmail { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public UserAccount UserAccount { get; set; } = null!;
     }
 }

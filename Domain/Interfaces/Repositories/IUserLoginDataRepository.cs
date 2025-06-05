@@ -12,9 +12,9 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
         Task<UserLoginData?> GetByUserAccountID(int userAccountID);
         Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
-        Task<PagedList<AuthUser>> RetrievePaged(
-            PagedParameters parameters,
-            CancellationToken cancellationToken,
-            int authUserID);
+        Task<PagedList<UserLoginDataDTO>> RetrievePaged(
+           PagedParameters parameters,
+           CancellationToken cancellationToken,
+           int authUserID);
     }
 }

@@ -131,13 +131,13 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result<PagedList<AuthUser>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
             var errors = parameters.Validate<AuthUser>();
             if (errors.Any())
             {
-                return Result.Failure<PagedList<AuthUser>>(PagedListResults.InvalidPagedParameters(errors.First()));
+                return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
             var users = await userLoginDataRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
 

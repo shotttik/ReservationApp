@@ -103,6 +103,10 @@ namespace Application.Services
             {
                 return Result.Failure<LoginResponse>(AuthResults.InvalidPassword);
             }
+            if (user.DeletedAt != null)
+            {
+                return Result.Failure<LoginResponse>(AuthResults.UserDeletedCantBeUsed);
+            }
 
             var AuthUser = user.MapToAuthorizationData();
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
@@ -415,6 +419,41 @@ namespace Application.Services
             await cacheService.RemoveAsync(CacheUtils.ActiveSessionsKey((int)UserID));
 
             return Result.Success(AuthResults.AllSessionsRemoved);
+        }
+
+        // administrator can delete any user, otherwise only current user can delete their own account
+        public async Task<Result> Delete(int? userID, bool force)
+        {
+            var invalidUserID = userID.HasValue && userID < 0;
+            if (invalidUserID)
+            {
+                return Result.Failure(AuthResults.InvalidId);
+            }
+            userID ??= authService.GetUserLoginDataID();
+
+            var userLoginData = await userLoginDataRepository.Get((int)userID);
+            if (userLoginData == null)
+            {
+                return Result.Failure(AuthResults.UserDoesntExists);
+            }
+            if (userLoginData.DeletedAt != null)
+            {
+                return Result.Failure(AuthResults.UserAlreadyDeleted);
+            }
+            if (force == true)
+            {
+                userLoginData.DeletedAt = DateTime.UtcNow;
+                await userLoginDataRepository.Delete(userLoginData);
+            }
+            else
+            {
+                userLoginData.DeletedAt = DateTime.UtcNow;
+
+                await userLoginDataRepository.Update(userLoginData);
+            }
+            await DeleteAllActiveSessions(userID);
+
+            return Result.Success(AuthResults.UserDeleted);
         }
     }
 }

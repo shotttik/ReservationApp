@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
                 Where(uld => uld.RecoveryToken == recoveryToken)
                 .FirstOrDefaultAsync();
         }
-        public async Task<PagedList<AuthUser>> RetrievePaged(
+        public async Task<PagedList<UserLoginDataDTO>> RetrievePaged(
            PagedParameters parameters,
            CancellationToken cancellationToken,
            int authUserID)
@@ -84,12 +84,12 @@ namespace Infrastructure.Repositories
                     .ThenInclude(e => e.Company)
                         .ThenInclude(c => c.WorkSchedules)
                 .Where(u => u.ID != authUserID)
-                .Select(e => e.MapToAuthorizationData())
+                .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync(cancellationToken);
 
-            return new PagedList<AuthUser>(users, parameters.PageNumber, parameters.PageSize, totalCount);
+            return new PagedList<UserLoginDataDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
         }
     }
 }

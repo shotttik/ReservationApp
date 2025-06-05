@@ -19,13 +19,16 @@ namespace API.Controllers
     {
         private readonly IAdminService adminService;
         private readonly ICompanyService companyService;
+        private readonly IUserService userService;
 
         public AdminController(
             IAdminService adminService,
-            ICompanyService companyService)
+            ICompanyService companyService,
+            IUserService userService)
         {
             this.adminService = adminService;
             this.companyService = companyService;
+            this.userService = userService;
         }
 
         [HttpPost("user")]
@@ -50,6 +53,19 @@ namespace API.Controllers
         {
             request.ID = id;
             var result = await adminService.UserUpdate(request);
+
+            return result.ToResponse();
+        }
+
+        [HttpDelete("user/{id}")]
+        [HasPermission(Permission.UserDelete)]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> UserDelete(int id, [FromQuery] bool force = false)
+        {
+            var result = await userService.Delete(id, force);
 
             return result.ToResponse();
         }
