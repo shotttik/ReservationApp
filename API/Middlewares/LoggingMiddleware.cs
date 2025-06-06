@@ -6,18 +6,17 @@ using Newtonsoft.Json;
 using Serilog.Context;
 using Shared.Extensions;
 using System.Net;
-using ILogger = Serilog.ILogger;
 
 namespace API.Middlewares
 {
     public class LoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger logger;
+        private readonly ILogger<LoggingMiddleware> logger;
         //private AuthUser? AuthUser;
         private LoggingType loggingType;
 
-        public LoggingMiddleware(RequestDelegate next, ILogger logger)
+        public LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
         {
             _next = next;
             this.logger = logger;
@@ -177,7 +176,7 @@ namespace API.Middlewares
 
                 }
                 LogContext.PushProperty("StatusCode", context.Response.StatusCode);
-                logger.Information("Success");
+                logger.LogInformation("Success");
             }
             finally
             {
@@ -207,7 +206,7 @@ namespace API.Middlewares
             {
                 LogContext.PushProperty("StatusCode", serverErrorCode);
                 LogContext.PushProperty("Response", errorMessage);
-                logger.Error(ex, "Exception has occurred");
+                logger.LogError(ex, "Exception has occurred");
             }
 
             await context.Response.WriteAsJsonAsync(problemDetails);

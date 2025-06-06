@@ -2,7 +2,6 @@
 using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
-using Infrastructure.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,8 +24,6 @@ namespace Infrastructure.Extensions
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
-
-            services.AddSwaggerDocumentation();
 
             return services;
         }
