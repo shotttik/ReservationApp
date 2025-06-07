@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
-    [Route("api/user")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/user")]
     [ApiController]
     [Tags("User Account")]
     public class UserController :ControllerBase

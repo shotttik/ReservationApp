@@ -8,12 +8,6 @@ namespace API.Configuration
     {
         public static WebApplication UseConfiguredMiddleware(this WebApplication app)
         {
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
             app.UseRouting();

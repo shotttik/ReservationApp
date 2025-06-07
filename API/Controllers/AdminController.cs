@@ -13,7 +13,8 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
-    [Route("api/super-admin")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/super-admin")]
     [ApiController]
     [Tags("Admin Management")]
     public class AdminController :ControllerBase
@@ -36,6 +37,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
+        [MapToApiVersion("1.0")]
         [HttpPost("user")]
         [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]

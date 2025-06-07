@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
-    [Route("api/company")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/company")]
     [ApiController]
     [Tags("Company Management")]
     public class CompanyController :ControllerBase
@@ -33,6 +34,7 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="request">Contains the user account ID to invite.</param>
         /// <returns>A secure token (for dev/testing) or email notification result.</returns>
+        [MapToApiVersion("1.0")]
         [HttpPost("invite")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]

@@ -3,6 +3,9 @@ using Application.Authentication;
 using Application.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 
 namespace API.Configuration
@@ -11,6 +14,24 @@ namespace API.Configuration
     {
         public static IServiceCollection AddConfiguredServices(this IServiceCollection services, IConfiguration config)
         {
+            // swagger versioning
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new UrlSegmentApiVersionReader(),
+                    new QueryStringApiVersionReader("version"),
+                    new HeaderApiVersionReader("X-Version")
+                );
+            });
+
+            services.AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV";
+                setup.SubstituteApiVersionInUrl = true;
+            });
+
             // Controllers + JSON Options + Custom Validation Response
             services.AddControllers()
                 .AddJsonOptions(options =>

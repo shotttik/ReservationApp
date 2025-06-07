@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace API.Extensions
@@ -7,27 +8,21 @@ namespace API.Extensions
     {
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
+            services.ConfigureOptions<ConfigureSwaggerGenOptions>();
             services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Your API Name",
-                    Version = "v1",
-                    Description = "API Documentation"
-                });
+           {
+               options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+               {
+                   Name = "Authorization",
+                   Type = SecuritySchemeType.Http,
+                   Scheme = "bearer",
+                   BearerFormat = "JWT",
+                   In = ParameterLocation.Header,
+                   Description = "Enter your valid JWT token."
+               });
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter your valid JWT token."
-                });
-
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+               options.AddSecurityRequirement(new OpenApiSecurityRequirement
+               {
                     {
                         new OpenApiSecurityScheme
                         {
@@ -39,29 +34,38 @@ namespace API.Extensions
                         },
                         Array.Empty<string>()
                     }
-                });
+               });
 
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
-                {
-                    options.IncludeXmlComments(xmlPath);
-                }
+               var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+               var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+               if (File.Exists(xmlPath))
+               {
+                   options.IncludeXmlComments(xmlPath);
+               }
 
-                options.SchemaFilter<Infrastructure.Swagger.CustomProblemDetailsSchema>();
-                options.UseAllOfToExtendReferenceSchemas();
-                options.UseInlineDefinitionsForEnums();
-            });
+               options.SchemaFilter<Infrastructure.Swagger.CustomProblemDetailsSchema>();
+               options.UseAllOfToExtendReferenceSchemas();
+               options.UseInlineDefinitionsForEnums();
+           });
 
             return services;
         }
 
         public static IApplicationBuilder UseSwaggerDocumentation(this IApplicationBuilder app)
         {
+            var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
+                // Create a swagger endpoint for each discovered API version
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerEndpoint(
+                        $"/swagger/{description.GroupName}/swagger.json",
+                        $"API {description.GroupName.ToUpperInvariant()}");
+                }
+
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
             });
 
