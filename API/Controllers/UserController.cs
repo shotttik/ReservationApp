@@ -124,7 +124,7 @@ namespace API.Controllers
         [HttpGet("authorization-data")]
         [Authorize]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<UserAccountDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<AuthUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAuthorizationDataAsync()
         {
