@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/company")]
+    [Route("api/v{version:apiVersion}/companies")]
     [ApiController]
-    [Tags("Company Management")]
+    [Tags("Companies")]
     public class CompanyController :ControllerBase
     {
         private readonly ICompanyService companyService;
@@ -24,100 +24,6 @@ namespace API.Controllers
         {
             this.companyService = companyService;
 
-        }
-        /// <summary>
-        /// Sends a company membership invitation to a user.
-        /// </summary>
-        /// <remarks>
-        /// Only company admins can invite users to join their company. 
-        /// The user must currently be a public user.
-        /// </remarks>
-        /// <param name="request">Contains the user account ID to invite.</param>
-        /// <returns>A secure token (for dev/testing) or email notification result.</returns>
-        [MapToApiVersion("1.0")]
-        [HttpPost("invite")]
-        [HasPermission(Permission.CompanyUpdate)]
-        [Logging(LoggingType.Full)]
-        [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<string>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
-        {
-            var result = await companyService.InviteMember(request.UserAccountID);
-
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Accepts a company invitation using a secure token.
-        /// </summary>
-        /// <param name="token">The invitation token received by email.</param>
-        /// <returns>Success result if invitation is valid and accepted.</returns>
-        [HttpGet("invite-accept")]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> InviteAccept([FromQuery] string token)
-        {
-            var result = await companyService.InviteAccept(token);
-
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Creates a list of services offered by the company.
-        /// </summary>
-        /// <remarks>
-        /// Can only be done once if services do not already exist for the company.
-        /// </remarks>
-        /// <param name="request">List of service details to create.</param>
-        /// <returns>Success if services are saved.</returns>
-        [HttpPost("service")]
-        [Logging(LoggingType.Full)]
-        [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ServiceCreate)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServicesSCreate([FromBody] ServicesCreateRequest request)
-        {
-            Result result = await companyService.ServicesCreate(request);
-
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Updates existing services for the company.
-        /// </summary>
-        /// <remarks>
-        /// The provided service list must match existing service IDs.
-        /// </remarks>
-        /// <param name="request">List of service updates.</param>
-        /// <returns>Success if updates are applied.</returns>
-        [HttpPut("service")]
-        [Logging(LoggingType.Full)]
-        [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ServiceUpdate)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServicesUpdate([FromBody] ServicesUpdateRequest request)
-        {
-            Result result = await companyService.ServicesUpdate(request);
-
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Deletes a specific service from the company's service list.
-        /// </summary>
-        /// <param name="ID">The unique ID of the service to delete.</param>
-        /// <returns>Success if deletion is successful.</returns>
-        [HttpDelete("service")]
-        [Logging(LoggingType.Full)]
-        [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ServiceDelete)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServiceDelete([FromQuery] int ID)
-        {
-            Result result = await companyService.ServicesDelete(ID);
-
-            return result.ToResponse();
         }
         /// <summary>
         /// Retrieves a paginated list of companies.
@@ -146,9 +52,46 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAction(int id)
+        public async Task<IActionResult> GetCompany(int id)
         {
             var result = await companyService.Get(id, forPublic: true);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Sends a company membership invitation to a user.
+        /// </summary>
+        /// <remarks>
+        /// Only company admins can invite users to join their company. 
+        /// The user must currently be a public user.
+        /// </remarks>
+        /// <param name="request">Contains the user account ID to invite.</param>
+        /// <returns>A secure token (for dev/testing) or email notification result.</returns>
+        [MapToApiVersion("1.0")]
+        [HttpPost("invitations")]
+        [HasPermission(Permission.CompanyUpdate)]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result<string>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
+        {
+            var result = await companyService.InviteMember(request.UserAccountID);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Accepts a company invitation using a secure token.
+        /// </summary>
+        /// <param name="token">The invitation token received by email.</param>
+        /// <returns>Success result if invitation is valid and accepted.</returns>
+        [HttpGet("invitations/accept")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> InviteAccept([FromQuery] string token)
+        {
+            var result = await companyService.InviteAccept(token);
 
             return result.ToResponse();
         }

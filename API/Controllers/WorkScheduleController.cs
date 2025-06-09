@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/work-schedule")]
+    [Route("api/v{version:apiVersion}/schedules")]
     [ApiController]
-    [Tags("Work Schedules")]
+    [Tags("Company & Employee Work Schedules")]
     public class WorkScheduleController :ControllerBase
     {
         private readonly IWorkScheduleService workScheduleService;

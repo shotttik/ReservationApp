@@ -14,9 +14,9 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/super-admin")]
+    [Route("api/v{version:apiVersion}/admin")]
     [ApiController]
-    [Tags("Admin Management")]
+    [Tags("Administration")]
     public class AdminController :ControllerBase
     {
         private readonly IAdminService adminService;
@@ -38,7 +38,7 @@ namespace API.Controllers
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
         [MapToApiVersion("1.0")]
-        [HttpPost("user")]
+        [HttpPost("users")]
         [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]
         [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
@@ -56,7 +56,7 @@ namespace API.Controllers
         /// <param name="id">ID of the user to update.</param>
         /// <param name="request">Partial update payload for user account.</param>
         /// <returns>Returns success or failure of the update.</returns>
-        [HttpPatch("user/{id}")]
+        [HttpPatch("users/{id}")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -75,7 +75,7 @@ namespace API.Controllers
         /// <param name="id">ID of the user to delete.</param>
         /// <param name="force">Set to true for hard delete; false for soft delete (default).</param>
         /// <returns>Returns result of deletion.</returns>
-        [HttpDelete("user/{id}")]
+        [HttpDelete("users/{id}")]
         [HasPermission(Permission.UserDelete)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -92,7 +92,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="request">Company creation payload including name, email, and identifier.</param>
         /// <returns>Returns success or failure of the creation.</returns>
-        [HttpPost("company")]
+        [HttpPost("companies")]
         [HasPermission(Permission.CompanyCreate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -144,7 +144,7 @@ namespace API.Controllers
         /// <param name="parameters">Paging parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated company data.</returns>
-        [HttpGet("company/paged")]
+        [HttpGet("companies/paged")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyRead)]
         [EnableRateLimiting("fixed")]
@@ -161,7 +161,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id">Company ID.</param>
         /// <returns>Company details or not found error.</returns>
-        [HttpGet("company/{id:int}")]
+        [HttpGet("companies/{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
@@ -177,7 +177,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id">User ID.</param>
         /// <returns>User details or error response.</returns>
-        [HttpGet("user/{id:int}")]
+        [HttpGet("users/{id:int}")]
         [HasPermission(Permission.UserRead)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]
@@ -194,7 +194,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id">ID of the user to reactivate.</param>
         /// <returns>Returns result of the reactivation process.</returns>
-        [HttpPatch("user/{id}/reactivate")]
+        [HttpPatch("users/{id}/reactivate")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]
