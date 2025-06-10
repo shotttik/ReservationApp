@@ -1,5 +1,5 @@
 ﻿using Domain.DTO.WorkSchedule;
-using Domain.Entities;
+using Domain.Entities.Common;
 
 namespace Application.Extensions.Mappers
 {

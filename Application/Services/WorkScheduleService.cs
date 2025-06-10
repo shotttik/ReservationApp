@@ -4,7 +4,8 @@ using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO.User;
 using Domain.DTO.WorkSchedule;
-using Domain.Entities;
+using Domain.Entities.Common;
+using Domain.Entities.CompanyReleated;
 using Domain.Interfaces.Repositories;
 using Microsoft.IdentityModel.Tokens;
 

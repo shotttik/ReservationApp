@@ -8,14 +8,14 @@ using Application.Helpers;
 using Application.Interfaces;
 using Domain.DTO;
 using Domain.DTO.User;
-using Domain.Entities;
+using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Shared.Utilities;
-using Role = Domain.Entities.Role;
+using Role = Domain.Entities.User.Role;
 
 namespace Application.Services
 {

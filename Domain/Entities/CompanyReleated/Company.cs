@@ -1,0 +1,26 @@
+﻿using Domain.Entities.Common;
+using Domain.Entities.LocationReleated;
+using Domain.Entities.User;
+using Domain.Enums;
+
+namespace Domain.Entities.CompanyReleated
+{
+    public class Company :BaseEntity
+    {
+        public required string Name { get; set; }
+        public string? Description { get; set; }
+        public required string IN { get; set; }
+        public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public CompanyType Type { get; set; }
+        public bool IsActive { get; set; }
+        public int LocationID { get; set; }
+        public Location Location { get; set; } = null!;
+        public ICollection<UserAccount> UserAccounts { get; set; } = [];
+        public ICollection<CompanyInvitation> Invitations { get; set; } = [];
+        public ICollection<Service> Services { get; set; } = [];
+        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
+        public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
+    }
+}

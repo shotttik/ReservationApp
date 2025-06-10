@@ -1,0 +1,29 @@
+﻿using Domain.Entities.User;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infrastructure.Configurations.User
+{
+    internal sealed class RoleConfiguration :IEntityTypeConfiguration<Role>
+    {
+        public void Configure(EntityTypeBuilder<Role> builder)
+        {
+
+            builder.Property(e => e.ID)
+                   .ValueGeneratedNever();
+
+            builder.Property(e => e.Name)
+                   .IsRequired();
+
+            builder.HasMany(e => e.Permissions)
+                   .WithMany()
+                   .UsingEntity<RolePermission>();
+
+            builder.HasMany(e => e.UserAccounts)
+                   .WithOne(e => e.Role)
+                   .HasForeignKey(e => e.RoleID);
+
+            builder.HasData(Role.GetValues());
+        }
+    }
+}

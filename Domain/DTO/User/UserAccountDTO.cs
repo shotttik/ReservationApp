@@ -15,6 +15,6 @@ namespace Domain.DTO.User
         public int? CompanyID { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         [JsonIgnore]
-        public bool IsPublicUser => Role.ID == Entities.Role.PublicUser.ID;
+        public bool IsPublicUser => Role.ID == Entities.User.Role.PublicUser.ID;
     }
 }

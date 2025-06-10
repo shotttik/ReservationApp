@@ -1,6 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO.User;
-using Domain.Entities;
+using Domain.Entities.User;
 
 namespace Domain.Interfaces.Repositories
 {

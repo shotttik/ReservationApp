@@ -5,7 +5,7 @@ using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.User;
-using Domain.Entities;
+using Domain.Entities.User;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;

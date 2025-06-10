@@ -1,5 +1,7 @@
 ﻿using Application.Authentication;
-using Domain.Entities;
+using Domain.Entities.Common;
+using Domain.Entities.CompanyReleated;
+using Domain.Entities.User;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 

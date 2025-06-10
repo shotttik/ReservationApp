@@ -1,6 +1,6 @@
 ﻿using Domain.DTO.User;
 using Domain.DTO.WorkSchedule;
-using Domain.Entities;
+using Domain.Entities.User;
 using Domain.Enums;
 
 namespace Application.Extensions.Mappers

@@ -1,7 +1,7 @@
 ﻿using Application.Extensions.Mappers;
 using Domain.Abstractions;
 using Domain.DTO.Company;
-using Domain.Entities;
+using Domain.Entities.CompanyReleated;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;

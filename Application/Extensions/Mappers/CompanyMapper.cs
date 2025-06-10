@@ -1,12 +1,12 @@
 ﻿using Application.Common.Requests.Admin;
 using Domain.DTO.Company;
-using Domain.Entities;
+using Domain.Entities.CompanyReleated;
 
 namespace Application.Extensions.Mappers
 {
     public static class CompanyMapper
     {
-        public static Domain.DTO.Company.CompanyDTO MapToDTO(this Domain.Entities.Company company)
+        public static Domain.DTO.Company.CompanyDTO MapToDTO(this Company company)
         {
             return new Domain.DTO.Company.CompanyDTO
             {
@@ -41,9 +41,9 @@ namespace Application.Extensions.Mappers
             IsActive = request.IsActive
         };
 
-        public static Domain.Entities.Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)
+        public static Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)
         {
-            return new Domain.Entities.Company
+            return new Domain.Entities.CompanyReleated.Company
             {
                 ID = companyDTO.ID,
                 Name = companyDTO.Name,
