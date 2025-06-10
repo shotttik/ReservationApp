@@ -38,7 +38,8 @@ namespace Application.Extensions.Mappers
             Email = request.Email,
             Phone = request.Phone,
             Type = request.Type,
-            IsActive = request.IsActive
+            IsActive = request.IsActive,
+            Location = request.Location.MapToEntity()
         };
 
         public static Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)

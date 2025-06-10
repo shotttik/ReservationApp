@@ -21,6 +21,7 @@ namespace Application.Services
         private readonly ICacheService cacheService;
         private readonly ICompanyRepository companyRepository;
         private readonly IConfiguration configuration;
+        private readonly ILocationRepository locationRepository;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
@@ -29,7 +30,8 @@ namespace Application.Services
             IAuthService authService,
             ICacheService cacheService,
             ICompanyRepository companyRepository,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ILocationRepository locationRepository
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -39,6 +41,7 @@ namespace Application.Services
             this.cacheService = cacheService;
             this.companyRepository = companyRepository;
             this.configuration = configuration;
+            this.locationRepository = locationRepository;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)

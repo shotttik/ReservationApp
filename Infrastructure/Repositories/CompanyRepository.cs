@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
                 Include(e => e.Services).
                 Select(e => e.MapToDTO()).
                 Skip((parameters.PageNumber - 1) * parameters.PageSize).
-                Take(parameters.PageSize).
+                Take(parameters.PageSize). 
                 ToListAsync(cancellationToken);
 
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
