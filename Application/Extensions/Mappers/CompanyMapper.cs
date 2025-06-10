@@ -18,6 +18,7 @@ namespace Application.Extensions.Mappers
                 Phone = company.Phone,
                 Type = company.Type,
                 IsActive = company.IsActive,
+                Location = company.Location.MapToDTO(),
                 CreatedAt = company.CreatedAt,
                 Services = company.Services.Select(s => new ServiceDTO
                 {

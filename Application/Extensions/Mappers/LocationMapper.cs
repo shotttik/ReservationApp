@@ -1,4 +1,5 @@
 ﻿using Application.Common.Requests.Admin;
+using Domain.DTO.Location;
 using Domain.Entities.LocationReleated;
 
 namespace Application.Extensions.Mappers
@@ -14,6 +15,18 @@ namespace Application.Extensions.Mappers
                 City = request.City,
                 PostalCode = request.PostalCode,
                 Country = request.Country
+            };
+        }
+
+        public static LocationDTO MapToDTO(this Location location)
+        {
+            return new LocationDTO
+            {
+                AddressLine1 = location.AddressLine1,
+                AddressLine2 = location.AddressLine2,
+                City = location.City,
+                PostalCode = location.PostalCode,
+                Country = location.Country
             };
         }
     }

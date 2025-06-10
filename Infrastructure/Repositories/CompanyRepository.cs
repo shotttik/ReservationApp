@@ -28,6 +28,7 @@ namespace Infrastructure.Repositories
             return await _dbSet
                 .Include(c => c.Services)
                 .Include(c => c.WorkSchedules)
+                .Include(c => c.Location)
                 .FirstOrDefaultAsync(c => c.ID == id);
         }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(
@@ -48,9 +49,10 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync();
             var companies = await query.
                 Include(e => e.Services).
+                Include(e => e.Location).
                 Select(e => e.MapToDTO()).
                 Skip((parameters.PageNumber - 1) * parameters.PageSize).
-                Take(parameters.PageSize). 
+                Take(parameters.PageSize).
                 ToListAsync(cancellationToken);
 
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);

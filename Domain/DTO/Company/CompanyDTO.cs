@@ -1,4 +1,5 @@
-﻿using Domain.DTO.WorkSchedule;
+﻿using Domain.DTO.Location;
+using Domain.DTO.WorkSchedule;
 using Domain.Enums;
 
 namespace Domain.DTO.Company
@@ -14,6 +15,7 @@ namespace Domain.DTO.Company
         public CompanyType Type { get; set; } = CompanyType.None;
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public required LocationDTO Location { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];
     }
