@@ -10,6 +10,7 @@ namespace Domain.Entities.LocationReleated
         public required string City { get; set; }
         public string? PostalCode { get; set; }
         public required string Country { get; set; }
+        public string? State { get; set; }
         public Company? Company { get; set; }
     }
 }

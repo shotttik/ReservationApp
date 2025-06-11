@@ -40,6 +40,8 @@ namespace Application.Common.Requests.Admin
         [Required]
         [MaxLength(100)]
         public required string Country { get; set; }
+        [MaxLength(255)]
+        public string? State { get; set; }
     }
 
 }

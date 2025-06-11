@@ -14,7 +14,8 @@ namespace Application.Extensions.Mappers
                 AddressLine2 = request.AddressLine2,
                 City = request.City,
                 PostalCode = request.PostalCode,
-                Country = request.Country
+                Country = request.Country,
+                 State = request.State
             };
         }
 
@@ -26,7 +27,8 @@ namespace Application.Extensions.Mappers
                 AddressLine2 = location.AddressLine2,
                 City = location.City,
                 PostalCode = location.PostalCode,
-                Country = location.Country
+                Country = location.Country,
+                State = location.State
             };
         }
     }

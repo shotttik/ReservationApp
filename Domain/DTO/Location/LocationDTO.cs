@@ -7,6 +7,6 @@
         public required string City { get; set; }
         public string? PostalCode { get; set; }
         public required string Country { get; set; }
-
+        public string? State { get; set; }
     }
 }
