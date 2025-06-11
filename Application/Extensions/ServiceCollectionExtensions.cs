@@ -13,7 +13,8 @@ namespace Application.Extensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IWorkScheduleService, WorkScheduleService>();
-            
+            services.AddScoped<ILocationService, LocationService>();
+
             return services;
         }
     }

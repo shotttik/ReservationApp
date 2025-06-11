@@ -52,6 +52,14 @@ namespace Infrastructure.Configurations.LocationReleated
                 .WithMany(e => e.Cities)
                 .HasForeignKey(e => e.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.State)
+                .WithMany(e => e.Cities)
+                .HasForeignKey(e => e.StateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(e => e.Name)
+                .HasDatabaseName("IX_City_Name");
         }
     }
 }

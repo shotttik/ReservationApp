@@ -17,5 +17,6 @@ namespace Domain.Entities.LocationReleated
         public string? WikiDataId { get; set; }
 
         public Country Country { get; set; } = null!;
+        public State State { get; set; } = null!;
     }
 }

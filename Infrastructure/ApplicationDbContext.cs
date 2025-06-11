@@ -29,6 +29,7 @@ namespace Infrastructure
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<State> States { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated

@@ -88,7 +88,7 @@ namespace API.Controllers
         /// <param name="forgotPasswordRequest">User email to send the token to.</param>
         /// <returns>Token (for dev/testing) or email notification trigger.</returns>
         [HttpPost("forgot-password")]
-        [Logging(LoggingType.Full)]
+        [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

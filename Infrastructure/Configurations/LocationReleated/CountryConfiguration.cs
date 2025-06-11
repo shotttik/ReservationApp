@@ -75,6 +75,9 @@ namespace Infrastructure.Configurations.LocationReleated
 
             builder.Property(e => e.WikiDataId)
                 .HasMaxLength(255);
+
+            builder.HasIndex(e => e.Name)
+                .HasDatabaseName("IX_Country_Name");
         }
     }
 }

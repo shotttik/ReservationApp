@@ -30,5 +30,6 @@ namespace Domain.Entities.LocationReleated
         public string? WikiDataId { get; set; }
 
         public ICollection<City> Cities { get; set; } = [];
+        public ICollection<State> States { get; set; } = [];
     }
 }

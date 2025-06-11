@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250611101442_addedCountryNameToStates")]
+    partial class addedCountryNameToStates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,8 +415,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("Name")
                         .HasDatabaseName("IX_City_Name");
 
-                    b.HasIndex("StateId");
-
                     b.ToTable("Cities");
                 });
 
@@ -602,6 +603,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("FipsCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Flag")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Iso2")
                         .HasColumnType("nvarchar(max)");
 
@@ -613,9 +617,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StateCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
@@ -1116,21 +1117,13 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.LocationReleated.State", "State")
-                        .WithMany("Cities")
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Country");
-
-                    b.Navigation("State");
                 });
 
             modelBuilder.Entity("Domain.Entities.LocationReleated.State", b =>
                 {
                     b.HasOne("Domain.Entities.LocationReleated.Country", "Country")
-                        .WithMany("States")
+                        .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1200,18 +1193,11 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.LocationReleated.Country", b =>
                 {
                     b.Navigation("Cities");
-
-                    b.Navigation("States");
                 });
 
             modelBuilder.Entity("Domain.Entities.LocationReleated.Location", b =>
                 {
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("Domain.Entities.LocationReleated.State", b =>
-                {
-                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("Domain.Entities.User.Role", b =>
