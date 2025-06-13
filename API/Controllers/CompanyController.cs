@@ -20,10 +20,10 @@ namespace API.Controllers
     {
         private readonly ICompanyService companyService;
 
-        public CompanyController(ICompanyService companyService)
+        public CompanyController(
+            ICompanyService companyService)
         {
             this.companyService = companyService;
-
         }
         /// <summary>
         /// Retrieves a paginated list of companies.

@@ -22,5 +22,6 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<Appointment> Appointments { get; set; } = [];
         public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
         public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
+        public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
     }
 }

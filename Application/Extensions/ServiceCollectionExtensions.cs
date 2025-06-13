@@ -14,6 +14,8 @@ namespace Application.Extensions
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IWorkScheduleService, WorkScheduleService>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<ICompanyFAQService, CompanyFAQService>();
+            services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
 
             return services;
         }

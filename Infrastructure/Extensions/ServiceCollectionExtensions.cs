@@ -21,8 +21,10 @@ namespace Infrastructure.Extensions
             services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
             services.AddScoped<IWorkScheduleExceptionRepository, WorkScheduleExceptionRepository>();
             services.AddScoped<ILocationRepository, LocationRepository>();
-            services.AddSingleton<ICacheService, CacheService>();
+            services.AddScoped<ICompanyFAQRepository, CompanyFAQRepository>();
+            services.AddScoped<ICompanyFAQCategoryRepository, CompanyFAQCategoryRepository>();
 
+            services.AddSingleton<ICacheService, CacheService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 

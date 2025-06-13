@@ -64,7 +64,10 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UserUpdate(int id, [FromBody] UserUpdateRequest request)
         {
-            request.ID = id;
+            if (request.ID != id)
+            {
+                return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
+            }
             var result = await adminService.UserUpdate(request);
 
             return result.ToResponse();

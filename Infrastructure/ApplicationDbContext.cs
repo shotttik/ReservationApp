@@ -30,6 +30,8 @@ namespace Infrastructure
         public DbSet<City> Cities { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<State> States { get; set; }
+        public DbSet<CompanyFAQ> CompanyFAQs { get; set; }
+        public DbSet<CompanyFAQCategory> CompanyFAQCategories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -43,6 +45,8 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyInvitationConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyFAQConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyFAQCategoryConfiguration());
 
             // Common
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
