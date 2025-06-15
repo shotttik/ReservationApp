@@ -1,4 +1,5 @@
-﻿using Domain.DTO.Company;
+﻿using Application.Common.Requests.Company;
+using Domain.DTO.Company;
 using Domain.Entities.CompanyReleated;
 
 namespace Application.Extensions.Mappers

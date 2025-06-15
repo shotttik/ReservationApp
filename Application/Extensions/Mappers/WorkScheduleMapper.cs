@@ -1,4 +1,4 @@
-﻿using Domain.DTO.WorkSchedule;
+﻿using Application.Common.Requests.WorkSchedule;
 using Domain.Entities.Common;
 
 namespace Application.Extensions.Mappers

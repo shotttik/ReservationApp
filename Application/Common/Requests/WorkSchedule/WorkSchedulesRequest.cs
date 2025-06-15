@@ -12,4 +12,12 @@ namespace Application.Common.Requests.WorkSchedule
 
     public class WorkSchedulesUpdateRequest :WorkSchedulesRequest<WorkScheduleUpdateDTO> { }
 
+    public class WorkScheduleCreateDTO :BaseWorkScheduleDTO
+    {
+    }
+    public class WorkScheduleUpdateDTO :BaseWorkScheduleDTO
+    {
+        [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
+        public int ID { get; set; }
+    }
 }
