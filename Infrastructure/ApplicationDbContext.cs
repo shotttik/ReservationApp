@@ -32,6 +32,8 @@ namespace Infrastructure
         public DbSet<State> States { get; set; }
         public DbSet<CompanyFAQ> CompanyFAQs { get; set; }
         public DbSet<CompanyFAQCategory> CompanyFAQCategories { get; set; }
+        public DbSet<CompanyMedia> CompanyMedias { get; set; }
+        public DbSet<Media> Medias { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -47,11 +49,14 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyFAQConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyFAQCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyMediaConfiguration());
 
             // Common
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new WorkingScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new WorkingExceptionConfiguration());
+            modelBuilder.ApplyConfiguration(new MediaConfiguration());
+
 
             // Location Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());
