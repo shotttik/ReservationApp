@@ -24,6 +24,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<ICompanyFAQRepository, CompanyFAQRepository>();
             services.AddScoped<ICompanyFAQCategoryRepository, CompanyFAQCategoryRepository>();
             services.AddScoped<IMediaRepository, MediaRepository>();
+            services.AddScoped<ICompanyMediaRepository, CompanyMediaRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
             services.AddDbContext<ApplicationDbContext>(options =>
