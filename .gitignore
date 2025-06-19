@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# This file is used to ignore files that are not needed in the repository.
+uploads/
+
 # User-specific files
 *.rsuser
 *.suo

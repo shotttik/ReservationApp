@@ -27,6 +27,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<ICompanyMediaRepository, CompanyMediaRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
+            services.AddScoped<IImageProcessingService, ImageProcessingService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 

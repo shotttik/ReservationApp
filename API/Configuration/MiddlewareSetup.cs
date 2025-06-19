@@ -1,6 +1,7 @@
 ﻿using API.Middlewares;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 namespace API.Configuration
 {
@@ -10,6 +11,12 @@ namespace API.Configuration
         {
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+                RequestPath = "/uploads"
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
