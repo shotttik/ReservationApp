@@ -16,7 +16,8 @@ namespace Domain.DTO.Company
         public bool IsActive { get; set; }
         public DateTime? CreatedAt { get; set; }
         public required LocationDTO Location { get; set; }
-        public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
+        public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];
+        public IEnumerable<MediaDTO> Medias { get; set; } = [];
     }
 }

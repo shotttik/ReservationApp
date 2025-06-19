@@ -26,9 +26,12 @@ namespace Infrastructure.Repositories
         public async Task<Company?> GetFullData(int id)
         {
             return await _dbSet
+                .AsNoTracking()
                 .Include(c => c.Services)
                 .Include(c => c.WorkSchedules)
                 .Include(c => c.Location)
+                .Include(c => c.CompanyMedias)
+                    .ThenInclude(cm => cm.Media)
                 .FirstOrDefaultAsync(c => c.ID == id);
         }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(

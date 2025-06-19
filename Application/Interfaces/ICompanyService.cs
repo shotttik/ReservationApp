@@ -17,5 +17,6 @@ namespace Application.Interfaces
            CancellationToken cancellationToken,
            bool forPublic);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
+        Task<Result> UploadImages(UploadCompanyImagesRequest request);
     }
 }

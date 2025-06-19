@@ -28,7 +28,13 @@ namespace Application.Extensions.Mappers
                     Duration = s.Duration,
                     Price = s.Price,
                     IsActive = s.IsActive,
-                }).ToList()
+                }).ToList(),
+                Medias = company.CompanyMedias.Select(cm => new MediaDTO
+                {
+                    ID = cm.MediaID,
+                    IsMain = cm.IsMain,
+                    Path = cm.Media.FilePath
+                }).ToList(),
             };
         }
         public static Company MapToEntity(this CompanyCreateRequest request) => new()

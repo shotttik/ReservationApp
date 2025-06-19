@@ -1,13 +1,16 @@
 ﻿using Application.Authentication;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
+using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.Company;
+using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Interfaces.Repositories;
+using Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
@@ -20,6 +23,9 @@ namespace Application.Services
         private readonly IAuthService authService;
         private readonly IServiceRepository serviceRepository;
         private readonly ICompanyRepository companyRepository;
+        private readonly IFileStorageService fileStorageService;
+        private readonly IMediaRepository mediaRepository;
+        private readonly ICompanyMediaRepository companyMediaRepository;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -27,7 +33,10 @@ namespace Application.Services
             IConfiguration configuration,
             IAuthService authService,
             IServiceRepository serviceRepository,
-            ICompanyRepository companyRepository)
+            ICompanyRepository companyRepository,
+            IFileStorageService fileStorageService,
+            IMediaRepository mediaRepository,
+            ICompanyMediaRepository companyMediaRepository)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
@@ -35,6 +44,9 @@ namespace Application.Services
             this.authService = authService;
             this.serviceRepository = serviceRepository;
             this.companyRepository = companyRepository;
+            this.fileStorageService = fileStorageService;
+            this.mediaRepository = mediaRepository;
+            this.companyMediaRepository = companyMediaRepository;
         }
 
         public async Task<Result<string>> InviteMember(int memberID)
@@ -152,6 +164,45 @@ namespace Application.Services
             }
 
             return Result.Success(company.MapToDTO());
+        }
+
+        public async Task<Result> UploadImages(UploadCompanyImagesRequest request)
+        {
+            var AuthUser = await authService.GetCurrentUser();
+            var company = await companyRepository.Get(AuthUser.CompanyID!.Value);
+
+            foreach (var item in request.Images)
+            {
+                var error = item.File.IsValidImage(configuration);
+                if (error != Error.None)
+                {
+                    return Result.Failure(error);
+                }
+                var fileName = item.File.FileName;
+                var contentType = item.File.ContentType;
+                var fileStream = item.File.OpenReadStream();
+
+                (string OriginalPath, string WebpPath) = await fileStorageService.UploadWithWebp(fileStream, fileName, contentType, Domain.Enums.UploadSubFolder.CompanyImages);
+
+                var media = new Media()
+                {
+                    FileName = fileName,
+                    FilePath = WebpPath,
+                    FileType = contentType,
+                    FileSize = item.File.Length
+                };
+                media = await mediaRepository.Add(media);
+
+                var companyMedia = new CompanyMedia()
+                {
+                    CompanyID = AuthUser.CompanyID!.Value,
+                    MediaID = media.ID,
+                    IsMain = item.IsMain
+                };
+                await companyMediaRepository.Add(companyMedia);
+            }
+
+            return Result.Success(MediaResults.ImagesUploaded);
         }
     }
 }

@@ -95,5 +95,26 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>  
+        /// Uploads images for the company.  
+        /// </summary>  
+        /// <remarks>  
+        /// This endpoint allows uploading multiple images for a company.  
+        /// Only users(Company Admin) with the appropriate permissions can perform this action.  
+        /// </remarks>  
+        /// <param name="request">The request containing the images to upload.</param>  
+        /// <returns>Result indicating success or failure of the upload operation.</returns>
+        [HttpPost("images/upload")]
+        [HasPermission(Permission.CompanyUpdate)]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UploadImages([FromForm] UploadCompanyImagesRequest request)
+        {
+            var result = await companyService.UploadImages(request);
+
+            return result.ToResponse();
+        }
     }
 }
