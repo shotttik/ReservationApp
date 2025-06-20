@@ -23,6 +23,15 @@ namespace Infrastructure.Repositories
             return entity;
         }
 
+        public virtual async Task<T> Add(T entity, CancellationToken cancellationToken)
+        {
+            await _dbSet.AddAsync(entity, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return entity;
+        }
+
+
         public virtual async Task<T?> Get(int id)
         {
             return await _dbSet.FindAsync(id);

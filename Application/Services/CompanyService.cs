@@ -166,13 +166,15 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result> UploadImages(UploadCompanyImagesRequest request)
+        public async Task<Result> UploadImages(UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
             var company = await companyRepository.Get(AuthUser.CompanyID!.Value);
 
             foreach (var item in request.Images)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var error = item.File.IsValidImage(configuration);
                 if (error != Error.None)
                 {
@@ -182,7 +184,12 @@ namespace Application.Services
                 var contentType = item.File.ContentType;
                 var fileStream = item.File.OpenReadStream();
 
-                (string OriginalPath, string WebpPath) = await fileStorageService.UploadWithWebp(fileStream, fileName, contentType, Domain.Enums.UploadSubFolder.CompanyImages);
+                (string OriginalPath, string WebpPath) = await fileStorageService.UploadWithWebp(
+                    fileStream,
+                    fileName,
+                    contentType,
+                    Domain.Enums.UploadSubFolder.CompanyImages,
+                    cancellationToken);
 
                 var media = new Media()
                 {
@@ -191,7 +198,7 @@ namespace Application.Services
                     FileType = contentType,
                     FileSize = item.File.Length
                 };
-                media = await mediaRepository.Add(media);
+                media = await mediaRepository.Add(media, cancellationToken);
 
                 var companyMedia = new CompanyMedia()
                 {
@@ -199,7 +206,7 @@ namespace Application.Services
                     MediaID = media.ID,
                     IsMain = item.IsMain
                 };
-                await companyMediaRepository.Add(companyMedia);
+                await companyMediaRepository.Add(companyMedia, cancellationToken);
             }
 
             return Result.Success(MediaResults.ImagesUploaded);

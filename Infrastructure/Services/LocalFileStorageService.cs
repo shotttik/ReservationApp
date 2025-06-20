@@ -39,21 +39,31 @@ namespace Infrastructure.Services
                 "image/png"
             };
 
-        public async Task<(string OriginalPath, string WebpPath)> UploadWithWebp(Stream fileStream, string fileName, string contentType, UploadSubFolder subFolder)
+        public async Task<(string OriginalPath, string WebpPath)> UploadWithWebp(
+            Stream fileStream,
+            string fileName,
+            string contentType,
+            UploadSubFolder subFolder,
+            CancellationToken cancellationToken)
         {
             if (!AllowedContentTypes.Contains(contentType.ToLower()))
                 throw new InvalidOperationException("Unsupported file type");
 
             using var memoryStream = new MemoryStream();
-            await fileStream.CopyToAsync(memoryStream);
+            await fileStream.CopyToAsync(memoryStream, cancellationToken);
 
-            var originalPath = await Upload(memoryStream, fileName, contentType, subFolder);
-            var webpPath = await UploadWebp(memoryStream, originalPath, subFolder);
+            var originalPath = await Upload(memoryStream, fileName, contentType, subFolder, cancellationToken);
+            var webpPath = await UploadWebp(memoryStream, originalPath, subFolder, cancellationToken);
 
             return (originalPath, webpPath);
         }
 
-        public async Task<string> Upload(Stream fileStream, string fileName, string contentType, UploadSubFolder subFolder)
+        public async Task<string> Upload(
+            Stream fileStream,
+            string fileName,
+            string contentType,
+            UploadSubFolder subFolder,
+            CancellationToken cancellationToken)
         {
             fileStream.Position = 0;
             var folderName = subFolder.GetFolderName();
@@ -63,14 +73,18 @@ namespace Infrastructure.Services
             var filePath = Path.Combine(folderPath, uniqueFileName);
 
             await using var writeStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-            await fileStream.CopyToAsync(writeStream);
+            await fileStream.CopyToAsync(writeStream, cancellationToken);
 
             var relativePath = Path.Combine(UploadsFolder, OriginalsFolder, folderName, uniqueFileName).Replace("\\", "/");
 
             return relativePath;
         }
 
-        private async Task<string> UploadWebp(Stream fileStream, string originalFilePath, UploadSubFolder subFolder)
+        private async Task<string> UploadWebp(
+            Stream fileStream,
+            string originalFilePath,
+            UploadSubFolder subFolder,
+            CancellationToken cancellationToken)
         {
             fileStream.Position = 0;
             var folderName = subFolder.GetFolderName();
@@ -80,10 +94,10 @@ namespace Infrastructure.Services
             var webpFileName = $"{baseName}.webp";
             var webpFilePath = Path.Combine(webpFolderPath, webpFileName);
 
-            var convertedStream = await imageProcessingService.ConvertToWebp(fileStream);
+            var convertedStream = await imageProcessingService.ConvertToWebp(fileStream, cancellationToken);
 
             await using var webpFileStreamToWrite = new FileStream(webpFilePath, FileMode.Create, FileAccess.Write);
-            await convertedStream.CopyToAsync(webpFileStreamToWrite);
+            await convertedStream.CopyToAsync(webpFileStreamToWrite, cancellationToken);
 
             var webpRelativePath = Path.Combine(UploadsFolder, WebpFolder, folderName, webpFileName).Replace("\\", "/");
 

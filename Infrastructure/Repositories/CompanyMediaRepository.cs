@@ -14,10 +14,10 @@ namespace Infrastructure.Repositories
             this.dbContext = dbContext;
             dbSet = dbContext.Set<CompanyMedia>();
         }
-        public async Task<CompanyMedia> Add(CompanyMedia entity)
+        public async Task<CompanyMedia> Add(CompanyMedia entity, CancellationToken cancellationToken)
         {
-            await dbSet.AddAsync(entity);
-            await dbContext.SaveChangesAsync();
+            await dbSet.AddAsync(entity, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return entity;
         }
         public async Task<CompanyMedia> Update(CompanyMedia entity)
