@@ -31,9 +31,9 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<AuthUser>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetUserAuthorizationDataAsync()
+        public async Task<IActionResult> GetUserAuthorizationData()
         {
-            var result = await userService.GetUserAuthorizationDataAsync();
+            var result = await userService.GetUserAuthorizationData();
 
             return result.ToResponse();
         }

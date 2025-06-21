@@ -251,7 +251,7 @@ namespace Application.Services
 
             return Result.Success(AuthResults.PasswordReseted);
         }
-        public async Task<Result<AuthUser>> GetUserAuthorizationDataAsync()
+        public async Task<Result<AuthUser>> GetUserAuthorizationData()
         {
             try
             {

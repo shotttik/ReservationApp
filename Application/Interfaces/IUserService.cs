@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task<Result> Logout();
         Task<Result<string>> ForgotPassword(ForgotPasswordRequest request);
         Task<Result> ResetPassword(ResetPasswordRequest request);
-        Task<Result<AuthUser>> GetUserAuthorizationDataAsync();
+        Task<Result<AuthUser>> GetUserAuthorizationData();
         Task<Result> VerifyEmail(string token);
         Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
         Task<Result> ChangePassword(ChangePasswordRequest request);
