@@ -16,6 +16,11 @@ namespace Infrastructure.Repositories
         }
         public async Task<CompanyMedia> Add(CompanyMedia entity, CancellationToken cancellationToken)
         {
+            if (entity.IsMain)
+            {
+                await dbSet.Where(e => e.IsMain == true && e.CompanyID == entity.CompanyID)
+                    .ExecuteUpdateAsync(Update => Update.SetProperty(e => e.IsMain, false), cancellationToken);
+            }
             await dbSet.AddAsync(entity, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             return entity;
