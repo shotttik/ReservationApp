@@ -24,8 +24,6 @@ namespace Infrastructure.Services
             OriginalUploadsRoot = Path.Combine(CurrentDirectory, UploadsFolder, OriginalsFolder);
             WebpUploadsRoot = Path.Combine(CurrentDirectory, UploadsFolder, WebpFolder);
 
-            var uploadsRoot = Path.Combine(CurrentDirectory, UploadsFolder);
-            EnsureDirectoryExists(uploadsRoot);
             EnsureDirectoryExists(OriginalUploadsRoot);
             EnsureDirectoryExists(WebpUploadsRoot);
 
