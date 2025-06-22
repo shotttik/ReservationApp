@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+﻿using Infrastructure.Swagger;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -11,6 +12,9 @@ namespace API.Extensions
             services.ConfigureOptions<ConfigureSwaggerGenOptions>();
             services.AddSwaggerGen(options =>
            {
+
+               options.EnableAnnotations(); 
+               options.OperationFilter<OperationIdFilter>();
                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                {
                    Name = "Authorization",
