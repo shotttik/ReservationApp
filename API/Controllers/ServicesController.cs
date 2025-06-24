@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/services")]
+    [Route("api/v{version:apiVersion}/companies/{companyId:int}/services")]
     [ApiController]
     [Tags("Company Services")]
     public class ServicesController :ControllerBase
@@ -27,7 +27,9 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Can only be done once if services do not already exist for the company.
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
         /// </remarks>
+        /// <param name="companyId">The unique ID of the company.</param>
         /// <param name="request">List of service details to create.</param>
         /// <returns>Success if services are saved.</returns>
         [HttpPost]
@@ -36,18 +38,21 @@ namespace API.Controllers
         [HasPermission(Permission.ServiceCreate)]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServicesSCreate([FromBody] ServicesCreateRequest request)
+        public async Task<IActionResult> CompanyServicesSCreate(int companyId, [FromBody] ServicesCreateRequest request)
         {
-            Result result = await companyService.ServicesCreate(request);
+            Result result = await companyService.ServicesCreate(companyId, request);
 
             return result.ToResponse();
         }
+
         /// <summary>
         /// Updates existing services for the company.
         /// </summary>
         /// <remarks>
         /// The provided service list must match existing service IDs.
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
         /// </remarks>
+        /// <param name="companyId">The unique ID of the company.</param>
         /// <param name="request">List of service updates.</param>
         /// <returns>Success if updates are applied.</returns>
         [HttpPut]
@@ -56,26 +61,31 @@ namespace API.Controllers
         [HasPermission(Permission.ServiceUpdate)]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServicesUpdate([FromBody] ServicesUpdateRequest request)
+        public async Task<IActionResult> CompanyServicesUpdate(int companyId, [FromBody] ServicesUpdateRequest request)
         {
-            Result result = await companyService.ServicesUpdate(request);
+            Result result = await companyService.ServicesUpdate(companyId, request);
 
             return result.ToResponse();
         }
-        /// <summary>
-        /// Deletes a specific service from the company's service list.
-        /// </summary>
-        /// <param name="ID">The unique ID of the service to delete.</param>
-        /// <returns>Success if deletion is successful.</returns>
-        [HttpDelete]
+
+        /// <summary>  
+        /// Deletes a specific service from the company's service list.  
+        /// </summary>  
+        /// <remarks>  
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>  
+        /// <param name="companyId">The unique ID of the company.</param>  
+        /// <param name="ID">The unique ID of the service to delete.</param>  
+        /// <returns>Success if deletion is successful.</returns>  
+        [HttpDelete("{ID:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ServiceDelete)]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyServiceDelete([FromQuery] int ID)
+        public async Task<IActionResult> CompanyServiceDelete(int companyId, int ID)
         {
-            Result result = await companyService.ServicesDelete(ID);
+            Result result = await companyService.ServicesDelete(companyId, ID);
 
             return result.ToResponse();
         }

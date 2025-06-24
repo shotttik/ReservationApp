@@ -1,6 +1,7 @@
 ﻿using Application.Authentication;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
+using Application.Common.Security;
 using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
@@ -26,6 +27,7 @@ namespace Application.Services
         private readonly IFileStorageService fileStorageService;
         private readonly IMediaRepository mediaRepository;
         private readonly ICompanyMediaRepository companyMediaRepository;
+        private readonly CompanyAccessGuard companyAccessGuard;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -36,7 +38,8 @@ namespace Application.Services
             ICompanyRepository companyRepository,
             IFileStorageService fileStorageService,
             IMediaRepository mediaRepository,
-            ICompanyMediaRepository companyMediaRepository)
+            ICompanyMediaRepository companyMediaRepository,
+            CompanyAccessGuard companyAccessGuard)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
@@ -47,6 +50,7 @@ namespace Application.Services
             this.fileStorageService = fileStorageService;
             this.mediaRepository = mediaRepository;
             this.companyMediaRepository = companyMediaRepository;
+            this.companyAccessGuard = companyAccessGuard;
         }
 
         public async Task<Result<string>> InviteMember(int memberID)
@@ -107,27 +111,41 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> ServicesCreate(ServicesCreateRequest request)
+        public async Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var services = request.Services.Select(service => service.MapToEntity(AuthUser.CompanyID!.Value));
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var services = request.Services.Select(service => service.MapToEntity(routeCompanyId));
             await serviceRepository.AddRange(services);
 
             return Result.Success();
         }
-        public async Task<Result> ServicesUpdate(ServicesUpdateRequest request)
+        public async Task<Result> ServicesUpdate(int routeCompanyId, ServicesUpdateRequest request)
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var services = request.Services.Select(service => service.MapToEntity(AuthUser.CompanyID!.Value)).ToList();
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var services = request.Services.Select(service => service.MapToEntity(routeCompanyId)).ToList();
             await serviceRepository.UpdateRange(services);
 
             return Result.Success();
         }
-        public async Task<Result> ServicesDelete(int ID)
+        public async Task<Result> ServicesDelete(int routeCompanyId, int ID)
         {
             var AuthUser = await authService.GetCurrentUser();
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
             var service = await serviceRepository.Get(ID);
-            if (service == null || service.CompanyID != AuthUser.CompanyID!.Value)
+            if (service == null || service.CompanyID != routeCompanyId)
             {
                 return Result.Failure(CompanyResults.ServiceNotFound);
             }

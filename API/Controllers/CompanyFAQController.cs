@@ -35,6 +35,9 @@ namespace API.Controllers
         /// <summary>  
         /// Creates a new FAQ category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing category details.</param>  
         /// <returns>Success result if the category is created successfully.</returns>  
@@ -53,6 +56,9 @@ namespace API.Controllers
         /// <summary>  
         /// Updates an existing FAQ category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ category to update.</param>  
         /// <param name="request">The request containing updated category details.</param>  
@@ -75,6 +81,9 @@ namespace API.Controllers
         /// <summary>  
         /// Deletes an FAQ category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ category to delete.</param>  
         /// <returns>Success result if the category is deleted successfully.</returns>  
@@ -109,6 +118,9 @@ namespace API.Controllers
         /// <summary>  
         /// Creates a new FAQ within a specific category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <param name="request">The request containing FAQ details.</param>  
@@ -131,6 +143,9 @@ namespace API.Controllers
         /// <summary>  
         /// Updates an existing FAQ within a specific category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <param name="id">The ID of the FAQ to update.</param>  
@@ -154,6 +169,9 @@ namespace API.Controllers
         /// <summary>  
         /// Deletes an FAQ within a specific category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <param name="id">The ID of the FAQ to delete.</param>  
