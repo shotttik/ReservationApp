@@ -1,10 +1,11 @@
 ﻿using Application.Common.Requests.Company;
 using Application.Common.Results;
+using Application.Common.Security;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO.Company;
-using Domain.DTO.User;
 using Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
 {
@@ -12,77 +13,86 @@ namespace Application.Services
     {
         private readonly ICompanyFAQRepository companyFAQRepository;
         private readonly ICompanyFAQCategoryRepository companyFAQCategoryRepository;
-        private readonly IAuthService authService;
-        private readonly int FAQLimitPerCategory = 10;
+        private readonly CompanyAccessGuard companyAccessGuard;
+        private readonly int FAQLimitPerCategory;
 
         public CompanyFAQService(
             ICompanyFAQRepository companyFAQRepository,
             ICompanyFAQCategoryRepository companyFAQCategoryRepository,
-            IAuthService authService)
+            CompanyAccessGuard companyAccessGuard,
+            IConfiguration configuration)
         {
             this.companyFAQRepository = companyFAQRepository;
             this.companyFAQCategoryRepository = companyFAQCategoryRepository;
-            this.authService = authService;
+            this.companyAccessGuard = companyAccessGuard;
+            FAQLimitPerCategory = configuration.GetValue<int>("CompanyLimits:FAQLimitPerCategory");
         }
 
-        public async Task<Result> Create(CompanyFAQCreateRequest request)
+        public async Task<Result> Create(int routeCompanyId, CompanyFAQCreateRequest request)
         {
-            var AuthUser = await authService.GetCurrentUser();
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
+
+            // Check limit
             var faqCountPerCategory = await companyFAQRepository.Count(request.CategoryID);
             if (faqCountPerCategory >= FAQLimitPerCategory)
             {
                 return Result.Failure(CompanyResults.FAQLimitReached);
             }
-            var companyFAQ = request.MapToEntity();
-            var categoryFAQ = await companyFAQCategoryRepository.Get(request.CategoryID);
-            if (categoryFAQ == null || categoryFAQ.CompanyID != AuthUser.CompanyID)
-            {
+            // Check if category exists and belongs to correct company
+            var category = await companyFAQCategoryRepository.Get(request.CategoryID);
+            if (category == null || category.CompanyID != routeCompanyId)
                 return Result.Failure(GenericResults.NotFound);
-            }
+
+            var companyFAQ = request.MapToEntity();
             await companyFAQRepository.Add(companyFAQ);
 
             return Result.Success(CompanyResults.FAQCreated);
         }
-        public async Task<Result> Delete(int id)
+        public async Task<Result> Delete(int routeCompanyId, int routeCategoryId, int id)
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var companyFAQ = await companyFAQRepository.GetFull(id);
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
 
-            if (companyFAQ == null || companyFAQ.Category.CompanyID != AuthUser.CompanyID!.Value)
-            {
+            var companyFAQ = await companyFAQRepository.GetFull(id);
+            if (companyFAQ == null)
                 return Result.Failure(GenericResults.NotFound);
-            }
+
+            // Ensure FAQ belongs to correct category and company
+            if (companyFAQ.CategoryID != routeCategoryId || companyFAQ.Category.CompanyID != routeCompanyId)
+                return Result.Failure(GenericResults.IDMismatch);
+
+
+
             await companyFAQRepository.Delete(companyFAQ);
 
             return Result.Success(CompanyResults.FAQDeleted);
         }
-
-        public async Task<Result<CompanyFAQDTO>> Get(int companyFAQID)
+        public async Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int companyId, int categoryID)
         {
-            var companyFAQ = await companyFAQRepository.Get(companyFAQID);
-            if (companyFAQ == null)
-            {
-                return Result.Failure<CompanyFAQDTO>(GenericResults.NotFound);
-            }
-
-            return Result.Success(companyFAQ.MapToDTO());
-        }
-
-        public async Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int categoryID)
-        {
-            var companyFAQs = await companyFAQRepository.GetAll(categoryID);
+            var companyFAQs = await companyFAQRepository.GetAll(companyId, categoryID);
             var companyFAQsDTOs = companyFAQs.Select(faq => faq.MapToDTO());
 
             return Result.Success(companyFAQsDTOs);
         }
 
-        public async Task<Result> Update(CompanyFAQUpdateRequest request)
+        public async Task<Result> Update(int routeCompanyId, int routeCategoryId, CompanyFAQUpdateRequest request)
         {
-            var companyFAQ = await companyFAQRepository.Get(request.ID);
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
+
+            var companyFAQ = await companyFAQRepository.GetFull(request.ID);
             if (companyFAQ == null)
             {
                 return Result.Failure(GenericResults.NotFound);
             }
+            // Validate that category and company match
+            if (companyFAQ.CategoryID != routeCategoryId || companyFAQ.Category.CompanyID != routeCompanyId)
+                return Result.Failure(GenericResults.IDMismatch);
+
             request.MapToEntity(companyFAQ);
             await companyFAQRepository.Update(companyFAQ);
 

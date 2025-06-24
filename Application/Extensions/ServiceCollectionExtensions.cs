@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Common.Security;
+using Application.Interfaces;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ namespace Application.Extensions
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ICompanyFAQService, CompanyFAQService>();
             services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
+            services.AddScoped<CompanyAccessGuard>();
 
             return services;
         }

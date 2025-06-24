@@ -44,9 +44,9 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateFAQCategory([FromBody] CompanyFAQCategoryCreateRequest request)
+        public async Task<IActionResult> CreateFAQCategory(int companyId, [FromBody] CompanyFAQCategoryCreateRequest request)
         {
-            var result = await companyFAQCategoryService.Create(request);
+            var result = await companyFAQCategoryService.Create(companyId, request);
             return result.ToResponse();
         }
 
@@ -63,12 +63,12 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateFAQCategory(int id, [FromBody] CompanyFAQCategoryUpdateRequest request)
+        public async Task<IActionResult> UpdateFAQCategory(int companyId, int id, [FromBody] CompanyFAQCategoryUpdateRequest request)
         {
             if (id != request.ID)
                 return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
 
-            var result = await companyFAQCategoryService.Update(request);
+            var result = await companyFAQCategoryService.Update(companyId, request);
             return result.ToResponse();
         }
 
@@ -84,9 +84,9 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteFAQCategory(int id)
+        public async Task<IActionResult> DeleteFAQCategory(int companyId, int id)
         {
-            var result = await companyFAQCategoryService.Delete(id);
+            var result = await companyFAQCategoryService.Delete(companyId, id);
             return result.ToResponse();
         }
 
@@ -119,12 +119,12 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateFAQ(int categoryId, [FromBody] CompanyFAQCreateRequest request)
+        public async Task<IActionResult> CreateFAQ(int companyId, int categoryId, [FromBody] CompanyFAQCreateRequest request)
         {
             if (categoryId != request.CategoryID)
                 return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
 
-            var result = await companyFAQService.Create(request);
+            var result = await companyFAQService.Create(companyId, request);
             return result.ToResponse();
         }
 
@@ -142,12 +142,12 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateFAQ(int id, int categoryId, [FromBody] CompanyFAQUpdateRequest request)
+        public async Task<IActionResult> UpdateFAQ(int companyId, int categoryId, int id, [FromBody] CompanyFAQUpdateRequest request)
         {
             if (id != request.ID || categoryId != request.CategoryID)
                 return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
 
-            var result = await companyFAQService.Update(request);
+            var result = await companyFAQService.Update(companyId, categoryId, request);
             return result.ToResponse();
         }
 
@@ -158,15 +158,15 @@ namespace API.Controllers
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <param name="id">The ID of the FAQ to delete.</param>  
         /// <returns>Success result if the FAQ is deleted successfully.</returns>  
-        [HttpDelete("{companyId:int}/faq-categories/{categoryId:int}faqs/{id:int}")]
+        [HttpDelete("{companyId:int}/faq-categories/{categoryId:int}/faqs/{id:int}")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteFAQ(int id)
+        public async Task<IActionResult> DeleteFAQ(int companyId, int categoryId, int id)
         {
-            var result = await companyFAQService.Delete(id);
+            var result = await companyFAQService.Delete(companyId, categoryId, id);
             return result.ToResponse();
         }
 
@@ -181,27 +181,9 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<Result<IEnumerable<CompanyFAQDTO>>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAllFAQs(int categoryId)
+        public async Task<IActionResult> GetAllFAQs(int companyId, int categoryId)
         {
-            var result = await companyFAQService.GetAll(categoryId);
-            return result.ToResponse();
-        }
-
-        /// <summary>  
-        /// Retrieves a specific FAQ within a category for a company.  
-        /// </summary>  
-        /// <param name="companyId">The ID of the company.</param>  
-        /// <param name="categoryId">The ID of the FAQ category.</param>  
-        /// <param name="id">The ID of the FAQ to retrieve.</param>  
-        /// <returns>The requested FAQ details.</returns>  
-        [HttpGet("{companyId:int}/faq-categories/{categoryId:int}/faqs/{id:int}")]
-        [Logging(LoggingType.Full)]
-        [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<CompanyFAQDTO>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetFAQ(int id)
-        {
-            var result = await companyFAQService.Get(id);
+            var result = await companyFAQService.GetAll(companyId, categoryId);
             return result.ToResponse();
         }
     }

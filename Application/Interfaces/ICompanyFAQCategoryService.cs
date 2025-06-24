@@ -6,9 +6,9 @@ namespace Application.Interfaces
 {
     public interface ICompanyFAQCategoryService
     {
-        Task<Result> Create(CompanyFAQCategoryCreateRequest request);
-        Task<Result> Update(CompanyFAQCategoryUpdateRequest request);
-        Task<Result> Delete(int id);
+        Task<Result> Create(int routeCompanyId,CompanyFAQCategoryCreateRequest request);
+        Task<Result> Update(int routeCompanyId, CompanyFAQCategoryUpdateRequest request);
+        Task<Result> Delete(int routeCompanyId, int id);
         Task<Result<IEnumerable<CompanyFAQCategoryDTO>>> GetAll(int companyID);
     }
 }

@@ -10,8 +10,7 @@
         public static readonly Error InvalidID = Error.Validation("Generic.InvalidID", "ID must be greater than 0.");
         public static readonly Error DontExists = Error.Validation("Generic.DontExists", "Resource do not exists.");
         public static readonly Error IDMismatch = Error.Validation("Generic.IDMismatch", "Route ID and request ID must match.");
-
-
+        public static readonly Error Forbidden = Error.Forbidden("Generic.Forbidden", "You do not have permission to perform this action.");
         #endregion
         #region Success
         public static readonly SuccessInfo Success = new("Generic.Success", "Operation completed successfully.");
