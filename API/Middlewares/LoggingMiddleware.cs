@@ -24,12 +24,6 @@ namespace API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            //var authService = context.RequestServices.GetService<IAuthService>();
-
-            //if (authService != null)
-            //{
-            //    AuthUser = authService.GetCurrentUser();
-            //}
             loggingType = GetLoggingType(context);
 
             try
@@ -88,7 +82,6 @@ namespace API.Middlewares
             LogContext.PushProperty("Method", context.Request.Method);
             LogContext.PushProperty("RequestPath", context.Request.Path);
             LogContext.PushProperty("IpAddress", context.Connection.RemoteIpAddress);
-            //LogContext.PushProperty("UN_ID", AuthUser?.UnID);
             LogRequestHeaders(context.Request);
 
             if (loggingType != LoggingType.General)
@@ -207,6 +200,11 @@ namespace API.Middlewares
                 LogContext.PushProperty("StatusCode", serverErrorCode);
                 LogContext.PushProperty("Response", errorMessage);
                 logger.LogError(ex, "Exception has occurred");
+
+                //@TODO Remove before production Log to console
+                Console.WriteLine($"Error: {ex}");
+                Console.WriteLine($"Status Code: {serverErrorCode}");
+                Console.WriteLine($"Response: {errorMessage}");
             }
 
             await context.Response.WriteAsJsonAsync(problemDetails);
