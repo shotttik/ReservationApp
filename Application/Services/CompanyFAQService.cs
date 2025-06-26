@@ -50,21 +50,15 @@ namespace Application.Services
 
             return Result.Success(CompanyResults.FAQCreated);
         }
-        public async Task<Result> Delete(int routeCompanyId, int routeCategoryId, int id)
+        public async Task<Result> Delete(int routeCompanyId, int id)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
             var companyFAQ = await companyFAQRepository.GetFull(id);
-            if (companyFAQ == null)
+            if (companyFAQ == null || companyFAQ.Category.CompanyID != routeCompanyId)
                 return Result.Failure(GenericResults.NotFound);
-
-            // Ensure FAQ belongs to correct category and company
-            if (companyFAQ.CategoryID != routeCategoryId || companyFAQ.Category.CompanyID != routeCompanyId)
-                return Result.Failure(GenericResults.IDMismatch);
-
-
 
             await companyFAQRepository.Delete(companyFAQ);
 
@@ -78,21 +72,17 @@ namespace Application.Services
             return Result.Success(companyFAQsDTOs);
         }
 
-        public async Task<Result> Update(int routeCompanyId, int routeCategoryId, CompanyFAQUpdateRequest request)
+        public async Task<Result> Update(int routeCompanyId, CompanyFAQUpdateRequest request)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
             var companyFAQ = await companyFAQRepository.GetFull(request.ID);
-            if (companyFAQ == null)
+            if (companyFAQ == null || companyFAQ.Category.CompanyID != routeCompanyId)
             {
                 return Result.Failure(GenericResults.NotFound);
             }
-            // Validate that category and company match
-            if (companyFAQ.CategoryID != routeCategoryId || companyFAQ.Category.CompanyID != routeCompanyId)
-                return Result.Failure(GenericResults.IDMismatch);
-
             request.MapToEntity(companyFAQ);
             await companyFAQRepository.Update(companyFAQ);
 
