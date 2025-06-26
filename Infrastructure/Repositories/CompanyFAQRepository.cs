@@ -11,9 +11,16 @@ namespace Infrastructure.Repositories
 
         }
 
-        public async Task<IEnumerable<CompanyFAQ>> GetAll(int companyID, int categoryID)
+        public async Task<IEnumerable<CompanyFAQ>> GetAll(int companyID, int? categoryID)
         {
-            return await _dbSet.Where(x => x.CategoryID == categoryID && x.Category.CompanyID == companyID).OrderBy(x => x.Order).ToListAsync();
+            var query = _dbSet.Where(x => x.Category.CompanyID == companyID);
+
+            if (categoryID.HasValue)
+            {
+                query = query.Where(x => x.CategoryID == categoryID);
+            }
+
+            return await query.OrderBy(x => x.Order).ToListAsync();
         }
 
         public async Task<int> Count(int categoryID)

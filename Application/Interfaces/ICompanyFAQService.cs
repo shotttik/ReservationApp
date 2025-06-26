@@ -9,6 +9,6 @@ namespace Application.Interfaces
         Task<Result> Create(int routeCompanyId, CompanyFAQCreateRequest request);
         Task<Result> Update(int routeCompanyId, int routeCategoryId, CompanyFAQUpdateRequest request);
         Task<Result> Delete(int routeCompanyId, int routeCategoryId, int id);
-        Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int companyId, int categoryID);
+        Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int companyId, int? categoryID);
     }
 }

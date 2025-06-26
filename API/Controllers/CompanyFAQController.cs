@@ -194,12 +194,12 @@ namespace API.Controllers
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <returns>A list of FAQs.</returns>  
-        [HttpGet("{companyId:int}/faq-categories/{categoryId:int}/faqs")]
+        [HttpGet("{companyId:int}/faqs")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<CompanyFAQDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAllFAQs(int companyId, int categoryId)
+        public async Task<IActionResult> GetAllFAQs(int companyId, [FromQuery] int? categoryId = null)
         {
             var result = await companyFAQService.GetAll(companyId, categoryId);
             return result.ToResponse();

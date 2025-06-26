@@ -70,7 +70,7 @@ namespace Application.Services
 
             return Result.Success(CompanyResults.FAQDeleted);
         }
-        public async Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int companyId, int categoryID)
+        public async Task<Result<IEnumerable<CompanyFAQDTO>>> GetAll(int companyId, int? categoryID)
         {
             var companyFAQs = await companyFAQRepository.GetAll(companyId, categoryID);
             var companyFAQsDTOs = companyFAQs.Select(faq => faq.MapToDTO());
