@@ -116,7 +116,7 @@ namespace API.Controllers
         [HttpGet("users/paged")]
         [HasPermission(Permission.UserRead)]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<AuthUser>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<AuthUser>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePagedUsers([FromQuery] PagedParameters request, CancellationToken cancellationToken)
         {
@@ -151,7 +151,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyRead)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<CompanyDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
@@ -167,7 +167,7 @@ namespace API.Controllers
         [HttpGet("companies/{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<CompanyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCompany(int id)
         {
@@ -182,8 +182,9 @@ namespace API.Controllers
         /// <returns>User details or error response.</returns>
         [HttpGet("users/{id:int}")]
         [HasPermission(Permission.UserRead)]
+        [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<UserLoginDataDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUser(int id)
@@ -199,13 +200,33 @@ namespace API.Controllers
         /// <returns>Returns result of the reactivation process.</returns>
         [HttpPatch("users/{id:int}/reactivate")]
         [HasPermission(Permission.UserUpdate)]
+        [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<UserLoginDataDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ReactivateUser(int id)
         {
             var result = await adminService.ReactivateUser(id);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Deletes all active login sessions for a specific user.
+        /// </summary>
+        /// <param name="id">ID of the user whose active sessions will be deleted.</param>
+        /// <returns>Returns the result of the session termination process.</returns>
+        [HttpDelete("users/sessions/{id:int}")]
+        [HasPermission(Permission.UserDelete)]
+        [EnableRateLimiting("fixed")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<UserLoginDataDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteSpecificUserAllActiveSessions(int id)
+        {
+            var result = await userService.DeleteAllActiveSessions(id);
 
             return result.ToResponse();
         }
