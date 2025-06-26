@@ -2,32 +2,89 @@
 {
     public enum Permission
     {
-        // User Permissions
+        // ==== User Permissions ====
         UserCreate = 1,
-        UserRead = 2,
-        UserUpdate = 3,
-        UserDelete = 4,
+        UserRead,
+        UserUpdate,
+        UserDelete,
 
-        // Company Permissions
-        CompanyCreate = 5,
-        CompanyRead = 6,
-        CompanyUpdate = 7,
-        CompanyDelete = 8,
+        // ==== Company Permissions ====
+        CompanyCreate,
+        CompanyRead,
+        CompanyUpdate,
+        CompanyDelete,
 
-        // Report Permissions
-        ReportView = 9,
+        // ==== Report and Settings ====
+        ReportView,
+        SettingsManage,
 
-        // Settings Permissions
-        SettingsManage = 10,
+        // ==== Work Schedule Permissions ====
+        WorkScheduleCompanyRead,
+        WorkScheduleCompanyCreate,
+        WorkScheduleCompanyUpdate,
+        WorkScheduleCompanyExceptionManage,
 
-        // WorkSchedule Permissions
-        WorkScheduleManageCompany = 11,
-        WorkScheduleManageUser = 12,
+        WorkScheduleUserRead,
+        WorkScheduleUserCreate,
+        WorkScheduleUserUpdate,
+        WorkScheduleUserExceptionManage,
 
-        // Service Permissions
-        ServiceCreate = 13,
-        ServiceRead = 14,
-        ServiceUpdate = 15,
-        ServiceDelete = 16,
+        // ==== Service Permissions ====
+        ServiceCreate,
+        ServiceRead,
+        ServiceUpdate,
+        ServiceDelete,
+
+        // ==== Appointment Permissions ====
+        AppointmentSchedule,
+        AppointmentRead,
+        AppointmentUpdate,
+        AppointmentCancel,
+        AppointmentApprove,
+
+        // ==== Media Permissions ====
+        MediaUpload,
+        MediaRead,
+        MediaDelete,
+
+        // ==== Company Media Permissions ====
+        CompanyMediaUpload,
+        CompanyMediaRead,
+        CompanyMediaDelete,
+
+        // ==== FAQ Permissions ====
+        FaqCreate,
+        FaqRead,
+        FaqUpdate,
+        FaqDelete,
+
+        // ==== FAQ Category Permissions ====
+        FaqCategoryCreate,
+        FaqCategoryRead,
+        FaqCategoryUpdate,
+        FaqCategoryDelete,
+
+        // ==== Invitation Permissions ====
+        InvitationSend,
+        InvitationRead,
+        InvitationRevoke,
+
+        // ==== Location / Geography Permissions ====
+        LocationRead,
+        CityRead,
+        StateRead,
+        CountryRead,
+
+        // ==== Role and Permission Management ====
+        RoleCreate,
+        RoleRead,
+        RoleUpdate,
+        RoleDelete,
+        RolePermissionManage,
+
+        // ==== Auth & Login Permissions ====
+        UserLoginDataRead,
+        UserLoginDataManage
     }
 }
+

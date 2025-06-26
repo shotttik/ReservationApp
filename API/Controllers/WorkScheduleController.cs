@@ -32,7 +32,7 @@ namespace API.Controllers
         [HttpPost("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.WorkScheduleManageCompany)]
+        [HasPermission(Permission.WorkScheduleCompanyCreate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateCompanyWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
@@ -52,7 +52,7 @@ namespace API.Controllers
         [HttpPut("company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.WorkScheduleManageCompany)]
+        [HasPermission(Permission.WorkScheduleCompanyUpdate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
@@ -72,7 +72,7 @@ namespace API.Controllers
         [HttpPost("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.WorkScheduleManageUser)]
+        [HasPermission(Permission.WorkScheduleUserCreate)]
         public async Task<IActionResult> CreateEmployeeWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
         {
             var result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: true);
@@ -90,12 +90,12 @@ namespace API.Controllers
         [HttpPut("employee")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.WorkScheduleManageUser)]
+        [HasPermission(Permission.WorkScheduleUserRead)]
         public async Task<IActionResult> UpdateEmployeeWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
         {
             var result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: true);
 
-            return result.ToResponse(); 
+            return result.ToResponse();
         }
     }
 }
