@@ -45,7 +45,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateFAQCategory(int companyId, [FromBody] CompanyFAQCategoryCreateRequest request)
         {
@@ -67,7 +67,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateFAQCategory(int companyId, int id, [FromBody] CompanyFAQCategoryUpdateRequest request)
         {
@@ -91,7 +91,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteFAQCategory(int companyId, int id)
         {
@@ -107,7 +107,7 @@ namespace API.Controllers
         [HttpGet("{companyId:int}/faq-categories")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<IEnumerable<CompanyFAQCategoryDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<IEnumerable<CompanyFAQCategoryDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllFAQCategories(int companyId)
         {
@@ -129,7 +129,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateFAQ(int companyId, int categoryId, [FromBody] CompanyFAQCreateRequest request)
         {
@@ -155,7 +155,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateFAQ(int companyId, int categoryId, int id, [FromBody] CompanyFAQUpdateRequest request)
         {
@@ -180,7 +180,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteFAQ(int companyId, int categoryId, int id)
         {
@@ -197,7 +197,7 @@ namespace API.Controllers
         [HttpGet("{companyId:int}/faq-categories/{categoryId:int}/faqs")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<IEnumerable<CompanyFAQDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<IEnumerable<CompanyFAQDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAllFAQs(int companyId, int categoryId)
         {

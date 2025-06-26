@@ -74,7 +74,7 @@ namespace API.Controllers
         /// <returns>Success if session was removed.</returns>
         [HttpPost("logout")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Logout()
         {
@@ -106,7 +106,7 @@ namespace API.Controllers
         [HttpPost("reset-password")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
         {
@@ -121,7 +121,7 @@ namespace API.Controllers
         /// <returns>Success if email is verified.</returns>
         [HttpGet("verify-email")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {

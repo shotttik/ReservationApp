@@ -197,7 +197,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id">ID of the user to reactivate.</param>
         /// <returns>Returns result of the reactivation process.</returns>
-        [HttpPatch("users/{id}/reactivate")]
+        [HttpPatch("users/{id:int}/reactivate")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<Result<UserLoginDataDTO>>), StatusCodes.Status200OK)]

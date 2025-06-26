@@ -33,13 +33,13 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.WorkScheduleManageCompany)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateCompanyWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
         {
-            Result result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: false);
+            var result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: false);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         /// <summary>
         /// Updates the existing company work schedule.
@@ -53,13 +53,13 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.WorkScheduleManageCompany)]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateCompanyWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
         {
-            Result result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: false);
+            var result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: false);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         /// <summary>
         /// Creates the employee's personal work schedule.
@@ -75,9 +75,9 @@ namespace API.Controllers
         [HasPermission(Permission.WorkScheduleManageUser)]
         public async Task<IActionResult> CreateEmployeeWorkSchedules([FromBody] WorkSchedulesCreateRequest request)
         {
-            Result result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: true);
+            var result = await workScheduleService.WorkSchedulesCreate(request, isForEmployee: true);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse();
         }
         /// <summary>
         /// Updates the employee's personal work schedule.
@@ -93,9 +93,9 @@ namespace API.Controllers
         [HasPermission(Permission.WorkScheduleManageUser)]
         public async Task<IActionResult> UpdateEmployeeWorkSchedules([FromBody] WorkSchedulesUpdateRequest request)
         {
-            Result result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: true);
+            var result = await workScheduleService.WorkSchedulesUpdate(request, isForEmployee: true);
 
-            return result.IsSuccess ? Ok(result) : result.ToProblemDetails();
+            return result.ToResponse(); 
         }
     }
 }

@@ -45,7 +45,7 @@ namespace API.Controllers
         [HttpPost("change-email")]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result<RegisterResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
         {
@@ -61,7 +61,7 @@ namespace API.Controllers
         [HttpPost("change-password")]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
@@ -77,7 +77,7 @@ namespace API.Controllers
         [HttpPut]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
         {

@@ -26,7 +26,7 @@ namespace API.Controllers
         [HttpGet]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result<List<SessionInfoSummaryDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<SessionInfoSummaryDTO>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetActiveSessions()
         {
             var result = await userService.GetActiveSessions();
@@ -41,7 +41,7 @@ namespace API.Controllers
         [HttpDelete("{sessionId}")]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteActiveSession(string sessionId)
         {
@@ -56,7 +56,7 @@ namespace API.Controllers
         [HttpDelete]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAllActiveSessions()
         {

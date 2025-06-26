@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("paged")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<PagedList<CompanyDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
@@ -50,7 +50,7 @@ namespace API.Controllers
         [HttpGet("{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<CompanyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCompany(int id)
         {
@@ -72,7 +72,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result<string>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
         {
@@ -109,7 +109,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<Result>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadImages([FromForm] UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {

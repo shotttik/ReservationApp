@@ -23,7 +23,7 @@ namespace API.Controllers
         [HttpGet("countries")]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.General)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<List<CountryDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<CountryDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCountries()
         {
@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("countries/{countryId}/states")]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.General)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<List<StateDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<StateDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStatesByCountry(int countryId)
         {
@@ -44,7 +44,7 @@ namespace API.Controllers
         [HttpGet("states/{stateId}/cities")]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.General)]
-        [ProducesResponseType(typeof(SuccessResponse<Result<List<CityDTO>>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<CityDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCitiesByState(int stateId)
         {
