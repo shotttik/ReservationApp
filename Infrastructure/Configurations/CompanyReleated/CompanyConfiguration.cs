@@ -11,7 +11,7 @@ namespace Infrastructure.Configurations.CompanyReleated
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
-            builder.Property(e => e.Description).HasMaxLength(255);
+            builder.Property(e => e.Description).HasColumnType("nvarchar(max)");
             builder.Property(e => e.IN).HasMaxLength(9).IsRequired();
             builder.Property(e => e.Email).HasMaxLength(255);
             builder.Property(e => e.Phone).HasMaxLength(9);

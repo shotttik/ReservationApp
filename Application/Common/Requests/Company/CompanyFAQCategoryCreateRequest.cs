@@ -8,5 +8,6 @@ namespace Application.Common.Requests.Company
         [MaxLength(500)]
         public required string Name { get; set; }
         public int Order { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

@@ -60,20 +60,16 @@ namespace API.Controllers
         /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
-        /// <param name="id">The ID of the FAQ category to update.</param>  
         /// <param name="request">The request containing updated category details.</param>  
         /// <returns>Success result if the category is updated successfully.</returns>  
-        [HttpPut("{companyId:int}/faq-categories/{id:int}")]
+        [HttpPut("{companyId:int}/faq-categories")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateFAQCategory(int companyId, int id, [FromBody] CompanyFAQCategoryUpdateRequest request)
+        public async Task<IActionResult> UpdateFAQCategory(int companyId, [FromBody] CompanyFAQCategoryUpdateRequest request)
         {
-            if (id != request.ID)
-                return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
-
             var result = await companyFAQCategoryService.Update(companyId, request);
             return result.ToResponse();
         }
@@ -143,20 +139,16 @@ namespace API.Controllers
         /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
-        /// <param name="id">The ID of the FAQ to update.</param>  
         /// <param name="request">The request containing updated FAQ details.</param>  
         /// <returns>Success result if the FAQ is updated successfully.</returns>  
-        [HttpPut("{companyId:int}/faqs/{id:int}")]
+        [HttpPut("{companyId:int}/faqs")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateFAQ(int companyId, int id, [FromBody] CompanyFAQUpdateRequest request)
+        public async Task<IActionResult> UpdateFAQ(int companyId, [FromBody] CompanyFAQUpdateRequest request)
         {
-            if (id != request.ID)
-                return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
-
             var result = await companyFAQService.Update(companyId, request);
             return result.ToResponse();
         }

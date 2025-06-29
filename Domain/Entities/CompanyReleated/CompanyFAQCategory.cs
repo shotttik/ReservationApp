@@ -6,6 +6,7 @@ namespace Domain.Entities.CompanyReleated
     {
         public string Name { get; set; } = null!;
         public int CompanyID { get; set; }
+        public bool IsActive { get; set; }
         public int Order { get; set; }
         public Company Company { get; set; } = null!;
         public ICollection<CompanyFAQ> FAQs { get; set; } = [];

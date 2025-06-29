@@ -211,10 +211,10 @@ namespace Application.Services
 
                 var media = new Media()
                 {
-                    FileName = fileName,
-                    FilePath = WebpPath,
+                    OriginalName = fileName,
+                    RemoteUrl = WebpPath,
                     FileType = contentType,
-                    FileSize = item.File.Length
+                    FileSizeInBytes = item.File.Length
                 };
                 media = await mediaRepository.Add(media, cancellationToken);
 

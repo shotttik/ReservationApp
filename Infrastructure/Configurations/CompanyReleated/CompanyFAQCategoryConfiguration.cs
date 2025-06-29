@@ -14,7 +14,11 @@ namespace Infrastructure.Configurations.CompanyReleated
                 .IsRequired()
                 .HasMaxLength(500);
 
-            builder.HasIndex(c => c.Name);
+            builder.HasIndex(c => c.Name)
+                .IsUnique();
+            builder.Property(e => e.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
 
             builder.HasMany(c => c.FAQs)
                 .WithOne(f => f.Category)

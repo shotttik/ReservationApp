@@ -33,7 +33,7 @@ namespace Application.Extensions.Mappers
                 {
                     ID = cm.MediaID,
                     IsMain = cm.IsMain,
-                    Path = cm.Media.FilePath
+                    Path = cm.Media.RemoteUrl
                 }).ToList(),
                 WorkSchedules = company.WorkSchedules.Select(ws => ws.MapToDTO())
             };

@@ -9,16 +9,16 @@ namespace Infrastructure.Configurations.Common
         public void Configure(EntityTypeBuilder<Media> builder)
         {
             builder.HasKey(e => e.ID);
-            builder.Property(e => e.FileName)
+            builder.Property(e => e.OriginalName)
                 .IsRequired()
                 .HasMaxLength(255);
-            builder.Property(e => e.FilePath)
+            builder.Property(e => e.RemoteUrl)
                 .IsRequired()
                 .HasMaxLength(2000);
             builder.Property(e => e.FileType)
                 .IsRequired()
                 .HasMaxLength(100);
-            builder.Property(e => e.FileSize)
+            builder.Property(e => e.FileSizeInBytes)
                 .IsRequired();
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
