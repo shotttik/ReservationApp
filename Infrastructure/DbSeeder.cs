@@ -78,13 +78,61 @@ namespace Infrastructure
 
                     for (int i = 0; i < 50; i++)
                     {
+                        var name = $"Company {i + 1}";
+                        var iN = random.Next(100000000, 999999999).ToString();
+                        var email = $"company{i + 1}@example.com";
+                        var phone = $"555-01{i:D3}";
+                        var description = $"""
+                            <p>Welcome to <strong>{name}</strong>, where <em>creativity</em> meets <u>technology</u>. Since our founding in <span style="color: #555;">2010</span>, we have delivered top-notch solutions to clients worldwide.</p>
+
+                            <p>Our core values include:</p>
+
+                            <ul>
+                              <li>Integrity</li>
+                              <li>Innovation</li>
+                              <li>Customer Success</li>
+                            </ul>
+
+                            <blockquote>
+                              “The best way to predict the future is to invent it.” — Alan Kay
+                            </blockquote>
+
+                            <p>We specialize in:</p>
+
+                            <ol>
+                              <li>Web Development</li>
+                              <li>Mobile Applications</li>
+                              <li>Cloud Solutions</li>
+                            </ol>
+
+                            <p>To learn more, visit our <a href="https://www.example.com" target="_blank">official website</a> or follow us on social media.</p>
+
+                            <hr>
+
+                            <h3>Contact Us</h3>
+                            <p>📞 <a href="tel:+1234567890">{phone}</a><br>
+                            📧 <a href="mailto:info@example.com">{email}</a></p>
+
+                            <p>
+                              <img src="https://via.placeholder.com/400x200" alt="Company Team Photo" style="max-width: 100%; border-radius: 8px;">
+                            </p>
+
+                            <p style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #00AF87;">
+                              <strong>Note:</strong> We are committed to <mark>continuous improvement</mark> and welcome your feedback.
+                            </p>
+
+                            <p>
+                              <small>Last updated: June 2025</small>
+                            </p>
+                            {i + 1}
+                            """;
                         companies.Add(new Company
                         {
-                            Name = $"Company {i + 1}",
-                            IN = random.Next(100000000, 999999999).ToString(),
-                            Email = $"company{i + 1}@example.com",
-                            Phone = $"555-01{i:D3}",
-                            Description = $"This is Company {i + 1}",
+                            Name = name,
+                            IN = iN,
+                            Email = email,
+                            Phone = phone,
+                            Description = description,
                             IsActive = true,
                             LocationID = locations [i].ID // One-to-one
                         });
