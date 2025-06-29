@@ -27,10 +27,12 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.ReportView),
             Create(Role.SuperAdmin, Permission.SettingsManage),
 
+            Create(Role.SuperAdmin, Permission.WorkScheduleCompanyCreate),
             Create(Role.SuperAdmin, Permission.WorkScheduleCompanyRead),
             Create(Role.SuperAdmin, Permission.WorkScheduleCompanyUpdate),
             Create(Role.SuperAdmin, Permission.WorkScheduleCompanyExceptionManage),
 
+            Create(Role.SuperAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserRead),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserUpdate),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserExceptionManage),
@@ -75,14 +77,14 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyUpdate),
             Create(Role.CompanyAdmin, Permission.CompanyDelete),
 
-            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyRead),
             Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyCreate),
+            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyRead),
             Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyUpdate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyExceptionManage),
 
+            Create(Role.CompanyAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserRead),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserUpdate),
-            Create(Role.CompanyAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserExceptionManage),
 
             Create(Role.CompanyAdmin, Permission.ServiceCreate),

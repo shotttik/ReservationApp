@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations.Common
@@ -12,12 +13,12 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.DayOfWeek)
                 .IsRequired();
             builder.Property(e => e.IsWorkingDay).IsRequired();
-            //builder.Property(e => e.StartTime)
-            //    .HasConversion(
-            //        v => v!.ToString(),
-            //        v => TimeOnly.Parse(v))
-            //    .IsRequired(false);
-            builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+
+            builder
+                .Property(e => e.CreatedAt)
+                .ValueGeneratedOnAdd() 
+                .HasDefaultValueSql("GETDATE()")
+                .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);  // Ignore updates
 
             builder.HasOne(e => e.Company)
                 .WithMany(e => e.WorkSchedules)

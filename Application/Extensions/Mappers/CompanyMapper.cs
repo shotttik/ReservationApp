@@ -35,6 +35,7 @@ namespace Application.Extensions.Mappers
                     IsMain = cm.IsMain,
                     Path = cm.Media.FilePath
                 }).ToList(),
+                WorkSchedules = company.WorkSchedules.Select(ws => ws.MapToDTO())
             };
         }
         public static Company MapToEntity(this CompanyCreateRequest request) => new()

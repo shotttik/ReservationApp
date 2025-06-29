@@ -13,6 +13,10 @@ namespace Infrastructure.Repositories
 
         public override async Task UpdateRange(IEnumerable<WorkSchedule> schedules)
         {
+            foreach (var item in schedules)
+            {
+                item.UpdateTimestamp();
+            };
             _dbSet.UpdateRange(schedules);
 
             // Process company schedule updates (when UserID is null)

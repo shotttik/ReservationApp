@@ -27,7 +27,7 @@ namespace API.Controllers
         /// <remarks>
         /// The schedule must include all 7 days of the week. Can only be created if it doesn't already exist.
         /// </remarks>
-        /// <param name="request">List of work schedule entries for the company.</param>
+        /// <param name="request">Schedule entries to be applied to the company. The <c>TargetUserId</c> property should not be set for this endpoint.</param>
         /// <returns>Success if creation is successful, or validation errors otherwise.</returns>
         [HttpPost("company")]
         [Logging(LoggingType.Full)]
@@ -47,7 +47,7 @@ namespace API.Controllers
         /// <remarks>
         /// All schedule entries must reference existing work schedule IDs.
         /// </remarks>
-        /// <param name="request">Updated schedule entries for the company.</param>
+        /// <param name="request">Updated schedule entries for the company. The <c>TargetUserId</c> property should not be set for this endpoint.</param>
         /// <returns>Success if update is applied.</returns>
         [HttpPut("company")]
         [Logging(LoggingType.Full)]
@@ -66,8 +66,10 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Must conform to the company's defined schedule boundaries (e.g., hours, days).
+        /// SuperAdmins may provide <c>TargetUserId</c> in the request to assign the schedule to another user.
+        /// All other roles must omit this property.
         /// </remarks>
-        /// <param name="request">Schedule entries for all 7 days of the week.</param>
+        /// <param name="request">Schedule entries for all 7 days of the week. Optionally includes <c>TargetUserId</c> if called by SuperAdmin.</param>
         /// <returns>Success if creation is valid and within company constraints.</returns>
         [HttpPost("employee")]
         [Logging(LoggingType.Full)]
@@ -84,8 +86,10 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// All updated entries must match existing employee schedule IDs.
+        /// SuperAdmins may provide <c>TargetUserId</c> to update another user's schedule.
+        /// All other roles must omit this property.
         /// </remarks>
-        /// <param name="request">Updated work schedule entries.</param>
+        /// <param name="request">Updated work schedule entries. Optionally includes <c>TargetUserId</c> if called by SuperAdmin.</param>
         /// <returns>Success if update passes validation and is within company-defined limits.</returns>
         [HttpPut("employee")]
         [Logging(LoggingType.Full)]
