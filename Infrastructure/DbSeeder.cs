@@ -64,7 +64,9 @@ namespace Infrastructure
                             State = states [random.Next(states.Length)],
                             City = cities [random.Next(cities.Length)],
                             AddressLine1 = $"{random.Next(1, 9999)} {streets [random.Next(streets.Length)]}",
-                            PostalCode = random.Next(10000, 99999).ToString()
+                            PostalCode = random.Next(10000, 99999).ToString(),
+                            Latitude = Convert.ToDecimal(random.NextDouble() * (90 - (-90)) + (-90)),
+                            Longitude = Convert.ToDecimal(random.NextDouble() * (180 - (-180)) + (-180))
                         };
 
                         locations.Add(location);
@@ -150,6 +152,7 @@ namespace Infrastructure
                     }
                     await context.SaveChangesAsync();
                 }
+                await SeedMediasAsync(context);
                 // Seed multiple services
                 if (!await context.Services.AnyAsync())
                 {
@@ -465,6 +468,45 @@ namespace Infrastructure
             {
                 Debug.Write(ex, "An error occurred while seeding the database.");
             }
+        }
+        public static async Task SeedMediasAsync(ApplicationDbContext context)
+        {
+            var random = new Random();
+
+            // Check if media already exists  
+            if (!await context.Medias.AnyAsync())
+            {
+                var companies = await context.Companies.ToListAsync();
+                var medias = new List<Media>();
+
+                foreach (var company in companies)
+                {
+                    for (int i = 0; i < 5; i++) // Generate 5 media items per company  
+                    {
+                        var media = new Media
+                        {
+                            OriginalName = $"Media_{company.Name}_{i + 1}",
+                            RemoteUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
+                            FileSizeInBytes = random.Next(1000, 5000), // Random file size in bytes  
+                            FileType = "image/jpeg",
+                            CompanyMedias = new List<CompanyMedia>
+                                       {
+                                           new CompanyMedia
+                                           {
+                                               CompanyID = company.ID,
+                                               IsMain = i == 0 // Only the first media is marked as IsMain=true  
+                                           }
+                                       }
+                        };
+
+                        medias.Add(media);
+                    }
+                }
+
+                await context.Medias.AddRangeAsync(medias);
+                await context.SaveChangesAsync();
+            }
+
         }
     }
 }
