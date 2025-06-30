@@ -20,6 +20,10 @@ namespace Infrastructure.Configurations.LocationReleated
             builder.Property(e => e.Country)
                 .HasMaxLength(100)
                 .IsRequired();
+            builder.Property(e => e.Latitude)
+                 .HasPrecision(10, 8);
+            builder.Property(e => e.Longitude)
+                .HasPrecision(11, 8);
             builder.Property(e => e.State)
                 .HasMaxLength(255);
             builder.Property(e => e.CreatedAt)

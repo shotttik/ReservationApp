@@ -15,7 +15,9 @@ namespace Application.Extensions.Mappers
                 City = request.City,
                 PostalCode = request.PostalCode,
                 Country = request.Country,
-                 State = request.State
+                 State = request.State,
+                 Latitude = request.Latitude,
+                 Longitude = request.Longitude
             };
         }
 
@@ -28,7 +30,9 @@ namespace Application.Extensions.Mappers
                 City = location.City,
                 PostalCode = location.PostalCode,
                 Country = location.Country,
-                State = location.State
+                State = location.State,
+                Latitude = location.Latitude,
+                Longitude = location.Longitude
             };
         }
     }

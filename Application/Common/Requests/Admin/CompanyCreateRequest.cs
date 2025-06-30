@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Shared;
 using System.ComponentModel.DataAnnotations;
 namespace Application.Common.Requests.Admin
 {
@@ -42,6 +43,10 @@ namespace Application.Common.Requests.Admin
         public required string Country { get; set; }
         [MaxLength(255)]
         public string? State { get; set; }
+        [DecimalPrecision(10, 8, ErrorMessage = "Latitude must have a precision of 9 and scale of 6.")]
+        public decimal? Latitude { get; set; }
+        [DecimalPrecision(11, 8, ErrorMessage = "Latitude must have a precision of 9 and scale of 6.")]
+        public decimal? Longitude { get; set; }
     }
 
 }
