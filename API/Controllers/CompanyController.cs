@@ -9,6 +9,7 @@ using Domain.DTO.Company;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
@@ -117,5 +118,26 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+
+        /// <summary>
+        /// Updates the description of the authenticated user's company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows a CompanyAdmin to update the <c>Description</c> field of their own company.  
+        /// Only authenticated users with the CompanyAdmin role can perform this action.  
+        /// The company is determined from the authenticated user's context.
+        /// </remarks>
+        /// <param name="request">The request containing the new description.</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpPatch]
+        [HasPermission(Permission.CompanyUpdate)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CompanyPartialUpdate([FromBody] CompanyPartialUpdateRequest request)
+        {
+            var result = await companyService.Update(request);
+            return result.ToResponse();
+        }
+
     }
 }

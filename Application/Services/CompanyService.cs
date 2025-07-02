@@ -229,5 +229,18 @@ namespace Application.Services
 
             return Result.Success(MediaResults.ImagesUploaded);
         }
+
+        public async Task<Result> Update(CompanyPartialUpdateRequest request)
+        {
+            var authUser = await authService.GetCurrentUser();
+
+            var company = await companyRepository.Get((int)authUser.CompanyID!);
+            if (company == null) return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            company.Description = request.Description;
+
+            await companyRepository.Update(company);
+
+            return Result.Success();
+        }
     }
 }
