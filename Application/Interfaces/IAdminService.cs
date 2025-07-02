@@ -8,7 +8,8 @@ namespace Application.Interfaces
     public interface IAdminService
     {
         Task<Result> UserCreate(UserCreateRequest request);
-        Task<Result> UserUpdate(UserUpdateRequest request);
+        Task<Result> UserUpdate(int id, UserUpdateRequest request);
+        Task<Result> CompanyUpdate(int id, CompanyUpdateRequest request);
         Task<Result> CompanyCreate(CompanyCreateRequest request);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request);

@@ -15,13 +15,18 @@ namespace Infrastructure.Repositories
         {
         }
 
-        public async Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone)
+        public async Task<bool> ExistsByDetailsAsync(
+          string IN,
+          string name,
+          string? email,
+          string? phone,
+          int? excludeId = null)
         {
             return await _dbSet.AnyAsync(c =>
-                c.Name == name
-                || c.IN == IN ||
-                (email == null || c.Email == email) ||
-                (phone == null || c.Phone == phone));
+                (c.Name == name || c.IN == IN ||
+                 (email != null && c.Email == email) ||
+                 (phone != null && c.Phone == phone))
+                && (!excludeId.HasValue || c.ID != excludeId.Value));
         }
         public async Task<Company?> GetFullData(int id)
         {
@@ -59,6 +64,12 @@ namespace Infrastructure.Repositories
                 ToListAsync(cancellationToken);
 
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
+        }
+        public async Task<Company?> GetWithLocation(int id)
+        {
+            return await _dbSet.Where(e => e.ID == id)
+                .Include(e => e.Location)
+                .FirstOrDefaultAsync();
         }
     }
 }

@@ -7,7 +7,6 @@ using Domain.Abstractions;
 using Domain.DTO.User;
 using Domain.Entities.User;
 using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services
@@ -16,32 +15,23 @@ namespace Application.Services
     {
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserAccountRepository userAccountRepository;
-        private readonly IRoleRepository roleRepository;
         private readonly IAuthService authService;
-        private readonly ICacheService cacheService;
         private readonly ICompanyRepository companyRepository;
         private readonly IConfiguration configuration;
-        private readonly ILocationRepository locationRepository;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
-            IRoleRepository roleRepository,
             IAuthService authService,
-            ICacheService cacheService,
             ICompanyRepository companyRepository,
-            IConfiguration configuration,
-            ILocationRepository locationRepository
+            IConfiguration configuration
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
             this.userAccountRepository = userAccountRepository;
-            this.roleRepository = roleRepository;
             this.authService = authService;
-            this.cacheService = cacheService;
             this.companyRepository = companyRepository;
             this.configuration = configuration;
-            this.locationRepository = locationRepository;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -96,14 +86,14 @@ namespace Application.Services
             return Result.Success(AuthResults.UserCreated);
         }
 
-        public async Task<Result> UserUpdate(UserUpdateRequest request)
+        public async Task<Result> UserUpdate(int id, UserUpdateRequest request)
         {
             if (request == null)
             {
                 return Result.Failure(AuthResults.ArgumentNull);
             }
 
-            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.ID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataID(id);
             if (userAccount is null)
             {
                 return Result.Failure(AuthResults.UserNotFound);
@@ -115,7 +105,7 @@ namespace Application.Services
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
             await userAccountRepository.Update(userAccount);
-            await authService.RefreshUserCache(request.ID);
+            await authService.RefreshUserCache(id);
 
             return Result.Success(AuthResults.UserUpdated);
         }
@@ -131,6 +121,23 @@ namespace Application.Services
             await companyRepository.Add(company);
 
             return Result.Success();
+        }
+
+        public async Task<Result> CompanyUpdate(int id, CompanyUpdateRequest request)
+        {
+            var existingCompany = await companyRepository.GetWithLocation(id);
+            if (existingCompany == null)
+            {
+                return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            }
+            if (await companyRepository.ExistsByDetailsAsync(request.IN, request.Name, request.Email, request.Phone, excludeId: id))
+                return Result.Failure(CompanyResults.AlreadyExists);
+
+            var company = request.MapToEntity(existingCompany);
+
+            await companyRepository.Update(company);
+
+            return Result.Success(CompanyResults.Updated);
         }
 
         public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)

@@ -18,6 +18,8 @@
         #endregion
 
         #region Success
+        public static readonly SuccessInfo Updated = new SuccessInfo("Company.Updated", "Company updated successfully.");
+
         public static readonly SuccessInfo FAQCreated = new SuccessInfo("Company.FAQCreated", "Company FAQ created successfully.");
         public static readonly SuccessInfo FAQDeleted = new SuccessInfo("Company.FAQDeleted", "Company FAQ deleted successfully.");
         public static readonly SuccessInfo FAQUpdated = new SuccessInfo("Company.FAQUpdated", "Company FAQ updated successfully.");

@@ -56,7 +56,7 @@ namespace API.Controllers
         /// <param name="id">ID of the user to update.</param>
         /// <param name="request">Partial update payload for user account.</param>
         /// <returns>Returns success or failure of the update.</returns>
-        [HttpPatch("users/{id}")]
+        [HttpPatch("users/{id:int}")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -64,11 +64,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UserUpdate(int id, [FromBody] UserUpdateRequest request)
         {
-            if (request.ID != id)
-            {
-                return Result.Failure(GenericResults.IDMismatch).ToProblemDetails();
-            }
-            var result = await adminService.UserUpdate(request);
+            var result = await adminService.UserUpdate(id, request);
 
             return result.ToResponse();
         }
@@ -227,6 +223,26 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteSpecificUserAllActiveSessions(int id)
         {
             var result = await userService.DeleteAllActiveSessions(id);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Updates an existing company's information by ID. Only accessible by SuperAdmin.
+        /// </summary>
+        /// <param name="id">The ID of the company to update.</param>
+        /// <param name="request">The updated company information.</param>
+        /// <returns>No content if successful, or validation/problem details on failure.</returns>
+        [HttpPut("companies/{id:int}")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyUpdateRequest request)
+        {
+            var result = await adminService.CompanyUpdate(id, request);
 
             return result.ToResponse();
         }

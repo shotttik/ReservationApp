@@ -15,9 +15,9 @@ namespace Application.Extensions.Mappers
                 City = request.City,
                 PostalCode = request.PostalCode,
                 Country = request.Country,
-                 State = request.State,
-                 Latitude = request.Latitude,
-                 Longitude = request.Longitude
+                State = request.State,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude
             };
         }
 
@@ -34,6 +34,19 @@ namespace Application.Extensions.Mappers
                 Latitude = location.Latitude,
                 Longitude = location.Longitude
             };
+        }
+        public static Location MapToEntity(this LocationCreateRequest request, Location entity)
+        {
+            entity.AddressLine1 = request.AddressLine1;
+            entity.AddressLine2 = request.AddressLine2;
+            entity.City = request.City;
+            entity.PostalCode = request.PostalCode;
+            entity.Country = request.Country;
+            entity.State = request.State;
+            entity.Latitude = request.Latitude;
+            entity.Longitude = request.Longitude;
+
+            return entity;
         }
     }
 }

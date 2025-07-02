@@ -65,6 +65,18 @@ namespace Application.Extensions.Mappers
                 CreatedAt = companyDTO.CreatedAt
             };
         }
+        public static Company MapToEntity(this CompanyUpdateRequest request, Company entity)
+        {
+            entity.Name = request.Name;
+            entity.Description = request.Description;
+            entity.IN = request.IN;
+            entity.Email = request.Email;
+            entity.Phone = request.Phone;
+            entity.Type = request.Type;
+            entity.IsActive = request.IsActive;
+            entity.Location = request.Location.MapToEntity(entity.Location);
 
+            return entity;
+        }
     }
 }
