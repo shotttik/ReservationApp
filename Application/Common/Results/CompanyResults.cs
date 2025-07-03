@@ -15,7 +15,6 @@
 
         public static readonly Error MaxFAQCategoriesReached = Error.Validation("Company.MaxFAQCategoriesReached", "You have reached the maximum number of FAQ categories for your company.");
         public static readonly Error FAQLimitReached = Error.Validation("Company.FAQLimitReached", "You have reached the maximum number of FAQs for your company.");
-        // validation error only user with company admin role can register company member
         public static readonly Error MemberRegistrationNotAllowed = Error.Validation("Company.MemberRegistrationNotAllowed", "You are not allowed to register company members. Only company admins can do that.");
         #endregion
 

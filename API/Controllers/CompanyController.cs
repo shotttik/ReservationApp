@@ -163,9 +163,34 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateCompanyMember(
             [FromRoute] int routeCompanyId,
-            [FromBody] CreateCompanyMemberRequest request)
+            [FromBody] MemberCreateRequest request)
         {
-            var result = await companyService.CreateCompanyMember(routeCompanyId, request);
+            var result = await companyService.CreateMember(routeCompanyId, request);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Updates the profile details of a company member.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows a CompanyAdmin to update an existing member’s first name, last name, gender, and date of birth.
+        /// Only authenticated users with appropriate access to the specified company can perform this action.
+        /// The member is identified by their UserLoginData ID.
+        /// </remarks>
+        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="request">The update request containing new profile data.</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpPatch("{routeCompanyId:int}/members")]
+        [HasPermission(Permission.CompanyUpdate)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateCompanyMember(
+            [FromRoute] int routeCompanyId,
+            [FromBody] MemberUpdateRequest request)
+        {
+            var result = await companyService.UpdateMember(routeCompanyId, request);
             return result.ToResponse();
         }
     }

@@ -247,7 +247,7 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> CreateCompanyMember(int routeCompanyId, CreateCompanyMemberRequest request)
+        public async Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -289,6 +289,28 @@ namespace Application.Services
             await userLoginDataRepository.Add(userLoginData);
 
             return Result.Success(AuthResults.UserCreated);
+        }
+        public async Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request)
+        {
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.ID);
+            if (userAccount is null || userAccount.CompanyID != routeCompanyId)
+            {
+                return Result.Failure(AuthResults.UserDoesntExists);
+            }
+
+            if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
+            if (request.LastName is not null) userAccount.LastName = request.LastName;
+            if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
+            if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
+            await userAccountRepository.Update(userAccount);
+            await authService.RefreshUserCache(request.ID);
+
+            return Result.Success(AuthResults.UserUpdated);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Company
 {
-    public class CreateCompanyMemberRequest
+    public class MemberCreateRequest
     {
         [Required]
         [MaxLength(100)]

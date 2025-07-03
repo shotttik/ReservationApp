@@ -19,6 +19,7 @@ namespace Application.Interfaces
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
         Task<Result> UploadImages(UploadCompanyImagesRequest request, CancellationToken cancellationToken);
         Task<Result> Update(CompanyPartialUpdateRequest request);
-        Task<Result> CreateCompanyMember(int routeCompanyId, CreateCompanyMemberRequest request);
+        Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
+        Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
     }
 }

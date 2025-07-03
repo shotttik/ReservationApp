@@ -86,11 +86,6 @@ namespace Application.Services
 
         public async Task<Result> UserUpdate(int id, UserUpdateRequest request)
         {
-            if (request == null)
-            {
-                return Result.Failure(AuthResults.ArgumentNull);
-            }
-
             var userAccount = await userAccountRepository.GetByUserLoginDataID(id);
             if (userAccount is null)
             {
