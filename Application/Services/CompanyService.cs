@@ -27,6 +27,7 @@ namespace Application.Services
         private readonly IFileStorageService fileStorageService;
         private readonly IMediaRepository mediaRepository;
         private readonly ICompanyMediaRepository companyMediaRepository;
+        private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly CompanyAccessGuard companyAccessGuard;
 
         public CompanyService(
@@ -39,6 +40,7 @@ namespace Application.Services
             IFileStorageService fileStorageService,
             IMediaRepository mediaRepository,
             ICompanyMediaRepository companyMediaRepository,
+            IUserLoginDataRepository userLoginDataRepository,
             CompanyAccessGuard companyAccessGuard)
         {
             this.userAccountRepository = userAccountRepository;
@@ -50,6 +52,7 @@ namespace Application.Services
             this.fileStorageService = fileStorageService;
             this.mediaRepository = mediaRepository;
             this.companyMediaRepository = companyMediaRepository;
+            this.userLoginDataRepository = userLoginDataRepository;
             this.companyAccessGuard = companyAccessGuard;
         }
 
@@ -242,6 +245,51 @@ namespace Application.Services
             await companyRepository.Update(company);
 
             return Result.Success();
+        }
+
+        public async Task<Result> CreateCompanyMember(int routeCompanyId, CreateCompanyMemberRequest request)
+        {
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var existingUser = await userLoginDataRepository.GetByEmail(request.Email);
+            if (existingUser != null)
+            {
+                return Result.Failure(AuthResults.EmailAlreadyExists);
+            }
+
+            var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
+            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
+
+            // Create user account and login data
+            var userAccount = new UserAccount()
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Gender = request.Gender,
+                DateOfBirth = request.DateOfBirth,
+                RoleID = (int)Domain.Enums.Role.CompanyMember,
+                CompanyID = routeCompanyId
+            };
+
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+
+            var userLoginData = new UserLoginData()
+            {
+                Email = request.Email,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                VerificationToken = verificationToken,
+                VerificationTokenExpTime = verificationTokenExpirationTime,
+                UserAccount = userAccount
+            };
+
+            await userLoginDataRepository.Add(userLoginData);
+
+            return Result.Success(AuthResults.UserCreated);
         }
     }
 }

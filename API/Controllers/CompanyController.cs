@@ -9,7 +9,6 @@ using Domain.DTO.Company;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
@@ -130,6 +129,7 @@ namespace API.Controllers
         /// <param name="request">The request containing the new description.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpPatch]
+        [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyUpdate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -138,6 +138,35 @@ namespace API.Controllers
             var result = await companyService.Update(request);
             return result.ToResponse();
         }
-
+        /// <summary>
+        /// Creates a new company member user account for the specified company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows a CompanyAdmin or SuperAdmin to create a new user account (CompanyMember role)
+        /// for a specific company identified by <paramref name="routeCompanyId"/>.  
+        /// 
+        /// The request must contain all required information including personal details and login credentials.  
+        /// Email addresses must be unique in the system.  
+        /// A verification token is automatically generated and assigned to the new user.
+        /// </remarks>
+        /// <param name="routeCompanyId">The ID of the target company for which the member is being created.</param>
+        /// <param name="request">The request containing new member details and login credentials.</param>
+        /// <returns>
+        /// Success response if the user is created; appropriate error response if email already exists
+        /// or access is denied.
+        /// </returns>
+        [HttpPost("{routeCompanyId:int}/members")]
+        [HasPermission(Permission.CompanyUpdate)]
+        [Logging(LoggingType.General)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> CreateCompanyMember(
+            [FromRoute] int routeCompanyId,
+            [FromBody] CreateCompanyMemberRequest request)
+        {
+            var result = await companyService.CreateCompanyMember(routeCompanyId, request);
+            return result.ToResponse();
+        }
     }
 }

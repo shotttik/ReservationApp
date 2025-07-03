@@ -2,9 +2,9 @@
 using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Common.Requests.Admin
+namespace Application.Common.Requests.Company
 {
-    public class UserCreateRequest
+    public class CreateCompanyMemberRequest
     {
         [Required]
         [MaxLength(100)]
@@ -20,9 +20,7 @@ namespace Application.Common.Requests.Admin
         [MaxLength(255)]
         public required string Email { get; set; }
         [Required]
+        [PasswordComplexity]
         public required string Password { get; set; }
-        [Required]
-        public required Role Role { get; set; }
-        public int? CompanyID { get; set; }
     }
 }
