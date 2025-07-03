@@ -1,4 +1,5 @@
 ﻿using Application.Common.Requests.Admin;
+using Application.Common.Requests.Company;
 using Domain.DTO.Company;
 using Domain.Entities.CompanyReleated;
 
@@ -78,5 +79,40 @@ namespace Application.Extensions.Mappers
 
             return entity;
         }
+        public static void ApplyPartialUpdate(this Company company, CompanyPartialUpdateRequest req)
+        {
+            if (!string.IsNullOrWhiteSpace(req.Description))
+                company.Description = req.Description;
+
+            if (!string.IsNullOrWhiteSpace(req.Phone))
+                company.Phone = req.Phone;
+
+            if (req.Location is not null)
+            {
+                var loc = req.Location;
+
+                if (!string.IsNullOrWhiteSpace(loc.AddressLine1))
+                    company.Location.AddressLine1 = loc.AddressLine1;
+
+                if (!string.IsNullOrWhiteSpace(loc.AddressLine2))
+                    company.Location.AddressLine2 = loc.AddressLine2;
+
+                if (!string.IsNullOrWhiteSpace(loc.City))
+                    company.Location.City = loc.City;
+
+                if (!string.IsNullOrWhiteSpace(loc.State))
+                    company.Location.State = loc.State;
+
+                if (!string.IsNullOrWhiteSpace(loc.PostalCode))
+                    company.Location.PostalCode = loc.PostalCode;
+
+                if (loc.Latitude.HasValue)
+                    company.Location.Latitude = loc.Latitude;
+
+                if (loc.Longitude.HasValue)
+                    company.Location.Longitude = loc.Longitude;
+            }
+        }
+
     }
 }

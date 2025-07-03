@@ -236,7 +236,8 @@ namespace Application.Services
 
             var company = await companyRepository.Get((int)authUser.CompanyID!);
             if (company == null) return Result.Failure(CompanyResults.CompanyDoesNotExists);
-            company.Description = request.Description;
+
+            company.ApplyPartialUpdate(request);
 
             await companyRepository.Update(company);
 
