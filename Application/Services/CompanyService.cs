@@ -264,7 +264,6 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
-            // Create user account and login data
             var userAccount = new UserAccount()
             {
                 FirstName = request.FirstName,
