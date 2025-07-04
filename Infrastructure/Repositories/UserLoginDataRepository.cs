@@ -47,6 +47,14 @@ namespace Infrastructure.Repositories
             return userLoginData;
         }
 
+        public async Task<UserLoginData?> GetWithUserAccount(int ID, int companyID)
+        {
+            return await _dbSet
+                .Where(uld => uld.ID == ID && uld.UserAccount.CompanyID == companyID)
+                .Include(uld => uld.UserAccount)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<UserLoginData?> GetByVerificationToken(string verificationToken)
         {
             return await _dbSet

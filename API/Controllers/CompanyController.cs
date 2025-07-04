@@ -193,5 +193,33 @@ namespace API.Controllers
             var result = await companyService.UpdateMember(routeCompanyId, request);
             return result.ToResponse();
         }
+
+        /// <summary>
+        /// Deletes a company member from the specified company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows a CompanyAdmin to soft delete or permanently delete a company member (with role CompanyMember).  
+        /// Only authenticated users with access to the specified company can perform this action.  
+        /// The deletion can be a soft delete (default) or a force delete (permanent).
+        /// </remarks>
+        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="memberID">The ID of the member to delete (UserLoginData ID).</param>
+        /// <param name="force">Whether to permanently delete the member (true) or perform a soft delete (false).</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpDelete("{routeCompanyId:int}/members/{memberID:int}")]
+        [HasPermission(Permission.CompanyUpdate)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteCompanyMember(
+            [FromRoute] int routeCompanyId,
+            [FromRoute] int memberID,
+            [FromQuery] bool force = false)
+        {
+            var result = await companyService.DeleteMember(routeCompanyId, memberID, force);
+            return result.ToResponse();
+        }
+
     }
 }

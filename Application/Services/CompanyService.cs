@@ -28,6 +28,7 @@ namespace Application.Services
         private readonly IMediaRepository mediaRepository;
         private readonly ICompanyMediaRepository companyMediaRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
+        private readonly IUserService userService;
         private readonly CompanyAccessGuard companyAccessGuard;
 
         public CompanyService(
@@ -41,6 +42,7 @@ namespace Application.Services
             IMediaRepository mediaRepository,
             ICompanyMediaRepository companyMediaRepository,
             IUserLoginDataRepository userLoginDataRepository,
+            IUserService userService,
             CompanyAccessGuard companyAccessGuard)
         {
             this.userAccountRepository = userAccountRepository;
@@ -53,6 +55,7 @@ namespace Application.Services
             this.mediaRepository = mediaRepository;
             this.companyMediaRepository = companyMediaRepository;
             this.userLoginDataRepository = userLoginDataRepository;
+            this.userService = userService;
             this.companyAccessGuard = companyAccessGuard;
         }
 
@@ -311,6 +314,37 @@ namespace Application.Services
             await authService.RefreshUserCache(request.ID);
 
             return Result.Success(AuthResults.UserUpdated);
+        }
+        public async Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force)
+        {
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var userLoginData = await userLoginDataRepository.GetWithUserAccount(memberID, routeCompanyId);
+            if (userLoginData is null)
+            {
+                return Result.Failure(AuthResults.UserNotFound);
+            }
+            if (userLoginData.DeletedAt != null)
+            {
+                return Result.Failure(AuthResults.UserAlreadyDeleted);
+            }
+            if (force == true)
+            {
+                userLoginData.DeletedAt = DateTime.UtcNow;
+                await userLoginDataRepository.Delete(userLoginData);
+            }
+            else
+            {
+                userLoginData.DeletedAt = DateTime.UtcNow;
+
+                await userLoginDataRepository.Update(userLoginData);
+            }
+            await userService.DeleteAllActiveSessions(memberID);
+
+            return Result.Success(AuthResults.UserDeleted);
         }
     }
 }

@@ -21,5 +21,6 @@ namespace Application.Interfaces
         Task<Result> Update(CompanyPartialUpdateRequest request);
         Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
         Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
+        Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);
     }
 }

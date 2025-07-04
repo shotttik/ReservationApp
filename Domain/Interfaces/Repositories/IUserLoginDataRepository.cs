@@ -9,6 +9,7 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetByEmail(string email);
         Task<UserLoginData?> GetFullUserDataByEmail(string email);
         Task<UserLoginData?> GetFullUserData(int ID);
+        Task<UserLoginData?> GetWithUserAccount(int ID, int companyID);
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
         Task<UserLoginData?> GetByUserAccountID(int userAccountID);
         Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
