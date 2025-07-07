@@ -6,6 +6,7 @@ using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.Company;
+using Domain.DTO.User;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -221,5 +222,29 @@ namespace API.Controllers
             return result.ToResponse();
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of company members for the authenticated CompanyAdmin.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint returns paginated company members for the authenticated user's company.  
+        /// Only users with the <c>CompanyAdmin</c> role and valid company association can access this endpoint.
+        /// </remarks>
+        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="parameters">Pagination and filtering parameters.</param>
+        /// <param name="cancellationToken">Token to cancel the operation.</param>
+        /// <returns>Paginated list of company members or an error response.</returns>
+        [HttpGet("{routeCompanyId:int}/members")]
+        [HasPermission(Permission.CompanyRead)]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<UserLoginDataDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> RetrievePagedCompanyMembers(
+            [FromRoute] int routeCompanyId,
+            [FromQuery] PagedParameters parameters,
+            CancellationToken cancellationToken)
+        {
+            var result = await companyService.RetrievePagedCompanyMembers(routeCompanyId, parameters, cancellationToken);
+            return result.ToResponse();
+        }
     }
 }

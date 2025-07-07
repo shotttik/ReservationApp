@@ -7,6 +7,7 @@ using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.Company;
+using Domain.DTO.User;
 using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
@@ -345,6 +346,25 @@ namespace Application.Services
             await userService.DeleteAllActiveSessions(memberID);
 
             return Result.Success(AuthResults.UserDeleted);
+        }
+
+        public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var userID = authService.GetUserLoginDataID();
+
+            if (accessError != Error.None)
+            {
+                return Result.Failure<PagedList<UserLoginDataDTO>>(accessError);
+            }
+            var errors = parameters.Validate<AuthUser>();
+            if (errors.Any())
+            {
+                return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+            }
+            var users = await userLoginDataRepository.RetrievePagedCompanyMembers(parameters, cancellationToken, userID, routeCompanyId);
+
+            return Result.Success(users);
         }
     }
 }

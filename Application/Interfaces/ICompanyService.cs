@@ -2,6 +2,7 @@
 using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO.Company;
+using Domain.DTO.User;
 
 namespace Application.Interfaces
 {
@@ -22,5 +23,6 @@ namespace Application.Interfaces
         Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
         Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
         Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);
+        Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
     }
 }

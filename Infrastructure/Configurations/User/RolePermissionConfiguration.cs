@@ -24,6 +24,11 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyUpdate),
             Create(Role.SuperAdmin, Permission.CompanyDelete),
 
+            Create(Role.SuperAdmin, Permission.CompanyMemberCreate),
+            Create(Role.SuperAdmin, Permission.CompanyMemberRead),
+            Create(Role.SuperAdmin, Permission.CompanyMemberUpdate),
+            Create(Role.SuperAdmin, Permission.CompanyMemberDelete),
+
             Create(Role.SuperAdmin, Permission.ReportView),
             Create(Role.SuperAdmin, Permission.SettingsManage),
 
@@ -76,6 +81,11 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyRead),
             Create(Role.CompanyAdmin, Permission.CompanyUpdate),
             Create(Role.CompanyAdmin, Permission.CompanyDelete),
+
+            Create(Role.CompanyAdmin, Permission.CompanyMemberCreate),
+            Create(Role.CompanyAdmin, Permission.CompanyMemberRead),
+            Create(Role.CompanyAdmin, Permission.CompanyMemberUpdate),
+            Create(Role.CompanyAdmin, Permission.CompanyMemberDelete),
 
             Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyCreate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyRead),

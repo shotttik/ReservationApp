@@ -14,6 +14,12 @@
         CompanyUpdate,
         CompanyDelete,
 
+        // ==== Company Member Permissions ====
+        CompanyMemberCreate,
+        CompanyMemberRead,
+        CompanyMemberUpdate,
+        CompanyMemberDelete,
+
         // ==== Report and Settings ====
         ReportView,
         SettingsManage,

@@ -100,5 +100,28 @@ namespace Infrastructure.Repositories
 
             return new PagedList<UserLoginDataDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
         }
+        public async Task<PagedList<UserLoginDataDTO>> RetrievePagedCompanyMembers(
+           PagedParameters parameters,
+           CancellationToken cancellationToken,
+           int authUserID,
+           int companyID)
+        {
+            var query = _dbSet.AsQueryable();
+
+            query = query.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .Include(u => u.UserAccount)
+                    .ThenInclude(ua => ua.Role)
+                .Where(u => u.ID != authUserID && u.UserAccount.CompanyID == companyID)
+                .Select(e => e.MapToDTO())
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return new PagedList<UserLoginDataDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
+        }
     }
 }
