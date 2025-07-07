@@ -53,7 +53,7 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<CompanyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCompany(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var result = await companyService.Get(id, forPublic: true);
 
@@ -103,18 +103,19 @@ namespace API.Controllers
         /// This endpoint allows uploading multiple images for a company.  
         /// Only users(Company Admin) with the appropriate permissions can perform this action.  
         /// </remarks>  
+        /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="request">The request containing the images to upload.</param>
         /// <param name="cancellationToken">Cancellation token</param>  
         /// <returns>Result indicating success or failure of the upload operation.</returns>
-        [HttpPost("images/upload")]
+        [HttpPost("{companyId:int}/images/upload")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UploadImages([FromForm] UploadCompanyImagesRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadImages([FromRoute] int companyId, [FromForm] UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {
-            var result = await companyService.UploadImages(request, cancellationToken);
+            var result = await companyService.UploadImages(companyId, request, cancellationToken);
 
             return result.ToResponse();
         }
@@ -134,7 +135,7 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CompanyPartialUpdate([FromBody] CompanyPartialUpdateRequest request)
+        public async Task<IActionResult> PartialUpdate([FromBody] CompanyPartialUpdateRequest request)
         {
             var result = await companyService.Update(request);
             return result.ToResponse();
@@ -144,29 +145,29 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint allows a CompanyAdmin or SuperAdmin to create a new user account (CompanyMember role)
-        /// for a specific company identified by <paramref name="routeCompanyId"/>.  
+        /// for a specific company identified by <paramref name="companyId"/>.  
         /// 
         /// The request must contain all required information including personal details and login credentials.  
         /// Email addresses must be unique in the system.  
         /// A verification token is automatically generated and assigned to the new user.
         /// </remarks>
-        /// <param name="routeCompanyId">The ID of the target company for which the member is being created.</param>
+        /// <param name="companyId">The ID of the target company for which the member is being created.</param>
         /// <param name="request">The request containing new member details and login credentials.</param>
         /// <returns>
         /// Success response if the user is created; appropriate error response if email already exists
         /// or access is denied.
         /// </returns>
-        [HttpPost("{routeCompanyId:int}/members")]
+        [HttpPost("{companyId:int}/members")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> CreateCompanyMember(
-            [FromRoute] int routeCompanyId,
+        public async Task<IActionResult> CreateMember(
+            [FromRoute] int companyId,
             [FromBody] MemberCreateRequest request)
         {
-            var result = await companyService.CreateMember(routeCompanyId, request);
+            var result = await companyService.CreateMember(companyId, request);
             return result.ToResponse();
         }
 
@@ -178,20 +179,20 @@ namespace API.Controllers
         /// Only authenticated users with appropriate access to the specified company can perform this action.
         /// The member is identified by their UserLoginData ID.
         /// </remarks>
-        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPatch("{routeCompanyId:int}/members")]
+        [HttpPatch("{companyId:int}/members")]
         [HasPermission(Permission.CompanyUpdate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateCompanyMember(
-            [FromRoute] int routeCompanyId,
+        public async Task<IActionResult> UpdateMember(
+            [FromRoute] int companyId,
             [FromBody] MemberUpdateRequest request)
         {
-            var result = await companyService.UpdateMember(routeCompanyId, request);
+            var result = await companyService.UpdateMember(companyId, request);
             return result.ToResponse();
         }
 
@@ -203,22 +204,22 @@ namespace API.Controllers
         /// Only authenticated users with access to the specified company can perform this action.  
         /// The deletion can be a soft delete (default) or a force delete (permanent).
         /// </remarks>
-        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="memberID">The ID of the member to delete (UserLoginData ID).</param>
         /// <param name="force">Whether to permanently delete the member (true) or perform a soft delete (false).</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpDelete("{routeCompanyId:int}/members/{memberID:int}")]
+        [HttpDelete("{companyId:int}/members/{memberID:int}")]
         [HasPermission(Permission.CompanyUpdate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteCompanyMember(
-            [FromRoute] int routeCompanyId,
+        public async Task<IActionResult> DeleteMember(
+            [FromRoute] int companyId,
             [FromRoute] int memberID,
             [FromQuery] bool force = false)
         {
-            var result = await companyService.DeleteMember(routeCompanyId, memberID, force);
+            var result = await companyService.DeleteMember(companyId, memberID, force);
             return result.ToResponse();
         }
 
@@ -229,21 +230,41 @@ namespace API.Controllers
         /// This endpoint returns paginated company members for the authenticated user's company.  
         /// Only users with the <c>CompanyAdmin</c> role and valid company association can access this endpoint.
         /// </remarks>
-        /// <param name="routeCompanyId">The ID of the company in the route.</param>
+        /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>Paginated list of company members or an error response.</returns>
-        [HttpGet("{routeCompanyId:int}/members")]
+        [HttpGet("{companyId:int}/members")]
         [HasPermission(Permission.CompanyRead)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<UserLoginDataDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> RetrievePagedCompanyMembers(
-            [FromRoute] int routeCompanyId,
+        public async Task<IActionResult> RetrievePagedMembers(
+            [FromRoute] int companyId,
             [FromQuery] PagedParameters parameters,
             CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePagedCompanyMembers(routeCompanyId, parameters, cancellationToken);
+            var result = await companyService.RetrievePagedCompanyMembers(companyId, parameters, cancellationToken);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Updates media for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to update media for a company, including adding new media, marking images as the main one, or removing media.
+        /// </remarks>
+        /// <param name="routeCompanyId">The ID of the company to update media for.</param>
+        /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpPut("{routeCompanyId}/media")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateImages([FromRoute] int routeCompanyId, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
+        {
+            var result = await companyService.UpdateImages(routeCompanyId, mediaUpdates, cancellationToken);
             return result.ToResponse();
         }
     }

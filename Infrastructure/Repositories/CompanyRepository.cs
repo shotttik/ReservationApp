@@ -71,5 +71,12 @@ namespace Infrastructure.Repositories
                 .Include(e => e.Location)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Company?> GetWithMedia(int id)
+        {
+            return await _dbSet.Where(e => e.ID == id)
+                .Include(e => e.CompanyMedias)
+                    .ThenInclude(e => e.Media)
+                .FirstOrDefaultAsync();
+        }
     }
 }

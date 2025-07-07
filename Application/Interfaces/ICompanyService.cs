@@ -18,11 +18,12 @@ namespace Application.Interfaces
            CancellationToken cancellationToken,
            bool forPublic);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
-        Task<Result> UploadImages(UploadCompanyImagesRequest request, CancellationToken cancellationToken);
+        Task<Result> UploadImages(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken);
         Task<Result> Update(CompanyPartialUpdateRequest request);
         Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
         Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
         Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
+        Task<Result> UpdateImages(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken);
     }
 }

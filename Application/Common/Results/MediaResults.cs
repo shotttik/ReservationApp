@@ -12,6 +12,7 @@
         public static readonly SuccessInfo ImageUploaded = new("Media.ImageUploaded", "The image has been successfully uploaded.");
         public static readonly SuccessInfo ImageDeleted = new("Media.ImageDeleted", "The image has been successfully deleted.");
         public static readonly SuccessInfo ImagesUploaded = new("Media.ImagesUploaded", "The images have been successfully uploaded.");
+        public static readonly SuccessInfo ImagesUpdated = new("Media.ImagesUpdated", "The images have been successfully updated.");
         #endregion
     }
 }

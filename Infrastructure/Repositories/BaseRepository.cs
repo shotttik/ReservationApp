@@ -54,6 +54,11 @@ namespace Infrastructure.Repositories
             _dbSet.Remove(entity);
             await dbContext.SaveChangesAsync();
         }
+        public virtual async Task Delete(T entity, CancellationToken cancellationToken)
+        {
+            _dbSet.Remove(entity);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
 
         public virtual async Task AddRange(IEnumerable<T> entities)
         {

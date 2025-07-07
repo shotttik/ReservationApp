@@ -10,6 +10,7 @@ namespace Domain.Interfaces.Repositories
         Task<IEnumerable<T>> GetAll();
         Task Update(T entity);
         Task Delete(T entity);
+        Task Delete(T entity, CancellationToken cancellation);
         Task AddRange(IEnumerable<T> entities);
         Task UpdateRange(IEnumerable<T> entities);
     }

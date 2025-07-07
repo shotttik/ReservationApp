@@ -191,7 +191,7 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result> UploadImages(UploadCompanyImagesRequest request, CancellationToken cancellationToken)
+        public async Task<Result> UploadImages(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
             var company = await companyRepository.Get(AuthUser.CompanyID!.Value);
@@ -227,7 +227,7 @@ namespace Application.Services
 
                 var companyMedia = new CompanyMedia()
                 {
-                    CompanyID = AuthUser.CompanyID!.Value,
+                    CompanyID = routeCompanyId,
                     MediaID = media.ID,
                     IsMain = item.IsMain
                 };
@@ -365,6 +365,98 @@ namespace Application.Services
             var users = await userLoginDataRepository.RetrievePagedCompanyMembers(parameters, cancellationToken, userID, routeCompanyId);
 
             return Result.Success(users);
+        }
+        public async Task<Result> UpdateImages(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
+        {
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var company = await companyRepository.GetWithMedia(routeCompanyId);
+            if (company == null)
+                return Result.Failure(CompanyResults.CompanyDoesNotExists);
+            // Process each media update request
+            foreach (var mediaUpdate in mediaUpdates)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                // Handle uploading new images
+                if (mediaUpdate.IsNewImage && mediaUpdate.File != null)
+                {
+                    var validImageError = mediaUpdate.File.IsValidImage(configuration);
+                    if (validImageError != Error.None)
+                    {
+                        return Result.Failure(validImageError);
+                    }
+
+                    var fileStream = mediaUpdate.File.OpenReadStream();
+                    var (originalPath, webpPath) = await fileStorageService.UploadWithWebp(
+                        fileStream,
+                        mediaUpdate.File.FileName,
+                        mediaUpdate.File.ContentType,
+                        Domain.Enums.UploadSubFolder.CompanyImages,
+                        cancellationToken
+                    );
+
+                    // Create and save new media
+                    var media = new Media
+                    {
+                        OriginalName = mediaUpdate.File.FileName,
+                        RemoteUrl = webpPath,
+                        FileType = mediaUpdate.File.ContentType,
+                        FileSizeInBytes = mediaUpdate.File.Length
+                    };
+
+                    media = await mediaRepository.Add(media, cancellationToken);
+
+                    // Add this new media to the company
+                    var companyMedia = new CompanyMedia
+                    {
+                        CompanyID = routeCompanyId,
+                        MediaID = media.ID,
+                        IsMain = mediaUpdate.IsMain
+                    };
+
+                    await companyMediaRepository.Add(companyMedia, cancellationToken);
+                }
+
+                // Handle updating the main image
+                if (mediaUpdate.IsMain)
+                {
+                    var currentMainMedia = company.CompanyMedias.Where(e => e.IsMain).ToList();
+                    if (currentMainMedia.Count != 0)
+                    {
+                        foreach (var media in currentMainMedia)
+                        {
+                            media.IsMain = false;
+                        }
+                        await companyMediaRepository.UpdateRange(currentMainMedia, cancellationToken);
+                    }
+
+                    // Now mark the new media as the main image
+                    var companyMediaToUpdate = company.CompanyMedias.FirstOrDefault(e => e.MediaID == mediaUpdate.MediaId);
+                    if (companyMediaToUpdate != null)
+                    {
+                        companyMediaToUpdate.IsMain = true;
+                        await companyMediaRepository.Update(companyMediaToUpdate, cancellationToken);
+                    }
+                }
+
+                // Handle removing images
+                if (mediaUpdate.IsRemoved)
+                {
+                    var companyMediaToDelete = company.CompanyMedias.FirstOrDefault(e => e.MediaID == mediaUpdate.MediaId);
+                    if (companyMediaToDelete != null)
+                    {
+                        await companyMediaRepository.Delete(companyMediaToDelete, cancellationToken);
+                        // Optionally, delete the file from storage
+                        fileStorageService.Delete(companyMediaToDelete.Media.RemoteUrl);
+                        await mediaRepository.Delete(companyMediaToDelete.Media, cancellationToken);
+                    }
+                }
+            }
+
+            return Result.Success(MediaResults.ImagesUpdated);
         }
     }
 }
