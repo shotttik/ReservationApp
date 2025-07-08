@@ -2,13 +2,13 @@
 
 namespace Application.Authentication
 {
-    public class PermissionRequirement: IAuthorizationRequirement
+    public class PermissionRequirement :IAuthorizationRequirement
     {
-        public PermissionRequirement(string permission)
-        {
-            Permission = permission;
-        }
-        public string Permission { get; }
+        public IReadOnlyList<string> Permissions { get; }
 
+        public PermissionRequirement(string policy)
+        {
+            Permissions = policy.Split(',').Select(p => p.Trim()).ToList();
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace Application.Authentication
             }
             var userPermissions = sessionInfo.AuthUser.Role.Permissions;
 
-            if (userPermissions.Any(p => p.Name == requirement.Permission))
+            if (userPermissions.Any(p => requirement.Permissions.Contains(p.Name)))
             {
                 context.Succeed(requirement);
             }

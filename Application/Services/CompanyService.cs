@@ -237,11 +237,14 @@ namespace Application.Services
             return Result.Success(MediaResults.ImagesUploaded);
         }
 
-        public async Task<Result> Update(CompanyPartialUpdateRequest request)
+        public async Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request)
         {
-            var authUser = await authService.GetCurrentUser();
-
-            var company = await companyRepository.Get((int)authUser.CompanyID!);
+            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure(accessError);
+            }
+            var company = await companyRepository.Get(routeCompanyId);
             if (company == null) return Result.Failure(CompanyResults.CompanyDoesNotExists);
 
             company.ApplyPartialUpdate(request);

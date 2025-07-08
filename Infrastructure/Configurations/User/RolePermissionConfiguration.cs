@@ -22,7 +22,12 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyCreate),
             Create(Role.SuperAdmin, Permission.CompanyRead),
             Create(Role.SuperAdmin, Permission.CompanyUpdate),
+            Create(Role.SuperAdmin, Permission.CompanyUpdateFull),
             Create(Role.SuperAdmin, Permission.CompanyDelete),
+            Create(Role.SuperAdmin, Permission.CompanyReadAll),
+            Create(Role.SuperAdmin, Permission.CompanyReadOwn),
+            Create(Role.SuperAdmin, Permission.CompanyReadLimited),
+
 
             Create(Role.SuperAdmin, Permission.CompanyMemberCreate),
             Create(Role.SuperAdmin, Permission.CompanyMemberRead),
@@ -76,11 +81,14 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyMediaUpload),
             Create(Role.SuperAdmin, Permission.CompanyMediaRead),
             Create(Role.SuperAdmin, Permission.CompanyMediaDelete),
+            Create(Role.SuperAdmin, Permission.CompanyMediaUpdate),
 
             // ==== CompanyAdmin: Manage Own Company ====
             Create(Role.CompanyAdmin, Permission.CompanyRead),
+            Create(Role.CompanyAdmin, Permission.CompanyReadOwn),
             Create(Role.CompanyAdmin, Permission.CompanyUpdate),
             Create(Role.CompanyAdmin, Permission.CompanyDelete),
+            Create(Role.CompanyAdmin, Permission.CompanyUpdatePartial),
 
             Create(Role.CompanyAdmin, Permission.CompanyMemberCreate),
             Create(Role.CompanyAdmin, Permission.CompanyMemberRead),
@@ -122,6 +130,8 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyMediaUpload),
             Create(Role.CompanyAdmin, Permission.CompanyMediaRead),
             Create(Role.CompanyAdmin, Permission.CompanyMediaDelete),
+            Create(Role.CompanyAdmin, Permission.CompanyMediaUpdate),
+
 
             // ==== CompanyMember: Can Manage Own Schedule, View Services ====
             Create(Role.CompanyMember, Permission.WorkScheduleUserRead),
@@ -136,7 +146,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyMember, Permission.ServiceRead),
 
             // ==== PublicUser: Can Only View Companies and Schedule Appointments ====
-            Create(Role.PublicUser, Permission.CompanyRead),
+            Create(Role.CompanyAdmin, Permission.CompanyReadLimited),
             Create(Role.PublicUser, Permission.ServiceRead),
             Create(Role.PublicUser, Permission.AppointmentSchedule),
             Create(Role.PublicUser, Permission.AppointmentRead)

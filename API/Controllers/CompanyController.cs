@@ -29,6 +29,7 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves a paginated list of companies.
         /// </summary>
+        /// <remarks>Required role: <strong>Accessible by everyone</strong></remarks>
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company records.</returns>
@@ -39,7 +40,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
+            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
 
             return result.ToResponse();
         }
@@ -48,6 +49,7 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id">The ID of the company to retrieve.</param>
         /// <returns>Returns the company details if found.</returns>
+        /// <remarks>Required role: <strong>Accessible by everyone</strong></remarks>
         [HttpGet("{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -65,12 +67,13 @@ namespace API.Controllers
         /// <remarks>
         /// Only company admins can invite users to join their company. 
         /// The user must currently be a public user.
+        /// Required role: <strong>CompanyAdmin</strong>
         /// </remarks>
         /// <param name="request">Contains the user account ID to invite.</param>
         /// <returns>A secure token (for dev/testing) or email notification result.</returns>
         [MapToApiVersion("1.0")]
         [HttpPost("invitations")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.InvitationSend)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<string>), StatusCodes.Status200OK)]
@@ -84,6 +87,9 @@ namespace API.Controllers
         /// <summary>
         /// Accepts a company invitation using a secure token.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong>
+        /// </remarks>
         /// <param name="token">The invitation token received by email.</param>
         /// <returns>Success result if invitation is valid and accepted.</returns>
         [HttpGet("invitations/accept")]
@@ -101,7 +107,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>  
         /// This endpoint allows uploading multiple images for a company.  
-        /// Only users(Company Admin) with the appropriate permissions can perform this action.  
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>  
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="request">The request containing the images to upload.</param>
@@ -125,19 +131,20 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint allows a CompanyAdmin to update the <c>Description</c> field of their own company.  
-        /// Only authenticated users with the CompanyAdmin role can perform this action.  
-        /// The company is determined from the authenticated user's context.
+        /// The company is determined from the route param context.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
+        /// <param name="companyId">The ID of the target company for which the member is being created.</param>
         /// <param name="request">The request containing the new description.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPatch]
+        [HttpPatch("{companyId:int}")]
         [Logging(LoggingType.Full)]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.CompanyUpdatePartial)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PartialUpdate([FromBody] CompanyPartialUpdateRequest request)
+        public async Task<IActionResult> PartialUpdate([FromRoute] int companyId, [FromBody] CompanyPartialUpdateRequest request)
         {
-            var result = await companyService.Update(request);
+            var result = await companyService.Update(companyId, request);
             return result.ToResponse();
         }
         /// <summary>
@@ -150,6 +157,7 @@ namespace API.Controllers
         /// The request must contain all required information including personal details and login credentials.  
         /// Email addresses must be unique in the system.  
         /// A verification token is automatically generated and assigned to the new user.
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the target company for which the member is being created.</param>
         /// <param name="request">The request containing new member details and login credentials.</param>
@@ -158,7 +166,7 @@ namespace API.Controllers
         /// or access is denied.
         /// </returns>
         [HttpPost("{companyId:int}/members")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.CompanyMemberCreate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -178,12 +186,14 @@ namespace API.Controllers
         /// This endpoint allows a CompanyAdmin to update an existing member’s first name, last name, gender, and date of birth.
         /// Only authenticated users with appropriate access to the specified company can perform this action.
         /// The member is identified by their UserLoginData ID.
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpPatch("{companyId:int}/members")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.CompanyMemberUpdate)]
+        [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -203,13 +213,15 @@ namespace API.Controllers
         /// This endpoint allows a CompanyAdmin to soft delete or permanently delete a company member (with role CompanyMember).  
         /// Only authenticated users with access to the specified company can perform this action.  
         /// The deletion can be a soft delete (default) or a force delete (permanent).
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="memberID">The ID of the member to delete (UserLoginData ID).</param>
         /// <param name="force">Whether to permanently delete the member (true) or perform a soft delete (false).</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpDelete("{companyId:int}/members/{memberID:int}")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.CompanyMemberDelete)]
+        [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -228,14 +240,15 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint returns paginated company members for the authenticated user's company.  
-        /// Only users with the <c>CompanyAdmin</c> role and valid company association can access this endpoint.
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>Paginated list of company members or an error response.</returns>
         [HttpGet("{companyId:int}/members")]
-        [HasPermission(Permission.CompanyRead)]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanyMemberRead)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<UserLoginDataDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -252,12 +265,15 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint allows you to update media for a company, including adding new media, marking images as the main one, or removing media.
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="routeCompanyId">The ID of the company to update media for.</param>
         /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
         [HttpPut("{routeCompanyId}/media")]
+        [HasPermission(Permission.CompanyMediaUpdate)]
+        [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

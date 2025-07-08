@@ -12,7 +12,12 @@
         CompanyCreate,
         CompanyRead,
         CompanyUpdate,
+        CompanyUpdatePartial,
+        CompanyUpdateFull,
         CompanyDelete,
+        CompanyReadAll,
+        CompanyReadOwn,
+        CompanyReadLimited,
 
         // ==== Company Member Permissions ====
         CompanyMemberCreate,
@@ -57,6 +62,7 @@
         CompanyMediaUpload,
         CompanyMediaRead,
         CompanyMediaDelete,
+        CompanyMediaUpdate,
 
         // ==== FAQ Permissions ====
         FaqCreate,

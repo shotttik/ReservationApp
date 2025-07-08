@@ -19,7 +19,7 @@ namespace Application.Interfaces
            bool forPublic);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
         Task<Result> UploadImages(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken);
-        Task<Result> Update(CompanyPartialUpdateRequest request);
+        Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request);
         Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
         Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
         Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);

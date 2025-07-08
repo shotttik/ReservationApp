@@ -36,13 +36,13 @@ namespace API.Controllers
         /// Creates a new FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing category details.</param>  
         /// <returns>Success result if the category is created successfully.</returns>  
         [HttpPost("{companyId:int}/faq-categories")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqCategoryCreate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -57,13 +57,13 @@ namespace API.Controllers
         /// Updates an existing FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing updated category details.</param>  
         /// <returns>Success result if the category is updated successfully.</returns>  
         [HttpPut("{companyId:int}/faq-categories")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqCategoryUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -78,13 +78,13 @@ namespace API.Controllers
         /// Deletes an FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ category to delete.</param>  
         /// <returns>Success result if the category is deleted successfully.</returns>  
         [HttpDelete("{companyId:int}/faq-categories/{id:int}")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqCategoryDelete)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -98,6 +98,9 @@ namespace API.Controllers
         /// <summary>  
         /// Retrieves all FAQ categories for a company.  
         /// </summary>  
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong>
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <returns>A list of FAQ categories.</returns>  
         [HttpGet("{companyId:int}/faq-categories")]
@@ -115,13 +118,13 @@ namespace API.Controllers
         /// Creates a new FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing FAQ details.</param>  
         /// <returns>Success result if the FAQ is created successfully.</returns>  
         [HttpPost("{companyId:int}/faqs")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqCreate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -136,13 +139,13 @@ namespace API.Controllers
         /// Updates an existing FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing updated FAQ details.</param>  
         /// <returns>Success result if the FAQ is updated successfully.</returns>  
         [HttpPut("{companyId:int}/faqs")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqUpdate)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -157,13 +160,13 @@ namespace API.Controllers
         /// Deletes an FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// This method can be called by users with the roles SuperAdmin and CompanyAdmin.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ to delete.</param>  
         /// <returns>Success result if the FAQ is deleted successfully.</returns>  
         [HttpDelete("{companyId:int}/faqs/{id:int}")]
-        [HasPermission(Permission.CompanyUpdate)]
+        [HasPermission(Permission.FaqDelete)]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -177,6 +180,9 @@ namespace API.Controllers
         /// <summary>  
         /// Retrieves all FAQs within a specific category for a company.  
         /// </summary>  
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong>
+        /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="categoryId">The ID of the FAQ category.</param>  
         /// <returns>A list of FAQs.</returns>  

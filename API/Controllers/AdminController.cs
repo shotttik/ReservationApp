@@ -35,6 +35,9 @@ namespace API.Controllers
         /// <summary>
         /// Creates a new user under administrator control.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
         [MapToApiVersion("1.0")]
@@ -53,6 +56,9 @@ namespace API.Controllers
         /// <summary>
         /// Updates an existing user's account information.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">ID of the user to update.</param>
         /// <param name="request">Partial update payload for user account.</param>
         /// <returns>Returns success or failure of the update.</returns>
@@ -71,6 +77,9 @@ namespace API.Controllers
         /// <summary>
         /// Deletes a user account. Supports soft and hard delete.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">ID of the user to delete.</param>
         /// <param name="force">Set to true for hard delete; false for soft delete (default).</param>
         /// <returns>Returns result of deletion.</returns>
@@ -89,6 +98,9 @@ namespace API.Controllers
         /// <summary>
         /// Creates a new company.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="request">Company creation payload including name, email, and identifier.</param>
         /// <returns>Returns success or failure of the creation.</returns>
         [HttpPost("companies")]
@@ -123,6 +135,9 @@ namespace API.Controllers
         /// <summary>
         /// Assigns a user to a company with a specified role.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="request">Assignment data including user ID, company ID, and role.</param>
         /// <returns>Returns assignment result.</returns>
         [HttpPost("assign-user-to-company")]
@@ -140,28 +155,35 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves a paginated list of companies visible to the admin.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="parameters">Paging parameters.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param
         /// <returns>Paginated company data.</returns>
         [HttpGet("companies/paged")]
         [Logging(LoggingType.Full)]
-        [HasPermission(Permission.CompanyRead)]
+        [HasAnyPermission(Permission.CompanyReadAll)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
+            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
 
             return result.ToResponse();
         }
         /// <summary>
         /// Retrieves detailed information about a company by ID.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">Company ID.</param>
         /// <returns>Company details or not found error.</returns>
         [HttpGet("companies/{id:int}")]
         [Logging(LoggingType.Full)]
+        [HasAnyPermission(Permission.CompanyReadAll)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<CompanyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -174,6 +196,9 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves detailed information about a specific user.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">User ID.</param>
         /// <returns>User details or error response.</returns>
         [HttpGet("users/{id:int}")]
@@ -192,6 +217,9 @@ namespace API.Controllers
         /// <summary>
         /// Reactivates a previously soft-deleted user.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">ID of the user to reactivate.</param>
         /// <returns>Returns result of the reactivation process.</returns>
         [HttpPatch("users/{id:int}/reactivate")]
@@ -211,6 +239,9 @@ namespace API.Controllers
         /// <summary>
         /// Deletes all active login sessions for a specific user.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">ID of the user whose active sessions will be deleted.</param>
         /// <returns>Returns the result of the session termination process.</returns>
         [HttpDelete("users/sessions/{id:int}")]
@@ -230,12 +261,16 @@ namespace API.Controllers
         /// <summary>
         /// Updates an existing company's information by ID. Only accessible by SuperAdmin.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
         /// <param name="id">The ID of the company to update.</param>
         /// <param name="request">The updated company information.</param>
         /// <returns>No content if successful, or validation/problem details on failure.</returns>
         [HttpPut("companies/{id:int}")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
+        [HasPermission(Permission.CompanyUpdateFull)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
