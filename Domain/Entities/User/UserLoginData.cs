@@ -9,7 +9,6 @@ namespace Domain.Entities.User
         public required byte [] PasswordHash { get; set; }
         public required byte [] PasswordSalt { get; set; }
         public string? ConfirmationToken { get; set; }
-        public int UserAccountID { get; set; }
         public string? VerificationToken { get; set; }
         public DateTime? VerificationTokenExpTime { get; set; }
         public VerificationStatus VerificationStatus { get; set; }
@@ -17,6 +16,6 @@ namespace Domain.Entities.User
         public DateTime? RecoveryTokenExpTime { get; set; }
         public string? PendingNewEmail { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public UserAccount UserAccount { get; set; } = null!;
+        public virtual UserAccount UserAccount { get; set; } = null!;
     }
 }

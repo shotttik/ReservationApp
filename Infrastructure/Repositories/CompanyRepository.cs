@@ -33,7 +33,6 @@ namespace Infrastructure.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(c => c.Services)
-                .Include(c => c.WorkSchedules)
                 .Include(c => c.Location)
                 .Include(c => c.CompanyMedias)
                     .ThenInclude(cm => cm.Media)

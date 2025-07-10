@@ -72,11 +72,10 @@ namespace Application.Services
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 VerificationToken = verificationToken,
-                VerificationTokenExpTime = verificationTokenExpirationTime
+                VerificationTokenExpTime = verificationTokenExpirationTime,
+                UserAccount = userAccount
             };
 
-            userAccount = await userAccountRepository.Add(userAccount);
-            userLoginData.UserAccountID = userAccount.ID;
             await userLoginDataRepository.Add(userLoginData);
 
             var response = new RegisterResponse()
@@ -110,7 +109,7 @@ namespace Application.Services
 
             var AuthUser = user.MapToAuthorizationData();
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
-            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccountID, user.Email, sessionInfo.SessionID, configuration);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionID, configuration);
 
             await cacheService.SetAsync(
                CacheUtils.SessionKey(sessionInfo.SessionID),

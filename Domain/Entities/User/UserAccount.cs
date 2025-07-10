@@ -12,7 +12,8 @@ namespace Domain.Entities.User
         public DateOnly? DateOfBirth { get; set; }
         public int? CompanyID { get; set; }
         public required int RoleID { get; set; }
-        public virtual UserLoginData? UserLoginData { get; set; }
+        public int UserLoginDataID { get; set; }
+        public virtual UserLoginData UserLoginData { get; set; } = null!;
         public virtual Role? Role { get; set; }
         public virtual Company? Company { get; set; }
         public ICollection<Appointment> AppointmentsAsClient { get; set; } = [];

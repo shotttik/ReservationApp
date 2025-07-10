@@ -1,5 +1,4 @@
 ﻿using Domain.DTO.User;
-using Domain.DTO.WorkSchedule;
 using Domain.Entities.User;
 using Domain.Enums;
 
@@ -28,16 +27,7 @@ namespace Application.Extensions.Mappers
                     }).ToList()
                 },
                 CompanyID = user.UserAccount.CompanyID,
-                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => new WorkScheduleDTO
-                {
-                    ID = e.ID,
-                    CompanyID = e.CompanyID,
-                    UserID = e.UserID,
-                    DayOfWeek = e.DayOfWeek,
-                    StartTime = e.StartTime,
-                    EndTime = e.EndTime,
-                    IsWorkingDay = e.IsWorkingDay
-                }).ToList(),
+                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
                 CreatedAt = user.CreatedAt,
 
             };
@@ -67,16 +57,7 @@ namespace Application.Extensions.Mappers
                     }).ToList()
                 },
                 CompanyID = user.UserAccount.CompanyID,
-                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => new WorkScheduleDTO
-                {
-                    ID = e.ID,
-                    CompanyID = e.CompanyID,
-                    UserID = e.UserID,
-                    DayOfWeek = e.DayOfWeek,
-                    StartTime = e.StartTime,
-                    EndTime = e.EndTime,
-                    IsWorkingDay = e.IsWorkingDay
-                }).ToList(),
+                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
             };

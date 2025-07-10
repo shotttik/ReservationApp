@@ -37,14 +37,10 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.ReportView),
             Create(Role.SuperAdmin, Permission.SettingsManage),
 
-            Create(Role.SuperAdmin, Permission.WorkScheduleCompanyCreate),
-            Create(Role.SuperAdmin, Permission.WorkScheduleCompanyRead),
-            Create(Role.SuperAdmin, Permission.WorkScheduleCompanyUpdate),
-            Create(Role.SuperAdmin, Permission.WorkScheduleCompanyExceptionManage),
-
             Create(Role.SuperAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserRead),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserUpdate),
+            Create(Role.SuperAdmin, Permission.WorkScheduleUserDelete),
             Create(Role.SuperAdmin, Permission.WorkScheduleUserExceptionManage),
 
             Create(Role.SuperAdmin, Permission.ServiceCreate),
@@ -95,14 +91,10 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyMemberUpdate),
             Create(Role.CompanyAdmin, Permission.CompanyMemberDelete),
 
-            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyCreate),
-            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyRead),
-            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyUpdate),
-            Create(Role.CompanyAdmin, Permission.WorkScheduleCompanyExceptionManage),
-
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserRead),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserUpdate),
+            Create(Role.CompanyAdmin, Permission.WorkScheduleUserDelete),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserExceptionManage),
 
             Create(Role.CompanyAdmin, Permission.ServiceCreate),
@@ -137,6 +129,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyMember, Permission.WorkScheduleUserRead),
             Create(Role.CompanyMember, Permission.WorkScheduleUserCreate),
             Create(Role.CompanyMember, Permission.WorkScheduleUserUpdate),
+            Create(Role.CompanyMember, Permission.WorkScheduleUserDelete),
             Create(Role.CompanyMember, Permission.WorkScheduleUserExceptionManage),
 
             Create(Role.CompanyMember, Permission.AppointmentSchedule),

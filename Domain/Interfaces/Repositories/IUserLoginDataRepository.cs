@@ -11,7 +11,6 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetFullUserData(int ID);
         Task<UserLoginData?> GetWithUserAccount(int ID, int companyID);
         Task<UserLoginData?> GetByVerificationToken(string verificationToken);
-        Task<UserLoginData?> GetByUserAccountID(int userAccountID);
         Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
         Task<PagedList<UserLoginDataDTO>> RetrievePaged(
            PagedParameters parameters,

@@ -3,57 +3,14 @@
     public class WorkScheduleResults
     {
         #region Errors
-        public static readonly Error UserMentioned = Error.Validation(
-            code: "WorkSchedule.UserMentioned",
-            description: "User cannot be mentioned in company work schedule."
-        );
-        public static readonly Error InvalidStartEndTime = Error.Validation(
-            code: "WorkSchedule.InvalidStartEndTime",
-            description: "Start time must be less than end time."
-        );
-
-        // is its not working day , start and end time must not be provided  
-        public static readonly Error NonWorkingDay = Error.Validation(
-            code: "WorkSchedule.NonWorkingDay",
-            description: "Start and end time must not be provided for non-working days."
-        );
-
-        public static readonly Error EmployeeWorkingTimesOutOfBounds = Error.Validation(
-            code: "WorkSchedule.EmployeeWorkingTimesOutOfBounds",
-            description: "Employee working times are out of bounds of company work schedule."
-        );
-        public static readonly Error InvalidWorkScheduleCount = Error.Validation(
-        code: "WorkSchedule.DaysInvalidCount",
-        description: "The number of work schedules must be 7, one for each day of the week."
-        );
-        public static readonly Error AlreadyExists = Error.Validation(
-                code: "WorkSchedule.AlreadyExists",
-                description: "Work schedule already exists, only update is available."
-        );
-        public static readonly Error NotExists = Error.Validation(
-            code: "WorkSchedule.NotExists",
-            description: "Work schedules does not exist."
-        );
-        public static readonly Error Mismatch = Error.Validation(
-            code: "WorkSchedule.Mismatch",
-            description: "Work schedules does not match with existed work schedules."
-        );
-        public static readonly Error InvalidBreakTime = Error.Validation(
-            code: "WorkSchedule.InvalidBreakTime",
-            description: "Break time must be less than working time."
-        );
-        public static readonly Error BreakTimeOutOfRange = Error.Validation(
-            code: "WorkSchedule.BreakTimeOutOfRange",
-            description: "Break time must be between 0 and 60 minutes."
-        );
-        public static readonly Error InsufficientWorkingHours = Error.Validation(
-            code: "WorkSchedule.InsufficientWorkingHours",
-            description: "Insufficient working hours detected. Please review the work schedule."
-        );
-        public static readonly Error ExcessiveWorkingHours = Error.Validation(
-            code: "WorkSchedule.ExcessiveWorkingHours",
-            description: "Excessive working hours detected. Please review the work schedule."
-        );
+        public static readonly Error DoesntExists = Error.Validation("WorkSchedule.DoesntExists", "Work schedule doesn't exists.");
+        public static readonly Error InvalidTimeRange = Error.Validation("WorkSchedule.InvalidTimeRange", "Start time cannot be greater than end time.");
+        public static readonly Error OverlappingSchedule = Error.Validation("WorkSchedule.OverlappingSchedule", "The schedule overlaps with another schedule.");
+        #endregion
+        #region Success
+        public static readonly SuccessInfo Created = new SuccessInfo("WorkSchedule.Created", "Work schedule created successfully.");
+        public static readonly SuccessInfo Updated = new SuccessInfo("WorkSchedule.Updated", "Work schedule updated successfully.");
+        public static readonly SuccessInfo Deleted = new SuccessInfo("WorkSchedule.Deleted", "Work schedule deleted successfully.");
         #endregion
     }
 }

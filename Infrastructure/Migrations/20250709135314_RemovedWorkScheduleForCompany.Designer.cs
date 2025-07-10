@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250709135314_RemovedWorkScheduleForCompany")]
+    partial class RemovedWorkScheduleForCompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,7 +158,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserAccountID")
+                    b.Property<int?>("UserAccountID")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -1254,11 +1257,6 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 23
-                        },
-                        new
-                        {
-                            RoleID = 1,
                             PermissionID = 24
                         },
                         new
@@ -1469,11 +1467,6 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 23
-                        },
-                        new
-                        {
-                            RoleID = 3,
                             PermissionID = 24
                         },
                         new
@@ -1599,11 +1592,6 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 23
-                        },
-                        new
-                        {
-                            RoleID = 4,
                             PermissionID = 24
                         },
                         new
@@ -1688,17 +1676,11 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserLoginDataID")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
 
                     b.HasIndex("CompanyID");
 
                     b.HasIndex("RoleID");
-
-                    b.HasIndex("UserLoginDataID")
-                        .IsUnique();
 
                     b.ToTable("UserAccounts");
                 });
@@ -1751,6 +1733,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserAccountID")
+                        .HasColumnType("int");
+
                     b.Property<int>("VerificationStatus")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -1771,6 +1756,9 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PendingNewEmail")
                         .IsUnique()
                         .HasFilter("[PendingNewEmail] IS NOT NULL");
+
+                    b.HasIndex("UserAccountID")
+                        .IsUnique();
 
                     b.ToTable("UserLoginDatas");
                 });
@@ -1806,8 +1794,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.User.UserAccount", "User")
                         .WithMany("WorkSchedules")
                         .HasForeignKey("UserAccountID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -1954,17 +1941,20 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.User.UserLoginData", "UserLoginData")
-                        .WithOne("UserAccount")
-                        .HasForeignKey("Domain.Entities.User.UserAccount", "UserLoginDataID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Company");
 
                     b.Navigation("Role");
+                });
 
-                    b.Navigation("UserLoginData");
+            modelBuilder.Entity("Domain.Entities.User.UserLoginData", b =>
+                {
+                    b.HasOne("Domain.Entities.User.UserAccount", "UserAccount")
+                        .WithOne("UserLoginData")
+                        .HasForeignKey("Domain.Entities.User.UserLoginData", "UserAccountID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>
@@ -2020,15 +2010,11 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("AppointmentsAsEmployee");
 
+                    b.Navigation("UserLoginData");
+
                     b.Navigation("WorkScheduleExceptions");
 
                     b.Navigation("WorkSchedules");
-                });
-
-            modelBuilder.Entity("Domain.Entities.User.UserLoginData", b =>
-                {
-                    b.Navigation("UserAccount")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

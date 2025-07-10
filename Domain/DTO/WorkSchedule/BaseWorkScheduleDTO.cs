@@ -1,4 +1,0 @@
-﻿namespace Domain.DTO.WorkSchedule
-{
-    
-}

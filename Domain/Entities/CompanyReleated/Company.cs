@@ -20,8 +20,6 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];
         public ICollection<Appointment> Appointments { get; set; } = [];
-        public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
-        public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
         public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
     }

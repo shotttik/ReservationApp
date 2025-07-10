@@ -30,14 +30,11 @@
         SettingsManage,
 
         // ==== Work Schedule Permissions ====
-        WorkScheduleCompanyRead,
-        WorkScheduleCompanyCreate,
-        WorkScheduleCompanyUpdate,
-        WorkScheduleCompanyExceptionManage,
 
         WorkScheduleUserRead,
         WorkScheduleUserCreate,
         WorkScheduleUserUpdate,
+        WorkScheduleUserDelete,
         WorkScheduleUserExceptionManage,
 
         // ==== Service Permissions ====

@@ -20,15 +20,13 @@ namespace Infrastructure
                 if (!await context.UserAccounts.AnyAsync(u => u.Role != null && u.Role.ID == 1))
                 {
 
-                    var superAdmin = new UserAccount
+                    var superAdminUserAccount = new UserAccount
                     {
                         FirstName = "Super",
                         LastName = "Admin",
                         RoleID = Role.SuperAdmin.ID,
 
                     };
-                    context.UserAccounts.Add(superAdmin);
-                    await context.SaveChangesAsync();
 
                     // Create password hash and salt
                     var password = "SuperAdminPassword123!"; // Change this in production
@@ -37,12 +35,63 @@ namespace Infrastructure
                     var superAdminLogin = new UserLoginData
                     {
                         Email = "superadmin@example.com",
-                        UserAccountID = superAdmin.ID,
+                        UserAccount = superAdminUserAccount,
                         VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
                         PasswordHash = hash,
                         PasswordSalt = salt
                     };
                     context.UserLoginDatas.Add(superAdminLogin);
+                    await context.SaveChangesAsync();
+                }
+                // seed company admin
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyAdmin.ID))
+                {
+                    var companyAdminUserAccount = new UserAccount
+                    {
+                        FirstName = "CompanyAdmin",
+                        LastName = "Company ADmin",
+                        RoleID = Role.CompanyAdmin.ID,
+
+                    };
+
+                    // Create password hash and salt
+                    var password = "SuperAdminPassword123!"; // Change this in production
+                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
+
+                    var companyAdminLoginData = new UserLoginData
+                    {
+                        Email = "companyAdmin@example.com",
+                        UserAccount = companyAdminUserAccount,
+                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
+                        PasswordHash = hash,
+                        PasswordSalt = salt
+                    };
+                    context.UserLoginDatas.Add(companyAdminLoginData);
+                    await context.SaveChangesAsync();
+                }
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyMember.ID))
+                {
+                    var companyMemberUserAccount = new UserAccount
+                    {
+                        FirstName = "CompanyMember",
+                        LastName = "CompanyMember",
+                        RoleID = Role.CompanyAdmin.ID,
+
+                    };
+
+                    // Create password hash and salt
+                    var password = "SuperAdminPassword123!"; // Change this in production
+                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
+
+                    var companyMemberLoginData = new UserLoginData
+                    {
+                        Email = "companyMember@example.com",
+                        UserAccount = companyMemberUserAccount,
+                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
+                        PasswordHash = hash,
+                        PasswordSalt = salt
+                    };
+                    context.UserLoginDatas.Add(companyMemberLoginData);
                     await context.SaveChangesAsync();
                 }
                 // seed multiple locations same count as a companies
@@ -272,196 +321,110 @@ namespace Infrastructure
                         .Where(c => c.IN == "123456789" || c.IN == "987654321" || c.IN == "555666777" || c.IN == "112233445" || c.IN == "998877665")
                         .ToDictionaryAsync(c => c.IN, c => c.ID);
                     // seed 7 days of week work schedules for companies
-                    var workSchedulesToSeed = new List<WorkSchedule>
-                {
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Monday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Tuesday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Wednesday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Thursday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Friday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Saturday,
-                       StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(10)),
-                       EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)),
-                       IsWorkingDay = true,
-                       CompanyID = companyDict["123456789"]
-                   },
-                   new WorkSchedule
-                   {
-                       DayOfWeek = DayOfWeek.Sunday,
-                       IsWorkingDay = false,
-                       CompanyID = companyDict["123456789"]
-                   }, 
-                   // repeat for one more company
-                     new WorkSchedule
-                     {
-                          DayOfWeek = DayOfWeek.Monday,
-                          StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                          EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                          IsWorkingDay = true,
-                          CompanyID = companyDict["987654321"]
-                     },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Tuesday,
-                            StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                            EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            IsWorkingDay = true,
-                            CompanyID = companyDict["987654321"]
-                        },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Wednesday,
-                            StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                            EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            IsWorkingDay = true,
-                            CompanyID = companyDict["987654321"]
-                        },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Thursday,
-                            StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                            EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            IsWorkingDay = true,
-                            CompanyID = companyDict["987654321"]
-                        },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Friday,
-                            StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                            EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            IsWorkingDay = true,
-                            CompanyID = companyDict["987654321"]
-                        },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Saturday,
-                            StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(10)),
-                            EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)),
-                            IsWorkingDay = true,
-                            CompanyID = companyDict["987654321"]
-                        },
-                        new WorkSchedule
-                        {
-                            DayOfWeek = DayOfWeek.Sunday,
-                            IsWorkingDay = false,
-                            CompanyID = companyDict["987654321"]
-                        }
-                };
-                    foreach (var workSchedule in workSchedulesToSeed)
+                    var companyAdmin = await context.UserLoginDatas.Where(e => e.Email == "companyAdmin@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
+                    if (companyAdmin != null)
                     {
-                        if (!await context.WorkSchedules.AnyAsync())
+                        var workSchedulesToSeed = new List<WorkSchedule>
                         {
-                            context.WorkSchedules.Add(workSchedule);
-                        }
-                    }
-                    await context.SaveChangesAsync();
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyAdmin.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Monday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyAdmin.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Saturday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyAdmin.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Wednesday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyAdmin.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Thursday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyAdmin.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Friday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
 
+                        };
+                        foreach (var workSchedule in workSchedulesToSeed)
+                        {
+                            if (!await context.WorkSchedules.AnyAsync())
+                            {
+                                context.WorkSchedules.Add(workSchedule);
+                            }
+                        }
+                        await context.SaveChangesAsync();
+                    }
+                    var companyMember = await context.UserLoginDatas.Where(e => e.Email == "companyMember@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
+                    if (companyMember != null)
+                    {
+                        var workSchedulesToSeed = new List<WorkSchedule>
+                        {
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyMember.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Monday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyMember.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Saturday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyMember.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Wednesday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyMember.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Thursday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+                            new WorkSchedule
+                            {
+                                UserAccountID = companyMember.UserAccount.ID,
+                                DayOfWeek = DayOfWeek.Friday,
+                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                            },
+
+                        };
+                        foreach (var workSchedule in workSchedulesToSeed)
+                        {
+                            if (!await context.WorkSchedules.AnyAsync())
+                            {
+                                context.WorkSchedules.Add(workSchedule);
+                            }
+                        }
+                        await context.SaveChangesAsync();
+                    }
                 }
                 // seed basic users with role publicuser and company member
-                if (!await context.UserAccounts.AnyAsync(u => u.Role != null && u.Role.ID == Role.PublicUser.ID))
-                {
-
-                    var usersToSeed = new List<UserAccount>
-                {
-                    new UserAccount
-                    {
-                        FirstName = "John",
-                        LastName = "Doe",
-                        RoleID = Role.PublicUser.ID,
-                        CompanyID = 1
-                    },
-                    new UserAccount
-                    {
-                        FirstName = "Jane",
-                        LastName = "Smith",
-                        RoleID = Role.PublicUser.ID,
-                        CompanyID = 2
-                    },
-                    new UserAccount
-                    {
-                        FirstName = "Alice",
-                        LastName = "Johnson",
-                        RoleID = Role.PublicUser.ID,
-                        CompanyID = 3
-                    },
-                    // seed with role CompanyMember a few users
-                    new UserAccount
-                    {
-                        FirstName = "Bob",
-                        LastName = "Brown",
-                        RoleID = Role.CompanyMember.ID,
-                        CompanyID = 1
-                    },
-                    new UserAccount
-                    {
-                        FirstName = "Charlie",
-                        LastName = "Davis",
-                        RoleID = Role.CompanyMember.ID,
-                        CompanyID = 2
-                    },
-                    new UserAccount
-                    {
-                        FirstName = "Eve",
-                        LastName = "Wilson",
-                        RoleID = Role.CompanyMember.ID,
-                        CompanyID = 3
-                    },
-                    new UserAccount
-                    {
-                        FirstName = "Frank",
-                        LastName = "Garcia",
-                        RoleID = Role.CompanyMember.ID,
-                        CompanyID = 1
-                    },
-                };
-                    foreach (var user in usersToSeed)
-                    {
-                        if (!await context.UserAccounts.AnyAsync(u => u.FirstName == user.FirstName && u.LastName == user.LastName && u.CompanyID == user.CompanyID))
-                        {
-                            context.UserAccounts.Add(user);
-                        }
-                    }
-                    await context.SaveChangesAsync();
-
-                }
-
                 Debug.Write("Database seeding completed successfully.");
             }
             catch (Exception ex)

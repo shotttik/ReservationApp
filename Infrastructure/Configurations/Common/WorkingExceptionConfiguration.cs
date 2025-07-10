@@ -14,11 +14,6 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.IsFullDay).IsRequired();
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
-            builder.HasOne(e => e.Company)
-                .WithMany(e => e.WorkScheduleExceptions)
-                .HasForeignKey(e => e.CompanyID)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(e => e.UserAccount)
                 .WithMany(e => e.WorkScheduleExceptions)
                 .HasForeignKey(e => e.UserAccountID)

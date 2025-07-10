@@ -61,12 +61,6 @@ namespace Infrastructure.Repositories
                 .Where(uld => uld.VerificationToken == verificationToken)
                 .FirstOrDefaultAsync();
         }
-        public async Task<UserLoginData?> GetByUserAccountID(int userAccountID)
-        {
-            return await _dbSet
-                .Where(uld => uld.UserAccountID == userAccountID)
-                .FirstOrDefaultAsync();
-        }
 
         public async Task<UserLoginData?> GetByRecoveryToken(string recoveryToken)
         {
@@ -89,9 +83,6 @@ namespace Infrastructure.Repositories
                 .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.Role)
                         .ThenInclude(ur => ur!.Permissions)
-                .Include(u => u.UserAccount)
-                    .ThenInclude(e => e.Company)
-                        .ThenInclude(c => c.WorkSchedules)
                 .Where(u => u.ID != authUserID)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)

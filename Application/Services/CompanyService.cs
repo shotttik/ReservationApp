@@ -30,7 +30,7 @@ namespace Application.Services
         private readonly ICompanyMediaRepository companyMediaRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserService userService;
-        private readonly CompanyAccessGuard companyAccessGuard;
+        private readonly IAccessGuard companyAccessGuard;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -44,7 +44,7 @@ namespace Application.Services
             ICompanyMediaRepository companyMediaRepository,
             IUserLoginDataRepository userLoginDataRepository,
             IUserService userService,
-            CompanyAccessGuard companyAccessGuard)
+            IAccessGuard companyAccessGuard)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;

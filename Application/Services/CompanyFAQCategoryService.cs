@@ -12,11 +12,11 @@ namespace Application.Services
     public class CompanyFAQCategoryService :ICompanyFAQCategoryService
     {
         private readonly ICompanyFAQCategoryRepository companyFAQCategoryRepository;
-        private readonly CompanyAccessGuard companyAccessGuard;
+        private readonly IAccessGuard companyAccessGuard;
         private readonly int MaxFAQCategories;
         public CompanyFAQCategoryService(
             ICompanyFAQCategoryRepository companyFAQCategoryRepository,
-            CompanyAccessGuard companyAccessGuard,
+            IAccessGuard companyAccessGuard,
             IConfiguration configuration)
         {
             this.companyFAQCategoryRepository = companyFAQCategoryRepository;

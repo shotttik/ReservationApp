@@ -15,9 +15,12 @@ namespace Domain.DTO.User
         public int? CompanyID { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         [JsonIgnore]
-        public bool IsPublicUser => Role.ID == (int)Domain.Enums.Role.PublicUser;
+        public bool IsPublicUser => Role.ID == (int)Enums.Role.PublicUser;
         [JsonIgnore]
-        public bool IsSuperUser => Role.ID == (int)Domain.Enums.Role.SuperAdmin;
-
+        public bool IsSuperUser => Role.ID == (int)Enums.Role.SuperAdmin;
+        [JsonIgnore]
+        public bool IsCompanyAdmin => Role.ID == (int)Enums.Role.CompanyAdmin;
+        [JsonIgnore]
+        public bool IsCompanyMember => Role.ID == (int)Enums.Role.CompanyMember;
     }
 }

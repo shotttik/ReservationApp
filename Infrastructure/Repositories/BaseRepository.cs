@@ -68,6 +68,10 @@ namespace Infrastructure.Repositories
 
         public virtual async Task UpdateRange(IEnumerable<T> entities)
         {
+            foreach (var item in entities)
+            {
+                item.UpdateTimestamp();
+            }
             _dbSet.UpdateRange(entities);
             await dbContext.SaveChangesAsync();
         }

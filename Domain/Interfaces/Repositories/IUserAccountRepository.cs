@@ -8,5 +8,6 @@ namespace Domain.Interfaces.Repositories
     {
         Task<UserAccount?> GetAuthorizationData(int ID);
         Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID);
+        Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID);
     }
 }

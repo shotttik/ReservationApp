@@ -17,7 +17,8 @@ namespace Infrastructure.Configurations.User
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
             builder.HasOne(ua => ua.UserLoginData)
                    .WithOne(uld => uld.UserAccount)
-                   .HasForeignKey<UserLoginData>(uld => uld.UserAccountID)
+                   .HasForeignKey<UserAccount>(uld => uld.UserLoginDataID)
+                   .OnDelete(DeleteBehavior.Cascade)
                    .IsRequired();
         }
     }

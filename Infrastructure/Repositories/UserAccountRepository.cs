@@ -23,8 +23,6 @@ namespace Infrastructure.Repositories
             var user = await _dbSet
                     .Include(u => u.Role)
                         .ThenInclude(r => r!.Permissions)
-                    .Include(e => e.Company)
-                        .ThenInclude(e => e!.WorkSchedules)
                     .FirstOrDefaultAsync(u => u.ID == ID);
 
             return user;
@@ -49,5 +47,16 @@ namespace Infrastructure.Repositories
 
             return userAccount;
         }
+
+        public async Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID)
+        {
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData != null && e.UserLoginData.ID == userLoginDataID)
+                .Include(e => e.WorkSchedules)
+                .FirstOrDefaultAsync();
+
+            return userAccount;
+        }
+
     }
 }

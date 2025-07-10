@@ -1,7 +1,6 @@
 ﻿using API.Attributes;
 using Application.Authentication;
 using Application.Common.Requests.Admin;
-using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
@@ -44,7 +43,7 @@ namespace API.Controllers
         [HttpPost("users")]
         [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]
-        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserCreate([FromBody] UserCreateRequest request)
         {

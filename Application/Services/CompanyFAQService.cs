@@ -13,13 +13,13 @@ namespace Application.Services
     {
         private readonly ICompanyFAQRepository companyFAQRepository;
         private readonly ICompanyFAQCategoryRepository companyFAQCategoryRepository;
-        private readonly CompanyAccessGuard companyAccessGuard;
+        private readonly IAccessGuard companyAccessGuard;
         private readonly int FAQLimitPerCategory;
 
         public CompanyFAQService(
             ICompanyFAQRepository companyFAQRepository,
             ICompanyFAQCategoryRepository companyFAQCategoryRepository,
-            CompanyAccessGuard companyAccessGuard,
+            IAccessGuard companyAccessGuard,
             IConfiguration configuration)
         {
             this.companyFAQRepository = companyFAQRepository;
