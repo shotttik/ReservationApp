@@ -5,7 +5,10 @@
         #region Errors
         public static readonly Error DoesntExists = Error.Validation("WorkSchedule.DoesntExists", "Work schedule doesn't exists.");
         public static readonly Error InvalidTimeRange = Error.Validation("WorkSchedule.InvalidTimeRange", "Start time cannot be greater than end time.");
+        public static readonly Error InvalidDateRange = Error.Validation("WorkSchedule.InvalidDateRange", "Start date cannot be greater than end date.");
         public static readonly Error OverlappingSchedule = Error.Validation("WorkSchedule.OverlappingSchedule", "The schedule overlaps with another schedule.");
+        public static readonly Error OverlappingException = Error.Validation("WorkScheduleException.OverlappingException", "The requested exception period overlaps with an existing exception.");
+
         #endregion
         #region Success
         public static readonly SuccessInfo Created = new SuccessInfo("WorkSchedule.Created", "Work schedule created successfully.");

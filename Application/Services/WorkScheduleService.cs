@@ -14,18 +14,21 @@ namespace Application.Services
         private readonly IUserAccountRepository userAccountRepository;
         private readonly IAccessGuard accessGuard;
         private readonly IAuthService authService;
+        private readonly IWorkScheduleExceptionRepository workScheduleExceptionRepository;
 
         public WorkScheduleService(
             IWorkScheduleRepository workScheduleRepository,
             IUserAccountRepository userAccountRepository,
             IAccessGuard accessGuard,
-            IAuthService authService
+            IAuthService authService,
+            IWorkScheduleExceptionRepository workScheduleExceptionRepository
             )
         {
             this.workScheduleRepository = workScheduleRepository;
             this.userAccountRepository = userAccountRepository;
             this.accessGuard = accessGuard;
             this.authService = authService;
+            this.workScheduleExceptionRepository = workScheduleExceptionRepository;
         }
 
         public async Task<Result> Create(WorkScheduleCreateRequest request)
@@ -151,6 +154,109 @@ namespace Application.Services
 
             return Result.Success(schedulesDTOs);
         }
+        public async Task<Result> CreateException(WorkScheduleExceptionCreateRequest request)
+        {
+            if (request.StartDate > request.EndDate)
+                return Result.Failure(WorkScheduleResults.InvalidDateRange);
+
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID);
+
+            if (userAccount == null || userAccount.CompanyID == null)
+                return Result.Failure(GenericResults.DontExists);
+
+            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
+
+            bool hasOverlap = userAccount.WorkScheduleExceptions.Any(e =>
+                 (request.StartDate <= e.EndDate && request.EndDate >= e.StartDate));
+
+            if (hasOverlap)
+            {
+                return Result.Failure(WorkScheduleResults.OverlappingException);
+            }
+
+            var workScheduleException = request.MapToEntity();
+            workScheduleException.UserAccountID = request.UserID;
+
+            await workScheduleExceptionRepository.Add(workScheduleException);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> UpdateException(WorkScheduleExceptionUpdateRequest request)
+        {
+            if (request.StartDate > request.EndDate)
+                return Result.Failure(WorkScheduleResults.InvalidDateRange);
+
+            var workScheduleException = await workScheduleExceptionRepository.Get(request.ID);
+
+            if (workScheduleException == null)
+                return Result.Failure(WorkScheduleResults.DoesntExists);
+
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID);
+
+            if (userAccount == null || userAccount.CompanyID == null)
+                return Result.Failure(GenericResults.DontExists);
+
+            if (workScheduleException.UserAccountID != userAccount.ID)
+                return Result.Failure(GenericResults.Forbidden);
+
+            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
+
+            // Check for overlapping exceptions (excluding self)
+            bool hasOverlap = userAccount.WorkScheduleExceptions
+                .Where(e => e.ID != request.ID)
+                .Any(e => request.StartDate <= e.EndDate && request.EndDate >= e.StartDate);
+
+            if (hasOverlap)
+                return Result.Failure(WorkScheduleResults.OverlappingException);
+
+            request.MapToEntity(workScheduleException);
+
+            await workScheduleExceptionRepository.Update(workScheduleException);
+
+            return Result.Success(WorkScheduleResults.Updated);
+        }
+
+        public async Task<Result> DeleteException(int id)
+        {
+            var workScheduleException = await workScheduleExceptionRepository.Get(id);
+
+            if (workScheduleException == null)
+                return Result.Failure(WorkScheduleResults.DoesntExists);
+
+            var userAccount = await userAccountRepository.Get(workScheduleException.UserAccountID);
+
+            if (userAccount == null || userAccount.CompanyID == null)
+                return Result.Failure(GenericResults.DontExists);
+
+            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, userAccount.UserLoginDataID);
+            if (accessError != Error.None)
+                return Result.Failure(accessError);
+
+            await workScheduleExceptionRepository.Delete(workScheduleException);
+
+            return Result.Success(WorkScheduleResults.Deleted);
+        }
+
+        public async Task<Result<List<WorkScheduleExceptionDTO>>> GetAllExceptionForUser(int userId)
+        {
+            var schedules = await workScheduleExceptionRepository.GetAllForUser(userId);
+
+            var schedulesDTOs = new List<WorkScheduleExceptionDTO>();
+
+            foreach (var item in schedules)
+            {
+                schedulesDTOs.Add(item.MapToDTO());
+            }
+
+            return Result.Success(schedulesDTOs);
+
+        }
+
         private bool IsOverlapping(TimeOnly newStart, TimeOnly newEnd, TimeOnly existingStart, TimeOnly existingEnd)
         {
             return newStart < existingEnd && newEnd > existingStart;

@@ -1,7 +1,6 @@
 ﻿using Application.Authentication;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
-using Application.Common.Security;
 using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
@@ -120,7 +119,6 @@ namespace Application.Services
         }
         public async Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request)
         {
-            var AuthUser = await authService.GetCurrentUser();
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
@@ -145,7 +143,6 @@ namespace Application.Services
         }
         public async Task<Result> ServicesDelete(int routeCompanyId, int ID)
         {
-            var AuthUser = await authService.GetCurrentUser();
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {

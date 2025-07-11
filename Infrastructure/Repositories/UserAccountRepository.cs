@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData != null && e.UserLoginData.ID == userLoginDataID)
+                .Where(e => e.UserLoginData.ID == userLoginDataID)
                 .FirstOrDefaultAsync();
 
             return userAccount;
@@ -51,12 +51,20 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData != null && e.UserLoginData.ID == userLoginDataID)
+                .Where(e => e.UserLoginData.ID == userLoginDataID)
                 .Include(e => e.WorkSchedules)
                 .FirstOrDefaultAsync();
 
             return userAccount;
         }
+        public async Task<UserAccount?> GetByUserLoginDataIDWithWorkScheduleExceptions(int userLoginDataID)
+        {
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Include(e => e.WorkScheduleExceptions)
+                .FirstOrDefaultAsync();
 
+            return userAccount;
+        }
     }
 }

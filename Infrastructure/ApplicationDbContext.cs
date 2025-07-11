@@ -54,7 +54,7 @@ namespace Infrastructure
             // Common
             modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleConfiguration());
-            modelBuilder.ApplyConfiguration(new WorkingExceptionConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkScheduleExceptionConfiguration());
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
 
 

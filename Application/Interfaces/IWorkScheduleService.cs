@@ -10,5 +10,9 @@ namespace Application.Interfaces
         Task<Result> Update(WorkScheduleUpdateRequest request);
         Task<Result> Delete(int id);
         Task<Result<List<WorkScheduleDTO>>> GetAllForUser(int userId);
+        Task<Result> CreateException(WorkScheduleExceptionCreateRequest request);
+        Task<Result> UpdateException(WorkScheduleExceptionUpdateRequest request);
+        Task<Result> DeleteException(int id);
+        Task<Result<List<WorkScheduleExceptionDTO>>> GetAllExceptionForUser(int userId);
     }
 }

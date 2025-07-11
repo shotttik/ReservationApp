@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations.Common
 {
-    internal sealed class WorkingExceptionConfiguration :IEntityTypeConfiguration<WorkScheduleException>
+    internal sealed class WorkScheduleExceptionConfiguration :IEntityTypeConfiguration<WorkScheduleException>
     {
         public void Configure(EntityTypeBuilder<WorkScheduleException> builder)
         {
             builder.HasKey(e => e.ID);
-            builder.Property(e => e.StartDateTime).IsRequired();
-            builder.Property(e => e.EndDateTime).IsRequired();
-            builder.Property(e => e.IsFullDay).IsRequired();
+            builder.Property(e => e.StartDate).IsRequired();
+            builder.Property(e => e.EndDate).IsRequired();
+            builder.Property(e => e.Type).IsRequired();
+            builder.Property(e => e.Notes).HasMaxLength(2000);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.HasOne(e => e.UserAccount)

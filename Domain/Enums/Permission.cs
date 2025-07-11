@@ -31,11 +31,13 @@
 
         // ==== Work Schedule Permissions ====
 
-        WorkScheduleUserRead,
         WorkScheduleUserCreate,
         WorkScheduleUserUpdate,
         WorkScheduleUserDelete,
-        WorkScheduleUserExceptionManage,
+        WorkScheduleExceptionUserCreate,
+        WorkScheduleExceptionUserUpdate,
+        WorkScheduleExceptionUserDelete,
+
 
         // ==== Service Permissions ====
         ServiceCreate,
