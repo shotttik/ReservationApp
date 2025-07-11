@@ -73,17 +73,17 @@ namespace Infrastructure.Repositories
            CancellationToken cancellationToken,
            int authUserID)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _dbSet
+            .Include(u => u.UserAccount)
+                .ThenInclude(ua => ua.Role)
+            .Where(u => u.ID != authUserID)
+            .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
 
-            var totalCount = await query.CountAsync();
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var users = await query
-                .Include(u => u.UserAccount)
-                    .ThenInclude(ua => ua.Role)
-                        .ThenInclude(ur => ur!.Permissions)
-                .Where(u => u.ID != authUserID)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
@@ -97,16 +97,17 @@ namespace Infrastructure.Repositories
            int authUserID,
            int companyID)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _dbSet
+            .Include(u => u.UserAccount)
+                .ThenInclude(ua => ua.Role)
+            .Where(u => u.ID != authUserID && u.UserAccount.CompanyID == companyID)
+            .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
 
-            var totalCount = await query.CountAsync();
+            var totalCount = await query.CountAsync(cancellationToken);
 
             var users = await query
-                .Include(u => u.UserAccount)
-                    .ThenInclude(ua => ua.Role)
-                .Where(u => u.ID != authUserID && u.UserAccount.CompanyID == companyID)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
