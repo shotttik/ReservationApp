@@ -3,6 +3,7 @@ using Application.Common.Requests.Company;
 using Application.Common.Results;
 using Application.Extensions;
 using Application.Extensions.Mappers;
+using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.Company;
@@ -162,7 +163,8 @@ namespace Application.Services
            CancellationToken cancellationToken,
            bool forPublic)
         {
-            var errors = parameters.Validate<CompanyDTO>();
+            var allowedFields = CompanyFieldMap.DtoToEntityPath;
+            var errors = parameters.Validate(allowedFields, typeof(CompanyDTO));
             if (errors.Any())
             {
                 return Result.Failure<PagedList<CompanyDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
@@ -357,7 +359,8 @@ namespace Application.Services
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(accessError);
             }
-            var errors = parameters.Validate<AuthUser>();
+            var allowedFields = UserLoginDataFilterMap.DtoToEntityPath;
+            var errors = parameters.Validate(allowedFields, typeof(UserLoginData));
             if (errors.Any())
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));

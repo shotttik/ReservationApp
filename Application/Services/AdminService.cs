@@ -2,6 +2,7 @@
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
 using Application.Extensions.Mappers;
+using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.User;
@@ -136,12 +137,14 @@ namespace Application.Services
         public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var errors = parameters.Validate<AuthUser>();
+            var allowedFields = UserLoginDataFilterMap.DtoToEntityPath;
+            var errors = parameters.Validate(allowedFields, typeof(UserLoginData));
             if (errors.Any())
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
-            var users = await userLoginDataRepository.RetrievePaged(parameters, cancellationToken, AuthUser.ID);
+            var mappedParams = PagedParameterMapper.MapToEntityPaths(parameters, allowedFields);
+            var users = await userLoginDataRepository.RetrievePaged(mappedParams, cancellationToken, AuthUser.ID);
 
             return Result.Success(users);
         }
