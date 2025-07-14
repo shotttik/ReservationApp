@@ -29,7 +29,21 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves a paginated list of companies.
         /// </summary>
-        /// <remarks>Required role: <strong>Accessible by everyone</strong></remarks>
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>Name</c></li>
+        /// <li><c>Description</c></li>
+        /// <li><c>IN</c></li>
+        /// <li><c>Email</c></li>
+        /// <li><c>Phone</c></li>
+        /// <li><c>Type</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// </ul>
+        /// </remarks>
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company records.</returns>

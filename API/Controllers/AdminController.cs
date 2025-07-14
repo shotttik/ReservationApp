@@ -117,6 +117,23 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves a paginated list of users with filtering options.
         /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>CompanyID</c></li>
+        /// <li><c>FirstName</c></li>
+        /// <li><c>LastName</c></li>
+        /// <li><c>Email</c></li>
+        /// <li><c>VerificationStatus</c></li>
+        /// <li><c>Role.Name</c></li>
+        /// <li><c>ActiveStatus</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// </ul>
+        /// </remarks>
         /// <param name="request">Paging and filtering parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of users.</returns>
@@ -156,6 +173,20 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>CompanyID</c></li>
+        /// <li><c>FirstName</c></li>
+        /// <li><c>LastName</c></li>
+        /// <li><c>Email</c></li>
+        /// <li><c>VerificationStatus</c></li>
+        /// <li><c>Role.Name</c></li>
+        /// <li><c>ActiveStatus</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// </ul>
         /// </remarks>
         /// <param name="parameters">Paging parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param
