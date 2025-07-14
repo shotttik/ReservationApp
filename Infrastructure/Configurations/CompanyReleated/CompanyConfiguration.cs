@@ -14,7 +14,7 @@ namespace Infrastructure.Configurations.CompanyReleated
             builder.Property(e => e.Description).HasColumnType("nvarchar(max)");
             builder.Property(e => e.IN).HasMaxLength(9).IsRequired();
             builder.Property(e => e.Email).HasMaxLength(255);
-            builder.Property(e => e.Phone).HasMaxLength(9);
+            builder.Property(e => e.Phone).HasMaxLength(20);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
 
             builder.Property(e => e.Type)

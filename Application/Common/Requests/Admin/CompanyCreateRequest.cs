@@ -17,8 +17,8 @@ namespace Application.Common.Requests.Admin
         [EmailAddress]
         [MaxLength(255)]
         public string? Email { get; set; }
-        [Length(1, 30)]
-        [RegularExpression(@"^\d+$", ErrorMessage = "Phone must be only numbers.")]
+        [Length(1, 20)]
+        [RegularExpression(@"^\+\d+$", ErrorMessage = "Phone must start with '+' and contain only numbers.")]
         public string? Phone { get; set; }
         [Required]
         public CompanyType Type { get; set; }
