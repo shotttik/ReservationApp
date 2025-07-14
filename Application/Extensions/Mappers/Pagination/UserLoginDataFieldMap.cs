@@ -12,7 +12,7 @@
             ["Email"] = "Email",
             ["VerificationStatus"] = "VerificationStatus",
             ["Role.Name"] = "UserAccount.Role.Name",
-            ["DeletedAt"] = "DeletedAt",
+            ["ActiveStatus"] = "ActiveStatus",
             ["CreatedAt"] = "CreatedAt",
             ["UpdatedAt"] = "UpdatedAt"
         };

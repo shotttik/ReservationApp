@@ -25,10 +25,9 @@
         public static readonly Error NoActiveSessions = Error.NotFound("Auth.NoActiveSessions", "No active sessions found for this user.");
         public static readonly Error UserAlreadyAssignedToCompany = Error.Conflict("Auth.UserAlreadyAssignedToCompany", "User already assigned to this company with specific role.");
         public static readonly Error InvalidId = Error.Validation("Auth.InvalidId", "Invalid user id provided.");
-        public static readonly Error UserDeletedCantBeUsed = Error.Forbidden("Auth.UserDeletedCantBeUsedContactSupport", "User is deleted and cannot be used. Please contact support for more information.");
-        public static readonly Error UserAlreadyDeleted = Error.Validation("Auth.UserAlreadyDeleted", "User is already deleted.");
-        public static readonly Error UserNotDeactivated = Error.Validation("Auth.UserNotDeactivated", "User is not deactivated, cannot be reactivated.");
-
+        public static readonly Error UserDisabledCantBeUsed = Error.Forbidden("Auth.UserDisabledCantBeUsed", "User is disabled and cannot be used. Please contact support for more information.");
+        public static readonly Error UserAlreadyDisabled = Error.Validation("Auth.UserAlreadyDisabled", "User is already disabled.");
+        public static readonly Error UserAlreadyActived = Error.Validation("Auth.UserAlreadyActived", "User is already actived.");
         #endregion
 
         #region Success
@@ -45,6 +44,7 @@
         public static readonly SuccessInfo UserCreated = new("Auth.UserCreated", "User created successfully.");
         public static readonly SuccessInfo UserAssignedToCompany = new("Auth.UserAssignedToCompany", "User assigned to company successfully.");
 
+        public static readonly SuccessInfo UserDisabled = new("Auth.UserDisabled", "User disabled successfully.");
         public static readonly SuccessInfo UserDeleted = new("Auth.UserDeleted", "User deleted successfully.");
         public static readonly SuccessInfo UserReactivated = new("Auth.UserReactivated", "User reactivated successfully.");
         #endregion

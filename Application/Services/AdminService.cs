@@ -193,11 +193,11 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
-            if (userLoginData.DeletedAt == null)
+            if (userLoginData.IsActive)
             {
-                return Result.Failure(AuthResults.UserNotDeactivated);
+                return Result.Failure(AuthResults.UserAlreadyActived);
             }
-            userLoginData.DeletedAt = null;
+            userLoginData.Activate();
             await userLoginDataRepository.Update(userLoginData);
 
             return Result.Success(AuthResults.UserReactivated);

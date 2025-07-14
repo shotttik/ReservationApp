@@ -330,24 +330,21 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserNotFound);
             }
-            if (userLoginData.DeletedAt != null)
+            if (userLoginData.IsDisabled)
             {
-                return Result.Failure(AuthResults.UserAlreadyDeleted);
+                return Result.Failure(AuthResults.UserAlreadyDisabled);
             }
-            if (force == true)
+            if (force)
             {
-                userLoginData.DeletedAt = DateTime.UtcNow;
                 await userLoginDataRepository.Delete(userLoginData);
-            }
-            else
-            {
-                userLoginData.DeletedAt = DateTime.UtcNow;
+                await userService.DeleteAllActiveSessions(memberID);
+                return Result.Success(AuthResults.UserDeleted);
 
-                await userLoginDataRepository.Update(userLoginData);
             }
+            userLoginData.Disable();
+            await userLoginDataRepository.Update(userLoginData);
             await userService.DeleteAllActiveSessions(memberID);
-
-            return Result.Success(AuthResults.UserDeleted);
+            return Result.Success(AuthResults.UserDisabled);
         }
 
         public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken)

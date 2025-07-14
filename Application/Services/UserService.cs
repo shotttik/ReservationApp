@@ -102,9 +102,9 @@ namespace Application.Services
             {
                 return Result.Failure<LoginResponse>(AuthResults.InvalidPassword);
             }
-            if (user.DeletedAt != null)
+            if (user.IsDisabled)
             {
-                return Result.Failure<LoginResponse>(AuthResults.UserDeletedCantBeUsed);
+                return Result.Failure<LoginResponse>(AuthResults.UserDisabledCantBeUsed);
             }
 
             var AuthUser = user.MapToAuthorizationData();
@@ -435,24 +435,22 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
-            if (userLoginData.DeletedAt != null)
+            if (userLoginData.IsDisabled)
             {
-                return Result.Failure(AuthResults.UserAlreadyDeleted);
+                return Result.Failure(AuthResults.UserAlreadyDisabled);
             }
-            if (force == true)
+            if (force)
             {
-                userLoginData.DeletedAt = DateTime.UtcNow;
                 await userLoginDataRepository.Delete(userLoginData);
+                await DeleteAllActiveSessions(userID);
+                return Result.Success(AuthResults.UserDeleted);
             }
-            else
-            {
-                userLoginData.DeletedAt = DateTime.UtcNow;
 
-                await userLoginDataRepository.Update(userLoginData);
-            }
+            userLoginData.Disable();
+            await userLoginDataRepository.Update(userLoginData);
             await DeleteAllActiveSessions(userID);
 
-            return Result.Success(AuthResults.UserDeleted);
+            return Result.Success(AuthResults.UserDisabled);
         }
     }
 }
