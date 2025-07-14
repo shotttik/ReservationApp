@@ -21,9 +21,9 @@ namespace Infrastructure.Configurations.LocationReleated
                 .HasMaxLength(100)
                 .IsRequired();
             builder.Property(e => e.Latitude)
-                 .HasPrecision(10, 8);
+                .HasPrecision(23, 15);
             builder.Property(e => e.Longitude)
-                .HasPrecision(11, 8);
+                .HasPrecision(24, 15);
             builder.Property(e => e.State)
                 .HasMaxLength(255);
             builder.Property(e => e.CreatedAt)
