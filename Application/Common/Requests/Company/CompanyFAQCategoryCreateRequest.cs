@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Company
 {
@@ -8,6 +9,6 @@ namespace Application.Common.Requests.Company
         [MaxLength(500)]
         public required string Name { get; set; }
         public int Order { get; set; }
-        public bool IsActive { get; set; } = true;
+        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
     }
 }

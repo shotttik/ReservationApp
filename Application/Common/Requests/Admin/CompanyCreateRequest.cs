@@ -22,7 +22,7 @@ namespace Application.Common.Requests.Admin
         public string? Phone { get; set; }
         [Required]
         public CompanyType Type { get; set; }
-        public bool IsActive { get; set; } = true;
+        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
         public required LocationCreateRequest Location { get; set; }
     }
 

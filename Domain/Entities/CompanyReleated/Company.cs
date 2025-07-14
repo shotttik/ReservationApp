@@ -5,7 +5,7 @@ using Domain.Enums;
 
 namespace Domain.Entities.CompanyReleated
 {
-    public class Company :BaseEntity
+    public class Company :ActivableEntity
     {
         public required string Name { get; set; }
         public string? Description { get; set; }
@@ -13,7 +13,6 @@ namespace Domain.Entities.CompanyReleated
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public CompanyType Type { get; set; }
-        public bool IsActive { get; set; }
         public int LocationID { get; set; }
         public Location Location { get; set; } = null!;
         public ICollection<UserAccount> UserAccounts { get; set; } = [];

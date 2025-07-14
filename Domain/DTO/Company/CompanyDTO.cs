@@ -13,7 +13,7 @@ namespace Domain.DTO.Company
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public CompanyType Type { get; set; } = CompanyType.None;
-        public bool IsActive { get; set; }
+        public ActiveStatus ActiveStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public required LocationDTO Location { get; set; }
         public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.DTO.Company
 {
@@ -15,6 +16,6 @@ namespace Domain.DTO.Company
         public required int Duration { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public bool IsActive { get; set; } = true;
+        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
     }
 }

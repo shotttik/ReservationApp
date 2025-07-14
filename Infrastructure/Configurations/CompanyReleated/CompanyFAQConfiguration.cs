@@ -19,9 +19,6 @@ namespace Infrastructure.Configurations.CompanyReleated
             builder.Property(e => e.Answer)
                 .IsRequired()
                 .HasMaxLength(2000);
-            builder.Property(e => e.IsActive)
-                .IsRequired()
-                .HasDefaultValue(true);
         }
     }
 }

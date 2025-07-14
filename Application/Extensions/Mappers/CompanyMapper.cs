@@ -18,7 +18,7 @@ namespace Application.Extensions.Mappers
                 Email = company.Email,
                 Phone = company.Phone,
                 Type = company.Type,
-                IsActive = company.IsActive,
+                ActiveStatus = company.ActiveStatus,
                 Location = company.Location.MapToDTO(),
                 CreatedAt = company.CreatedAt,
                 Services = company.Services.Select(s => new ServiceDTO
@@ -28,7 +28,7 @@ namespace Application.Extensions.Mappers
                     Description = s.Description,
                     Duration = s.Duration,
                     Price = s.Price,
-                    IsActive = s.IsActive,
+                    ActiveStatus = s.ActiveStatus,
                 }).ToList(),
                 Medias = company.CompanyMedias.Select(cm => new MediaDTO
                 {
@@ -46,7 +46,7 @@ namespace Application.Extensions.Mappers
             Email = request.Email,
             Phone = request.Phone,
             Type = request.Type,
-            IsActive = request.IsActive,
+            ActiveStatus = request.ActiveStatus,
             Location = request.Location.MapToEntity()
         };
 
@@ -61,7 +61,7 @@ namespace Application.Extensions.Mappers
                 Email = companyDTO.Email,
                 Phone = companyDTO.Phone,
                 Type = companyDTO.Type,
-                IsActive = companyDTO.IsActive,
+                ActiveStatus = companyDTO.ActiveStatus,
                 CreatedAt = companyDTO.CreatedAt
             };
         }
@@ -73,7 +73,7 @@ namespace Application.Extensions.Mappers
             entity.Email = request.Email;
             entity.Phone = request.Phone;
             entity.Type = request.Type;
-            entity.IsActive = request.IsActive;
+            entity.ActiveStatus = request.ActiveStatus;
             entity.Location = request.Location.MapToEntity(entity.Location);
 
             return entity;

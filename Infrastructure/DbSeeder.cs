@@ -184,7 +184,7 @@ namespace Infrastructure
                             Email = email,
                             Phone = phone,
                             Description = description,
-                            IsActive = true,
+                            ActiveStatus = Domain.Enums.ActiveStatus.Active,
                             LocationID = locations [i].ID // One-to-one
                         });
                     }

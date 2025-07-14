@@ -15,7 +15,7 @@ namespace Application.Extensions.Mappers
                 Description = service.Description,
                 Price = service.Price,
                 Duration = service.Duration,
-                IsActive = service.IsActive,
+                ActiveStatus = service.ActiveStatus,
                 CompanyID = companyID
             };
         }
@@ -28,7 +28,7 @@ namespace Application.Extensions.Mappers
                 Description = service.Description,
                 Price = service.Price,
                 Duration = service.Duration,
-                IsActive = service.IsActive,
+                ActiveStatus = service.ActiveStatus,
                 CompanyID = companyID
             };
         }
@@ -41,7 +41,7 @@ namespace Application.Extensions.Mappers
                 Description = service.Description,
                 Price = service.Price,
                 Duration = service.Duration,
-                IsActive = service.IsActive,
+                ActiveStatus = service.ActiveStatus,
             };
         }
     }
