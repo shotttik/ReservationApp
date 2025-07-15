@@ -8,11 +8,11 @@ namespace Application.Common.Requests.Admin
         [Required]
         [MaxLength(200)]
         public required string Name { get; set; }
-        [MaxLength(255)]
+        [MaxLength(4000)]
         public string? Description { get; set; }
         [Required]
         [RegularExpression(@"^\d+$", ErrorMessage = "IN must be only numbers.")]
-        [Length(9, 9)]
+        [Length(1, 30)]
         public required string IN { get; set; }
         [EmailAddress]
         [MaxLength(255)]
@@ -42,9 +42,9 @@ namespace Application.Common.Requests.Admin
         public required string Country { get; set; }
         [MaxLength(255)]
         public string? State { get; set; }
-        [DecimalPrecision(20, 8, ErrorMessage = "Latitude must have a precision of 20 and scale of 8.")]
+        [DecimalPrecision(20, 15, ErrorMessage = "Latitude must have a precision of 20 and scale of 15.")]
         public decimal? Latitude { get; set; }
-        [DecimalPrecision(20, 8, ErrorMessage = "Longitude must have a precision of 20 and scale of 8.")]
+        [DecimalPrecision(20, 15, ErrorMessage = "Longitude must have a precision of 20 and scale of 15.")]
         public decimal? Longitude { get; set; }
     }
 
