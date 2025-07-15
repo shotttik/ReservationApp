@@ -1,4 +1,5 @@
-﻿using Application.Common.Requests.Admin;
+﻿using Application.Common.Requests;
+using Application.Common.Requests.Admin;
 using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO.User;
@@ -14,6 +15,6 @@ namespace Application.Interfaces
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request);
         Task<Result<UserLoginDataDTO>> GetUser(int id);
-        Task<Result> ReactivateUser(int userID);
+        Task<Result> ChangeActiveStatus(ChangeStatusRequest request, int userId);
     }
 }

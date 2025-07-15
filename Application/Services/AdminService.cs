@@ -1,4 +1,5 @@
 ﻿using Application.Authentication;
+using Application.Common.Requests;
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
 using Application.Extensions.Mappers;
@@ -7,6 +8,7 @@ using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.User;
 using Domain.Entities.User;
+using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
 
@@ -19,13 +21,15 @@ namespace Application.Services
         private readonly IAuthService authService;
         private readonly ICompanyRepository companyRepository;
         private readonly IConfiguration configuration;
+        private readonly IUserService userService;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
             IUserAccountRepository userAccountRepository,
             IAuthService authService,
             ICompanyRepository companyRepository,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IUserService userService
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -33,6 +37,7 @@ namespace Application.Services
             this.authService = authService;
             this.companyRepository = companyRepository;
             this.configuration = configuration;
+            this.userService = userService;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -186,21 +191,25 @@ namespace Application.Services
             return Result.Success(user.MapToDTO());
         }
 
-        public async Task<Result> ReactivateUser(int userID)
+        public async Task<Result> ChangeActiveStatus(ChangeStatusRequest request, int userId)
         {
-            var userLoginData = await userLoginDataRepository.Get(userID);
+            var userLoginData = await userLoginDataRepository.Get(userId);
             if (userLoginData == null)
             {
-                return Result.Failure(AuthResults.UserDoesntExists);
+                return Result.Failure(AuthResults.UserNotFound);
             }
-            if (userLoginData.IsActive)
+            if (userLoginData.ActiveStatus == request.NewStatus)
             {
-                return Result.Failure(AuthResults.UserAlreadyActived);
+                return Result.Failure(AuthResults.UserSameStatus);
             }
-            userLoginData.Activate();
+            userLoginData.ActiveStatus = request.NewStatus;
             await userLoginDataRepository.Update(userLoginData);
+            if (request.NewStatus == ActiveStatus.Disabled)
+            {
+                await userService.DeleteAllActiveSessions(userId);
+            }
 
-            return Result.Success(AuthResults.UserReactivated);
+            return Result.Success(AuthResults.UserStatusChanged);
         }
     }
 }

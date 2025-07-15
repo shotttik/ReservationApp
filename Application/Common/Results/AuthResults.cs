@@ -28,6 +28,7 @@
         public static readonly Error UserDisabledCantBeUsed = Error.Forbidden("Auth.UserDisabledCantBeUsed", "User is disabled and cannot be used. Please contact support for more information.");
         public static readonly Error UserAlreadyDisabled = Error.Validation("Auth.UserAlreadyDisabled", "User is already disabled.");
         public static readonly Error UserAlreadyActived = Error.Validation("Auth.UserAlreadyActived", "User is already actived.");
+        public static readonly Error UserSameStatus = Error.Validation("AuthUser.UserSameStatus", "User already have same active status.")
         #endregion
 
         #region Success
@@ -47,6 +48,7 @@
         public static readonly SuccessInfo UserDisabled = new("Auth.UserDisabled", "User disabled successfully.");
         public static readonly SuccessInfo UserDeleted = new("Auth.UserDeleted", "User deleted successfully.");
         public static readonly SuccessInfo UserReactivated = new("Auth.UserReactivated", "User reactivated successfully.");
+        public static readonly SuccessInfo UserStatusChanged = new("Auth.UserStatusChanged", "User status changed successfully.");
         #endregion
     }
 }
