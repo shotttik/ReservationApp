@@ -18,7 +18,6 @@ namespace Application.Common.Requests.Admin
         [MaxLength(255)]
         public string? Email { get; set; }
         [Length(1, 20)]
-        [RegularExpression(@"^\+\d+$", ErrorMessage = "Phone must start with '+' and contain only numbers.")]
         public string? Phone { get; set; }
         [Required]
         public CompanyType Type { get; set; }
