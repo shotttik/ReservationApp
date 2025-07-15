@@ -116,26 +116,29 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-        /// <summary>  
-        /// Uploads images for the company.  
-        /// </summary>  
-        /// <remarks>  
-        /// This endpoint allows uploading multiple images for a company.  
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
-        /// </remarks>  
-        /// <param name="companyId">The ID of the company in the route.</param>
-        /// <param name="request">The request containing the images to upload.</param>
-        /// <param name="cancellationToken">Cancellation token</param>  
-        /// <returns>Result indicating success or failure of the upload operation.</returns>
-        [HttpPost("{companyId:int}/images/upload")]
+        /// <summary>
+        /// Uploads one or more media files for the specified company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows uploading multiple media files to a company.
+        ///
+        /// <para><b>Required Roles:</b> SuperAdmin, CompanyAdmin</para>
+        /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
+        /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
+        /// </remarks>
+        /// <param name="companyId">The ID of the company for which the media is being uploaded.</param>
+        /// <param name="request">The request containing the media files to upload.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A result indicating the success or failure of the upload operation.</returns>
+        [HttpPost("{companyId:int}/media")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UploadImages([FromRoute] int companyId, [FromForm] UploadCompanyImagesRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadMedia([FromRoute] int companyId, [FromForm] UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {
-            var result = await companyService.UploadImages(companyId, request, cancellationToken);
+            var result = await companyService.UploadMedia(companyId, request, cancellationToken);
 
             return result.ToResponse();
         }
@@ -281,20 +284,20 @@ namespace API.Controllers
         /// This endpoint allows you to update media for a company, including adding new media, marking images as the main one, or removing media.
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="routeCompanyId">The ID of the company to update media for.</param>
+        /// <param name="companyId">The ID of the company to update media for.</param>
         /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
-        [HttpPut("{routeCompanyId}/media")]
+        [HttpPut("{companyId}/media")]
         [HasPermission(Permission.CompanyMediaUpdate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateImages([FromRoute] int routeCompanyId, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateMedia([FromRoute] int companyId, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
         {
-            var result = await companyService.UpdateImages(routeCompanyId, mediaUpdates, cancellationToken);
+            var result = await companyService.UpdateMedia(companyId, mediaUpdates, cancellationToken);
             return result.ToResponse();
         }
     }

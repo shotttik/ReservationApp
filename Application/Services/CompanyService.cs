@@ -190,7 +190,7 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result> UploadImages(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken)
+        public async Task<Result> UploadMedia(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
             var company = await companyRepository.Get(AuthUser.CompanyID!.Value);
@@ -366,7 +366,7 @@ namespace Application.Services
 
             return Result.Success(users);
         }
-        public async Task<Result> UpdateImages(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
+        public async Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
