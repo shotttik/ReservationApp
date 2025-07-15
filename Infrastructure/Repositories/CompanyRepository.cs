@@ -2,6 +2,7 @@
 using Domain.Abstractions;
 using Domain.DTO.Company;
 using Domain.Entities.CompanyReleated;
+using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -42,28 +43,31 @@ namespace Infrastructure.Repositories
             PagedParameters parameters,
             CancellationToken cancellationToken,
             bool forPublic // only active companies
-            )
+        )
         {
+            var query = _dbSet
+                .Include(e => e.Services)
+                .Include(e => e.Location)
+                .AsQueryable();
 
-            var query = _dbSet.AsQueryable();
-            query = query.ApplyQueryParamsAsync(parameters);
-
-            if (!forPublic)
+            if (forPublic)
             {
-                query = query.Where(c => c.IsActive);
+                query = query.Where(c => c.ActiveStatus == ActiveStatus.Active);
             }
 
-            var totalCount = await query.CountAsync();
-            var companies = await query.
-                Include(e => e.Services).
-                Include(e => e.Location).
-                Select(e => e.MapToDTO()).
-                Skip((parameters.PageNumber - 1) * parameters.PageSize).
-                Take(parameters.PageSize).
-                ToListAsync(cancellationToken);
+            query = query.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var companies = await query
+                .Select(e => e.MapToDTO())
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync(cancellationToken);
 
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
         }
+
         public async Task<Company?> GetWithLocation(int id)
         {
             return await _dbSet.Where(e => e.ID == id)
