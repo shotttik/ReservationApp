@@ -11,12 +11,14 @@
         public static readonly Error DontExists = Error.Validation("Generic.DontExists", "Resource do not exists.");
         public static readonly Error IDMismatch = Error.Validation("Generic.IDMismatch", "Route ID and request ID must match.");
         public static readonly Error Forbidden = Error.Forbidden("Generic.Forbidden", "You do not have permission to perform this action.");
+        public static readonly Error SameStatus = Error.Validation("Generic.SameStatus", "Already have same active status.");
         #endregion
         #region Success
         public static readonly SuccessInfo Success = new("Generic.Success", "Operation completed successfully.");
         public static readonly SuccessInfo Created = new("Generic.Created", "Resource created successfully.");
         public static readonly SuccessInfo Updated = new("Generic.Updated", "Resource updated successfully.");
         public static readonly SuccessInfo Deleted = new("Generic.Deleted", "Resource deleted successfully.");
+        public static readonly SuccessInfo StatusChanged = new("Generic.StatusChanged", "Status changed successfully.");
         #endregion
     }
 }

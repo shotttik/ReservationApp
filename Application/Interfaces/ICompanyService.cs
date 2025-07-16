@@ -1,4 +1,5 @@
-﻿using Application.Common.Requests.Company;
+﻿using Application.Common.Requests;
+using Application.Common.Requests.Company;
 using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO.Company;
@@ -25,5 +26,6 @@ namespace Application.Interfaces
         Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken);
+        Task<Result> ChangeActiveStatus(int routeCompanyId, ChangeStatusRequest request);
     }
 }

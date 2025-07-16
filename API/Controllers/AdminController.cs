@@ -270,9 +270,9 @@ namespace API.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ChangeActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int userId)
+        public async Task<IActionResult> ChangeUserActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int userId)
         {
-            var result = await adminService.ChangeActiveStatus(request, userId);
+            var result = await adminService.ChangeUserActiveStatus(request, userId);
 
             return result.ToResponse();
         }
@@ -316,12 +316,36 @@ namespace API.Controllers
         [HasPermission(Permission.CompanyUpdateFull)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyUpdateRequest request)
         {
             var result = await adminService.CompanyUpdate(id, request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Changes active status to the company.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">ID of the company to reactivate.</param>
+        /// <param name="request">new status request.</param>
+        /// <returns>No content if successful, or validation/problem details on failure.</returns>
+        [HttpPatch("companies/{companyId:int}/change-status")]
+        [Tags("Administration-Company")]
+        [HasPermission(Permission.CompanyUpdateFull)]
+        [EnableRateLimiting("fixed")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeCompanyActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int companyId)
+        {
+            var result = await companyService.ChangeActiveStatus(companyId, request);
 
             return result.ToResponse();
         }

@@ -191,7 +191,7 @@ namespace Application.Services
             return Result.Success(user.MapToDTO());
         }
 
-        public async Task<Result> ChangeActiveStatus(ChangeStatusRequest request, int userId)
+        public async Task<Result> ChangeUserActiveStatus(ChangeStatusRequest request, int userId)
         {
             var userLoginData = await userLoginDataRepository.Get(userId);
             if (userLoginData == null)
@@ -200,16 +200,20 @@ namespace Application.Services
             }
             if (userLoginData.ActiveStatus == request.NewStatus)
             {
-                return Result.Failure(AuthResults.UserSameStatus);
+                return Result.Failure(GenericResults.SameStatus);
             }
-            userLoginData.ActiveStatus = request.NewStatus;
-            await userLoginDataRepository.Update(userLoginData);
-            if (request.NewStatus == ActiveStatus.Disabled)
+            if (request.NewStatus == ActiveStatus.Active)
             {
+                userLoginData.Activate();
+            }
+            else
+            {
+                userLoginData.Disable();
                 await userService.DeleteAllActiveSessions(userId);
             }
+            await userLoginDataRepository.Update(userLoginData);
 
-            return Result.Success(AuthResults.UserStatusChanged);
+            return Result.Success(GenericResults.StatusChanged);
         }
     }
 }
