@@ -16,7 +16,6 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/admin")]
     [ApiController]
-    [Tags("Administration")]
     public class AdminController :ControllerBase
     {
         private readonly IAdminService adminService;
@@ -41,6 +40,7 @@ namespace API.Controllers
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
         [MapToApiVersion("1.0")]
+        [Tags("Administration-User")]
         [HttpPost("users")]
         [HasPermission(Permission.UserCreate)]
         [Logging(LoggingType.ExceptBody)]
@@ -63,6 +63,7 @@ namespace API.Controllers
         /// <param name="request">Partial update payload for user account.</param>
         /// <returns>Returns success or failure of the update.</returns>
         [HttpPatch("users/{id:int}")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -84,6 +85,7 @@ namespace API.Controllers
         /// <param name="force">Set to true for hard delete; false for soft delete (default).</param>
         /// <returns>Returns result of deletion.</returns>
         [HttpDelete("users/{id}")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserDelete)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -104,6 +106,7 @@ namespace API.Controllers
         /// <param name="request">Company creation payload including name, email, and identifier.</param>
         /// <returns>Returns success or failure of the creation.</returns>
         [HttpPost("companies")]
+        [Tags("Administration-Company")]
         [HasPermission(Permission.CompanyCreate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -139,6 +142,7 @@ namespace API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of users.</returns>
         [HttpGet("users/paged")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserRead)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<AuthUser>>), StatusCodes.Status200OK)]
@@ -158,6 +162,7 @@ namespace API.Controllers
         /// <param name="request">Assignment data including user ID, company ID, and role.</param>
         /// <returns>Returns assignment result.</returns>
         [HttpPost("assign-user-to-company")]
+        [Tags("Administration-Company")]
         [HasPermission(Permission.UserUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -193,6 +198,7 @@ namespace API.Controllers
         /// <param name="cancellationToken">Cancellation token.</param
         /// <returns>Paginated company data.</returns>
         [HttpGet("companies/paged")]
+        [Tags("Administration-Company")]
         [Logging(LoggingType.Full)]
         [HasAnyPermission(Permission.CompanyReadAll)]
         [EnableRateLimiting("fixed")]
@@ -213,6 +219,7 @@ namespace API.Controllers
         /// <param name="id">Company ID.</param>
         /// <returns>Company details or not found error.</returns>
         [HttpGet("companies/{id:int}")]
+        [Tags("Administration-Company")]
         [Logging(LoggingType.Full)]
         [HasAnyPermission(Permission.CompanyReadAll)]
         [EnableRateLimiting("fixed")]
@@ -233,6 +240,7 @@ namespace API.Controllers
         /// <param name="id">User ID.</param>
         /// <returns>User details or error response.</returns>
         [HttpGet("users/{id:int}")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserRead)]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
@@ -255,6 +263,7 @@ namespace API.Controllers
         /// <param name="request">new status request.</param>
         /// <returns>No content if successful, or validation/problem details on failure.</returns>
         [HttpPatch("users/{userId:int}/change-status")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserUpdate)]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
@@ -277,6 +286,7 @@ namespace API.Controllers
         /// <param name="id">ID of the user whose active sessions will be deleted.</param>
         /// <returns>Returns the result of the session termination process.</returns>
         [HttpDelete("users/sessions/{id:int}")]
+        [Tags("Administration-User")]
         [HasPermission(Permission.UserDelete)]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
@@ -300,6 +310,7 @@ namespace API.Controllers
         /// <param name="request">The updated company information.</param>
         /// <returns>No content if successful, or validation/problem details on failure.</returns>
         [HttpPut("companies/{id:int}")]
+        [Tags("Administration-Company")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.CompanyUpdateFull)]
