@@ -16,8 +16,8 @@ namespace Domain.Entities.User
         public virtual UserLoginData UserLoginData { get; set; } = null!;
         public virtual Role? Role { get; set; }
         public virtual Company? Company { get; set; }
-        public ICollection<Appointment> AppointmentsAsClient { get; set; } = [];
-        public ICollection<Appointment> AppointmentsAsEmployee { get; set; } = [];
+        public ICollection<Booking> BookingsAsClient { get; set; } = [];
+        public ICollection<Booking> BookingsAsEmployee { get; set; } = [];
         public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
         public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
     }

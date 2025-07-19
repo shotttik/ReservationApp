@@ -23,7 +23,7 @@ namespace Infrastructure
         public DbSet<Company> Companies { get; set; }
         public DbSet<CompanyInvitation> CompanyInvitations { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<WorkScheduleException> WorkScheduleExceptions { get; set; }
         public DbSet<Country> Countries { get; set; }
@@ -52,11 +52,10 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new CompanyMediaConfiguration());
 
             // Common
-            modelBuilder.ApplyConfiguration(new AppointmentConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleExceptionConfiguration());
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
-
 
             // Location Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());

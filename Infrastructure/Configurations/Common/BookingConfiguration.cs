@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations.Common
 {
-    public class AppointmentConfiguration :IEntityTypeConfiguration<Appointment>
+    public class BookingConfiguration :IEntityTypeConfiguration<Booking>
     {
-        public void Configure(EntityTypeBuilder<Appointment> builder)
+        public void Configure(EntityTypeBuilder<Booking> builder)
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.StartTime).IsRequired();
@@ -16,26 +16,33 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.Discount).HasPrecision(18, 2);
             builder.Property(e => e.PriceFinal).HasPrecision(18, 2);
             builder.Property(e => e.PriceFull).HasPrecision(18, 2);
-
+            builder.Property(e => e.CancellationReason)
+                .HasMaxLength(2000);
+            builder.Property(e => e.Note)
+                    .HasMaxLength(2000);
+            builder.Property(e => e.ServiceName)
+                .IsRequired()
+                .HasMaxLength(255);
             builder.Property(e => e.Status)
                 .IsRequired()
                 .HasConversion<int>()
-                .HasDefaultValue(AppointmentStatus.Pending);
+                .HasDefaultValue(BookingStatus.Pending);
+
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
             builder.HasOne(e => e.Client)
-                .WithMany(e => e.AppointmentsAsClient)
+                .WithMany(e => e.BookingsAsClient)
                 .HasForeignKey(e => e.ClientID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
             builder.HasOne(e => e.Employee)
-                .WithMany(e => e.AppointmentsAsEmployee)
+                .WithMany(e => e.BookingsAsEmployee)
                 .HasForeignKey(e => e.EmployeeID)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(e => e.Company)
-                .WithMany(e => e.Appointments)
+                .WithMany(e => e.Bookings)
                 .HasForeignKey(e => e.CompanyID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

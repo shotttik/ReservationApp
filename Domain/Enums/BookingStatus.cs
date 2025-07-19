@@ -1,6 +1,6 @@
 ﻿namespace Domain.Enums
 {
-    public enum AppointmentStatus
+    public enum BookingStatus
     {
         Failed = -2,
         Canceled = -1,

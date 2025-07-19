@@ -18,7 +18,7 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];
-        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<Booking> Bookings { get; set; } = [];
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
         public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
     }
