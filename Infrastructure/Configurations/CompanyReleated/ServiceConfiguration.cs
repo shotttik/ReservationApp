@@ -10,7 +10,7 @@ namespace Infrastructure.Configurations.CompanyReleated
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
-            builder.HasIndex(e => e.Name).IsUnique();
+            builder.HasIndex(e => e.Name);
             builder.Property(e => e.Duration).IsRequired();
             builder.Property(e => e.Price).HasPrecision(18, 2);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
