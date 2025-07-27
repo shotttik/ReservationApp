@@ -66,5 +66,21 @@ namespace Infrastructure.Repositories
 
             return userAccount;
         }
+
+        public async Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Include(e => e.Company)
+                    .ThenInclude(c => c!.Services)
+                .Include(e => e.BookingsAsEmployee)
+                .Include(e => e.WorkSchedules)
+                .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
+                .FirstOrDefaultAsync();
+
+            return userAccount;
+        }
     }
 }

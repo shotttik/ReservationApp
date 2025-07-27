@@ -1,6 +1,4 @@
-﻿using Domain.Abstractions;
-using Domain.DTO;
-using Domain.Entities.User;
+﻿using Domain.Entities.User;
 
 namespace Domain.Interfaces.Repositories
 {
@@ -10,5 +8,6 @@ namespace Domain.Interfaces.Repositories
         Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkScheduleExceptions(int userLoginDataID);
+        Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID);
     }
 }

@@ -11,5 +11,10 @@ namespace Domain.Entities.Common
         public WorkScheduleExceptionType Type { get; set; }
         public string? Notes { get; set; }
         public virtual UserAccount UserAccount { get; set; } = null!;
+        public bool IsActiveOn(DateTime dateTime)
+        {
+            var date = DateOnly.FromDateTime(dateTime);
+            return date >= StartDate && date <= EndDate;
+        }
     }
 }

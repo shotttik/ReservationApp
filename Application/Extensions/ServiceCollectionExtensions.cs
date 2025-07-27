@@ -17,6 +17,8 @@ namespace Application.Extensions
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ICompanyFAQService, CompanyFAQService>();
             services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
+            services.AddScoped<IBookingService, BookingService>();
+
             services.AddScoped<IAccessGuard, AccessGuard>();
 
             return services;

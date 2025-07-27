@@ -27,7 +27,7 @@ namespace Application.Extensions.Mappers
                     }).ToList()
                 },
                 CompanyID = user.UserAccount.CompanyID,
-                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
+                WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
                 CreatedAt = user.CreatedAt,
 
             };
