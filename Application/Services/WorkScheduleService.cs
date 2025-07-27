@@ -177,7 +177,7 @@ namespace Application.Services
             }
 
             var workScheduleException = request.MapToEntity();
-            workScheduleException.UserAccountID = request.UserID;
+            workScheduleException.UserAccountID = userAccount.ID;
 
             await workScheduleExceptionRepository.Add(workScheduleException);
 
