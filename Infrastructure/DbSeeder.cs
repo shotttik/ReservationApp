@@ -17,7 +17,7 @@ namespace Infrastructure
                 var random = new Random();
 
                 // Seed SuperAdmin User
-                if (!await context.UserAccounts.AnyAsync(u => u.Role != null && u.Role.ID == 1))
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.SuperAdmin.ID))
                 {
 
                     var superAdminUserAccount = new UserAccount
@@ -43,14 +43,15 @@ namespace Infrastructure
                     context.UserLoginDatas.Add(superAdminLogin);
                     await context.SaveChangesAsync();
                 }
-                // seed company admin
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyAdmin.ID))
+
+                // seed public user
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.PublicUser.ID))
                 {
-                    var companyAdminUserAccount = new UserAccount
+                    var publicUserUserAccount = new UserAccount
                     {
-                        FirstName = "CompanyAdmin",
-                        LastName = "Company ADmin",
-                        RoleID = Role.CompanyAdmin.ID,
+                        FirstName = "PublicUser",
+                        LastName = "PublicUser",
+                        RoleID = Role.PublicUser.ID,
 
                     };
 
@@ -58,42 +59,19 @@ namespace Infrastructure
                     var password = "SuperAdminPassword123!"; // Change this in production
                     (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
 
-                    var companyAdminLoginData = new UserLoginData
+                    var publicUserLoginData = new UserLoginData
                     {
-                        Email = "companyAdmin@example.com",
-                        UserAccount = companyAdminUserAccount,
+                        Email = "publicUser@example.com",
+                        UserAccount = publicUserUserAccount,
                         VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
                         PasswordHash = hash,
                         PasswordSalt = salt
                     };
-                    context.UserLoginDatas.Add(companyAdminLoginData);
+                    context.UserLoginDatas.Add(publicUserLoginData);
                     await context.SaveChangesAsync();
                 }
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyMember.ID))
-                {
-                    var companyMemberUserAccount = new UserAccount
-                    {
-                        FirstName = "CompanyMember",
-                        LastName = "CompanyMember",
-                        RoleID = Role.CompanyAdmin.ID,
 
-                    };
 
-                    // Create password hash and salt
-                    var password = "SuperAdminPassword123!"; // Change this in production
-                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
-
-                    var companyMemberLoginData = new UserLoginData
-                    {
-                        Email = "companyMember@example.com",
-                        UserAccount = companyMemberUserAccount,
-                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    };
-                    context.UserLoginDatas.Add(companyMemberLoginData);
-                    await context.SaveChangesAsync();
-                }
                 // seed multiple locations same count as a companies
                 if (!await context.Locations.AnyAsync() || !await context.Companies.AnyAsync())
 
@@ -424,7 +402,158 @@ namespace Infrastructure
                         await context.SaveChangesAsync();
                     }
                 }
-                // seed basic users with role publicuser and company member
+                // seed company users with role company admin and company member
+                if (!await context.Companies.AnyAsync(c => c.Email == "vieheCorporation@example.com"))
+                {
+                    var name = $"Viehe corporation";
+                    var iN = random.Next(100000000, 999999999).ToString();
+                    var email = $"vieheCorporation@example.com";
+                    var phone = $"555-0112-1231";
+                    var description = $"""
+                            <p>Welcome to <strong>{name}</strong>, where <em>creativity</em> meets <u>technology</u>. Since our founding in <span style="color: #555;">2010</span>, we have delivered top-notch solutions to clients worldwide.</p>
+
+                            <p>Our core values include:</p>
+
+                            <ul>
+                              <li>Integrity</li>
+                              <li>Innovation</li>
+                              <li>Customer Success</li>
+                            </ul>
+
+                            <blockquote>
+                              “The best way to predict the future is to invent it.” — Alan Kay
+                            </blockquote>
+
+                            <p>We specialize in:</p>
+
+                            <ol>
+                              <li>Web Development</li>
+                              <li>Mobile Applications</li>
+                              <li>Cloud Solutions</li>
+                            </ol>
+
+                            <p>To learn more, visit our <a href="https://www.example.com" target="_blank">official website</a> or follow us on social media.</p>
+
+                            <hr>
+
+                            <h3>Contact Us</h3>
+                            <p>📞 <a href="tel:+1234567890">{phone}</a><br>
+                            📧 <a href="mailto:info@example.com">{email}</a></p>
+
+                            <p>
+                              <img src="https://via.placeholder.com/400x200" alt="Company Team Photo" style="max-width: 100%; border-radius: 8px;">
+                            </p>
+
+                            <p style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #00AF87;">
+                              <strong>Note:</strong> We are committed to <mark>continuous improvement</mark> and welcome your feedback.
+                            </p>
+
+                            <p>
+                              <small>Last updated: June 2025</small>
+                            </p>
+                            """;
+                    var company = new Company
+                    {
+                        Name = name,
+                        IN = iN,
+                        Email = email,
+                        Phone = phone,
+                        Description = description,
+                        ActiveStatus = Domain.Enums.ActiveStatus.Active,
+                        Location = new Location
+                        {
+                            Country = "Georgia",
+                            State = "Shida-Kartli",
+                            City = "Kaspi",
+                            AddressLine1 = $"{random.Next(1, 9999)} avtandilis nomeri kucha",
+                            PostalCode = random.Next(10000, 99999).ToString(),
+                            Latitude = Convert.ToDecimal(41.7855048),
+                            Longitude = Convert.ToDecimal(44.7529183)
+                        },
+                        Services =
+                        [
+                           new Service
+                           {
+                               Name = "Consultation",
+                               Description = "One-on-one consultation service",
+                               Duration = 15,
+                               Price = 100.00m,
+                           },
+                           new Service
+                           {
+                               Name = "Web Development",
+                               Description = "Custom web development services",
+                               Duration = 15,
+                               Price = 5000.00m,
+                           },
+                           new Service
+                           {
+                               Name = "SEO Optimization",
+                               Description = "Search engine optimization services",
+                               Duration = 15,
+                               Price = 1500.00m,
+                           },
+                         ]
+                    };
+
+
+                    context.Companies.Add(company);
+                    await context.SaveChangesAsync();
+
+                }
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyAdmin.ID))
+                {
+                    var mainCompany = await context.Companies.Where(c => c.Email == "vieheCorporation@example.com").FirstOrDefaultAsync();
+                    var companyAdminUserAccount = new UserAccount
+                    {
+                        FirstName = "CompanyAdmin",
+                        LastName = "Company ADmin",
+                        RoleID = Role.CompanyAdmin.ID,
+                        CompanyID = mainCompany?.ID
+                    };
+
+                    // Create password hash and salt
+                    var password = "SuperAdminPassword123!"; // Change this in production
+                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
+
+                    var companyAdminLoginData = new UserLoginData
+                    {
+                        Email = "companyAdmin@example.com",
+                        UserAccount = companyAdminUserAccount,
+                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
+                        PasswordHash = hash,
+                        PasswordSalt = salt
+                    };
+                    context.UserLoginDatas.Add(companyAdminLoginData);
+                    await context.SaveChangesAsync();
+                }
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyMember.ID))
+                {
+                    var mainCompany = await context.Companies.Where(c => c.Email == "vieheCorporation@example.com").FirstOrDefaultAsync();
+                    var companyMemberUserAccount = new UserAccount
+                    {
+                        FirstName = "CompanyMember",
+                        LastName = "CompanyMember",
+                        RoleID = Role.CompanyMember.ID,
+                        CompanyID = mainCompany?.ID
+                    };
+
+                    // Create password hash and salt
+                    var password = "SuperAdminPassword123!"; // Change this in production
+                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
+
+                    var companyMemberLoginData = new UserLoginData
+                    {
+                        Email = "companyMember@example.com",
+                        UserAccount = companyMemberUserAccount,
+                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
+                        PasswordHash = hash,
+                        PasswordSalt = salt
+                    };
+                    context.UserLoginDatas.Add(companyMemberLoginData);
+                    await context.SaveChangesAsync();
+                }
+
                 Debug.Write("Database seeding completed successfully.");
             }
             catch (Exception ex)
