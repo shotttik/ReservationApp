@@ -1,11 +1,8 @@
-﻿using API.Extensions;
-using Application.Authentication;
+﻿using Application.Authentication;
 using Application.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 
 namespace API.Configuration

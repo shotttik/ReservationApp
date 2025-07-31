@@ -1,5 +1,4 @@
 using API.Configuration;
-using API.Extensions;
 using Application.Extensions;
 using Infrastructure.Extensions;
 using Serilog;
@@ -18,6 +17,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration.GetConnectionSt
 builder.Services.AddConfiguredServices(builder.Configuration);
 builder.Services.AddAuthenticationServices(builder.Configuration);
 builder.Services.AddRateLimitingServices(builder.Configuration);
+builder.Services.AddQuartzJobs(builder.Configuration);
 
 var app = builder.Build();
 await app.MigrateAndSeedAsync();

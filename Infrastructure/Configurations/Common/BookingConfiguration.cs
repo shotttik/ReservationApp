@@ -12,7 +12,7 @@ namespace Infrastructure.Configurations.Common
             builder.HasKey(e => e.ID);
             builder.Property(e => e.StartTime).IsRequired();
             builder.Property(e => e.EndTimeExpected).IsRequired();
-            builder.Property(e => e.PriceExpected).IsRequired();
+            builder.Property(e => e.PriceExpected).HasPrecision(18, 2).IsRequired();
             builder.Property(e => e.Discount).HasPrecision(18, 2);
             builder.Property(e => e.PriceFinal).HasPrecision(18, 2);
             builder.Property(e => e.PriceFull).HasPrecision(18, 2);

@@ -24,6 +24,8 @@ namespace API.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
+            LogContext.PushProperty("LogTarget", "HTTP");
+            
             loggingType = GetLoggingType(context);
 
             try

@@ -1,5 +1,6 @@
 ﻿using Application.Common.Security;
 using Application.Interfaces;
+using Application.Jobs;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,8 @@ namespace Application.Extensions
             services.AddScoped<IBookingService, BookingService>();
 
             services.AddScoped<IAccessGuard, AccessGuard>();
+
+            services.AddScoped<EmailNotificationJob>();
 
             return services;
         }
