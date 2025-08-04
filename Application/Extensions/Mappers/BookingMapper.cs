@@ -31,19 +31,24 @@ namespace Application.Extensions.Mappers
             };
         }
 
-        public static Booking MapToEntity(this BookingCreateRequest request, Service service)
+        public static Booking MapToEntity(
+            this ClientBookingCreateRequest request,
+            Service service,
+            int? clientID,
+            int companyID,
+            int employeeID)
         {
-            var entity = new Booking()
+            return new Booking
             {
-                EmployeeID = request.EmployeeID,
+                ClientID = clientID,
+                CompanyID = companyID,
+                EmployeeID = employeeID,
                 ServiceName = service.Name,
                 StartTime = request.StartTime,
                 EndTimeExpected = request.StartTime.AddMinutes(service.Duration),
                 PriceExpected = service.Price,
                 Note = request.Note
             };
-
-            return entity;
         }
     }
 }

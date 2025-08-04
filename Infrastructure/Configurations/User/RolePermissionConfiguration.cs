@@ -49,11 +49,12 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.ServiceUpdate),
             Create(Role.SuperAdmin, Permission.ServiceDelete),
 
-            Create(Role.SuperAdmin, Permission.AppointmentSchedule),
-            Create(Role.SuperAdmin, Permission.AppointmentRead),
-            Create(Role.SuperAdmin, Permission.AppointmentUpdate),
-            Create(Role.SuperAdmin, Permission.AppointmentCancel),
-            Create(Role.SuperAdmin, Permission.AppointmentApprove),
+            Create(Role.SuperAdmin, Permission.BookingCreate),
+            Create(Role.SuperAdmin, Permission.BookingRead),
+            Create(Role.SuperAdmin, Permission.BookingUpdate),
+            Create(Role.SuperAdmin, Permission.BookingDelete),
+            Create(Role.SuperAdmin, Permission.BookingCancel),
+            Create(Role.SuperAdmin, Permission.BookingApprove),
 
             Create(Role.SuperAdmin, Permission.RoleCreate),
             Create(Role.SuperAdmin, Permission.RoleRead),
@@ -104,8 +105,12 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.ServiceUpdate),
             Create(Role.CompanyAdmin, Permission.ServiceDelete),
 
-            Create(Role.CompanyAdmin, Permission.AppointmentRead),
-            Create(Role.CompanyAdmin, Permission.AppointmentApprove),
+            Create(Role.CompanyAdmin, Permission.BookingCreate),
+            Create(Role.CompanyAdmin, Permission.BookingRead),
+            Create(Role.CompanyAdmin, Permission.BookingUpdate),
+            Create(Role.CompanyAdmin, Permission.BookingDelete),
+            Create(Role.CompanyAdmin, Permission.BookingCancel),
+            Create(Role.CompanyAdmin, Permission.BookingApprove),
 
             Create(Role.CompanyAdmin, Permission.FaqCreate),
             Create(Role.CompanyAdmin, Permission.FaqRead),
@@ -135,17 +140,18 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyMember, Permission.WorkScheduleExceptionUserUpdate),
             Create(Role.CompanyMember, Permission.WorkScheduleExceptionUserDelete),
 
-            Create(Role.CompanyMember, Permission.AppointmentSchedule),
-            Create(Role.CompanyMember, Permission.AppointmentRead),
-            Create(Role.CompanyMember, Permission.AppointmentCancel),
-
             Create(Role.CompanyMember, Permission.ServiceRead),
 
+            Create(Role.CompanyMember, Permission.BookingRead),
+            Create(Role.CompanyMember, Permission.BookingCancel),
+            Create(Role.CompanyMember, Permission.BookingApprove),
+
+
             // ==== PublicUser: Can Only View Companies and Schedule Appointments ====
-            Create(Role.CompanyAdmin, Permission.CompanyReadLimited),
+            Create(Role.PublicUser, Permission.CompanyReadLimited),
             Create(Role.PublicUser, Permission.ServiceRead),
-            Create(Role.PublicUser, Permission.AppointmentSchedule),
-            Create(Role.PublicUser, Permission.AppointmentRead)
+            Create(Role.PublicUser, Permission.BookingRead)
+
             );
         }
 

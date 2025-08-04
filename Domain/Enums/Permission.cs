@@ -45,12 +45,13 @@
         ServiceUpdate,
         ServiceDelete,
 
-        // ==== Appointment Permissions ====
-        AppointmentSchedule,
-        AppointmentRead,
-        AppointmentUpdate,
-        AppointmentCancel,
-        AppointmentApprove,
+        // ==== Booking Permissions ====
+        BookingCreate,
+        BookingRead,
+        BookingUpdate,
+        BookingDelete,
+        BookingCancel,
+        BookingApprove,
 
         // ==== Media Permissions ====
         MediaUpload,

@@ -6,6 +6,7 @@ namespace Application.Interfaces
 {
     public interface IBookingService
     {
-        Task<Result<BookingDTO>> Create(BookingCreateRequest request);
+        Task<Result<BookingDTO>> CreateByClient(ClientBookingCreateRequest request);
+        Task<Result<BookingDTO>> CreateByAdmin(AdminBookingCreateRequest request);
     }
 }

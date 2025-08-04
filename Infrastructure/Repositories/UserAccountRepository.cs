@@ -82,5 +82,18 @@ namespace Infrastructure.Repositories
 
             return userAccount;
         }
+
+        public async Task<UserAccount?> GetByEmailWithClientBookingData(string email)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData.Email == email)
+                .Include(e => e.BookingsAsClient)
+                .Include(e => e.UserLoginData)
+                .FirstOrDefaultAsync();
+
+            return userAccount;
+        }
     }
 }

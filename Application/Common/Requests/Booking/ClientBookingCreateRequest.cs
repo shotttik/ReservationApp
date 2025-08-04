@@ -2,7 +2,7 @@
 
 namespace Application.Common.Requests.Booking
 {
-    public class BookingCreateRequest
+    public class ClientBookingCreateRequest
     {
         [Required]
         public int EmployeeID { get; set; }
