@@ -1,6 +1,6 @@
 ﻿namespace Application.Extensions.Mappers.Pagination
 {
-    public static class UserLoginDataFilterMap
+    public static class UserLoginDataFieldMap
     {
         public static readonly Dictionary<string, string> DtoToEntityPath = new(StringComparer.OrdinalIgnoreCase)
         {

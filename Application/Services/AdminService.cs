@@ -142,7 +142,7 @@ namespace Application.Services
         public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var allowedFields = UserLoginDataFilterMap.DtoToEntityPath;
+            var allowedFields = UserLoginDataFieldMap.DtoToEntityPath;
             var errors = parameters.Validate(allowedFields, typeof(UserLoginData));
             if (errors.Any())
             {

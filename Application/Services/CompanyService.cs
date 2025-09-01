@@ -357,7 +357,7 @@ namespace Application.Services
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(accessError);
             }
-            var allowedFields = UserLoginDataFilterMap.DtoToEntityPath;
+            var allowedFields = UserLoginDataFieldMap.DtoToEntityPath;
             var errors = parameters.Validate(allowedFields, typeof(UserLoginData));
             if (errors.Any())
             {
