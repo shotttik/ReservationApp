@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/booking")]
+    [Route("api/v{version:apiVersion}/bookings")]
     [ApiController]
-    [Tags("Booking")]
+    [Tags("Bookings")]
     public class BookingController :ControllerBase
     {
         private readonly IBookingService bookingService;
@@ -41,7 +41,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateBookingByClient([FromBody] ClientBookingCreateRequest request)
+        public async Task<IActionResult> CreateByClient([FromBody] ClientBookingCreateRequest request)
         {
             var result = await bookingService.CreateByClient(request);
 
@@ -65,9 +65,28 @@ namespace API.Controllers
         [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateBookingByAdmin([FromBody] AdminBookingCreateRequest request)
+        public async Task<IActionResult> CreateByAdmin([FromBody] AdminBookingCreateRequest request)
         {
             var result = await bookingService.CreateByAdmin(request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Public method. Returns confirmed bookings for all active employees,
+        /// Takes first day of week.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// </remarks>
+        /// <param name="companyId">company id</param>
+        /// <param name="targetDate">this is start date of week</param>
+        /// <returns>List of BookingDTO when success or empty</returns>
+        [HttpGet("companies/{companyId:int}")]
+        [MapToApiVersion("1.0")]
+        [Logging(LoggingType.General)]
+        public async Task<IActionResult> GetWeeklyPublicData(int companyId, [FromQuery] DateOnly targetDate)
+        {
+            var result = await bookingService.GetWeeklyPublicData(companyId, targetDate);
 
             return result.ToResponse();
         }

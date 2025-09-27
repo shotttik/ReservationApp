@@ -5,5 +5,6 @@ namespace Domain.Interfaces.Repositories
     public interface IBookingRepository :IBaseRepository<Booking>
     {
         Task<bool> HasBookingOverlap(int userId, DateTime start, DateTime end, bool asEmployee);
+        Task<List<Booking>> GetDataForAllActiveEmployees(int companyId, DateOnly startDate, DateOnly endDate);
     }
 }

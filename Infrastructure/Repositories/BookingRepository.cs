@@ -24,5 +24,17 @@ namespace Infrastructure.Repositories
                     )
                 .AnyAsync();
         }
+
+        public async Task<List<Booking>> GetDataForAllActiveEmployees(int companyId, DateOnly startDate, DateOnly endDate)
+        {
+            return await _dbSet.Where(b =>
+                b.CompanyID == companyId &&
+                DateOnly.FromDateTime(b.StartTime) >= startDate &&
+                DateOnly.FromDateTime(b.StartTime) <= endDate &&
+                (
+                b.Status == BookingStatus.Accepted ||
+                b.Status == BookingStatus.Completed)
+                ).ToListAsync();
+        }
     }
 }

@@ -93,6 +93,15 @@ namespace Application.Services
             return Result.Success(bookingDTO);
         }
 
+        public async Task<Result<List<BookingDTO>>> GetWeeklyPublicData(int companyId, DateOnly targetDate)
+        {
+            var endDate = targetDate.AddDays(7);
+            var data = await bookingRepository.GetDataForAllActiveEmployees(companyId, targetDate, endDate);
+            var bookings = data.Select(e => e.MapToDTO()).ToList();
+
+            return Result.Success(bookings);
+        }
+
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
         {
             if (service == null)
