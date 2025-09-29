@@ -25,14 +25,14 @@ namespace Application.Common.Security
             return Error.None;
         }
 
-        public async Task<Error> EnsureAccessToCompanyMember(int memberCompanyId, int memberId)
+        public async Task<Error> EnsureAccessToCompanyEmployee(int employeeCompanyId, int employeeId)
         {
             var user = await _authService.GetCurrentUser();
             if (user.IsSuperUser)
                 return Error.None;
-            if (user.IsCompanyAdmin && user.CompanyID == memberCompanyId)
+            if (user.IsCompanyAdmin && user.CompanyID == employeeCompanyId)
                 return Error.None;
-            if (user.IsCompanyMember && user.CompanyID == memberCompanyId && user.ID == memberId)
+            if (user.IsCompanyEmployee && user.CompanyID == employeeCompanyId && user.ID == employeeId)
                 return Error.None;
             return GenericResults.Forbidden;
         }

@@ -49,7 +49,7 @@ namespace Application.Services
             // company - role compatibility check
             if (request.CompanyID.HasValue)
             {
-                if (request.Role != Domain.Enums.Role.CompanyAdmin && request.Role != Domain.Enums.Role.CompanyMember)
+                if (request.Role != Domain.Enums.Role.CompanyAdmin && request.Role != Domain.Enums.Role.CompanyEmployee)
                 {
                     return Result.Failure(AuthResults.RoleIncompatibility);
                 }

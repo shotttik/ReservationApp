@@ -19,11 +19,11 @@
         CompanyReadOwn,
         CompanyReadLimited,
 
-        // ==== Company Member Permissions ====
-        CompanyMemberCreate,
-        CompanyMemberRead,
-        CompanyMemberUpdate,
-        CompanyMemberDelete,
+        // ==== Company Employee Permissions ====
+        CompanyEmployeeCreate,
+        CompanyEmployeeRead,
+        CompanyEmployeeUpdate,
+        CompanyEmployeeDelete,
 
         // ==== Report and Settings ====
         ReportView,

@@ -42,7 +42,7 @@ namespace Application.Services
             {
                 return Result.Failure(GenericResults.DontExists);
             }
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -93,7 +93,7 @@ namespace Application.Services
                 return Result.Failure(GenericResults.Forbidden);
             }
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -132,7 +132,7 @@ namespace Application.Services
             if (userAccount == null)
                 return Result.Failure(GenericResults.Forbidden);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID!, userAccount.UserLoginDataID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID!, userAccount.UserLoginDataID);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
@@ -164,7 +164,7 @@ namespace Application.Services
             if (userAccount == null || userAccount.CompanyID == null)
                 return Result.Failure(GenericResults.DontExists);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
@@ -202,7 +202,7 @@ namespace Application.Services
             if (workScheduleException.UserAccountID != userAccount.ID)
                 return Result.Failure(GenericResults.Forbidden);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
@@ -233,7 +233,7 @@ namespace Application.Services
             if (userAccount == null || userAccount.CompanyID == null)
                 return Result.Failure(GenericResults.DontExists);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember((int)userAccount.CompanyID, userAccount.UserLoginDataID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, userAccount.UserLoginDataID);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 

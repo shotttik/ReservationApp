@@ -7,7 +7,7 @@
         public static readonly Error InviteNotFound = Error.NotFound("Company.InviteNotFound", "Invite not found by given token.");
         public static readonly Error InviteTokenExpired = Error.Validation("Company.InviteTokenExpired", "Token is already expired.");
         public static readonly Error InviteInvalidUser = Error.Validation("Company.InviteInvalidUser", "This invite is not for your user.");
-        public static readonly Error InviteMemberNotFound = Error.Validation("Company.InviteMemberNotFound", "Member not found for invitation.");
+        public static readonly Error InviteEmployeeNotFound = Error.Validation("Company.InviteEmployeeNotFound", "Employee not found for invitation.");
         public static readonly Error InviteInvalidRole = Error.Validation("Company.InviteInvalidRole", "Auth user is not a company admin or invited person is not a user.");
         public static readonly Error ServiceNotFound = Error.NotFound("Company.ServiceNotFound", "Company service not found.");
         public static readonly Error CompanyNotFound = Error.NotFound("Company.CompanyNotFound", "Company not found by given ID.");
@@ -15,7 +15,7 @@
 
         public static readonly Error MaxFAQCategoriesReached = Error.Validation("Company.MaxFAQCategoriesReached", "You have reached the maximum number of FAQ categories for your company.");
         public static readonly Error FAQLimitReached = Error.Validation("Company.FAQLimitReached", "You have reached the maximum number of FAQs for your company.");
-        public static readonly Error MemberRegistrationNotAllowed = Error.Validation("Company.MemberRegistrationNotAllowed", "You are not allowed to register company members. Only company admins can do that.");
+        public static readonly Error EmployeeRegistrationNotAllowed = Error.Validation("Company.EmployeeRegistrationNotAllowed", "You are not allowed to register company employees. Only company admins can do that.");
         #endregion
 
         #region Success

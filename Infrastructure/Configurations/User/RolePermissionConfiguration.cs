@@ -29,10 +29,10 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyReadLimited),
 
 
-            Create(Role.SuperAdmin, Permission.CompanyMemberCreate),
-            Create(Role.SuperAdmin, Permission.CompanyMemberRead),
-            Create(Role.SuperAdmin, Permission.CompanyMemberUpdate),
-            Create(Role.SuperAdmin, Permission.CompanyMemberDelete),
+            Create(Role.SuperAdmin, Permission.CompanyEmployeeCreate),
+            Create(Role.SuperAdmin, Permission.CompanyEmployeeRead),
+            Create(Role.SuperAdmin, Permission.CompanyEmployeeUpdate),
+            Create(Role.SuperAdmin, Permission.CompanyEmployeeDelete),
 
             Create(Role.SuperAdmin, Permission.ReportView),
             Create(Role.SuperAdmin, Permission.SettingsManage),
@@ -88,10 +88,10 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyDelete),
             Create(Role.CompanyAdmin, Permission.CompanyUpdatePartial),
 
-            Create(Role.CompanyAdmin, Permission.CompanyMemberCreate),
-            Create(Role.CompanyAdmin, Permission.CompanyMemberRead),
-            Create(Role.CompanyAdmin, Permission.CompanyMemberUpdate),
-            Create(Role.CompanyAdmin, Permission.CompanyMemberDelete),
+            Create(Role.CompanyAdmin, Permission.CompanyEmployeeCreate),
+            Create(Role.CompanyAdmin, Permission.CompanyEmployeeRead),
+            Create(Role.CompanyAdmin, Permission.CompanyEmployeeUpdate),
+            Create(Role.CompanyAdmin, Permission.CompanyEmployeeDelete),
 
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserCreate),
             Create(Role.CompanyAdmin, Permission.WorkScheduleUserUpdate),
@@ -132,19 +132,19 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyMediaUpdate),
 
 
-            // ==== CompanyMember: Can Manage Own Schedule, View Services ====
-            Create(Role.CompanyMember, Permission.WorkScheduleUserCreate),
-            Create(Role.CompanyMember, Permission.WorkScheduleUserUpdate),
-            Create(Role.CompanyMember, Permission.WorkScheduleUserDelete),
-            Create(Role.CompanyMember, Permission.WorkScheduleExceptionUserCreate),
-            Create(Role.CompanyMember, Permission.WorkScheduleExceptionUserUpdate),
-            Create(Role.CompanyMember, Permission.WorkScheduleExceptionUserDelete),
+            // ==== CompanyEmployee: Can Manage Own Schedule, View Services ====
+            Create(Role.CompanyEmployee, Permission.WorkScheduleUserCreate),
+            Create(Role.CompanyEmployee, Permission.WorkScheduleUserUpdate),
+            Create(Role.CompanyEmployee, Permission.WorkScheduleUserDelete),
+            Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserCreate),
+            Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserUpdate),
+            Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserDelete),
 
-            Create(Role.CompanyMember, Permission.ServiceRead),
+            Create(Role.CompanyEmployee, Permission.ServiceRead),
 
-            Create(Role.CompanyMember, Permission.BookingRead),
-            Create(Role.CompanyMember, Permission.BookingCancel),
-            Create(Role.CompanyMember, Permission.BookingApprove),
+            Create(Role.CompanyEmployee, Permission.BookingRead),
+            Create(Role.CompanyEmployee, Permission.BookingCancel),
+            Create(Role.CompanyEmployee, Permission.BookingApprove),
 
 
             // ==== PublicUser: Can Only View Companies and Schedule Appointments ====

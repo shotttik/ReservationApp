@@ -350,42 +350,42 @@ namespace Infrastructure
                         }
                         await context.SaveChangesAsync();
                     }
-                    var companyMember = await context.UserLoginDatas.Where(e => e.Email == "companyMember@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
-                    if (companyMember != null)
+                    var companyEmployee = await context.UserLoginDatas.Where(e => e.Email == "companyEmployee@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
+                    if (companyEmployee != null)
                     {
                         var workSchedulesToSeed = new List<WorkSchedule>
                         {
                             new WorkSchedule
                             {
-                                UserAccountID = companyMember.UserAccount.ID,
+                                UserAccountID = companyEmployee.UserAccount.ID,
                                 DayOfWeek = DayOfWeek.Monday,
                                 StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                                 EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
                             },
                             new WorkSchedule
                             {
-                                UserAccountID = companyMember.UserAccount.ID,
+                                UserAccountID = companyEmployee.UserAccount.ID,
                                 DayOfWeek = DayOfWeek.Saturday,
                                 StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                                 EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
                             },
                             new WorkSchedule
                             {
-                                UserAccountID = companyMember.UserAccount.ID,
+                                UserAccountID = companyEmployee.UserAccount.ID,
                                 DayOfWeek = DayOfWeek.Wednesday,
                                 StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                                 EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
                             },
                             new WorkSchedule
                             {
-                                UserAccountID = companyMember.UserAccount.ID,
+                                UserAccountID = companyEmployee.UserAccount.ID,
                                 DayOfWeek = DayOfWeek.Thursday,
                                 StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                                 EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
                             },
                             new WorkSchedule
                             {
-                                UserAccountID = companyMember.UserAccount.ID,
+                                UserAccountID = companyEmployee.UserAccount.ID,
                                 DayOfWeek = DayOfWeek.Friday,
                                 StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
                                 EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
@@ -402,7 +402,7 @@ namespace Infrastructure
                         await context.SaveChangesAsync();
                     }
                 }
-                // seed company users with role company admin and company member
+                // seed company users with role company admin and company employee
                 if (!await context.Companies.AnyAsync(c => c.Email == "vieheCorporation@example.com"))
                 {
                     var name = $"Viehe corporation";
@@ -527,14 +527,14 @@ namespace Infrastructure
                     context.UserLoginDatas.Add(companyAdminLoginData);
                     await context.SaveChangesAsync();
                 }
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyMember.ID))
+                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyEmployee.ID))
                 {
                     var mainCompany = await context.Companies.Where(c => c.Email == "vieheCorporation@example.com").FirstOrDefaultAsync();
-                    var companyMemberUserAccount = new UserAccount
+                    var companyEmployeeUserAccount = new UserAccount
                     {
-                        FirstName = "CompanyMember",
-                        LastName = "CompanyMember",
-                        RoleID = Role.CompanyMember.ID,
+                        FirstName = "CompanyEmployee",
+                        LastName = "CompanyEmployee",
+                        RoleID = Role.CompanyEmployee.ID,
                         CompanyID = mainCompany?.ID
                     };
 
@@ -542,15 +542,15 @@ namespace Infrastructure
                     var password = "SuperAdminPassword123!"; // Change this in production
                     (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
 
-                    var companyMemberLoginData = new UserLoginData
+                    var companyEmployeeLoginData = new UserLoginData
                     {
-                        Email = "companyMember@example.com",
-                        UserAccount = companyMemberUserAccount,
+                        Email = "companyEmployee@example.com",
+                        UserAccount = companyEmployeeUserAccount,
                         VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
                         PasswordHash = hash,
                         PasswordSalt = salt
                     };
-                    context.UserLoginDatas.Add(companyMemberLoginData);
+                    context.UserLoginDatas.Add(companyEmployeeLoginData);
                     await context.SaveChangesAsync();
                 }
 

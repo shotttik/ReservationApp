@@ -63,7 +63,7 @@ namespace Application.Services
             var employee = employeeResult.Value!;
             var companyID = employee.CompanyID!.Value;
 
-            var accessError = await accessGuard.EnsureAccessToCompanyMember(companyID, employee.UserLoginDataID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee(companyID, employee.UserLoginDataID);
             if (accessError != Error.None)
             {
                 return Result.Failure<BookingDTO>(accessError);

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Company
 {
-    public class MemberUpdateRequest
+    public class EmployeeUpdateRequest
     {
         [Required]
         public int ID { get; set; }

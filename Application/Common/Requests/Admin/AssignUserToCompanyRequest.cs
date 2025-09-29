@@ -7,6 +7,6 @@ namespace Application.Common.Requests.Admin
         public int UserID { get; set; }
         public int CompanyID { get; set; }
         public Role Role { get; set; }
-        public bool IsRoleValid => Role == Role.CompanyAdmin || Role == Role.CompanyMember;
+        public bool IsRoleValid => Role == Role.CompanyAdmin || Role == Role.CompanyEmployee;
     }
 }

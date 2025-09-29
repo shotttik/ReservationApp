@@ -61,25 +61,25 @@ namespace Application.Services
             this.companyAccessGuard = companyAccessGuard;
         }
 
-        public async Task<Result<string>> InviteMember(int memberID)
+        public async Task<Result<string>> InviteEmployee(int employeeID)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var member = await userAccountRepository.Get(memberID);
-            if (member is null)
+            var employee = await userAccountRepository.Get(employeeID);
+            if (employee is null)
             {
-                return Result.Failure<string>(CompanyResults.InviteMemberNotFound);
+                return Result.Failure<string>(CompanyResults.InviteEmployeeNotFound);
             }
-            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || member.RoleID != Role.PublicUser.ID)
+            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || employee.RoleID != Role.PublicUser.ID)
             {
                 return Result.Failure<string>(CompanyResults.InviteInvalidRole);
             }
-            await companyInvitationRepository.RevokePreviousInvite(memberID);
+            await companyInvitationRepository.RevokePreviousInvite(employeeID);
 
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
             {
                 CompanyID = AuthUser.CompanyID!.Value,
-                UserAccountID = member.ID,
+                UserAccountID = employee.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.UtcNow.AddDays(expDays),
                 IsAccepted = false
@@ -113,7 +113,7 @@ namespace Application.Services
 
             var authUserEntity = await userAccountRepository.GetByUserLoginDataID(AuthUser.ID);
             authUserEntity!.CompanyID = invitation.CompanyID;
-            authUserEntity.RoleID = Role.CompanyMember.ID;
+            authUserEntity.RoleID = Role.CompanyEmployee.ID;
 
             await userAccountRepository.Update(authUserEntity);
 
@@ -254,7 +254,7 @@ namespace Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request)
+        public async Task<Result> CreateEmployee(int routeCompanyId, EmployeeCreateRequest request)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -277,7 +277,7 @@ namespace Application.Services
                 LastName = request.LastName,
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
-                RoleID = (int)Domain.Enums.Role.CompanyMember,
+                RoleID = (int)Domain.Enums.Role.CompanyEmployee,
                 CompanyID = routeCompanyId
             };
 
@@ -297,7 +297,7 @@ namespace Application.Services
 
             return Result.Success(AuthResults.UserCreated);
         }
-        public async Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request)
+        public async Task<Result> UpdateEmployee(int routeCompanyId, EmployeeUpdateRequest request)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -319,14 +319,14 @@ namespace Application.Services
 
             return Result.Success(AuthResults.UserUpdated);
         }
-        public async Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force)
+        public async Task<Result> DeleteEmployee(int routeCompanyId, int employeeID, bool force)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
             }
-            var userLoginData = await userLoginDataRepository.GetWithUserAccount(memberID, routeCompanyId);
+            var userLoginData = await userLoginDataRepository.GetWithUserAccount(employeeID, routeCompanyId);
             if (userLoginData is null)
             {
                 return Result.Failure(AuthResults.UserNotFound);
@@ -338,17 +338,17 @@ namespace Application.Services
             if (force)
             {
                 await userLoginDataRepository.Delete(userLoginData);
-                await userService.DeleteAllActiveSessions(memberID);
+                await userService.DeleteAllActiveSessions(employeeID);
                 return Result.Success(AuthResults.UserDeleted);
 
             }
             userLoginData.Disable();
             await userLoginDataRepository.Update(userLoginData);
-            await userService.DeleteAllActiveSessions(memberID);
+            await userService.DeleteAllActiveSessions(employeeID);
             return Result.Success(AuthResults.UserDisabled);
         }
 
-        public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyEmployees(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken)
         {
             var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
             var userID = authService.GetUserLoginDataID();
@@ -363,7 +363,7 @@ namespace Application.Services
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
-            var users = await userLoginDataRepository.RetrievePagedCompanyMembers(parameters, cancellationToken, userID, routeCompanyId);
+            var users = await userLoginDataRepository.RetrievePagedCompanyEmployees(parameters, cancellationToken, userID, routeCompanyId);
 
             return Result.Success(users);
         }

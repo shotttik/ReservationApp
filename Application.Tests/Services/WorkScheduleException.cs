@@ -98,7 +98,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Add(It.IsAny<WorkScheduleException>()))
@@ -121,7 +121,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Add(It.IsAny<WorkScheduleException>()))
@@ -133,15 +133,15 @@ namespace Application.Tests.Services
         }
 
         [Fact]
-        public async Task Create_ShouldSucceed_WhenCompanyAdminCreatesForCompanyMemberInSameCompany()
+        public async Task Create_ShouldSucceed_WhenCompanyAdminCreatesForCompanyEmployeeInSameCompany()
         {
             var request = BuildCreateRequest(3, new DateOnly(2025, 07, 11), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(3, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(3, Domain.Entities.User.Role.CompanyEmployee.ID);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Add(It.IsAny<WorkScheduleException>()))
@@ -153,16 +153,16 @@ namespace Application.Tests.Services
         }
 
         [Fact]
-        public async Task Create_ShouldSucceed_WhenCompanyMemberCreatesForSelf()
+        public async Task Create_ShouldSucceed_WhenCompanyEmployeeCreatesForSelf()
         {
             var userId = 4;
             var request = BuildCreateRequest(userId, new DateOnly(2025, 07, 12), new DateOnly(2025, 07, 12));
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Add(It.IsAny<WorkScheduleException>()))
@@ -176,15 +176,15 @@ namespace Application.Tests.Services
 
 
         [Fact]
-        public async Task Create_ShouldFail_WhenCompanyAdminCreatesForMemberInDifferentCompany()
+        public async Task Create_ShouldFail_WhenCompanyAdminCreatesForEmployeeInDifferentCompany()
         {
             var request = BuildCreateRequest(5, new DateOnly(2025, 07, 13), new DateOnly(2025, 07, 13));
-            var userAccount = BuildUserAccount(5, Domain.Entities.User.Role.CompanyMember.ID, 2);
+            var userAccount = BuildUserAccount(5, Domain.Entities.User.Role.CompanyEmployee.ID, 2);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(GenericResults.Forbidden);
 
             var result = await service.CreateException(request);
@@ -194,15 +194,15 @@ namespace Application.Tests.Services
         }
 
         [Fact]
-        public async Task Create_ShouldFail_WhenCompanyMemberCreatesForAnotherMember()
+        public async Task Create_ShouldFail_WhenCompanyEmployeeCreatesForAnotherEmployee()
         {
             var request = BuildCreateRequest(6, new DateOnly(2025, 07, 14), new DateOnly(2025, 07, 14));
-            var userAccount = BuildUserAccount(6, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(6, Domain.Entities.User.Role.CompanyEmployee.ID);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(GenericResults.Forbidden);
 
             var result = await service.CreateException(request);
@@ -252,13 +252,13 @@ namespace Application.Tests.Services
                 Type = WorkScheduleExceptionType.Vacation
             };
 
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(existing);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             var result = await service.CreateException(request);
@@ -276,7 +276,7 @@ namespace Application.Tests.Services
             var userId = 1;
             var request = BuildUpdateRequest(10, userId, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
             var exception = BuildException(10, userId, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(exception);
 
             workScheduleExceptionMock.Setup(x => x.Get(request.ID))
@@ -285,7 +285,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Update(It.IsAny<WorkScheduleException>()))
@@ -345,7 +345,7 @@ namespace Application.Tests.Services
             var userId = 1;
             var request = BuildUpdateRequest(10, userId, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
             var exception = BuildException(10, userId, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(exception);
 
             workScheduleExceptionMock.Setup(x => x.Get(request.ID))
@@ -354,7 +354,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(GenericResults.Forbidden);
 
             var result = await service.UpdateException(request);
@@ -372,7 +372,7 @@ namespace Application.Tests.Services
 
             var overlapping = BuildException(11, userId, new DateOnly(2025, 07, 11), new DateOnly(2025, 07, 13));
 
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(overlapping);
 
             workScheduleExceptionMock.Setup(x => x.Get(request.ID))
@@ -381,7 +381,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             var result = await service.UpdateException(request);
@@ -399,7 +399,7 @@ namespace Application.Tests.Services
             var userId = 1;
             var exceptionId = 10;
             var exception = BuildException(exceptionId, userId, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
 
             workScheduleExceptionMock.Setup(x => x.Get(exceptionId))
                 .ReturnsAsync(exception);
@@ -407,7 +407,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.Get(exception.UserAccountID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(Error.None);
 
             workScheduleExceptionMock.Setup(x => x.Delete(It.IsAny<WorkScheduleException>()))
@@ -455,7 +455,7 @@ namespace Application.Tests.Services
         {
             var exceptionId = 10;
             var exception = BuildException(exceptionId, 1, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(1, Domain.Entities.User.Role.CompanyMember.ID, null);
+            var userAccount = BuildUserAccount(1, Domain.Entities.User.Role.CompanyEmployee.ID, null);
 
             workScheduleExceptionMock.Setup(x => x.Get(exceptionId))
                 .ReturnsAsync(exception);
@@ -474,7 +474,7 @@ namespace Application.Tests.Services
         {
             var exceptionId = 10;
             var exception = BuildException(exceptionId, 1, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
-            var userAccount = BuildUserAccount(1, Domain.Entities.User.Role.CompanyMember.ID);
+            var userAccount = BuildUserAccount(1, Domain.Entities.User.Role.CompanyEmployee.ID);
 
             workScheduleExceptionMock.Setup(x => x.Get(exceptionId))
                 .ReturnsAsync(exception);
@@ -482,7 +482,7 @@ namespace Application.Tests.Services
             userAccountRepositoryMock.Setup(x => x.Get(exception.UserAccountID))
                 .ReturnsAsync(userAccount);
 
-            accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+            accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(GenericResults.Forbidden);
 
             var result = await service.DeleteException(exceptionId);

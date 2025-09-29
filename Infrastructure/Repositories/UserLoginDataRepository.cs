@@ -91,7 +91,7 @@ namespace Infrastructure.Repositories
 
             return new PagedList<UserLoginDataDTO>(users, parameters.PageNumber, parameters.PageSize, totalCount);
         }
-        public async Task<PagedList<UserLoginDataDTO>> RetrievePagedCompanyMembers(
+        public async Task<PagedList<UserLoginDataDTO>> RetrievePagedCompanyEmployees(
            PagedParameters parameters,
            CancellationToken cancellationToken,
            int authUserID,

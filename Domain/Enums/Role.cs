@@ -5,6 +5,6 @@
         SuperAdmin = 1,
         PublicUser = 2,
         CompanyAdmin = 3,
-        CompanyMember = 4
+        CompanyEmployee = 4
     }
 }

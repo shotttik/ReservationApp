@@ -9,7 +9,7 @@ namespace Application.Interfaces
 {
     public interface ICompanyService
     {
-        Task<Result<string>> InviteMember(int memberID);
+        Task<Result<string>> InviteEmployee(int employeeId);
         Task<Result> InviteAccept(string token);
         Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request);
         Task<Result> ServicesUpdate(int routeCompanyId, ServicesUpdateRequest request);
@@ -21,10 +21,10 @@ namespace Application.Interfaces
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
         Task<Result> UploadMedia(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken);
         Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request);
-        Task<Result> CreateMember(int routeCompanyId, MemberCreateRequest request);
-        Task<Result> UpdateMember(int routeCompanyId, MemberUpdateRequest request);
-        Task<Result> DeleteMember(int routeCompanyId, int memberID, bool force);
-        Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyMembers(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
+        Task<Result> CreateEmployee(int routeCompanyId, EmployeeCreateRequest request);
+        Task<Result> UpdateEmployee(int routeCompanyId, EmployeeUpdateRequest request);
+        Task<Result> DeleteEmployee(int routeCompanyId, int employeeId, bool force);
+        Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyEmployees(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken);
         Task<Result> ChangeActiveStatus(int routeCompanyId, ChangeStatusRequest request);
     }

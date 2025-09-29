@@ -76,7 +76,7 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Sends a company membership invitation to a user.
+        /// Sends a company employeeship invitation to a user.
         /// </summary>
         /// <remarks>
         /// Only company admins can invite users to join their company. 
@@ -92,9 +92,9 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> InviteMember([FromBody] InviteMemberRequest request)
+        public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
         {
-            var result = await companyService.InviteMember(request.UserAccountID);
+            var result = await companyService.InviteEmployee(request.UserAccountID);
 
             return result.ToResponse();
         }
@@ -151,7 +151,7 @@ namespace API.Controllers
         /// The company is determined from the route param context.
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the target company for which the member is being created.</param>
+        /// <param name="companyId">The ID of the target company for which the employee is being created.</param>
         /// <param name="request">The request containing the new description.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpPatch("{companyId:int}")]
@@ -165,10 +165,10 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Creates a new company member user account for the specified company.
+        /// Creates a new company employee user account for the specified company.
         /// </summary>
         /// <remarks>
-        /// This endpoint allows a CompanyAdmin or SuperAdmin to create a new user account (CompanyMember role)
+        /// This endpoint allows a CompanyAdmin or SuperAdmin to create a new user account (CompanyEmployee role)
         /// for a specific company identified by <paramref name="companyId"/>.  
         /// 
         /// The request must contain all required information including personal details and login credentials.  
@@ -176,105 +176,105 @@ namespace API.Controllers
         /// A verification token is automatically generated and assigned to the new user.
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the target company for which the member is being created.</param>
-        /// <param name="request">The request containing new member details and login credentials.</param>
+        /// <param name="companyId">The ID of the target company for which the employee is being created.</param>
+        /// <param name="request">The request containing new employee details and login credentials.</param>
         /// <returns>
         /// Success response if the user is created; appropriate error response if email already exists
         /// or access is denied.
         /// </returns>
-        [HttpPost("{companyId:int}/members")]
-        [HasPermission(Permission.CompanyMemberCreate)]
+        [HttpPost("{companyId:int}/employees")]
+        [HasPermission(Permission.CompanyEmployeeCreate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> CreateMember(
+        public async Task<IActionResult> CreateEmployee(
             [FromRoute] int companyId,
-            [FromBody] MemberCreateRequest request)
+            [FromBody] EmployeeCreateRequest request)
         {
-            var result = await companyService.CreateMember(companyId, request);
+            var result = await companyService.CreateEmployee(companyId, request);
             return result.ToResponse();
         }
 
         /// <summary>
-        /// Updates the profile details of a company member.
+        /// Updates the profile details of a company employee.
         /// </summary>
         /// <remarks>
-        /// This endpoint allows a CompanyAdmin to update an existing member’s first name, last name, gender, and date of birth.
+        /// This endpoint allows a CompanyAdmin to update an existing employee’s first name, last name, gender, and date of birth.
         /// Only authenticated users with appropriate access to the specified company can perform this action.
-        /// The member is identified by their UserLoginData ID.
+        /// The employee is identified by their UserLoginData ID.
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPatch("{companyId:int}/members")]
-        [HasPermission(Permission.CompanyMemberUpdate)]
+        [HttpPatch("{companyId:int}/employees")]
+        [HasPermission(Permission.CompanyEmployeeUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateMember(
+        public async Task<IActionResult> UpdateEmployee(
             [FromRoute] int companyId,
-            [FromBody] MemberUpdateRequest request)
+            [FromBody] EmployeeUpdateRequest request)
         {
-            var result = await companyService.UpdateMember(companyId, request);
+            var result = await companyService.UpdateEmployee(companyId, request);
             return result.ToResponse();
         }
 
         /// <summary>
-        /// Deletes a company member from the specified company.
+        /// Deletes a company employee from the specified company.
         /// </summary>
         /// <remarks>
-        /// This endpoint allows a CompanyAdmin to soft delete or permanently delete a company member (with role CompanyMember).  
+        /// This endpoint allows a CompanyAdmin to soft delete or permanently delete a company employee (with role CompanyEmployee).  
         /// Only authenticated users with access to the specified company can perform this action.  
         /// The deletion can be a soft delete (default) or a force delete (permanent).
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
-        /// <param name="memberID">The ID of the member to delete (UserLoginData ID).</param>
-        /// <param name="force">Whether to permanently delete the member (true) or perform a soft delete (false).</param>
+        /// <param name="employeeID">The ID of the employee to delete (UserLoginData ID).</param>
+        /// <param name="force">Whether to permanently delete the employee (true) or perform a soft delete (false).</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpDelete("{companyId:int}/members/{memberID:int}")]
-        [HasPermission(Permission.CompanyMemberDelete)]
+        [HttpDelete("{companyId:int}/employees/{employeeID:int}")]
+        [HasPermission(Permission.CompanyEmployeeDelete)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteMember(
+        public async Task<IActionResult> DeleteEmployee(
             [FromRoute] int companyId,
-            [FromRoute] int memberID,
+            [FromRoute] int employeeID,
             [FromQuery] bool force = false)
         {
-            var result = await companyService.DeleteMember(companyId, memberID, force);
+            var result = await companyService.DeleteEmployee(companyId, employeeID, force);
             return result.ToResponse();
         }
 
         /// <summary>
-        /// Retrieves a paginated list of company members for the authenticated CompanyAdmin.
+        /// Retrieves a paginated list of company employees for the authenticated CompanyAdmin.
         /// </summary>
         /// <remarks>
-        /// This endpoint returns paginated company members for the authenticated user's company.  
+        /// This endpoint returns paginated company employees for the authenticated user's company.  
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
-        /// <returns>Paginated list of company members or an error response.</returns>
-        [HttpGet("{companyId:int}/members")]
+        /// <returns>Paginated list of company employees or an error response.</returns>
+        [HttpGet("{companyId:int}/employees")]
         [Logging(LoggingType.Full)]
-        [HasPermission(Permission.CompanyMemberRead)]
+        [HasPermission(Permission.CompanyEmployeeRead)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<UserLoginDataDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> RetrievePagedMembers(
+        public async Task<IActionResult> RetrievePagedEmployees(
             [FromRoute] int companyId,
             [FromQuery] PagedParameters parameters,
             CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePagedCompanyMembers(companyId, parameters, cancellationToken);
+            var result = await companyService.RetrievePagedCompanyEmployees(companyId, parameters, cancellationToken);
             return result.ToResponse();
         }
         /// <summary>

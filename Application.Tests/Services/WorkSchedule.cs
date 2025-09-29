@@ -75,12 +75,12 @@ public class WorkScheduleServiceTests
     {
         // Arrange
         var request = BuildCreateRequest(1, new TimeOnly(9, 0), new TimeOnly(12, 0));
-        var userAccount = BuildUserAccount(1, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(1, Role.CompanyEmployee.ID);
 
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(1))
             .ReturnsAsync(userAccount);
 
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(Error.None);
 
         workScheduleRepositoryMock.Setup(x => x.Add(It.IsAny<WorkSchedule>()))
@@ -114,13 +114,13 @@ public class WorkScheduleServiceTests
         var request = BuildCreateRequest(userId, new TimeOnly(10, 0), new TimeOnly(13, 0));
 
         var existingSchedule = BuildWorkSchedule(2, userId, new TimeOnly(9, 0), new TimeOnly(11, 0));
-        var userAccount = BuildUserAccount(userId, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
         userAccount.WorkSchedules.Add(existingSchedule);
 
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId))
             .ReturnsAsync(userAccount);
 
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(Error.None);
 
         var result = await service.Create(request);
@@ -135,12 +135,12 @@ public class WorkScheduleServiceTests
     {
         var userId = 1;
         var request = BuildCreateRequest(userId, new TimeOnly(9, 0), new TimeOnly(12, 0));
-        var userAccount = BuildUserAccount(userId, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
 
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId))
             .ReturnsAsync(userAccount);
 
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>()))
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(GenericResults.Forbidden);
 
         var result = await service.Create(request);
@@ -188,12 +188,12 @@ public class WorkScheduleServiceTests
         // Arrange
         var userId = 1;
         var schedule = BuildWorkSchedule(10, userId, new TimeOnly(9, 0), new TimeOnly(11, 0));
-        var userAccount = BuildUserAccount(userId, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
         userAccount.WorkSchedules.Add(schedule);
 
         workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId)).ReturnsAsync(userAccount);
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
         workScheduleRepositoryMock.Setup(x => x.Update(schedule)).Returns(Task.CompletedTask);
 
         var request = new WorkScheduleUpdateRequest
@@ -243,13 +243,13 @@ public class WorkScheduleServiceTests
         var schedule = BuildWorkSchedule(10, userId, new TimeOnly(9, 0), new TimeOnly(11, 0));
         var overlapping = BuildWorkSchedule(11, userId, new TimeOnly(10, 0), new TimeOnly(12, 0));
 
-        var userAccount = BuildUserAccount(userId, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
         userAccount.WorkSchedules.Add(schedule); // ✅ Add the schedule being updated
         userAccount.WorkSchedules.Add(overlapping); // ✅ Add the overlapping one
 
         workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId)).ReturnsAsync(userAccount);
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
 
         var request = new WorkScheduleUpdateRequest
         {
@@ -275,11 +275,11 @@ public class WorkScheduleServiceTests
     {
         var userId = 1;
         var schedule = BuildWorkSchedule(10, userId, new TimeOnly(9, 0), new TimeOnly(12, 0));
-        var userAccount = BuildUserAccount(userId, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
 
         workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.Get(schedule.UserAccountID)).ReturnsAsync(userAccount);
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Error.None);
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Error.None);
         workScheduleRepositoryMock.Setup(x => x.Delete(schedule)).Returns(Task.CompletedTask);
 
         var result = await service.Delete(schedule.ID);
@@ -302,11 +302,11 @@ public class WorkScheduleServiceTests
     public async Task Delete_ShouldFail_WhenAccessDenied()
     {
         var schedule = BuildWorkSchedule(10, 1, new TimeOnly(9, 0), new TimeOnly(12, 0));
-        var userAccount = BuildUserAccount(1, Role.CompanyMember.ID);
+        var userAccount = BuildUserAccount(1, Role.CompanyEmployee.ID);
 
         workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.Get(schedule.UserAccountID)).ReturnsAsync(userAccount);
-        accessGuardMock.Setup(x => x.EnsureAccessToCompanyMember(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(GenericResults.Forbidden);
+        accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(GenericResults.Forbidden);
 
         var result = await service.Delete(schedule.ID);
 

@@ -2,7 +2,7 @@
 
 namespace Application.Common.Requests.Company
 {
-    public class InviteMemberRequest
+    public class InviteEmployeeRequest
     {
         [Required]
         public int UserAccountID { get; set; }

@@ -5,6 +5,6 @@ namespace Application.Interfaces
     public interface IAccessGuard
     {
         Task<Error> EnsureAccessToCompany(int routeCompanyId);
-        Task<Error> EnsureAccessToCompanyMember(int memberCompanyId, int memberId);
+        Task<Error> EnsureAccessToCompanyEmployee(int employeeCompanyId, int employeeId);
     }
 }

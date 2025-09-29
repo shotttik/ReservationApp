@@ -21,6 +21,6 @@ namespace Domain.DTO.User
         [JsonIgnore]
         public bool IsCompanyAdmin => Role.ID == (int)Enums.Role.CompanyAdmin;
         [JsonIgnore]
-        public bool IsCompanyMember => Role.ID == (int)Enums.Role.CompanyMember;
+        public bool IsCompanyEmployee => Role.ID == (int)Enums.Role.CompanyEmployee;
     }
 }

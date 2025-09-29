@@ -16,7 +16,7 @@ namespace Domain.Interfaces.Repositories
            PagedParameters parameters,
            CancellationToken cancellationToken,
            int authUserID);
-        Task<PagedList<UserLoginDataDTO>> RetrievePagedCompanyMembers(
+        Task<PagedList<UserLoginDataDTO>> RetrievePagedCompanyEmployees(
          PagedParameters parameters,
          CancellationToken cancellationToken,
          int authUserID,

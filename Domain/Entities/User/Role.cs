@@ -7,7 +7,7 @@ namespace Domain.Entities.User
         public static Role SuperAdmin = new(1, nameof(SuperAdmin));
         public static Role PublicUser = new(2, nameof(PublicUser));
         public static Role CompanyAdmin = new(3, nameof(CompanyAdmin));
-        public static Role CompanyMember = new(4, nameof(CompanyMember));
+        public static Role CompanyEmployee = new(4, nameof(CompanyEmployee));
 
         public Role(int id, string name)
             : base(id, name)
