@@ -9,5 +9,6 @@ namespace Application.Interfaces
         Task<Result<BookingDTO>> CreateByClient(ClientBookingCreateRequest request);
         Task<Result<BookingDTO>> CreateByAdmin(AdminBookingCreateRequest request);
         Task<Result<List<BookingDTO>>> GetWeeklyPublicData(int companyId, DateOnly targetDate);
+        Task<Result> ChangeStatus(int bookingId, BookingStatusChangeRequest request);
     }
 }

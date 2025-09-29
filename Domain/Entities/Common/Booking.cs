@@ -22,5 +22,7 @@ namespace Domain.Entities.Common
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
         public string? CancellationReason { get; set; }
         public string? Note { get; set; }
+
+        public bool IsCompleted => Status == BookingStatus.Completed;
     }
 }

@@ -3,7 +3,7 @@ using Application.Interfaces;
 
 namespace Application.Common.Security
 {
-    public class AccessGuard:IAccessGuard
+    public class AccessGuard :IAccessGuard
     {
         private readonly IAuthService _authService;
 
@@ -34,7 +34,24 @@ namespace Application.Common.Security
                 return Error.None;
             if (user.IsCompanyEmployee && user.CompanyID == employeeCompanyId && user.ID == employeeId)
                 return Error.None;
+
             return GenericResults.Forbidden;
         }
+        public async Task<Error> EnsureAccessToBooking(int? clientId, int employeeId, int companyId)
+        {
+            var user = await _authService.GetCurrentUser();
+            var userAccountId = _authService.GetUserAccountID();
+            if (user.IsSuperUser)
+                return Error.None;
+            if (user.IsCompanyAdmin && user.CompanyID == companyId)
+                return Error.None;
+            if (user.IsCompanyEmployee && userAccountId == employeeId)
+                return Error.None;
+            if (userAccountId == clientId)
+                return Error.None;
+
+            return GenericResults.Forbidden;
+        }
+
     }
 }

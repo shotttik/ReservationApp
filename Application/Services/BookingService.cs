@@ -102,6 +102,31 @@ namespace Application.Services
             return Result.Success(bookings);
         }
 
+        public async Task<Result> ChangeStatus(int bookingId, BookingStatusChangeRequest request)
+        {
+            var booking = await bookingRepository.Get(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure(BookingResults.NotFound);
+            }
+            var error = await accessGuard.EnsureAccessToBooking(booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure(error);
+            }
+            if (booking.Status == request.Status)
+            {
+                return Result.Failure(BookingResults.SameStatus);
+            }
+            booking.Status = request.Status;
+            if (request.IsCompleted)
+            {
+                booking.EndTime = DateTime.Now;
+            }
+            await bookingRepository.Update(booking);
+
+            return Result.Success(BookingResults.StatusChanged);
+        }
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
         {
             if (service == null)
