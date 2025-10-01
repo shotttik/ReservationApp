@@ -108,7 +108,6 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.BookingCreate),
             Create(Role.CompanyAdmin, Permission.BookingRead),
             Create(Role.CompanyAdmin, Permission.BookingUpdate),
-            Create(Role.CompanyAdmin, Permission.BookingDelete),
             Create(Role.CompanyAdmin, Permission.BookingCancel),
             Create(Role.CompanyAdmin, Permission.BookingApprove),
 

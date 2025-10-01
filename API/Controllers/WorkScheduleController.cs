@@ -35,7 +35,7 @@ namespace API.Controllers
         [HasPermission(Permission.WorkScheduleUserCreate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> CreateWorkSchedule([FromBody] WorkScheduleCreateRequest request)
@@ -57,7 +57,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateWorkSchedule([FromBody] WorkScheduleUpdateRequest request)
         {
@@ -77,7 +77,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteWorkSchedule([FromRoute] int id)
         {
@@ -118,7 +118,7 @@ namespace API.Controllers
         [HasPermission(Permission.WorkScheduleExceptionUserCreate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> CreateWorkScheduleException([FromBody] WorkScheduleExceptionCreateRequest request)
@@ -140,7 +140,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateWorkScheduleException([FromBody] WorkScheduleExceptionUpdateRequest request)
         {
@@ -161,7 +161,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteWorkScheduleException([FromRoute] int id)
         {

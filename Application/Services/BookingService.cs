@@ -150,7 +150,18 @@ namespace Application.Services
 
             return bookings;
         }
+        public async Task<Result> Delete(int bookingId)
+        {
+            var booking = await bookingRepository.Get(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure(BookingResults.NotFound);
+            }
 
+            await bookingRepository.Delete(booking);
+
+            return Result.Success(BookingResults.Deleted);
+        }
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
         {
             if (service == null)

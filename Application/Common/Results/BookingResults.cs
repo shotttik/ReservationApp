@@ -17,6 +17,7 @@
         #endregion
         #region Success
         public static readonly SuccessInfo StatusChanged = new("Booking.StatusChanged", "Booking status changed successfully.");
+        public static readonly SuccessInfo Deleted = new("Booking.Deleted", "Booking deleted successfully.");
         #endregion
     }
 }

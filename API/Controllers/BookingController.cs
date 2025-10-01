@@ -162,5 +162,26 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Deletes the booking
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows only the SuperAdmin to permanently delete the bookingn).
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="id">The ID of the booking in the route.</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpDelete("{id:int}")]
+        [HasPermission(Permission.BookingDelete)]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteEmployee([FromRoute] int id)
+        {
+            var result = await bookingService.Delete(id);
+            return result.ToResponse();
+        }
     }
 }
