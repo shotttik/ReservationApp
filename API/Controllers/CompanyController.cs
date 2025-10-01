@@ -48,7 +48,7 @@ namespace API.Controllers
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company records.</returns>
         [HttpGet("paged")]
-        [Logging(LoggingType.Full)]
+        [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

@@ -1,8 +1,11 @@
 ﻿using Application.Common.Requests.Booking;
 using Application.Common.Results;
 using Application.Extensions.Mappers;
+using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Domain.Abstractions;
 using Domain.DTO;
+using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Interfaces.Repositories;
@@ -131,6 +134,23 @@ namespace Application.Services
 
             return Result.Success(BookingResults.StatusChanged);
         }
+        public async Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var allowedFields = BookingFieldMap.DtoToEntityPath;
+            var errors = parameters.Validate(allowedFields, typeof(Booking));
+
+            if (errors.Any())
+            {
+                return Result.Failure<PagedList<BookingDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+            }
+
+            var bookings = await bookingRepository.RetrievePaged(
+                parameters,
+                cancellationToken);
+
+            return bookings;
+        }
+
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
         {
             if (service == null)

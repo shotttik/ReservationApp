@@ -1,6 +1,10 @@
-﻿using Domain.Entities.Common;
+﻿using Application.Extensions.Mappers;
+using Domain.Abstractions;
+using Domain.DTO;
+using Domain.Entities.Common;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
@@ -35,6 +39,23 @@ namespace Infrastructure.Repositories
                 b.Status == BookingStatus.Accepted ||
                 b.Status == BookingStatus.Completed)
                 ).ToListAsync();
+        }
+
+        public async Task<PagedList<BookingDTO>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var query = _dbSet.AsQueryable();
+
+            query = query.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var bookings = await query
+                .Select(e => e.MapToDTO())
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return new PagedList<BookingDTO>(bookings, parameters.PageNumber, parameters.PageSize, totalCount);
         }
     }
 }

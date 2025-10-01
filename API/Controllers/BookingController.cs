@@ -3,10 +3,12 @@ using Application.Authentication;
 using Application.Common.Requests.Booking;
 using Application.Common.Results;
 using Application.Interfaces;
+using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -117,6 +119,46 @@ namespace API.Controllers
         public async Task<IActionResult> ChangeStatus([FromRoute] int id, [FromBody] BookingStatusChangeRequest request)
         {
             var result = await bookingService.ChangeStatus(id, request);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of bookings.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>ClientID</c></li>
+        /// <li><c>EmployeeID</c></li>
+        /// <li><c>CompanyID</c></li>
+        /// <li><c>ServiceName</c></li>
+        /// <li><c>StartTime</c></li>
+        /// <li><c>EndTimeExpected</c></li>
+        /// <li><c>EndTime</c></li>
+        /// <li><c>PriceExpected</c></li>
+        /// <li><c>PriceFull</c></li>
+        /// <li><c>Discount</c></li>
+        /// <li><c>PriceFinal</c></li>
+        /// <li><c>Status</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// </ul>
+        /// </remarks>
+        /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Paged list of company records.</returns>
+        [HttpGet("paged")]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<BookingDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var result = await bookingService.RetrievePaged(parameters, cancellationToken);
 
             return result.ToResponse();
         }
