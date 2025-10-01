@@ -143,6 +143,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyEmployee, Permission.ServiceRead),
 
             Create(Role.CompanyEmployee, Permission.BookingRead),
+            Create(Role.CompanyEmployee, Permission.BookingUpdate),
             Create(Role.CompanyEmployee, Permission.BookingCancel),
             Create(Role.CompanyEmployee, Permission.BookingApprove),
 
@@ -150,8 +151,8 @@ namespace Infrastructure.Configurations.User
             // ==== PublicUser: Can Only View Companies and Schedule Appointments ====
             Create(Role.PublicUser, Permission.CompanyReadLimited),
             Create(Role.PublicUser, Permission.ServiceRead),
-            Create(Role.PublicUser, Permission.BookingRead)
-
+            Create(Role.PublicUser, Permission.BookingRead),
+            Create(Role.PublicUser, Permission.BookingUpdate)
             );
         }
 

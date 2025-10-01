@@ -104,12 +104,12 @@ namespace API.Controllers
         /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
         /// </remarks>
         /// <param name="id">booking id</param>
-        /// <param name="bookingStatus">Status of booking</param>
+        /// <param name="request">request of booking status change</param>
         /// <returns>Success message or error result</returns>
         [HttpPatch("{id:int}")]
         [MapToApiVersion("1.0")]
         [Logging(LoggingType.Full)]
-        [Authorize]
+        [HasPermission(Permission.BookingUpdate)]
         [ProducesResponseType(typeof(SuccessResponse<List<BookingDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
