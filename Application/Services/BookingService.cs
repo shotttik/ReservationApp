@@ -123,6 +123,10 @@ namespace Application.Services
             {
                 booking.EndTime = DateTime.Now;
             }
+            if (request.IsCanceled || request.IsFailed)
+            {
+                booking.CancellationReason = request.CancellationReason;
+            }
             await bookingRepository.Update(booking);
 
             return Result.Success(BookingResults.StatusChanged);
