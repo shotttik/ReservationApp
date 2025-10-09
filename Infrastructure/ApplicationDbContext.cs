@@ -1,10 +1,12 @@
 using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Entities.LocationReleated;
+using Domain.Entities.ReviewReleated;
 using Domain.Entities.User;
 using Infrastructure.Configurations.Common;
 using Infrastructure.Configurations.CompanyReleated;
 using Infrastructure.Configurations.LocationReleated;
+using Infrastructure.Configurations.ReviewReleated;
 using Infrastructure.Configurations.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,9 @@ namespace Infrastructure
         public DbSet<CompanyFAQCategory> CompanyFAQCategories { get; set; }
         public DbSet<CompanyMedia> CompanyMedias { get; set; }
         public DbSet<Media> Medias { get; set; }
+        public DbSet<ReviewMedia> ReviewMedias { get; set; }
+        public DbSet<ReviewInvite> ReviewInvites { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -62,6 +67,11 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new CityConfiguration());
             modelBuilder.ApplyConfiguration(new LocationConfiguration());
             modelBuilder.ApplyConfiguration(new StateConfiguration());
+
+            // Review Releated
+            modelBuilder.ApplyConfiguration(new ReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new ReviewMediaConfiguration());
+            modelBuilder.ApplyConfiguration(new ReviewInviteConfiguration());
         }
     }
 }

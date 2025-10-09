@@ -57,5 +57,15 @@ namespace Infrastructure.Repositories
 
             return new PagedList<BookingDTO>(bookings, parameters.PageNumber, parameters.PageSize, totalCount);
         }
+
+        public async Task<Booking?> GetWithReviewInvite(int bookingId)
+        {
+            var booking = await _dbSet
+                .Where(e => e.ID == bookingId)
+                .Include(e => e.ReviewInvite)
+                .FirstOrDefaultAsync();
+
+            return booking;
+        }
     }
 }

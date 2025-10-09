@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251007125650_ChangedNameOfFieldInReviewInviteGuestToClient")]
+    partial class ChangedNameOfFieldInReviewInviteGuestToClient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1254,16 +1257,6 @@ namespace Infrastructure.Migrations
                         {
                             ID = 64,
                             Name = "UserLoginDataManage"
-                        },
-                        new
-                        {
-                            ID = 65,
-                            Name = "ReviewCreate"
-                        },
-                        new
-                        {
-                            ID = 66,
-                            Name = "ReviewInviteCreate"
                         });
                 });
 
@@ -1590,11 +1583,6 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 1,
-                            PermissionID = 66
-                        },
-                        new
-                        {
                             RoleID = 3,
                             PermissionID = 6
                         },
@@ -1790,11 +1778,6 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 3,
-                            PermissionID = 66
-                        },
-                        new
-                        {
                             RoleID = 4,
                             PermissionID = 20
                         },
@@ -1850,11 +1833,6 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 4,
-                            PermissionID = 66
-                        },
-                        new
-                        {
                             RoleID = 2,
                             PermissionID = 13
                         },
@@ -1872,11 +1850,6 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 2,
                             PermissionID = 32
-                        },
-                        new
-                        {
-                            RoleID = 2,
-                            PermissionID = 65
                         });
                 });
 

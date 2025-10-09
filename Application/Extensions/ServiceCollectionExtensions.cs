@@ -19,10 +19,12 @@ namespace Application.Extensions
             services.AddScoped<ICompanyFAQService, CompanyFAQService>();
             services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IReviewService, ReviewService>();
 
             services.AddScoped<IAccessGuard, AccessGuard>();
 
             services.AddScoped<EmailNotificationJob>();
+
 
             return services;
         }

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.CompanyReleated;
+using Domain.Entities.ReviewReleated;
 using Domain.Entities.User;
 using Domain.Enums;
 namespace Domain.Entities.Common
@@ -23,6 +24,7 @@ namespace Domain.Entities.Common
         public string? CancellationReason { get; set; }
         public string? Note { get; set; }
 
+        public virtual ReviewInvite ReviewInvite { get; set; } = null!;
         public bool IsCompleted => Status == BookingStatus.Completed;
     }
 }

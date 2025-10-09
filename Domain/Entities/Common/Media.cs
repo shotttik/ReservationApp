@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.CompanyReleated;
+using Domain.Entities.ReviewReleated;
 
 namespace Domain.Entities.Common
 {
@@ -9,5 +10,6 @@ namespace Domain.Entities.Common
         public string FileType { get; set; } = default!;         // image/jpeg, application/pdf etc.
         public long FileSizeInBytes { get; set; } = default!;             // in bytes
         public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
+        public ICollection<ReviewMedia> ReviewMedias { get; set; } = [];
     }
 }

@@ -26,12 +26,15 @@ namespace Infrastructure.Extensions
             services.AddScoped<IMediaRepository, MediaRepository>();
             services.AddScoped<ICompanyMediaRepository, CompanyMediaRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IReviewInviteRepository, ReviewInviteRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
 
             return services;
         }

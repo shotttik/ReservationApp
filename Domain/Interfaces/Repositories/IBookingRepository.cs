@@ -11,5 +11,6 @@ namespace Domain.Interfaces.Repositories
         Task<PagedList<BookingDTO>> RetrievePaged(
             PagedParameters parameters,
             CancellationToken cancellationToken);
+        Task<Booking?> GetWithReviewInvite(int bookingId);
     }
 }
