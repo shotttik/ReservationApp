@@ -25,6 +25,44 @@ namespace Infrastructure.Repositories
             await dbContext.SaveChangesAsync(cancellationToken);
             return entity;
         }
+        public async Task<CompanyMedia> Add(CompanyMedia entity)
+        {
+            if (entity.IsMain)
+            {
+                await dbSet.Where(e => e.IsMain == true && e.CompanyID == entity.CompanyID)
+                    .ExecuteUpdateAsync(Update => Update.SetProperty(e => e.IsMain, false));
+            }
+            await dbSet.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task AddOrUpdate(IEnumerable<CompanyMedia> companyMedias)
+        {
+            if (!companyMedias.Any()) return;
+
+            var companyId = companyMedias.First().CompanyID;
+
+            var existingMedias = await dbSet
+                .Where(cm => cm.CompanyID == companyId)
+                .ToListAsync();
+
+            foreach (var cm in companyMedias)
+            {
+                var exists = existingMedias.FirstOrDefault(e => e.MediaID == cm.MediaID);
+                if (exists == null)
+                {
+                    await dbSet.AddAsync(cm);
+                }
+                else
+                {
+                    exists.IsMain = cm.IsMain;
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+        }
+
         public async Task<CompanyMedia> Update(CompanyMedia entity, CancellationToken cancellationToken)
         {
             dbSet.Update(entity);
@@ -40,6 +78,11 @@ namespace Infrastructure.Repositories
         {
             dbSet.Remove(entity);
             await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        public async Task DeleteRange(IEnumerable<CompanyMedia> companyMedias)
+        {
+            dbSet.RemoveRange(companyMedias);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

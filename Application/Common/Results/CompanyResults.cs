@@ -12,6 +12,7 @@
         public static readonly Error ServiceNotFound = Error.NotFound("Company.ServiceNotFound", "Company service not found.");
         public static readonly Error CompanyNotFound = Error.NotFound("Company.CompanyNotFound", "Company not found by given ID.");
         public static readonly Error CompanyDoesNotExists = Error.Validation("Company.CompanyNotExists", "Company does not exist.");
+        public static readonly Error OnlyOneMainMedia = Error.Validation("Company.OnlyOneMainMedia", "There must be exactly one main media for the company.");
 
         public static readonly Error MaxFAQCategoriesReached = Error.Validation("Company.MaxFAQCategoriesReached", "You have reached the maximum number of FAQ categories for your company.");
         public static readonly Error FAQLimitReached = Error.Validation("Company.FAQLimitReached", "You have reached the maximum number of FAQs for your company.");

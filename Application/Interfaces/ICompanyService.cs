@@ -19,13 +19,13 @@ namespace Application.Interfaces
            CancellationToken cancellationToken,
            bool forPublic);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
-        Task<Result> UploadMedia(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken);
+        Task<Result<List<int>>> UploadMedia(UploadCompanyMediasRequest request, CancellationToken cancellationToken);
         Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request);
         Task<Result> CreateEmployee(int routeCompanyId, EmployeeCreateRequest request);
         Task<Result> UpdateEmployee(int routeCompanyId, EmployeeUpdateRequest request);
         Task<Result> DeleteEmployee(int routeCompanyId, int employeeId, bool force);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyEmployees(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
-        Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken);
+        Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates);
         Task<Result> ChangeActiveStatus(int routeCompanyId, ChangeStatusRequest request);
     }
 }

@@ -31,7 +31,7 @@ namespace Application.Services
         private readonly ICompanyMediaRepository companyMediaRepository;
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserService userService;
-        private readonly IAccessGuard companyAccessGuard;
+        private readonly IAccessGuard accessGuard;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -45,7 +45,7 @@ namespace Application.Services
             ICompanyMediaRepository companyMediaRepository,
             IUserLoginDataRepository userLoginDataRepository,
             IUserService userService,
-            IAccessGuard companyAccessGuard)
+            IAccessGuard accessGuard)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
@@ -58,7 +58,7 @@ namespace Application.Services
             this.companyMediaRepository = companyMediaRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.userService = userService;
-            this.companyAccessGuard = companyAccessGuard;
+            this.accessGuard = accessGuard;
         }
 
         public async Task<Result<string>> InviteEmployee(int employeeID)
@@ -121,7 +121,7 @@ namespace Application.Services
         }
         public async Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -133,7 +133,7 @@ namespace Application.Services
         }
         public async Task<Result> ServicesUpdate(int routeCompanyId, ServicesUpdateRequest request)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -145,7 +145,7 @@ namespace Application.Services
         }
         public async Task<Result> ServicesDelete(int routeCompanyId, int ID)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -191,23 +191,21 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result> UploadMedia(int routeCompanyId, UploadCompanyImagesRequest request, CancellationToken cancellationToken)
+        public async Task<Result<List<int>>> UploadMedia(UploadCompanyMediasRequest request, CancellationToken cancellationToken)
         {
-            var AuthUser = await authService.GetCurrentUser();
-            var company = await companyRepository.Get(AuthUser.CompanyID!.Value);
-
-            foreach (var item in request.Images)
+            var mediaIds = new List<int>();
+            foreach (var item in request.Medias)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var error = item.File.IsValidImage(configuration);
+                var error = item.IsValidImage(configuration);
                 if (error != Error.None)
                 {
-                    return Result.Failure(error);
+                    return Result.Failure<List<int>>(error);
                 }
-                var fileName = item.File.FileName;
-                var contentType = item.File.ContentType;
-                var fileStream = item.File.OpenReadStream();
+                var fileName = item.FileName;
+                var contentType = item.ContentType;
+                var fileStream = item.OpenReadStream();
 
                 (string OriginalPath, string WebpPath) = await fileStorageService.UploadWithWebp(
                     fileStream,
@@ -221,25 +219,18 @@ namespace Application.Services
                     OriginalName = fileName,
                     RemoteUrl = WebpPath,
                     FileType = contentType,
-                    FileSizeInBytes = item.File.Length
+                    FileSizeInBytes = item.Length
                 };
-                media = await mediaRepository.Add(media, cancellationToken);
-
-                var companyMedia = new CompanyMedia()
-                {
-                    CompanyID = routeCompanyId,
-                    MediaID = media.ID,
-                    IsMain = item.IsMain
-                };
-                await companyMediaRepository.Add(companyMedia, cancellationToken);
+                await mediaRepository.Add(media, cancellationToken);
+                mediaIds.Add(media.ID);
             }
 
-            return Result.Success(MediaResults.ImagesUploaded);
+            return Result.Success(mediaIds);
         }
 
         public async Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -256,7 +247,7 @@ namespace Application.Services
 
         public async Task<Result> CreateEmployee(int routeCompanyId, EmployeeCreateRequest request)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -299,7 +290,7 @@ namespace Application.Services
         }
         public async Task<Result> UpdateEmployee(int routeCompanyId, EmployeeUpdateRequest request)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -321,7 +312,7 @@ namespace Application.Services
         }
         public async Task<Result> DeleteEmployee(int routeCompanyId, int employeeID, bool force)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -350,7 +341,7 @@ namespace Application.Services
 
         public async Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyEmployees(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             var userID = authService.GetUserLoginDataID();
 
             if (accessError != Error.None)
@@ -367,95 +358,40 @@ namespace Application.Services
 
             return Result.Success(users);
         }
-        public async Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates, CancellationToken cancellationToken)
+        public async Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates)
         {
-            var accessError = await companyAccessGuard.EnsureAccessToCompany(routeCompanyId);
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
             }
+            var mainCount = mediaUpdates.Count(m => m.IsMain);
+            if (mainCount != 1)
+                return Result.Failure(CompanyResults.OnlyOneMainMedia);
+
             var company = await companyRepository.GetWithMedia(routeCompanyId);
             if (company == null)
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);
-            // Process each media update request
-            foreach (var mediaUpdate in mediaUpdates)
+
+            var updateMediaIds = mediaUpdates.Select(m => m.MediaId).ToHashSet();
+            var mediasExist = await mediaRepository.Exists(updateMediaIds);
+            if (!mediasExist)
+                return Result.Failure(MediaResults.SomeMediaDontExists);
+
+            var toRemove = company.CompanyMedias
+                .Where(cm => !updateMediaIds.Contains(cm.MediaID))
+                .ToList();
+            if (toRemove.Count != 0)
+                await companyMediaRepository.DeleteRange(toRemove);
+
+            var companyMediaEntities = mediaUpdates.Select(m => new CompanyMedia
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                // Handle uploading new images
-                if (mediaUpdate.IsNewImage && mediaUpdate.File != null)
-                {
-                    var validImageError = mediaUpdate.File.IsValidImage(configuration);
-                    if (validImageError != Error.None)
-                    {
-                        return Result.Failure(validImageError);
-                    }
+                CompanyID = routeCompanyId,
+                MediaID = m.MediaId,
+                IsMain = m.IsMain
+            }).ToList();
 
-                    var fileStream = mediaUpdate.File.OpenReadStream();
-                    var (originalPath, webpPath) = await fileStorageService.UploadWithWebp(
-                        fileStream,
-                        mediaUpdate.File.FileName,
-                        mediaUpdate.File.ContentType,
-                        Domain.Enums.UploadSubFolder.CompanyImages,
-                        cancellationToken
-                    );
-
-                    // Create and save new media
-                    var media = new Media
-                    {
-                        OriginalName = mediaUpdate.File.FileName,
-                        RemoteUrl = webpPath,
-                        FileType = mediaUpdate.File.ContentType,
-                        FileSizeInBytes = mediaUpdate.File.Length
-                    };
-
-                    media = await mediaRepository.Add(media, cancellationToken);
-
-                    // Add this new media to the company
-                    var companyMedia = new CompanyMedia
-                    {
-                        CompanyID = routeCompanyId,
-                        MediaID = media.ID,
-                        IsMain = mediaUpdate.IsMain
-                    };
-
-                    await companyMediaRepository.Add(companyMedia, cancellationToken);
-                }
-
-                // Handle updating the main image
-                if (mediaUpdate.IsMain)
-                {
-                    var currentMainMedia = company.CompanyMedias.Where(e => e.IsMain).ToList();
-                    if (currentMainMedia.Count != 0)
-                    {
-                        foreach (var media in currentMainMedia)
-                        {
-                            media.IsMain = false;
-                        }
-                        await companyMediaRepository.UpdateRange(currentMainMedia, cancellationToken);
-                    }
-
-                    // Now mark the new media as the main image
-                    var companyMediaToUpdate = company.CompanyMedias.FirstOrDefault(e => e.MediaID == mediaUpdate.MediaId);
-                    if (companyMediaToUpdate != null)
-                    {
-                        companyMediaToUpdate.IsMain = true;
-                        await companyMediaRepository.Update(companyMediaToUpdate, cancellationToken);
-                    }
-                }
-
-                // Handle removing images
-                if (mediaUpdate.IsRemoved)
-                {
-                    var companyMediaToDelete = company.CompanyMedias.FirstOrDefault(e => e.MediaID == mediaUpdate.MediaId);
-                    if (companyMediaToDelete != null)
-                    {
-                        await companyMediaRepository.Delete(companyMediaToDelete, cancellationToken);
-                        // Optionally, delete the file from storage
-                        fileStorageService.Delete(companyMediaToDelete.Media.RemoteUrl);
-                        await mediaRepository.Delete(companyMediaToDelete.Media, cancellationToken);
-                    }
-                }
-            }
+            await companyMediaRepository.AddOrUpdate(companyMediaEntities);
 
             return Result.Success(MediaResults.ImagesUpdated);
         }
