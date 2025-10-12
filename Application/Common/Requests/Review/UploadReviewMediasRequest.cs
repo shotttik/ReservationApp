@@ -6,6 +6,6 @@ namespace Application.Common.Requests.Review
     public class UploadReviewMediasRequest
     {
         [Required]
-        public List<IFormFile> Files { get; set; } = [];
+        public List<IFormFile> Medias { get; set; } = [];
     }
 }

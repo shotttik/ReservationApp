@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task<Result> CreateInvite(int bookingId);
         Task<Result> Create(ReviewCreateRequest request);
+        Task<Result<List<int>>> UploadMedia(UploadReviewMediasRequest request, CancellationToken cancellationToken);
     }
 }

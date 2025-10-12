@@ -66,6 +66,30 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
+        /// <summary>
+        /// Uploads one or more media files for the specified review.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows uploading multiple media files for review.
+        ///
+        /// <para><b>Required Roles:</b> PublicUser</para>
+        /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
+        /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
+        /// </remarks>
+        /// <param name="request">The request containing the media files to upload.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A result returns address of the image or failure of the upload operation.</returns>
+        [HttpPost("medias")]
+        [HasPermission(Permission.ReviewCreate)]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<List<int>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UploadMedia([FromForm] UploadReviewMediasRequest request, CancellationToken cancellationToken)
+        {
+            var result = await reviewService.UploadMedia(request, cancellationToken);
 
+            return result.ToResponse();
+        }
     }
 }

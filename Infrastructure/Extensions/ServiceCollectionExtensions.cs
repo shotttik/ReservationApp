@@ -28,6 +28,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IReviewInviteRepository, ReviewInviteRepository>();
+            services.AddScoped<IReviewMediaRepository, ReviewMediaRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();

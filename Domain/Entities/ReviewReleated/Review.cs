@@ -18,7 +18,6 @@ namespace Domain.Entities.ReviewReleated
 
         public string? Body { get; set; }
         public string? Locale { get; set; }
-        public DateTimeOffset? SubmittedAt { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
         public int ReviewInviteId { get; set; }
         public ReviewInvite ReviewInvite { get; set; } = null!;
