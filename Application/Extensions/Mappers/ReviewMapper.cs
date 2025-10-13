@@ -1,4 +1,5 @@
 ﻿using Application.Common.Requests.Review;
+using Domain.DTO.Review;
 using Domain.Entities.ReviewReleated;
 
 namespace Application.Extensions.Mappers
@@ -19,6 +20,20 @@ namespace Application.Extensions.Mappers
 
                 Body = request.Body,
                 Locale = request.Locale
+            };
+        }
+
+        public static ReviewInviteDTO MapToDTO(this ReviewInvite entity)
+        {
+            return new ReviewInviteDTO()
+            {
+                Id = entity.ID,
+                BookingId = entity.BookingId,
+                ClientReviewed = entity.ClientReviewed,
+                OpenAt = entity.OpenAt,
+                CloseAt = entity.CloseAt,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt,
             };
         }
     }

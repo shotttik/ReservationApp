@@ -3,8 +3,10 @@ using Application.Common.Results;
 using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Domain.DTO.Review;
 using Domain.Entities.Common;
 using Domain.Entities.ReviewReleated;
+using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
@@ -160,6 +162,15 @@ namespace Application.Services
             }
 
             return Result.Success(mediaIds);
+        }
+        public async Task<Result<IEnumerable<ReviewInviteDTO>>> GetOpenReviewInvites()
+        {
+            var authUser = await authService.GetCurrentUser();
+            var userAccountId = authService.GetUserAccountID();
+
+            var openInvites = await reviewInviteRepository.GetOpenReviewInvites(userAccountId, Enum.Parse<Role>(authUser.Role.Name));
+
+            return openInvites.Select(e => e.MapToDTO()).ToList();
         }
     }
 }

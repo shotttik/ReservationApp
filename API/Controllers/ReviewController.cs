@@ -3,6 +3,7 @@ using Application.Authentication;
 using Application.Common.Requests.Review;
 using Application.Common.Results;
 using Application.Interfaces;
+using Domain.DTO.Review;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -88,6 +89,38 @@ namespace API.Controllers
         public async Task<IActionResult> UploadMedia([FromForm] UploadReviewMediasRequest request, CancellationToken cancellationToken)
         {
             var result = await reviewService.UploadMedia(request, cancellationToken);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Retrieves all currently open review invites for the authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint returns a list of review invites that the user is eligible to submit a review for. 
+        /// The list is filtered by the user’s role and only includes invites that:
+        /// - Have not yet been reviewed (`ClientReviewed = false`)
+        /// - Are still within the review window (`CloseAt >= now`)
+        ///
+        /// <para><b>Role-based behavior:</b></para>
+        /// <list type="bullet">
+        ///     <item><b>PublicUser:</b> Returns invites where the authenticated user is the client.</item>
+        ///     <item><b>CompanyEmployee / CompanyAdmin:</b> Returns invites where the authenticated user is the employee associated with the booking.</item>
+        /// </list>
+        /// <para><b>Required Roles:</b> PublicUser, CompanyEmployee, CompanyAdmin</para>
+        /// </remarks>
+        /// <returns>
+        /// Returns a list of <see cref="ReviewInviteDTO"/> objects representing open review invites for the authenticated user.
+        /// </returns>
+        [HttpGet("open-invites")]
+        [HasPermission(Permission.ReviewInviteReadLimited)]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<List<ReviewInviteDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetOpenReviewInvites()
+        {
+            var result = await reviewService.GetOpenReviewInvites();
 
             return result.ToResponse();
         }

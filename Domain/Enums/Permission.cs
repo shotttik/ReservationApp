@@ -98,9 +98,11 @@
         UserLoginDataRead,
         UserLoginDataManage,
 
-        // ==== Auth & Login Permissions ====
+        // ==== Review Permissions ====
         ReviewCreate,
-        ReviewInviteCreate
+        ReviewInviteCreate,
+        ReviewInviteRead,
+        ReviewInviteReadLimited
     }
 }
 
