@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250731102033_Initial")]
-    partial class Initial
+    [Migration("20251015165256_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -806,6 +806,120 @@ namespace Infrastructure.Migrations
                     b.ToTable("States");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int?>("Accuracy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("CheckIn")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Cleanliness")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Communication")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Locale")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Location")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Overall")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("PublishedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ReviewInviteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ReviewInviteId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ClientReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("CloseAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTimeOffset>("OpenAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.ToTable("ReviewInvites");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewMedia", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId", "MediaId");
+
+                    b.HasIndex("MediaId");
+
+                    b.ToTable("ReviewMedias");
+                });
+
             modelBuilder.Entity("Domain.Entities.User.Permission", b =>
                 {
                     b.Property<int>("ID")
@@ -891,22 +1005,22 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 14,
-                            Name = "CompanyMemberCreate"
+                            Name = "CompanyEmployeeCreate"
                         },
                         new
                         {
                             ID = 15,
-                            Name = "CompanyMemberRead"
+                            Name = "CompanyEmployeeRead"
                         },
                         new
                         {
                             ID = 16,
-                            Name = "CompanyMemberUpdate"
+                            Name = "CompanyEmployeeUpdate"
                         },
                         new
                         {
                             ID = 17,
-                            Name = "CompanyMemberDelete"
+                            Name = "CompanyEmployeeDelete"
                         },
                         new
                         {
@@ -971,172 +1085,197 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 30,
-                            Name = "AppointmentSchedule"
+                            Name = "BookingCreate"
                         },
                         new
                         {
                             ID = 31,
-                            Name = "AppointmentRead"
+                            Name = "BookingRead"
                         },
                         new
                         {
                             ID = 32,
-                            Name = "AppointmentUpdate"
+                            Name = "BookingUpdate"
                         },
                         new
                         {
                             ID = 33,
-                            Name = "AppointmentCancel"
+                            Name = "BookingDelete"
                         },
                         new
                         {
                             ID = 34,
-                            Name = "AppointmentApprove"
+                            Name = "BookingCancel"
                         },
                         new
                         {
                             ID = 35,
-                            Name = "MediaUpload"
+                            Name = "BookingApprove"
                         },
                         new
                         {
                             ID = 36,
-                            Name = "MediaRead"
+                            Name = "MediaUpload"
                         },
                         new
                         {
                             ID = 37,
-                            Name = "MediaDelete"
+                            Name = "MediaRead"
                         },
                         new
                         {
                             ID = 38,
-                            Name = "CompanyMediaUpload"
+                            Name = "MediaDelete"
                         },
                         new
                         {
                             ID = 39,
-                            Name = "CompanyMediaRead"
+                            Name = "CompanyMediaUpload"
                         },
                         new
                         {
                             ID = 40,
-                            Name = "CompanyMediaDelete"
+                            Name = "CompanyMediaRead"
                         },
                         new
                         {
                             ID = 41,
-                            Name = "CompanyMediaUpdate"
+                            Name = "CompanyMediaDelete"
                         },
                         new
                         {
                             ID = 42,
-                            Name = "FaqCreate"
+                            Name = "CompanyMediaUpdate"
                         },
                         new
                         {
                             ID = 43,
-                            Name = "FaqRead"
+                            Name = "FaqCreate"
                         },
                         new
                         {
                             ID = 44,
-                            Name = "FaqUpdate"
+                            Name = "FaqRead"
                         },
                         new
                         {
                             ID = 45,
-                            Name = "FaqDelete"
+                            Name = "FaqUpdate"
                         },
                         new
                         {
                             ID = 46,
-                            Name = "FaqCategoryCreate"
+                            Name = "FaqDelete"
                         },
                         new
                         {
                             ID = 47,
-                            Name = "FaqCategoryRead"
+                            Name = "FaqCategoryCreate"
                         },
                         new
                         {
                             ID = 48,
-                            Name = "FaqCategoryUpdate"
+                            Name = "FaqCategoryRead"
                         },
                         new
                         {
                             ID = 49,
-                            Name = "FaqCategoryDelete"
+                            Name = "FaqCategoryUpdate"
                         },
                         new
                         {
                             ID = 50,
-                            Name = "InvitationSend"
+                            Name = "FaqCategoryDelete"
                         },
                         new
                         {
                             ID = 51,
-                            Name = "InvitationRead"
+                            Name = "InvitationSend"
                         },
                         new
                         {
                             ID = 52,
-                            Name = "InvitationRevoke"
+                            Name = "InvitationRead"
                         },
                         new
                         {
                             ID = 53,
-                            Name = "LocationRead"
+                            Name = "InvitationRevoke"
                         },
                         new
                         {
                             ID = 54,
-                            Name = "CityRead"
+                            Name = "LocationRead"
                         },
                         new
                         {
                             ID = 55,
-                            Name = "StateRead"
+                            Name = "CityRead"
                         },
                         new
                         {
                             ID = 56,
-                            Name = "CountryRead"
+                            Name = "StateRead"
                         },
                         new
                         {
                             ID = 57,
-                            Name = "RoleCreate"
+                            Name = "CountryRead"
                         },
                         new
                         {
                             ID = 58,
-                            Name = "RoleRead"
+                            Name = "RoleCreate"
                         },
                         new
                         {
                             ID = 59,
-                            Name = "RoleUpdate"
+                            Name = "RoleRead"
                         },
                         new
                         {
                             ID = 60,
-                            Name = "RoleDelete"
+                            Name = "RoleUpdate"
                         },
                         new
                         {
                             ID = 61,
-                            Name = "RolePermissionManage"
+                            Name = "RoleDelete"
                         },
                         new
                         {
                             ID = 62,
-                            Name = "UserLoginDataRead"
+                            Name = "RolePermissionManage"
                         },
                         new
                         {
                             ID = 63,
+                            Name = "UserLoginDataRead"
+                        },
+                        new
+                        {
+                            ID = 64,
                             Name = "UserLoginDataManage"
+                        },
+                        new
+                        {
+                            ID = 65,
+                            Name = "ReviewCreate"
+                        },
+                        new
+                        {
+                            ID = 66,
+                            Name = "ReviewInviteCreate"
+                        },
+                        new
+                        {
+                            ID = 67,
+                            Name = "ReviewInviteRead"
+                        },
+                        new
+                        {
+                            ID = 68,
+                            Name = "ReviewInviteReadLimited"
                         });
                 });
 
@@ -1172,7 +1311,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 4,
-                            Name = "CompanyMember"
+                            Name = "CompanyEmployee"
                         });
                 });
 
@@ -1359,7 +1498,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 57
+                            PermissionID = 35
                         },
                         new
                         {
@@ -1384,7 +1523,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 42
+                            PermissionID = 62
                         },
                         new
                         {
@@ -1439,7 +1578,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 38
+                            PermissionID = 53
                         },
                         new
                         {
@@ -1455,6 +1594,26 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 1,
                             PermissionID = 41
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 42
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 67
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 68
                         },
                         new
                         {
@@ -1554,7 +1713,17 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
+                            PermissionID = 30
+                        },
+                        new
+                        {
+                            RoleID = 3,
                             PermissionID = 31
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            PermissionID = 32
                         },
                         new
                         {
@@ -1564,7 +1733,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 42
+                            PermissionID = 35
                         },
                         new
                         {
@@ -1619,7 +1788,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 38
+                            PermissionID = 53
                         },
                         new
                         {
@@ -1635,6 +1804,21 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 3,
                             PermissionID = 41
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            PermissionID = 42
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            PermissionID = 68
                         },
                         new
                         {
@@ -1669,7 +1853,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 30
+                            PermissionID = 27
                         },
                         new
                         {
@@ -1679,16 +1863,31 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 33
+                            PermissionID = 32
                         },
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 27
+                            PermissionID = 34
                         },
                         new
                         {
-                            RoleID = 3,
+                            RoleID = 4,
+                            PermissionID = 35
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            PermissionID = 68
+                        },
+                        new
+                        {
+                            RoleID = 2,
                             PermissionID = 13
                         },
                         new
@@ -1699,12 +1898,22 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 2,
-                            PermissionID = 30
+                            PermissionID = 31
                         },
                         new
                         {
                             RoleID = 2,
-                            PermissionID = 31
+                            PermissionID = 32
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            PermissionID = 65
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            PermissionID = 68
                         });
                 });
 
@@ -1990,6 +2199,47 @@ namespace Infrastructure.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.ReviewReleated.ReviewInvite", "ReviewInvite")
+                        .WithOne("Review")
+                        .HasForeignKey("Domain.Entities.ReviewReleated.Review", "ReviewInviteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReviewInvite");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Booking", "Booking")
+                        .WithOne("ReviewInvite")
+                        .HasForeignKey("Domain.Entities.ReviewReleated.ReviewInvite", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Media", "Media")
+                        .WithMany("ReviewMedias")
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.ReviewReleated.Review", "Review")
+                        .WithMany("Medias")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("Domain.Entities.User.RolePermission", b =>
                 {
                     b.HasOne("Domain.Entities.User.Permission", null)
@@ -2031,9 +2281,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("UserLoginData");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Common.Booking", b =>
+                {
+                    b.Navigation("ReviewInvite")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>
                 {
                     b.Navigation("CompanyMedias");
+
+                    b.Navigation("ReviewMedias");
                 });
 
             modelBuilder.Entity("Domain.Entities.CompanyReleated.Company", b =>
@@ -2071,6 +2329,17 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.LocationReleated.State", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.Navigation("Review")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.User.Role", b =>

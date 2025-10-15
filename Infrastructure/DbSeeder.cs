@@ -16,145 +16,50 @@ namespace Infrastructure
             {
                 var random = new Random();
 
-                // Seed SuperAdmin User
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.SuperAdmin.ID))
-                {
+                // 1) Users that don't depend on companies
+                await EnsureSuperAdminAsync(context);
+                await EnsurePublicUserAsync(context);
 
-                    var superAdminUserAccount = new UserAccount
-                    {
-                        FirstName = "Super",
-                        LastName = "Admin",
-                        RoleID = Role.SuperAdmin.ID,
-
-                    };
-
-                    // Create password hash and salt
-                    var password = "SuperAdminPassword123!"; // Change this in production
-                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
-
-                    var superAdminLogin = new UserLoginData
-                    {
-                        Email = "superadmin@example.com",
-                        UserAccount = superAdminUserAccount,
-                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    };
-                    context.UserLoginDatas.Add(superAdminLogin);
-                    await context.SaveChangesAsync();
-                }
-
-                // seed public user
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.PublicUser.ID))
-                {
-                    var publicUserUserAccount = new UserAccount
-                    {
-                        FirstName = "PublicUser",
-                        LastName = "PublicUser",
-                        RoleID = Role.PublicUser.ID,
-
-                    };
-
-                    // Create password hash and salt
-                    var password = "SuperAdminPassword123!"; // Change this in production
-                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
-
-                    var publicUserLoginData = new UserLoginData
-                    {
-                        Email = "publicUser@example.com",
-                        UserAccount = publicUserUserAccount,
-                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    };
-                    context.UserLoginDatas.Add(publicUserLoginData);
-                    await context.SaveChangesAsync();
-                }
-
-
-                // seed multiple locations same count as a companies
-                if (!await context.Locations.AnyAsync() || !await context.Companies.AnyAsync())
-
+                // 2) Base Locations + Companies together (keep 1:1)
+                if (!await context.Locations.AnyAsync() && !await context.Companies.AnyAsync())
                 {
                     string [] countries = { "USA", "Canada", "Germany", "France", "UK" };
                     string [] states = { "California", "Ontario", "Bavaria", "Île-de-France", "London" };
                     string [] cities = { "Los Angeles", "Toronto", "Munich", "Paris", "London" };
                     string [] streets = { "Main St", "2nd Ave", "Elm Rd", "Maple Blvd", "Oak St" };
 
-                    var locations = new List<Location>();
-
-                    for (int i = 1; i <= 50; i++)
+                    var locations = new List<Location>(50);
+                    for (int i = 0; i < 50; i++)
                     {
-                        var location = new Location
+                        locations.Add(new Location
                         {
                             Country = countries [random.Next(countries.Length)],
                             State = states [random.Next(states.Length)],
                             City = cities [random.Next(cities.Length)],
                             AddressLine1 = $"{random.Next(1, 9999)} {streets [random.Next(streets.Length)]}",
                             PostalCode = random.Next(10000, 99999).ToString(),
-                            Latitude = Convert.ToDecimal(random.NextDouble() * (90 - (-90)) + (-90)),
-                            Longitude = Convert.ToDecimal(random.NextDouble() * (180 - (-180)) + (-180))
-                        };
-
-                        locations.Add(location);
+                            Latitude = Convert.ToDecimal(random.NextDouble() * 180 - 90),
+                            Longitude = Convert.ToDecimal(random.NextDouble() * 360 - 180)
+                        });
                     }
 
                     await context.Locations.AddRangeAsync(locations);
-                    await context.SaveChangesAsync(); // Save first to get IDs
+                    await context.SaveChangesAsync();
 
-                    // Seed multiple companies
-                    var companies = new List<Company>();
-
+                    var companies = new List<Company>(50);
                     for (int i = 0; i < 50; i++)
                     {
                         var name = $"Company {i + 1}";
-                        var iN = random.Next(100000000, 999999999).ToString();
+                        var iN = random.Next(100_000_000, 999_999_999).ToString();
                         var email = $"company{i + 1}@example.com";
                         var phone = $"555-01{i:D3}";
                         var description = $"""
-                            <p>Welcome to <strong>{name}</strong>, where <em>creativity</em> meets <u>technology</u>. Since our founding in <span style="color: #555;">2010</span>, we have delivered top-notch solutions to clients worldwide.</p>
-
-                            <p>Our core values include:</p>
-
-                            <ul>
-                              <li>Integrity</li>
-                              <li>Innovation</li>
-                              <li>Customer Success</li>
-                            </ul>
-
-                            <blockquote>
-                              “The best way to predict the future is to invent it.” — Alan Kay
-                            </blockquote>
-
-                            <p>We specialize in:</p>
-
-                            <ol>
-                              <li>Web Development</li>
-                              <li>Mobile Applications</li>
-                              <li>Cloud Solutions</li>
-                            </ol>
-
-                            <p>To learn more, visit our <a href="https://www.example.com" target="_blank">official website</a> or follow us on social media.</p>
-
-                            <hr>
-
-                            <h3>Contact Us</h3>
-                            <p>📞 <a href="tel:+1234567890">{phone}</a><br>
-                            📧 <a href="mailto:info@example.com">{email}</a></p>
-
-                            <p>
-                              <img src="https://via.placeholder.com/400x200" alt="Company Team Photo" style="max-width: 100%; border-radius: 8px;">
-                            </p>
-
-                            <p style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #00AF87;">
-                              <strong>Note:</strong> We are committed to <mark>continuous improvement</mark> and welcome your feedback.
-                            </p>
-
-                            <p>
-                              <small>Last updated: June 2025</small>
-                            </p>
+                            <p>Welcome to <strong>{name}</strong>, where <em>creativity</em> meets <u>technology</u>.</p>
+                            <ul><li>Integrity</li><li>Innovation</li><li>Customer Success</li></ul>
+                            <blockquote>“The best way to predict the future is to invent it.” — Alan Kay</blockquote>
                             {i + 1}
                             """;
+
                         companies.Add(new Company
                         {
                             Name = name,
@@ -163,442 +68,273 @@ namespace Infrastructure
                             Phone = phone,
                             Description = description,
                             ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                            LocationID = locations [i].ID // One-to-one
+                            LocationID = locations [i].ID
                         });
                     }
 
                     await context.Companies.AddRangeAsync(companies);
                     await context.SaveChangesAsync();
-
-                    foreach (var company in companies)
-                    {
-                        if (!await context.Companies.AnyAsync(c => c.IN == company.IN))
-                        {
-                            context.Companies.Add(company);
-                        }
-                    }
-                    await context.SaveChangesAsync();
                 }
+
+                // 3) Ensure the special company exists (before users/services/media)
+                var viehe = await EnsureVieheCompanyAsync(context);
+
+                // 4) Company users (depend on Viehe)
+                var companyAdmin = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyAdmin.ID,
+                                        "companyAdmin@example.com", "CompanyAdmin", "Company Admin");
+                var companyEmployee = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyEmployee.ID,
+                                        "companyEmployee@example.com", "CompanyEmployee", "Company Employee");
+
+                // 5) Services (attach to actual company IDs)
+                await EnsureServicesAsync(context);
+
+                // 6) Work schedules (after users; per-user/per-day)
+                if (companyAdmin?.UserAccount != null)
+                    await EnsureDefaultScheduleAsync(context, companyAdmin.UserAccount.ID);
+
+                if (companyEmployee?.UserAccount != null)
+                    await EnsureDefaultScheduleAsync(context, companyEmployee.UserAccount.ID);
+
+                // 7) Media last (so every company is present)
                 await SeedMediasAsync(context);
-                // Seed multiple services
-                if (!await context.Services.AnyAsync())
-                {
-                    // After seeding companies, fetch their IDs by IN or Name  
-                    var companyDict = await context.Companies
-                        .Where(c => c.IN == "123456789" || c.IN == "987654321" || c.IN == "555666777" || c.IN == "112233445" || c.IN == "998877665")
-                        .ToDictionaryAsync(c => c.IN, c => c.ID);
 
-                    // Now use these IDs when seeding services  
-                    var servicesToSeed = new List<Service>
-                       {
-                           new Service
-                           {
-                               Name = "Consultation",
-                               Description = "One-on-one consultation service",
-                               Duration = 15,
-                               Price = 100.00m,
-                               CompanyID = companyDict["123456789"] // Default Company  
-                           },
-                           new Service
-                           {
-                               Name = "Web Development",
-                               Description = "Custom web development services",
-                               Duration = 15,
-                               Price = 5000.00m,
-                               CompanyID = companyDict["987654321"] // Acme Corporation  
-                           },
-                           new Service
-                           {
-                               Name = "SEO Optimization",
-                               Description = "Search engine optimization services",
-                               Duration = 15,
-                               Price = 1500.00m,
-                               CompanyID = companyDict["555666777"] // Globex Ltd.  
-                           },
-                           new Service
-                           {
-                               Name = "Mobile App Development",
-                               Description = "Development of mobile applications",
-                               Duration = 15,
-                               Price = 3000.00m,
-                               CompanyID = companyDict["123456789"] // Default Company  
-                           },
-                           new Service
-                           {
-                               Name = "Digital Marketing",
-                               Description = "Comprehensive digital marketing services",
-                               Duration = 15,
-                               Price = 2000.00m,
-                               CompanyID = companyDict["987654321"] // Acme Corporation  
-                           },
-                            new Service
-                            {
-                                 Name = "Graphic Design",
-                                 Description = "Creative graphic design services",
-                                 Duration = 15,
-                                 Price = 800.00m,
-                                 CompanyID = companyDict["555666777"] // Globex Ltd.  
-                            },
-                            new Service
-                            {
-                                 Name = "Content Writing",
-                                 Description = "Professional content writing services",
-                                 Duration = 15,
-                                 Price = 500.00m,
-                                 CompanyID = companyDict["112233445"] // Tech Innovators Inc.  
-                            },
-                            new Service
-                            {
-                                 Name = "Social Media Management",
-                                 Description = "Management of social media accounts",
-                                 Duration = 15,
-                                 Price = 1200.00m,
-                                 CompanyID = companyDict["998877665"] // Green Earth Solutions  
-                            },
-                            new Service
-                            {
-                                 Name = "Data Analysis",
-                                 Description = "In-depth data analysis services",
-                                 Duration = 15,
-                                 Price = 2500.00m,
-                                 CompanyID = companyDict["123456789"] // Default Company  
-                            },
-                            new Service
-                            {
-                                 Name = "Email Marketing",
-                                 Description = "Targeted email marketing campaigns",
-                                 Duration = 15,
-                                 Price = 700.00m,
-                                 CompanyID = companyDict["987654321"] // Acme Corporation  
-                            },
-                            new Service
-                            {
-                                 Name = "Brand Strategy",
-                                 Description = "Comprehensive brand strategy development",
-                                 Duration = 15,
-                                 Price = 1800.00m,
-                                 CompanyID = companyDict["555666777"] // Globex Ltd.  
-                            },
-                       };
-
-                    foreach (var service in servicesToSeed)
-                    {
-                        if (!await context.Services.AnyAsync(s => s.Name == service.Name && s.CompanyID == service.CompanyID))
-                        {
-                            context.Services.Add(service);
-                        }
-                    }
-
-                    await context.SaveChangesAsync();
-                }
-                // check if work schedules doesn't exists then create
-                if (!await context.WorkSchedules.AnyAsync())
-                {
-                    // After seeding companies, fetch their IDs by IN or Name  
-                    var companyDict = await context.Companies
-                        .Where(c => c.IN == "123456789" || c.IN == "987654321" || c.IN == "555666777" || c.IN == "112233445" || c.IN == "998877665")
-                        .ToDictionaryAsync(c => c.IN, c => c.ID);
-                    // seed 7 days of week work schedules for companies
-                    var companyAdmin = await context.UserLoginDatas.Where(e => e.Email == "companyAdmin@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
-                    if (companyAdmin != null)
-                    {
-                        var workSchedulesToSeed = new List<WorkSchedule>
-                        {
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyAdmin.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Monday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyAdmin.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Saturday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyAdmin.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Wednesday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyAdmin.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Thursday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyAdmin.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Friday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-
-                        };
-                        foreach (var workSchedule in workSchedulesToSeed)
-                        {
-                            if (!await context.WorkSchedules.AnyAsync())
-                            {
-                                context.WorkSchedules.Add(workSchedule);
-                            }
-                        }
-                        await context.SaveChangesAsync();
-                    }
-                    var companyEmployee = await context.UserLoginDatas.Where(e => e.Email == "companyEmployee@example.com").Include(e => e.UserAccount).FirstOrDefaultAsync();
-                    if (companyEmployee != null)
-                    {
-                        var workSchedulesToSeed = new List<WorkSchedule>
-                        {
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyEmployee.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Monday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyEmployee.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Saturday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyEmployee.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Wednesday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyEmployee.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Thursday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-                            new WorkSchedule
-                            {
-                                UserAccountID = companyEmployee.UserAccount.ID,
-                                DayOfWeek = DayOfWeek.Friday,
-                                StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
-                                EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
-                            },
-
-                        };
-                        foreach (var workSchedule in workSchedulesToSeed)
-                        {
-                            if (!await context.WorkSchedules.AnyAsync())
-                            {
-                                context.WorkSchedules.Add(workSchedule);
-                            }
-                        }
-                        await context.SaveChangesAsync();
-                    }
-                }
-                // seed company users with role company admin and company employee
-                if (!await context.Companies.AnyAsync(c => c.Email == "vieheCorporation@example.com"))
-                {
-                    var name = $"Viehe corporation";
-                    var iN = random.Next(100000000, 999999999).ToString();
-                    var email = $"vieheCorporation@example.com";
-                    var phone = $"555-0112-1231";
-                    var description = $"""
-                            <p>Welcome to <strong>{name}</strong>, where <em>creativity</em> meets <u>technology</u>. Since our founding in <span style="color: #555;">2010</span>, we have delivered top-notch solutions to clients worldwide.</p>
-
-                            <p>Our core values include:</p>
-
-                            <ul>
-                              <li>Integrity</li>
-                              <li>Innovation</li>
-                              <li>Customer Success</li>
-                            </ul>
-
-                            <blockquote>
-                              “The best way to predict the future is to invent it.” — Alan Kay
-                            </blockquote>
-
-                            <p>We specialize in:</p>
-
-                            <ol>
-                              <li>Web Development</li>
-                              <li>Mobile Applications</li>
-                              <li>Cloud Solutions</li>
-                            </ol>
-
-                            <p>To learn more, visit our <a href="https://www.example.com" target="_blank">official website</a> or follow us on social media.</p>
-
-                            <hr>
-
-                            <h3>Contact Us</h3>
-                            <p>📞 <a href="tel:+1234567890">{phone}</a><br>
-                            📧 <a href="mailto:info@example.com">{email}</a></p>
-
-                            <p>
-                              <img src="https://via.placeholder.com/400x200" alt="Company Team Photo" style="max-width: 100%; border-radius: 8px;">
-                            </p>
-
-                            <p style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #00AF87;">
-                              <strong>Note:</strong> We are committed to <mark>continuous improvement</mark> and welcome your feedback.
-                            </p>
-
-                            <p>
-                              <small>Last updated: June 2025</small>
-                            </p>
-                            """;
-                    var company = new Company
-                    {
-                        Name = name,
-                        IN = iN,
-                        Email = email,
-                        Phone = phone,
-                        Description = description,
-                        ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                        Location = new Location
-                        {
-                            Country = "Georgia",
-                            State = "Shida-Kartli",
-                            City = "Kaspi",
-                            AddressLine1 = $"{random.Next(1, 9999)} avtandilis nomeri kucha",
-                            PostalCode = random.Next(10000, 99999).ToString(),
-                            Latitude = Convert.ToDecimal(41.7855048),
-                            Longitude = Convert.ToDecimal(44.7529183)
-                        },
-                        Services =
-                        [
-                           new Service
-                           {
-                               Name = "Consultation",
-                               Description = "One-on-one consultation service",
-                               Duration = 15,
-                               Price = 100.00m,
-                           },
-                           new Service
-                           {
-                               Name = "Web Development",
-                               Description = "Custom web development services",
-                               Duration = 15,
-                               Price = 5000.00m,
-                           },
-                           new Service
-                           {
-                               Name = "SEO Optimization",
-                               Description = "Search engine optimization services",
-                               Duration = 15,
-                               Price = 1500.00m,
-                           },
-                         ]
-                    };
-
-
-                    context.Companies.Add(company);
-                    await context.SaveChangesAsync();
-
-                }
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyAdmin.ID))
-                {
-                    var mainCompany = await context.Companies.Where(c => c.Email == "vieheCorporation@example.com").FirstOrDefaultAsync();
-                    var companyAdminUserAccount = new UserAccount
-                    {
-                        FirstName = "CompanyAdmin",
-                        LastName = "Company ADmin",
-                        RoleID = Role.CompanyAdmin.ID,
-                        CompanyID = mainCompany?.ID
-                    };
-
-                    // Create password hash and salt
-                    var password = "SuperAdminPassword123!"; // Change this in production
-                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
-
-                    var companyAdminLoginData = new UserLoginData
-                    {
-                        Email = "companyAdmin@example.com",
-                        UserAccount = companyAdminUserAccount,
-                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    };
-                    context.UserLoginDatas.Add(companyAdminLoginData);
-                    await context.SaveChangesAsync();
-                }
-                if (!await context.UserAccounts.AnyAsync(u => u.Role!.ID == Role.CompanyEmployee.ID))
-                {
-                    var mainCompany = await context.Companies.Where(c => c.Email == "vieheCorporation@example.com").FirstOrDefaultAsync();
-                    var companyEmployeeUserAccount = new UserAccount
-                    {
-                        FirstName = "CompanyEmployee",
-                        LastName = "CompanyEmployee",
-                        RoleID = Role.CompanyEmployee.ID,
-                        CompanyID = mainCompany?.ID
-                    };
-
-                    // Create password hash and salt
-                    var password = "SuperAdminPassword123!"; // Change this in production
-                    (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(password);
-
-                    var companyEmployeeLoginData = new UserLoginData
-                    {
-                        Email = "companyEmployee@example.com",
-                        UserAccount = companyEmployeeUserAccount,
-                        VerificationStatus = Domain.Enums.VerificationStatus.Verified, // Set as needed
-                        PasswordHash = hash,
-                        PasswordSalt = salt
-                    };
-                    context.UserLoginDatas.Add(companyEmployeeLoginData);
-                    await context.SaveChangesAsync();
-                }
-
-                Debug.Write("Database seeding completed successfully.");
+                Debug.WriteLine("Database seeding completed successfully.");
             }
             catch (Exception ex)
             {
-                Debug.Write(ex, "An error occurred while seeding the database.");
+                Debug.WriteLine($"An error occurred while seeding the database: {ex}");
             }
         }
-        public static async Task SeedMediasAsync(ApplicationDbContext context)
+
+        private static async Task EnsureSuperAdminAsync(ApplicationDbContext context)
         {
-            var random = new Random();
-
-            // Check if media already exists  
-            if (!await context.Medias.AnyAsync())
+            if (!await context.UserAccounts.AnyAsync(u => u.RoleID == Role.SuperAdmin.ID))
             {
-                var companies = await context.Companies.ToListAsync();
-                var medias = new List<Media>();
-
-                foreach (var company in companies)
+                var user = new UserAccount
                 {
-                    for (int i = 0; i < 5; i++) // Generate 5 media items per company  
-                    {
-                        var media = new Media
-                        {
-                            OriginalName = $"Media_{company.Name}_{i + 1}",
-                            RemoteUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
-                            FileSizeInBytes = random.Next(1000, 5000), // Random file size in bytes  
-                            FileType = "image/jpeg",
-                            CompanyMedias = new List<CompanyMedia>
-                                       {
-                                           new CompanyMedia
-                                           {
-                                               CompanyID = company.ID,
-                                               IsMain = i == 0 // Only the first media is marked as IsMain=true  
-                                           }
-                                       }
-                        };
+                    FirstName = "Super",
+                    LastName = "Admin",
+                    RoleID = Role.SuperAdmin.ID
+                };
+                var (hash, salt) = PasswordHasher.HashPassword("SuperAdminPassword123!"); // change in prod
 
-                        medias.Add(media);
-                    }
-                }
-
-                await context.Medias.AddRangeAsync(medias);
+                context.UserLoginDatas.Add(new UserLoginData
+                {
+                    Email = "superadmin@example.com",
+                    UserAccount = user,
+                    VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                    PasswordHash = hash,
+                    PasswordSalt = salt
+                });
                 await context.SaveChangesAsync();
             }
+        }
 
+        private static async Task EnsurePublicUserAsync(ApplicationDbContext context)
+        {
+            if (!await context.UserAccounts.AnyAsync(u => u.RoleID == Role.PublicUser.ID))
+            {
+                var user = new UserAccount
+                {
+                    FirstName = "PublicUser",
+                    LastName = "PublicUser",
+                    RoleID = Role.PublicUser.ID
+                };
+                var (hash, salt) = PasswordHasher.HashPassword("SuperAdminPassword123!"); // change in prod
+
+                context.UserLoginDatas.Add(new UserLoginData
+                {
+                    Email = "publicUser@example.com",
+                    UserAccount = user,
+                    VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                    PasswordHash = hash,
+                    PasswordSalt = salt
+                });
+                await context.SaveChangesAsync();
+            }
+        }
+
+        private static async Task<UserLoginData?> EnsureCompanyUserAsync(
+            ApplicationDbContext context,
+            int? companyId,
+            int roleId,
+            string email,
+            string firstName,
+            string lastName)
+        {
+            var existing = await context.UserLoginDatas
+                .Include(x => x.UserAccount)
+                .FirstOrDefaultAsync(x => x.Email == email);
+            if (existing != null) return existing;
+
+            var (hash, salt) = PasswordHasher.HashPassword("SuperAdminPassword123!"); // change in prod
+
+            var account = new UserAccount
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                RoleID = roleId,
+                CompanyID = companyId
+            };
+
+            var login = new UserLoginData
+            {
+                Email = email,
+                UserAccount = account,
+                VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                PasswordHash = hash,
+                PasswordSalt = salt
+            };
+
+            context.UserLoginDatas.Add(login);
+            await context.SaveChangesAsync();
+            return login;
+        }
+
+        private static async Task EnsureDefaultScheduleAsync(ApplicationDbContext context, int userAccountId)
+        {
+            var days = new []
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday,
+                DayOfWeek.Saturday
+            };
+
+            foreach (var day in days)
+            {
+                var exists = await context.WorkSchedules.AnyAsync(ws =>
+                    ws.UserAccountID == userAccountId && ws.DayOfWeek == day);
+
+                if (!exists)
+                {
+                    context.WorkSchedules.Add(new WorkSchedule
+                    {
+                        UserAccountID = userAccountId,
+                        DayOfWeek = day,
+                        StartTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)),
+                        EndTime = TimeOnly.FromTimeSpan(TimeSpan.FromHours(17)),
+                    });
+                }
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        private static async Task<Company?> EnsureVieheCompanyAsync(ApplicationDbContext context)
+        {
+            var existing = await context.Companies.FirstOrDefaultAsync(c => c.Email == "vieheCorporation@example.com");
+            if (existing != null) return existing;
+
+            var random = new Random();
+            var company = new Company
+            {
+                Name = "Viehe corporation",
+                IN = random.Next(100_000_000, 999_999_999).ToString(),
+                Email = "vieheCorporation@example.com",
+                Phone = "555-0112-1231",
+                Description = "<p>Welcome to <strong>Viehe corporation</strong>...</p>",
+                ActiveStatus = Domain.Enums.ActiveStatus.Active,
+                Location = new Location
+                {
+                    Country = "Georgia",
+                    State = "Shida-Kartli",
+                    City = "Kaspi",
+                    AddressLine1 = $"{random.Next(1, 9999)} avtandilis nomeri kucha",
+                    PostalCode = random.Next(10000, 99999).ToString(),
+                    Latitude = Convert.ToDecimal(41.7855048),
+                    Longitude = Convert.ToDecimal(44.7529183)
+                },
+                Services =
+                [
+                    new Service { Name = "Consultation",     Description = "One-on-one consultation service",   Duration = 15, Price = 100.00m  },
+                    new Service { Name = "Web Development",  Description = "Custom web development services",   Duration = 15, Price = 5000.00m },
+                    new Service { Name = "SEO Optimization", Description = "Search engine optimization services",Duration = 15, Price = 1500.00m },
+                ]
+            };
+
+            context.Companies.Add(company);
+            await context.SaveChangesAsync();
+            return company;
+        }
+
+        private static async Task EnsureServicesAsync(ApplicationDbContext context)
+        {
+            if (await context.Services.AnyAsync()) return;
+
+            var companyIds = await context.Companies
+                .OrderBy(c => c.ID)
+                .Select(c => c.ID)
+                .Take(5)
+                .ToListAsync();
+
+            if (companyIds.Count == 0) return;
+
+            int c1 = companyIds [0];
+            int c2 = companyIds.Count > 1 ? companyIds [1] : c1;
+            int c3 = companyIds.Count > 2 ? companyIds [2] : c1;
+            int c4 = companyIds.Count > 3 ? companyIds [3] : c1;
+            int c5 = companyIds.Count > 4 ? companyIds [4] : c1;
+
+            var servicesToSeed = new List<Service>
+            {
+                new Service { Name = "Consultation",            Description = "One-on-one consultation service",       Duration = 15, Price = 100.00m,   CompanyID = c1 },
+                new Service { Name = "Web Development",         Description = "Custom web development services",       Duration = 15, Price = 5000.00m,  CompanyID = c2 },
+                new Service { Name = "SEO Optimization",        Description = "Search engine optimization services",   Duration = 15, Price = 1500.00m,  CompanyID = c3 },
+                new Service { Name = "Mobile App Development",  Description = "Development of mobile applications",    Duration = 15, Price = 3000.00m,  CompanyID = c1 },
+                new Service { Name = "Digital Marketing",       Description = "Comprehensive digital marketing",       Duration = 15, Price = 2000.00m,  CompanyID = c2 },
+                new Service { Name = "Graphic Design",          Description = "Creative graphic design services",      Duration = 15, Price = 800.00m,   CompanyID = c3 },
+                new Service { Name = "Content Writing",         Description = "Professional content writing services", Duration = 15, Price = 500.00m,   CompanyID = c4 },
+                new Service { Name = "Social Media Management", Description = "Management of social media accounts",   Duration = 15, Price = 1200.00m,  CompanyID = c5 },
+                new Service { Name = "Data Analysis",           Description = "In-depth data analysis services",       Duration = 15, Price = 2500.00m,  CompanyID = c1 },
+                new Service { Name = "Email Marketing",         Description = "Targeted email marketing campaigns",    Duration = 15, Price = 700.00m,   CompanyID = c2 },
+                new Service { Name = "Brand Strategy",          Description = "Comprehensive brand strategy",          Duration = 15, Price = 1800.00m,  CompanyID = c3 },
+            };
+
+            foreach (var svc in servicesToSeed)
+            {
+                bool exists = await context.Services
+                    .AnyAsync(s => s.Name == svc.Name && s.CompanyID == svc.CompanyID);
+                if (!exists) context.Services.Add(svc);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SeedMediasAsync(ApplicationDbContext context)
+        {
+            if (await context.Medias.AnyAsync()) return;
+
+            var random = new Random();
+            var companies = await context.Companies.ToListAsync();
+            if (companies.Count == 0) return;
+
+            var medias = new List<Media>();
+            foreach (var company in companies)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    medias.Add(new Media
+                    {
+                        OriginalName = $"Media_{company.Name}_{i + 1}",
+                        RemoteUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
+                        FileSizeInBytes = random.Next(1000, 5000),
+                        FileType = "image/jpeg",
+                        CompanyMedias = new List<CompanyMedia>
+                        {
+                            new CompanyMedia
+                            {
+                                CompanyID = company.ID,
+                                IsMain    = i == 0
+                            }
+                        }
+                    });
+                }
+            }
+
+            await context.Medias.AddRangeAsync(medias);
+            await context.SaveChangesAsync();
         }
     }
 }
