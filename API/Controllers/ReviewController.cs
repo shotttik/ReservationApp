@@ -3,6 +3,7 @@ using Application.Authentication;
 using Application.Common.Requests.Review;
 using Application.Common.Results;
 using Application.Interfaces;
+using Domain.Abstractions;
 using Domain.DTO.Review;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +122,47 @@ namespace API.Controllers
         public async Task<IActionResult> GetOpenReviewInvites()
         {
             var result = await reviewService.GetOpenReviewInvites();
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Retrieves a paginated list of reviews.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows retrieving reviews with paging, sorting, and filtering options.
+        ///
+        /// <para><b>Required role:</b> Accessible by everyone.</para>
+        ///
+        /// <para><b>Paging and filtering parameters:</b></para>
+        /// - Page number: `parameters.PageNumber`
+        /// - Page size: `parameters.PageSize`
+        /// - Filter string: `parameters.Filter` (e.g., "Status>=1,ClientId=123")
+        ///
+        /// <para><b>Sortable / Filterable Fields:</b></para>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>Overall</c></li>
+        /// <li><c>Locale</c></li>
+        /// <li><c>PublishedAt</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// <li><c>ClientId</c></li>
+        /// <li><c>EmployeeId</c></li>
+        /// <li><c>CompanyId</c></li>
+        /// </ul>
+        /// </remarks>
+        /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
+        /// <returns>Returns containing a paged list of reviews. </returns>
+        [HttpGet("paged")]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [HasPermission(Permission.ReviewInviteRead)]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<ReviewDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var result = await reviewService.RetrievePaged(parameters, true, cancellationToken);
 
             return result.ToResponse();
         }

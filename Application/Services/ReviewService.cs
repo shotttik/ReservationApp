@@ -2,7 +2,9 @@
 using Application.Common.Results;
 using Application.Extensions;
 using Application.Extensions.Mappers;
+using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Domain.Abstractions;
 using Domain.DTO.Review;
 using Domain.Entities.Common;
 using Domain.Entities.ReviewReleated;
@@ -171,6 +173,22 @@ namespace Application.Services
             var openInvites = await reviewInviteRepository.GetOpenReviewInvites(userAccountId, Enum.Parse<Role>(authUser.Role.Name));
 
             return openInvites.Select(e => e.MapToDTO()).ToList();
+        }
+        public async Task<Result<PagedList<ReviewDTO>>> RetrievePaged(PagedParameters parameters, bool forPublic, CancellationToken cancellationToken)
+        {
+            var allowedFields = ReviewFieldMap.DtoToEntityPath(forPublic);
+            var errors = parameters.Validate(allowedFields, typeof(Review));
+            if (errors.Any())
+            {
+                return Result.Failure<PagedList<ReviewDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
+            }
+            var reviews = await reviewRepository.RetrievePaged(
+                parameters,
+                forPublic,
+                cancellationToken);
+
+            return reviews;
+
         }
     }
 }

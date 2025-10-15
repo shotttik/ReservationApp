@@ -9,7 +9,7 @@ namespace Domain.Abstractions
         public string? SortBy { get; set; }
         public int PageNumber { get; set; } = PagedResultUtils.DefaultPageNumber;
         public int PageSize { get; set; } = PagedResultUtils.DefaultPageSize;
-
+        
         public IEnumerable<string> Validate(IDictionary<string, string> allowedFields, Type entityType)
         {
             var errors = new List<string>();

@@ -23,6 +23,29 @@ namespace Application.Extensions.Mappers
             };
         }
 
+        public static ReviewDTO MapToDTO(this Review entity)
+        {
+            return new ReviewDTO()
+            {
+                Id = entity.ID,
+                Status = entity.Status,
+                Overall = entity.Overall,
+                Cleanliness = entity.Cleanliness,
+                Accuracy = entity.Accuracy,
+                CheckIn = entity.CheckIn,
+                Communication = entity.Communication,
+                Location = entity.Location,
+                Value = entity.Value,
+                Body = entity.Body,
+                Locale = entity.Locale,
+                PublishedAt = entity.PublishedAt,
+                ReviewInviteId = entity.ReviewInviteId,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt,
+                Medias = entity.Medias.Select(e => e.Media.RemoteUrl)
+            };
+        }
+
         public static ReviewInviteDTO MapToDTO(this ReviewInvite entity)
         {
             return new ReviewInviteDTO()
