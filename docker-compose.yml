@@ -9,7 +9,8 @@ services:
       - "1433:1433"
     networks:
       - backend
-    restart: always
+    restart: on-failure:3
+
 
   redis:
     image: redis:latest
@@ -18,7 +19,7 @@ services:
       - "6379:6379"
     networks:
       - backend
-    restart: always
+    restart: on-failure:3
 
   mongodb:
     image: mongo:latest
@@ -27,7 +28,7 @@ services:
       - "27017:27017"
     networks:
       - backend
-    restart: always
+    restart: on-failure:3
 
   reservationapi:
     build:
@@ -50,7 +51,7 @@ services:
       - mongodb
     networks:
       - backend
-    restart: always
+    restart: on-failure:3
 
 networks:
   backend:

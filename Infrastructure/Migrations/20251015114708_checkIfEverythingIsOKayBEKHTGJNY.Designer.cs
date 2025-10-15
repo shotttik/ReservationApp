@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250929075152_companyMemberChangedNameToCompanyEmployee")]
-    partial class companyMemberChangedNameToCompanyEmployee
+    [Migration("20251015114708_checkIfEverythingIsOKayBEKHTGJNY")]
+    partial class checkIfEverythingIsOKayBEKHTGJNY
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -806,6 +806,120 @@ namespace Infrastructure.Migrations
                     b.ToTable("States");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int?>("Accuracy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("CheckIn")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Cleanliness")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Communication")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Locale")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Location")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Overall")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("PublishedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ReviewInviteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ReviewInviteId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ClientReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("CloseAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTimeOffset>("OpenAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.ToTable("ReviewInvites");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewMedia", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId", "MediaId");
+
+                    b.HasIndex("MediaId");
+
+                    b.ToTable("ReviewMedias");
+                });
+
             modelBuilder.Entity("Domain.Entities.User.Permission", b =>
                 {
                     b.Property<int>("ID")
@@ -1142,6 +1256,26 @@ namespace Infrastructure.Migrations
                         {
                             ID = 64,
                             Name = "UserLoginDataManage"
+                        },
+                        new
+                        {
+                            ID = 65,
+                            Name = "ReviewCreate"
+                        },
+                        new
+                        {
+                            ID = 66,
+                            Name = "ReviewInviteCreate"
+                        },
+                        new
+                        {
+                            ID = 67,
+                            Name = "ReviewInviteRead"
+                        },
+                        new
+                        {
+                            ID = 68,
+                            Name = "ReviewInviteReadLimited"
                         });
                 });
 
@@ -1468,6 +1602,21 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
+                            RoleID = 1,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 67
+                        },
+                        new
+                        {
+                            RoleID = 1,
+                            PermissionID = 68
+                        },
+                        new
+                        {
                             RoleID = 3,
                             PermissionID = 6
                         },
@@ -1579,11 +1728,6 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 33
-                        },
-                        new
-                        {
-                            RoleID = 3,
                             PermissionID = 34
                         },
                         new
@@ -1668,6 +1812,16 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
+                            RoleID = 3,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            PermissionID = 68
+                        },
+                        new
+                        {
                             RoleID = 4,
                             PermissionID = 20
                         },
@@ -1709,12 +1863,27 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
+                            PermissionID = 32
+                        },
+                        new
+                        {
+                            RoleID = 4,
                             PermissionID = 34
                         },
                         new
                         {
                             RoleID = 4,
                             PermissionID = 35
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            PermissionID = 66
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            PermissionID = 68
                         },
                         new
                         {
@@ -1730,6 +1899,21 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 2,
                             PermissionID = 31
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            PermissionID = 32
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            PermissionID = 65
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            PermissionID = 68
                         });
                 });
 
@@ -2015,6 +2199,47 @@ namespace Infrastructure.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.HasOne("Domain.Entities.ReviewReleated.ReviewInvite", "ReviewInvite")
+                        .WithOne("Review")
+                        .HasForeignKey("Domain.Entities.ReviewReleated.Review", "ReviewInviteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReviewInvite");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Booking", "Booking")
+                        .WithOne("ReviewInvite")
+                        .HasForeignKey("Domain.Entities.ReviewReleated.ReviewInvite", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Media", "Media")
+                        .WithMany("ReviewMedias")
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.ReviewReleated.Review", "Review")
+                        .WithMany("Medias")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Media");
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("Domain.Entities.User.RolePermission", b =>
                 {
                     b.HasOne("Domain.Entities.User.Permission", null)
@@ -2056,9 +2281,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("UserLoginData");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Common.Booking", b =>
+                {
+                    b.Navigation("ReviewInvite")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>
                 {
                     b.Navigation("CompanyMedias");
+
+                    b.Navigation("ReviewMedias");
                 });
 
             modelBuilder.Entity("Domain.Entities.CompanyReleated.Company", b =>
@@ -2096,6 +2329,17 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.LocationReleated.State", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.Review", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ReviewReleated.ReviewInvite", b =>
+                {
+                    b.Navigation("Review")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.User.Role", b =>
