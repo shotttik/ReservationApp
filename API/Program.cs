@@ -13,7 +13,7 @@ builder.Host.UseSerilog();
 
 // Configurations
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration.GetConnectionString("DefaultConnection")!);
+builder.Services.AddInfrastructureServices(builder.Configuration!);
 builder.Services.AddConfiguredServices(builder.Configuration);
 builder.Services.AddAuthenticationServices(builder.Configuration);
 builder.Services.AddRateLimitingServices(builder.Configuration);

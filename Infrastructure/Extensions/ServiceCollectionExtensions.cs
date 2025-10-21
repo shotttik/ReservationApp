@@ -1,8 +1,10 @@
-﻿using Domain.Interfaces.Repositories;
+﻿using Application.Options;
+using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -10,7 +12,7 @@ namespace Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
@@ -33,8 +35,11 @@ namespace Infrastructure.Extensions
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
+            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.AddTransient<IEmailService, EmailService>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 
             return services;

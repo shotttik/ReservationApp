@@ -8,7 +8,7 @@ namespace Application.Interfaces
 {
     public interface IUserService
     {
-        Task<Result<RegisterResponse>> Register(RegisterUserRequest registerUserRequest);
+        Task<Result> Register(RegisterUserRequest registerUserRequest);
         Task<Result<LoginResponse>> Login(LoginRequest loginRequest);
         Task<Result<RefreshResponse>> Refresh(RefreshTokenRequest refreshTokenRequest);
         Task<Result> Logout();
@@ -16,7 +16,7 @@ namespace Application.Interfaces
         Task<Result> ResetPassword(ResetPasswordRequest request);
         Task<Result<AuthUser>> GetUserAuthorizationData();
         Task<Result> VerifyEmail(string token);
-        Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request);
+        Task<Result> ChangeEmail(ChangeEmailRequest request);
         Task<Result> ChangePassword(ChangePasswordRequest request);
         Task<Result> Update(UpdateUserRequest request);
         Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions();

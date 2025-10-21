@@ -1,7 +1,6 @@
 ﻿using API.Attributes;
 using Application.Authentication;
 using Application.Common.Requests.Company;
-using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
@@ -108,7 +107,7 @@ namespace API.Controllers
         /// <returns>Success result if invitation is valid and accepted.</returns>
         [HttpGet("invitations/accept")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteAccept([FromQuery] string token)
         {

@@ -45,7 +45,7 @@ namespace API.Controllers
         [HttpPost("change-email")]
         [Logging(LoggingType.Full)]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
         {

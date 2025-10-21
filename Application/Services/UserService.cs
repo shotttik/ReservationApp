@@ -26,6 +26,7 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
+        private readonly IEmailService emailService;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         public UserService(
@@ -34,21 +35,23 @@ namespace Application.Services
            IUserLoginDataRepository userLoginDataRepository,
            IHttpContextAccessor httpContextAccessor,
            IAuthService authService,
-           ICacheService cacheService)
+           ICacheService cacheService,
+           IEmailService emailService)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.authService = authService;
             this.cacheService = cacheService;
+            this.emailService = emailService;
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Result<RegisterResponse>> Register(RegisterUserRequest request)
+        public async Task<Result> Register(RegisterUserRequest request)
         {
             if (await userLoginDataRepository.GetByEmail(request.Email) != null)
             {
-                return Result.Failure<RegisterResponse>(AuthResults.EmailAlreadyExists);
+                return Result.Failure(AuthResults.EmailAlreadyExists);
             }
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -77,14 +80,13 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
+            await emailService.SendEmail(
+                request.Email,
+                "Verify your email",
+                $"Please verify your email by using this url: https://localhost:7201/api/v1/auth/verify-email?token={verificationToken}"
+            ).ConfigureAwait(false);
 
-            var response = new RegisterResponse()
-            {
-                VerificationToken = verificationToken,
-                VerificationTokenExpTime = verificationTokenExpirationTime
-            };
-
-            return Result.Success(response, AuthResults.Registered);
+            return Result.Success(AuthResults.Registered);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
@@ -292,25 +294,25 @@ namespace Application.Services
 
             return Result.Success(AuthResults.EmailVerified);
         }
-        public async Task<Result<RegisterResponse>> ChangeEmail(ChangeEmailRequest request)
+        public async Task<Result> ChangeEmail(ChangeEmailRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
             if (await userLoginDataRepository.GetByEmail(request.Email) != null)
             {
-                return Result.Failure<RegisterResponse>(AuthResults.EmailAlreadyExists);
+                return Result.Failure(AuthResults.EmailAlreadyExists);
             }
             var userLoginData = await userLoginDataRepository.Get(AuthUser.ID);
             if (userLoginData is null)
             {
-                return Result.Failure<RegisterResponse>(AuthResults.UserNotFound);
+                return Result.Failure(AuthResults.UserNotFound);
             }
             if (userLoginData.VerificationStatus != VerificationStatus.Verified)
             {
-                return Result.Failure<RegisterResponse>(AuthResults.EmailNotVerified);
+                return Result.Failure(AuthResults.EmailNotVerified);
             }
             if (userLoginData.VerificationTokenExpTime != null && userLoginData.VerificationTokenExpTime > DateTime.UtcNow)
             {
-                return Result.Failure<RegisterResponse>(AuthResults.EmailChangeAlreadyRequested);
+                return Result.Failure(AuthResults.EmailChangeAlreadyRequested);
             }
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
@@ -322,11 +324,14 @@ namespace Application.Services
 
             await userLoginDataRepository.Update(userLoginData);
 
-            return Result.Success(new RegisterResponse()
-            {
-                VerificationToken = verificationToken,
-                VerificationTokenExpTime = verificationTokenExpirationTime
-            }, AuthResults.CheckEmail);
+            await emailService.SendEmail(
+                    request.Email,
+                    "Verify your email",
+                    $"Please verify your email by using this url: https://localhost:7201/api/v1/auth/verify-email?token={verificationToken}"
+                ).ConfigureAwait(false);
+
+
+            return Result.Success(AuthResults.CheckEmail);
         }
 
         public async Task<Result> ChangePassword(ChangePasswordRequest request)

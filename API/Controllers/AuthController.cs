@@ -28,7 +28,7 @@ namespace API.Controllers
         [HttpPost("register")]
         [Logging(LoggingType.ExceptBody)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<RegisterResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerUserRequest)
         {
