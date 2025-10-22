@@ -45,7 +45,6 @@ namespace Application.Extensions.Mappers
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
                 ActiveStatus = user.ActiveStatus,
-                StatusChangedAt = user.StatusChangedAt,
                 VerificationStatus = user.VerificationStatus,
                 Role = new RoleDTO
                 {
