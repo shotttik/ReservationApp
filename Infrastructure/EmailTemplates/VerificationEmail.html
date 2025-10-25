@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Your Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    .title {
+      text-align: center;
+      color: #0d6efd;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin-top: 20px;
+      background-color: #0d6efd;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="title">Verify Your Email</h2>
+    <p>Hello {{FirstName}},</p>
+    <p>Please confirm your email by clicking the button below:</p>
+    <p style="text-align:center;">
+      <a href="{{VerificationLink}}" class="button">Verify Email</a>
+    </p>
+    <p>If the button doesn’t work, copy and paste this link into your browser:</p>
+    <p><a href="{{VerificationLink}}">{{VerificationLink}}</a></p>
+    <div class="footer">© {{Year}} Reservation App. All rights reserved.</div>
+  </div>
+</body>
+</html>

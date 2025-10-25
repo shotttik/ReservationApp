@@ -1,6 +1,7 @@
 ﻿using Application.Options;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Infrastructure.EmailTemplates;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,10 @@ namespace Infrastructure.Extensions
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
             services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
+            // email
             services.AddTransient<IEmailService, EmailService>();
+            services.AddSingleton<EmailTemplateBuilder>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

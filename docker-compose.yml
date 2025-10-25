@@ -5,30 +5,26 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Strong123!
-    ports:
-      - "1433:1433"
-    networks:
-      - backend
+    ports: ["1433:1433"]
+    networks: [backend]
     restart: on-failure:3
-
+    pull_policy: if_not_present
 
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - backend
+    ports: ["6379:6379"]
+    networks: [backend]
     restart: on-failure:3
+    pull_policy: if_not_present
 
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    ports:
-      - "27017:27017"
-    networks:
-      - backend
+    ports: ["27017:27017"]
+    networks: [backend]
     restart: on-failure:3
+    pull_policy: if_not_present
 
   reservationapi:
     build:
@@ -43,15 +39,11 @@ services:
       - Jwt__Key=0F37AA521B33461D8530CD54312D8AFB
       - Jwt__Issuer=https://myapp.example.com
       - Jwt__Audience=https://api.example.com
-    ports:  
-      - "5000:8080"
-    depends_on:
-      - sqlserver
-      - redis
-      - mongodb
-    networks:
-      - backend
+    ports: ["5000:8080"]
+    depends_on: [sqlserver, redis, mongodb]
+    networks: [backend]
     restart: on-failure:3
+    pull_policy: build   # only build if image missing
 
 networks:
   backend:

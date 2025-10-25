@@ -80,12 +80,7 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
-            await emailService.SendEmail(
-                request.Email,
-                "Verify your email",
-                $"Please verify your email by using this url: https://localhost:7201/api/v1/auth/verify-email?token={verificationToken}"
-            ).ConfigureAwait(false);
-
+            emailService.SendVerificationEmailAsync(request.Email, request.FirstName, verificationToken);
             return Result.Success(AuthResults.Registered);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
@@ -323,13 +318,7 @@ namespace Application.Services
             userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
 
             await userLoginDataRepository.Update(userLoginData);
-
-            await emailService.SendEmail(
-                    request.Email,
-                    "Verify your email",
-                    $"Please verify your email by using this url: https://localhost:7201/api/v1/auth/verify-email?token={verificationToken}"
-                ).ConfigureAwait(false);
-
+            emailService.SendVerificationEmailAsync(request.Email, AuthUser.FirstName, verificationToken);
 
             return Result.Success(AuthResults.CheckEmail);
         }
