@@ -11,9 +11,10 @@ namespace Application.Interfaces
     {
         Task<Result<string>> InviteEmployee(int employeeId);
         Task<Result> InviteAccept(string token);
-        Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request);
-        Task<Result> ServicesUpdate(int routeCompanyId, ServicesUpdateRequest request);
-        Task<Result> ServicesDelete(int routeCompanyId, int ID);
+        Task<Result> CreateServices(int routeCompanyId, ServicesCreateRequest request);
+        Task<Result> UpdateServices(int routeCompanyId, ServicesUpdateRequest request);
+        Task<Result> DeleteServices(int routeCompanyId, int ID);
+        Task<Result<List<ServiceDTO>>> RetrieveServices(int routeCompanyId, bool forPublic);
         Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
            CancellationToken cancellationToken,

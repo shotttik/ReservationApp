@@ -40,7 +40,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServicesSCreate(int companyId, [FromBody] ServicesCreateRequest request)
         {
-            Result result = await companyService.ServicesCreate(companyId, request);
+            var result = await companyService.CreateServices(companyId, request);
 
             return result.ToResponse();
         }
@@ -63,7 +63,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServicesUpdate(int companyId, [FromBody] ServicesUpdateRequest request)
         {
-            Result result = await companyService.ServicesUpdate(companyId, request);
+            var result = await companyService.UpdateServices(companyId, request);
 
             return result.ToResponse();
         }
@@ -85,8 +85,47 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CompanyServiceDelete(int companyId, int ID)
         {
-            Result result = await companyService.ServicesDelete(companyId, ID);
+            var result = await companyService.DeleteServices(companyId, ID);
 
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Retrieves all publicly available services for the specified company.
+        /// </summary>
+        /// <remarks>
+        /// Returns a list of <strong>active</strong> company services available to the public.
+        /// <br/><br/>
+        /// <b>Access:</b> Open to all users (no authentication required)
+        /// </remarks>
+        /// <param name="companyId">Unique identifier of the company.</param>
+        /// <response code="200">List of active public services or an empty list if none exist.</response>
+        [HttpGet("public")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CompanyServicesGet(int companyId)
+        {
+            var result = await companyService.RetrieveServices(companyId, true);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Retrieves all services (active and inactive) for the specified company.
+        /// </summary>
+        /// <remarks>
+        /// Returns the complete list of services, regardless of their active status.
+        /// <br/><br/>
+        /// <b>Required Roles:</b> SuperAdmin, CompanyAdmin
+        /// </remarks>
+        /// <param name="companyId">Unique identifier of the company.</param>
+        /// <response code="200">List of all company services or an empty list if none exist.</response>
+        [HttpGet]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.ServiceRead)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CompanyActiveServicesGet(int companyId)
+        {
+            var result = await companyService.RetrieveServices(companyId, false);
             return result.ToResponse();
         }
     }

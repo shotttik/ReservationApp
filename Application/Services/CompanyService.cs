@@ -119,7 +119,7 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> ServicesCreate(int routeCompanyId, ServicesCreateRequest request)
+        public async Task<Result> CreateServices(int routeCompanyId, ServicesCreateRequest request)
         {
             var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -131,7 +131,7 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> ServicesUpdate(int routeCompanyId, ServicesUpdateRequest request)
+        public async Task<Result> UpdateServices(int routeCompanyId, ServicesUpdateRequest request)
         {
             var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -143,7 +143,7 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> ServicesDelete(int routeCompanyId, int ID)
+        public async Task<Result> DeleteServices(int routeCompanyId, int ID)
         {
             var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
             if (accessError != Error.None)
@@ -158,6 +158,21 @@ namespace Application.Services
             await serviceRepository.Delete(service);
 
             return Result.Success();
+        }
+        public async Task<Result<List<ServiceDTO>>> RetrieveServices(int routeCompanyId, bool forPublic)
+        {
+            if (!forPublic)
+            {
+                var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
+                if (accessError != Error.None)
+                {
+                    return Result.Failure<List<ServiceDTO>>(accessError);
+                }
+            }
+            var services = await serviceRepository.GetServicesByCompanyId(routeCompanyId, forPublic);
+            var serviceDTOs = services.Select(s => s.MapToDTO()).ToList();
+
+            return Result.Success(serviceDTOs);
         }
         public async Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,

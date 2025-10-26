@@ -261,7 +261,10 @@ namespace Infrastructure
 
         private static async Task EnsureServicesAsync(ApplicationDbContext context)
         {
-            if (await context.Services.AnyAsync()) return;
+            if (await context.Services.AnyAsync())
+            {
+                return;
+            }
 
             var companyIds = await context.Companies
                 .OrderBy(c => c.ID)
@@ -279,26 +282,20 @@ namespace Infrastructure
 
             var servicesToSeed = new List<Service>
             {
-                new Service { Name = "Consultation",            Description = "One-on-one consultation service",       Duration = 15, Price = 100.00m,   CompanyID = c1 },
-                new Service { Name = "Web Development",         Description = "Custom web development services",       Duration = 15, Price = 5000.00m,  CompanyID = c2 },
-                new Service { Name = "SEO Optimization",        Description = "Search engine optimization services",   Duration = 15, Price = 1500.00m,  CompanyID = c3 },
-                new Service { Name = "Mobile App Development",  Description = "Development of mobile applications",    Duration = 15, Price = 3000.00m,  CompanyID = c1 },
-                new Service { Name = "Digital Marketing",       Description = "Comprehensive digital marketing",       Duration = 15, Price = 2000.00m,  CompanyID = c2 },
-                new Service { Name = "Graphic Design",          Description = "Creative graphic design services",      Duration = 15, Price = 800.00m,   CompanyID = c3 },
-                new Service { Name = "Content Writing",         Description = "Professional content writing services", Duration = 15, Price = 500.00m,   CompanyID = c4 },
-                new Service { Name = "Social Media Management", Description = "Management of social media accounts",   Duration = 15, Price = 1200.00m,  CompanyID = c5 },
-                new Service { Name = "Data Analysis",           Description = "In-depth data analysis services",       Duration = 15, Price = 2500.00m,  CompanyID = c1 },
-                new Service { Name = "Email Marketing",         Description = "Targeted email marketing campaigns",    Duration = 15, Price = 700.00m,   CompanyID = c2 },
-                new Service { Name = "Brand Strategy",          Description = "Comprehensive brand strategy",          Duration = 15, Price = 1800.00m,  CompanyID = c3 },
+                new() { Name = "Consultation", CompanyID = c1, Description = "...", Duration = 15, Price = 100.00m },
+                new() { Name = "Web Development", CompanyID = c2, Description = "...", Duration = 15, Price = 5000.00m },
+                new() { Name = "SEO Optimization", CompanyID = c3, Description = "...", Duration = 15, Price = 1500.00m },
+                new() { Name = "Mobile App Development", CompanyID = c1, Description = "...", Duration = 15, Price = 3000.00m },
+                new() { Name = "Digital Marketing", CompanyID = c2, Description = "...", Duration = 15, Price = 2000.00m },
+                new() { Name = "Graphic Design", CompanyID = c3, Description = "...", Duration = 15, Price = 800.00m },
+                new() { Name = "Content Writing", CompanyID = c4, Description = "...", Duration = 15, Price = 500.00m },
+                new() { Name = "Social Media Management", CompanyID = c5, Description = "...", Duration = 15, Price = 1200.00m },
+                new() { Name = "Data Analysis", CompanyID = c1, Description = "...", Duration = 15, Price = 2500.00m },
+                new() { Name = "Email Marketing", CompanyID = c2, Description = "...", Duration = 15, Price = 700.00m },
+                new() { Name = "Brand Strategy", CompanyID = c3, Description = "...", Duration = 15, Price = 1800.00m }
             };
 
-            foreach (var svc in servicesToSeed)
-            {
-                bool exists = await context.Services
-                    .AnyAsync(s => s.Name == svc.Name && s.CompanyID == svc.CompanyID);
-                if (!exists) context.Services.Add(svc);
-            }
-
+            context.Services.AddRange(servicesToSeed);
             await context.SaveChangesAsync();
         }
 
