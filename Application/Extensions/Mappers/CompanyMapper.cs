@@ -21,6 +21,7 @@ namespace Application.Extensions.Mappers
                 ActiveStatus = company.ActiveStatus,
                 Location = company.Location.MapToDTO(),
                 CreatedAt = company.CreatedAt,
+                Viewed = company.Viewed,
                 Services = company.Services.Select(s => new ServiceDTO
                 {
                     ID = s.ID,

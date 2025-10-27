@@ -37,7 +37,26 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Location)
                 .Include(c => c.CompanyMedias)
                     .ThenInclude(cm => cm.Media)
-                .FirstOrDefaultAsync(c => c.ID == id);
+                .Where(e => e.ID == id)
+                   .FirstOrDefaultAsync();
+        }
+        public async Task<Company?> GetFullDataPublic(int id)
+        {
+            await _dbSet
+            .Where(c => c.ID == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.Viewed, c => c.Viewed + 1));
+
+            var company = await _dbSet
+                .AsNoTracking()
+                .Include(c => c.Services
+                    .Where(s => s.ActiveStatus == ActiveStatus.Active))
+                .Include(c => c.Location)
+                .Include(c => c.CompanyMedias)
+                    .ThenInclude(cm => cm.Media)
+                .Where(e => e.ID == id && e.ActiveStatus == ActiveStatus.Active)
+                   .FirstOrDefaultAsync();
+
+            return company;
         }
         public async Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,

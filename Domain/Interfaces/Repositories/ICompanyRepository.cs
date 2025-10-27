@@ -8,6 +8,7 @@ namespace Domain.Interfaces.Repositories
     {
         Task<bool> ExistsByDetailsAsync(string IN, string name, string? email, string? phone, int? excludeId = null);
         Task<Company?> GetFullData(int id);
+        Task<Company?> GetFullDataPublic(int id);
         Task<PagedList<CompanyDTO>> RetrievePaged(
             PagedParameters parameters,
             CancellationToken cancellationToken,

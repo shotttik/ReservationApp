@@ -15,6 +15,7 @@ namespace Domain.DTO.Company
         public CompanyType Type { get; set; } = CompanyType.None;
         public ActiveStatus ActiveStatus { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int Viewed { get; set; }
         public required LocationDTO Location { get; set; }
         public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];

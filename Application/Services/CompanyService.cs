@@ -197,8 +197,11 @@ namespace Application.Services
 
         public async Task<Result<CompanyDTO>> Get(int id, bool forPublic)
         {
-            var company = await companyRepository.GetFullData(id);
-            if (company is null || (forPublic && !company.IsActive))
+            var company = forPublic ?
+                await companyRepository.GetFullDataPublic(id)
+                : await companyRepository.GetFullData(id);
+
+            if (company is null)
             {
                 return Result.Failure<CompanyDTO>(CompanyResults.CompanyNotFound);
             }

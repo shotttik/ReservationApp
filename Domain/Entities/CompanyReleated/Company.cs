@@ -21,5 +21,6 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<Booking> Bookings { get; set; } = [];
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
         public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
+        public int Viewed { get; set; }
     }
 }
