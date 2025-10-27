@@ -3,6 +3,7 @@ using Application.Authentication;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
 using Application.Interfaces;
+using Domain.DTO.Company;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -102,7 +103,7 @@ namespace API.Controllers
         [HttpGet("public")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<ServiceDTO>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CompanyServicesGet(int companyId)
         {
             var result = await companyService.RetrieveServices(companyId, true);
@@ -122,7 +123,7 @@ namespace API.Controllers
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.ServiceRead)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<ServiceDTO>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CompanyActiveServicesGet(int companyId)
         {
             var result = await companyService.RetrieveServices(companyId, false);
