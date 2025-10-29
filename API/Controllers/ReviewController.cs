@@ -81,13 +81,13 @@ namespace API.Controllers
         /// <param name="request">The request containing the media files to upload.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A result returns address of the image or failure of the upload operation.</returns>
-        [HttpPost("medias")]
+        [HttpPost("media")]
         [HasPermission(Permission.ReviewCreate)]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<List<int>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UploadMedia([FromForm] UploadReviewMediasRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadMedia([FromForm] UploadReviewMediaRequest request, CancellationToken cancellationToken)
         {
             var result = await reviewService.UploadMedia(request, cancellationToken);
 

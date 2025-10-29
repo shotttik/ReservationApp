@@ -21,6 +21,6 @@ namespace Domain.Entities.ReviewReleated
         public DateTimeOffset? PublishedAt { get; set; }
         public int ReviewInviteId { get; set; }
         public ReviewInvite ReviewInvite { get; set; } = null!;
-        public ICollection<ReviewMedia> Medias { get; set; } = new List<ReviewMedia>();
+        public ICollection<ReviewMedia> Media { get; set; } = new List<ReviewMedia>();
     }
 }

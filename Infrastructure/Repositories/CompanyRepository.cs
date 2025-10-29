@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.Services)
                 .Include(c => c.Location)
-                .Include(c => c.CompanyMedias)
+                .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id)
                    .FirstOrDefaultAsync();
@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Services
                     .Where(s => s.ActiveStatus == ActiveStatus.Active))
                 .Include(c => c.Location)
-                .Include(c => c.CompanyMedias)
+                .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id && e.ActiveStatus == ActiveStatus.Active)
                    .FirstOrDefaultAsync();
@@ -96,7 +96,7 @@ namespace Infrastructure.Repositories
         public async Task<Company?> GetWithMedia(int id)
         {
             return await _dbSet.Where(e => e.ID == id)
-                .Include(e => e.CompanyMedias)
+                .Include(e => e.CompanyMedia)
                     .ThenInclude(e => e.Media)
                 .FirstOrDefaultAsync();
         }

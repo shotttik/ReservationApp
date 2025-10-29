@@ -20,7 +20,7 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<Service> Services { get; set; } = [];
         public ICollection<Booking> Bookings { get; set; } = [];
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
-        public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
+        public ICollection<CompanyMedia> CompanyMedia { get; set; } = [];
         public int Viewed { get; set; }
     }
 }

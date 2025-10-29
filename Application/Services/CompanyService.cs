@@ -209,10 +209,10 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result<List<int>>> UploadMedia(UploadCompanyMediasRequest request, CancellationToken cancellationToken)
+        public async Task<Result<List<int>>> UploadMedia(UploadCompanyMediaRequest request, CancellationToken cancellationToken)
         {
             var mediaIds = new List<int>();
-            foreach (var item in request.Medias)
+            foreach (var item in request.Media)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -392,11 +392,11 @@ namespace Application.Services
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);
 
             var updateMediaIds = mediaUpdates.Select(m => m.MediaId).ToHashSet();
-            var mediasExist = await mediaRepository.Exists(updateMediaIds);
-            if (!mediasExist)
+            var mediaExist = await mediaRepository.Exists(updateMediaIds);
+            if (!mediaExist)
                 return Result.Failure(MediaResults.SomeMediaDontExists);
 
-            var toRemove = company.CompanyMedias
+            var toRemove = company.CompanyMedia
                 .Where(cm => !updateMediaIds.Contains(cm.MediaID))
                 .ToList();
             if (toRemove.Count != 0)

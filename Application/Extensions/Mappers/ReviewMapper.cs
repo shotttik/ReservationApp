@@ -42,7 +42,7 @@ namespace Application.Extensions.Mappers
                 ReviewInviteId = entity.ReviewInviteId,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt,
-                Medias = entity.Medias.Select(e => e.Media.RemoteUrl)
+                Media = entity.Media.Select(e => e.Media.RemoteUrl)
             };
         }
 

@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Company
 {
-    public class UploadCompanyMediasRequest
+    public class UploadCompanyMediaRequest
     {
         [Required]
-        public required List<IFormFile> Medias { get; set; } = [];
+        public required List<IFormFile> Media { get; set; } = [];
     }
 }

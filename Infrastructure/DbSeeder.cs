@@ -96,7 +96,7 @@ namespace Infrastructure
                     await EnsureDefaultScheduleAsync(context, companyEmployee.UserAccount.ID);
 
                 // 7) Media last (so every company is present)
-                await SeedMediasAsync(context);
+                await SeedMediaAsync(context);
 
                 Debug.WriteLine("Database seeding completed successfully.");
             }
@@ -299,26 +299,26 @@ namespace Infrastructure
             await context.SaveChangesAsync();
         }
 
-        public static async Task SeedMediasAsync(ApplicationDbContext context)
+        public static async Task SeedMediaAsync(ApplicationDbContext context)
         {
-            if (await context.Medias.AnyAsync()) return;
+            if (await context.Media.AnyAsync()) return;
 
             var random = new Random();
             var companies = await context.Companies.ToListAsync();
             if (companies.Count == 0) return;
 
-            var medias = new List<Media>();
+            var media = new List<Media>();
             foreach (var company in companies)
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    medias.Add(new Media
+                    media.Add(new Media
                     {
                         OriginalName = $"Media_{company.Name}_{i + 1}",
                         RemoteUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
                         FileSizeInBytes = random.Next(1000, 5000),
                         FileType = "image/jpeg",
-                        CompanyMedias = new List<CompanyMedia>
+                        CompanyMedia = new List<CompanyMedia>
                         {
                             new CompanyMedia
                             {
@@ -330,7 +330,7 @@ namespace Infrastructure
                 }
             }
 
-            await context.Medias.AddRangeAsync(medias);
+            await context.Media.AddRangeAsync(media);
             await context.SaveChangesAsync();
         }
     }

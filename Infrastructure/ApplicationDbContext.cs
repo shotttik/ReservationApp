@@ -19,7 +19,7 @@ namespace Infrastructure
         }
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<UserLoginData> UserLoginDatas { get; set; }
-        public DbSet<UserAccountMedia> UserAccountMedias { get; set; }
+        public DbSet<UserAccountMedia> UserAccountMedia { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
@@ -35,9 +35,9 @@ namespace Infrastructure
         public DbSet<State> States { get; set; }
         public DbSet<CompanyFAQ> CompanyFAQs { get; set; }
         public DbSet<CompanyFAQCategory> CompanyFAQCategories { get; set; }
-        public DbSet<CompanyMedia> CompanyMedias { get; set; }
-        public DbSet<Media> Medias { get; set; }
-        public DbSet<ReviewMedia> ReviewMedias { get; set; }
+        public DbSet<CompanyMedia> CompanyMedia { get; set; }
+        public DbSet<Media> Media { get; set; }
+        public DbSet<ReviewMedia> ReviewMedia { get; set; }
         public DbSet<ReviewInvite> ReviewInvites { get; set; }
         public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -22,6 +22,6 @@ namespace Domain.DTO.Review
         public int ReviewInviteId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public IEnumerable<string> Medias { get; set; } = [];
+        public IEnumerable<string> Media { get; set; } = [];
     }
 }

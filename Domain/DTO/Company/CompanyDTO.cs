@@ -19,6 +19,6 @@ namespace Domain.DTO.Company
         public required LocationDTO Location { get; set; }
         public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];
-        public IEnumerable<MediaDTO> Medias { get; set; } = [];
+        public IEnumerable<MediaDTO> Media { get; set; } = [];
     }
 }

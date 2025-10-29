@@ -20,7 +20,7 @@ namespace Application.Interfaces
            CancellationToken cancellationToken,
            bool forPublic);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
-        Task<Result<List<int>>> UploadMedia(UploadCompanyMediasRequest request, CancellationToken cancellationToken);
+        Task<Result<List<int>>> UploadMedia(UploadCompanyMediaRequest request, CancellationToken cancellationToken);
         Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request);
         Task<Result> CreateEmployee(int routeCompanyId, EmployeeCreateRequest request);
         Task<Result> UpdateEmployee(int routeCompanyId, EmployeeUpdateRequest request);

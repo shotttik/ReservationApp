@@ -31,7 +31,7 @@ namespace Application.Extensions.Mappers
                     Price = s.Price,
                     ActiveStatus = s.ActiveStatus,
                 }).ToList(),
-                Medias = company.CompanyMedias.Select(cm => new MediaDTO
+                Media = company.CompanyMedia.Select(cm => new MediaDTO
                 {
                     ID = cm.MediaID,
                     IsMain = cm.IsMain,

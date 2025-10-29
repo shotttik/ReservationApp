@@ -20,7 +20,7 @@ namespace Domain.Entities.User
         public ICollection<Booking> BookingsAsEmployee { get; set; } = [];
         public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
         public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
-        public ICollection<UserAccountMedia> UserAccountMedias { get; set; } = [];
+        public ICollection<UserAccountMedia> UserAccountMedia { get; set; } = [];
         //is available by given date time (eg workschedule + exceptions)
         public bool IsAvailable(DateTime dateTime)
         {

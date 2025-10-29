@@ -4,6 +4,6 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IReviewMediaRepository
     {
-        Task AddRange(IEnumerable<ReviewMedia> reviewMedias);
+        Task AddRange(IEnumerable<ReviewMedia> reviewMedia);
     }
 }

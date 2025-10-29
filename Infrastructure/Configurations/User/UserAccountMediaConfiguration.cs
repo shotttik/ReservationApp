@@ -10,11 +10,11 @@ namespace Infrastructure.Configurations.User
         {
             builder.HasKey(e => new { e.UserAccountId, e.MediaId });
             builder.HasOne(e => e.UserAccount)
-                .WithMany(ua => ua.UserAccountMedias)
+                .WithMany(ua => ua.UserAccountMedia)
                 .HasForeignKey(e => e.UserAccountId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(e => e.Media)
-                .WithMany(m => m.UserAccountMedias)
+                .WithMany(m => m.UserAccountMedia)
                 .HasForeignKey(e => e.MediaId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

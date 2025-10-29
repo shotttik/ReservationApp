@@ -107,8 +107,8 @@ namespace Application.Services
                 return Result.Failure(ReviewResults.AlreadyReviewed);
             }
 
-            var mediasExists = await mediaRepository.Exists(request.MediaIds);
-            if (!mediasExists)
+            var mediaExists = await mediaRepository.Exists(request.MediaIds);
+            if (!mediaExists)
             {
                 return Result.Failure(MediaResults.SomeMediaDontExists);
             }
@@ -117,7 +117,7 @@ namespace Application.Services
             var review = request.MapToEntity();
             await reviewRepository.Add(review);
 
-            var reviewMedias = request.MediaIds
+            var reviewMedia = request.MediaIds
                 .Select(mediaId => new ReviewMedia
                 {
                     MediaId = mediaId,
@@ -125,14 +125,14 @@ namespace Application.Services
                 })
                 .ToList();
 
-            await reviewMediaRepository.AddRange(reviewMedias);
+            await reviewMediaRepository.AddRange(reviewMedia);
 
             return Result.Success(ReviewResults.ReviewCreated);
         }
-        public async Task<Result<List<int>>> UploadMedia(UploadReviewMediasRequest request, CancellationToken cancellationToken)
+        public async Task<Result<List<int>>> UploadMedia(UploadReviewMediaRequest request, CancellationToken cancellationToken)
         {
             var mediaIds = new List<int>();
-            foreach (var item in request.Medias)
+            foreach (var item in request.Media)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 

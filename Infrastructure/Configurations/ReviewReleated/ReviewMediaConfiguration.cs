@@ -10,11 +10,11 @@ namespace Infrastructure.Configurations.ReviewReleated
         {
             builder.HasKey(cm => new { cm.ReviewId, cm.MediaId });
             builder.HasOne(cm => cm.Review)
-                .WithMany(c => c.Medias)
+                .WithMany(c => c.Media)
                 .HasForeignKey(cm => cm.ReviewId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(cm => cm.Media)
-                .WithMany(m => m.ReviewMedias)
+                .WithMany(m => m.ReviewMedia)
                 .HasForeignKey(cm => cm.MediaId)
                 .OnDelete(DeleteBehavior.Cascade);
 

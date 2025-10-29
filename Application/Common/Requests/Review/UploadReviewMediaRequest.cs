@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Review
 {
-    public class UploadReviewMediasRequest
+    public class UploadReviewMediaRequest
     {
         [Required]
-        public List<IFormFile> Medias { get; set; } = [];
+        public List<IFormFile> Media { get; set; } = [];
     }
 }
