@@ -97,7 +97,7 @@ namespace Application.Services
             {
                 return Result.Failure(CompanyResults.InviteNotFound);
             }
-            if (invitation.UserAccountID != authService.GetUserAccountID())
+            if (invitation.UserAccountID != AuthUser.UserAccountId)
             {
                 return Result.Failure(CompanyResults.InviteInvalidUser);
             }

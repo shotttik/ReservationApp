@@ -168,9 +168,8 @@ namespace Application.Services
         public async Task<Result<IEnumerable<ReviewInviteDTO>>> GetOpenReviewInvites()
         {
             var authUser = await authService.GetCurrentUser();
-            var userAccountId = authService.GetUserAccountID();
 
-            var openInvites = await reviewInviteRepository.GetOpenReviewInvites(userAccountId, Enum.Parse<Role>(authUser.Role.Name));
+            var openInvites = await reviewInviteRepository.GetOpenReviewInvites(authUser.UserAccountId, Enum.Parse<Role>(authUser.Role.Name));
 
             return openInvites.Select(e => e.MapToDTO()).ToList();
         }

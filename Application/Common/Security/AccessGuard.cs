@@ -40,14 +40,13 @@ namespace Application.Common.Security
         public async Task<Error> EnsureAccessToBooking(int? clientId, int employeeId, int companyId)
         {
             var user = await _authService.GetCurrentUser();
-            var userAccountId = _authService.GetUserAccountID();
             if (user.IsSuperUser)
                 return Error.None;
             if (user.IsCompanyAdmin && user.CompanyID == companyId)
                 return Error.None;
-            if (user.IsCompanyEmployee && userAccountId == employeeId)
+            if (user.IsCompanyEmployee && user.UserAccountId == employeeId)
                 return Error.None;
-            if (userAccountId == clientId)
+            if (user.UserAccountId == clientId)
                 return Error.None;
 
             return GenericResults.Forbidden;

@@ -34,7 +34,6 @@ namespace Application.Services
         public async Task<Result<BookingDTO>> CreateByClient(ClientBookingCreateRequest request)
         {
             var authUser = await authService.GetCurrentUser();
-            var clientUserAccountId = authService.GetUserAccountID();
 
             var employeeResult = await GetValidEmployee(request.EmployeeID);
             if (!employeeResult.IsSuccess)
@@ -43,14 +42,14 @@ namespace Application.Services
 
             var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
 
-            var requestValidationError = await ValidateCreateRequest(service, employee, request, clientUserAccountId);
+            var requestValidationError = await ValidateCreateRequest(service, employee, request, authUser.UserAccountId);
 
             if (requestValidationError != Error.None)
             {
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
 
-            var booking = request.MapToEntity(service!, clientUserAccountId, employee.CompanyID!.Value, employee.ID);
+            var booking = request.MapToEntity(service!, authUser.UserAccountId, employee.CompanyID!.Value, employee.ID);
             await bookingRepository.Add(booking);
 
             var bookingDTO = booking.MapToDTO();

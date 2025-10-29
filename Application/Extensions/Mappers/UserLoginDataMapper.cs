@@ -12,6 +12,7 @@ namespace Application.Extensions.Mappers
             {
                 Email = user.Email,
                 ID = user.ID,
+                UserAccountId = user.UserAccount.ID,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
@@ -20,11 +21,11 @@ namespace Application.Extensions.Mappers
                 {
                     ID = user.UserAccount.Role!.ID,
                     Name = user.UserAccount.Role.Name,
-                    Permissions = user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
+                    Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
                         ID = p.ID,
                         Name = p.Name
-                    }).ToList()
+                    })]
                 },
                 CompanyID = user.UserAccount.CompanyID,
                 WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
@@ -50,11 +51,11 @@ namespace Application.Extensions.Mappers
                 {
                     ID = user.UserAccount.Role!.ID,
                     Name = user.UserAccount.Role.Name,
-                    Permissions = user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
+                    Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
                         ID = p.ID,
                         Name = p.Name
-                    }).ToList()
+                    })]
                 },
                 CompanyID = user.UserAccount.CompanyID,
                 WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
