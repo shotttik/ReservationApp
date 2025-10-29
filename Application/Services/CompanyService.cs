@@ -229,7 +229,7 @@ namespace Application.Services
                     fileStream,
                     fileName,
                     contentType,
-                    Domain.Enums.UploadSubFolder.CompanyImages,
+                    Domain.Enums.UploadSubFolder.CompanyMedia,
                     cancellationToken);
 
                 var media = new Media()

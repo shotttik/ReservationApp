@@ -2,8 +2,9 @@
 {
     public enum UploadSubFolder
     {
-        UserProfilePictures,
-        CompanyImages
+        UserProfileMedia,
+        CompanyMedia,
+        ReviewMedia
     }
 }
 

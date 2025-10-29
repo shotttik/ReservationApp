@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.CompanyReleated;
 using Domain.Entities.ReviewReleated;
+using Domain.Entities.User;
 
 namespace Domain.Entities.Common
 {
@@ -11,5 +12,6 @@ namespace Domain.Entities.Common
         public long FileSizeInBytes { get; set; } = default!;             // in bytes
         public ICollection<CompanyMedia> CompanyMedias { get; set; } = [];
         public ICollection<ReviewMedia> ReviewMedias { get; set; } = [];
+        public ICollection<UserAccountMedia> UserAccountMedias { get; set; } = [];
     }
 }

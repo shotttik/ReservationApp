@@ -8,8 +8,9 @@ namespace Infrastructure.Extensions
         {
             return folder switch
             {
-                UploadSubFolder.UserProfilePictures => "user-profile-pictures",
-                UploadSubFolder.CompanyImages => "company-images",
+                UploadSubFolder.UserProfileMedia => "user-profile-media",
+                UploadSubFolder.CompanyMedia => "company-media",
+                UploadSubFolder.ReviewMedia => "review-media",
                 _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
             };
         }

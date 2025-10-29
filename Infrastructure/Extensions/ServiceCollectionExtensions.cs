@@ -17,6 +17,7 @@ namespace Infrastructure.Extensions
         {
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IUserLoginDataRepository, UserLoginDataRepository>();
+            services.AddScoped<IUserAccountMediaRepository, UserAccountMediaRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyInvitationRepository, CompanyInvitationRepository>();

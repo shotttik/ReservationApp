@@ -19,6 +19,7 @@ namespace Infrastructure
         }
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<UserLoginData> UserLoginDatas { get; set; }
+        public DbSet<UserAccountMedia> UserAccountMedias { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
@@ -47,6 +48,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new PermissionConfiguration());
             modelBuilder.ApplyConfiguration(new RolePermissionConfiguration());
+            modelBuilder.ApplyConfiguration(new UserAccountMediaConfiguration());
 
             // Company Releated
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
