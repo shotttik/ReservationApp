@@ -15,5 +15,6 @@ namespace Application.Common.Requests.User
         public Gender? Gender { get; set; }
         [Required]
         public DateOnly? DateOfBirth { get; set; }
+        public int? ImageId { get; set; }
     }
 }

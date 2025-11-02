@@ -23,5 +23,6 @@ namespace Application.Interfaces
         Task<Result> DeleteActiveSession(string sessionId);
         Task<Result> DeleteAllActiveSessions(int? UserID = null);
         Task<Result> Delete(int? userID, bool force);
+        Task<Result<int>> UploadProfileImage(UploadUserProfileImageRequest request, CancellationToken cancellationToken);
     }
 }

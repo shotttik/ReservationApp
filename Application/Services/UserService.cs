@@ -3,11 +3,13 @@ using Application.Common.Requests.User;
 using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Exceptions;
+using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Helpers;
 using Application.Interfaces;
 using Domain.DTO;
 using Domain.DTO.User;
+using Domain.Entities.Common;
 using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
@@ -27,6 +29,9 @@ namespace Application.Services
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
         private readonly IEmailService emailService;
+        private readonly IFileStorageService fileStorageService;
+        private readonly IMediaRepository mediaRepository;
+        private readonly IUserAccountMediaRepository userAccountMediaRepository;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         public UserService(
@@ -36,7 +41,10 @@ namespace Application.Services
            IHttpContextAccessor httpContextAccessor,
            IAuthService authService,
            ICacheService cacheService,
-           IEmailService emailService)
+           IEmailService emailService,
+           IFileStorageService fileStorageService,
+           IMediaRepository mediaRepository,
+           IUserAccountMediaRepository userAccountMediaRepository)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
@@ -44,6 +52,9 @@ namespace Application.Services
             this.authService = authService;
             this.cacheService = cacheService;
             this.emailService = emailService;
+            this.fileStorageService = fileStorageService;
+            this.mediaRepository = mediaRepository;
+            this.userAccountMediaRepository = userAccountMediaRepository;
             this.httpContextAccessor = httpContextAccessor;
         }
 
@@ -343,7 +354,22 @@ namespace Application.Services
         {
             var userAccountID = authService.GetUserAccountID();
             var userAccount = await userAccountRepository.Get(userAccountID);
-
+            if (request.ImageId != null)
+            {
+                var mediaExist = await mediaRepository.Exists([(int)request.ImageId]);
+                if (!mediaExist)
+                    return Result.Failure(MediaResults.SomeMediaDontExists);
+                var userAccountMedia = new UserAccountMedia
+                {
+                    UserAccountId = userAccountID,
+                    MediaId = (int)request.ImageId
+                };
+                await userAccountMediaRepository.EmptyThenAdd(userAccountMedia);
+            }
+            else
+            {
+                await userAccountMediaRepository.Empty(userAccountID);
+            }
             userAccount!.FirstName = request.FirstName;
             userAccount!.LastName = request.LastName;
             userAccount.DateOfBirth = request.DateOfBirth;
@@ -445,6 +471,38 @@ namespace Application.Services
             await DeleteAllActiveSessions(userID);
 
             return Result.Success(AuthResults.UserDisabled);
+        }
+
+        public async Task<Result<int>> UploadProfileImage(UploadUserProfileImageRequest request, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var error = request.File.IsValidImage(configuration);
+            if (error != Error.None)
+            {
+                return Result.Failure<int>(error);
+            }
+            var fileName = request.File.FileName;
+            var contentType = request.File.ContentType;
+            var fileStream = request.File.OpenReadStream();
+
+            (string OriginalPath, string WebpPath) = await fileStorageService.UploadWithWebp(
+                fileStream,
+                fileName,
+                contentType,
+                Domain.Enums.UploadSubFolder.UserProfileMedia,
+                cancellationToken);
+
+            var media = new Media()
+            {
+                OriginalName = fileName,
+                RemoteUrl = WebpPath,
+                FileType = contentType,
+                FileSizeInBytes = request.File.Length
+            };
+            await mediaRepository.Add(media, cancellationToken);
+
+            return Result.Success(media.ID);
         }
     }
 }

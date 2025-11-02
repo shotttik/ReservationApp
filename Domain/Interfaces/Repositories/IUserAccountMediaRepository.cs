@@ -4,6 +4,7 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IUserAccountMediaRepository
     {
-        Task EmptyThenAdd(UserAccountMedia entity, CancellationToken cancellationToken);
+        Task EmptyThenAdd(UserAccountMedia entity);
+        Task Empty(int userAccountId);
     }
 }

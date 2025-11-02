@@ -15,12 +15,18 @@ namespace Infrastructure.Repositories
             _dbSet = dbContext.Set<UserAccountMedia>();
         }
 
-        public async Task EmptyThenAdd(UserAccountMedia entity, CancellationToken cancellationToken)
+        public async Task Empty(int userAccountId)
         {
-            await _dbSet.Where(e => e.UserAccountId == entity.UserAccountId)
-                .ExecuteDeleteAsync(cancellationToken);
-            await _dbSet.AddAsync(entity, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+            await _dbSet.Where(e => e.UserAccountId == userAccountId)
+                .ExecuteDeleteAsync();
         }
+
+        public async Task EmptyThenAdd(UserAccountMedia entity)
+        {
+            await Empty(entity.UserAccountId);
+            await _dbSet.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
+        }
+
     }
 }

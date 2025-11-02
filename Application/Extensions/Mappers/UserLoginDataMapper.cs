@@ -17,6 +17,7 @@ namespace Application.Extensions.Mappers
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
+                ProfileImageUrl = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl,
                 Role = new RoleDTO
                 {
                     ID = user.UserAccount.Role!.ID,

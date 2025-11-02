@@ -42,6 +42,9 @@ namespace Infrastructure.Repositories
                         .ThenInclude(ur => ur!.Permissions)
                 .Include(u => u.UserAccount)
                    .ThenInclude(u => u.WorkSchedules)
+                .Include(u => u.UserAccount)
+                   .ThenInclude(u => u.UserAccountMedia)
+                        .ThenInclude(uam => uam.Media)
                 .FirstOrDefaultAsync();
 
             return userLoginData;

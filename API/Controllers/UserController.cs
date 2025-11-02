@@ -1,11 +1,11 @@
 ﻿using API.Attributes;
 using Application.Common.Requests.User;
-using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
@@ -70,7 +70,9 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Updates basic user profile data like name, birthdate, or gender.
+        /// Updates basic user profile data like name, birthdate, gender or Image.
+        /// imageId is returned from profile image upload endpoint.
+        /// if profile image is to be updated, use the profile image upload endpoint.
         /// </summary>
         /// <param name="request">Updated profile information.</param>
         /// <returns>Success if update was saved.</returns>
@@ -89,7 +91,7 @@ namespace API.Controllers
         /// Soft deletes the current user account (deactivation).
         /// </summary>
         /// <returns>Success if user is marked as deleted.</returns>
-        [HttpDelete("user")]
+        [HttpDelete()]
         [Authorize]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -98,6 +100,33 @@ namespace API.Controllers
         public async Task<IActionResult> UserDelete()
         {
             var result = await userService.Delete(null, false);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Uploads profile image for the user.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows uploading profile image. 
+        /// returned value is the ID of the uploaded media record.
+        /// and can be used to reference the image in user profile.
+        /// <para><b>Required Roles:</b> <strong>Accessible by everyone</strong></para>
+        /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
+        /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
+        /// </remarks>
+        /// <param name="request">The request containing the media file to upload.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>A result returns address of the image or failure of the upload operation.</returns>
+        [HttpPost("profile-image")]
+        [Authorize]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<int>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UploadMedia([FromForm] UploadUserProfileImageRequest request, CancellationToken cancellationToken)
+        {
+            var result = await userService.UploadProfileImage(request, cancellationToken);
 
             return result.ToResponse();
         }
