@@ -13,6 +13,7 @@ COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Shared/Shared.csproj", "Shared/"]
 COPY ["Application.Tests/Application.Tests.csproj", "Application.Tests/"]
+COPY ["Worker.Email/Worker.Email.csproj", "Worker.Email/"]
 
 RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet restore "ReservationApp.sln"

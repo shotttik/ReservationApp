@@ -1,10 +1,11 @@
 ﻿using Domain.Interfaces.Services;
 using Microsoft.Extensions.Logging;
+using Shared.RabbitMq;
 using System.Reflection;
 
 namespace Infrastructure.EmailTemplates
 {
-    public class EmailTemplateBuilder
+    public class EmailTemplateBuilder :IEmailTemplateBuilder
     {
         private readonly string _templateFolderPath;
         private readonly ILogger<IEmailService> _logger;
@@ -16,7 +17,7 @@ namespace Infrastructure.EmailTemplates
             _logger = logger;
         }
 
-        public string BuildFromTemplate(string templateName, Dictionary<string, string> placeholders)
+        private string BuildFromTemplate(string templateName, Dictionary<string, string> placeholders)
         {
             var templatePath = Path.Combine(_templateFolderPath, $"{templateName}.html");
             if (!File.Exists(templatePath))
@@ -33,8 +34,9 @@ namespace Infrastructure.EmailTemplates
             return html;
         }
 
-        public string BuildVerificationEmail(string firstName, string verificationLink)
+        public EmailMessage BuildVerificationEmailMessage(string toEmail, string firstName, string verificationLink)
         {
+            const string Subject = "Verify your email";
             var placeholders = new Dictionary<string, string>
             {
                 { "FirstName", firstName },
@@ -42,8 +44,15 @@ namespace Infrastructure.EmailTemplates
                 { "Year", DateTime.UtcNow.Year.ToString() }
 
             };
-            return BuildFromTemplate("VerificationEmail", placeholders);
-        }
+            var htmlBody = BuildFromTemplate("VerificationEmail", placeholders);
+            var emailMessage = new EmailMessage()
+            {
+                ToEmail = toEmail,
+                Subject = Subject,
+                Body = htmlBody
+            };
 
+            return emailMessage;
+        }
     }
 }

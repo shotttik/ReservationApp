@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Infrastructure.Swagger
+namespace API.Configuration.Swagger
 {
     /// <summary>
     /// Custom ProblemDetails schema for Swagger documentation

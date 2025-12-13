@@ -1,4 +1,4 @@
-﻿using Infrastructure.Swagger;
+﻿using API.Configuration.Swagger;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -47,7 +47,7 @@ namespace API.Configuration
                     options.IncludeXmlComments(xmlPath);
                 }
 
-                options.SchemaFilter<Infrastructure.Swagger.CustomProblemDetailsSchema>();
+                options.SchemaFilter<CustomProblemDetailsSchema>();
                 options.UseAllOfToExtendReferenceSchemas();
                 options.UseInlineDefinitionsForEnums();
             });

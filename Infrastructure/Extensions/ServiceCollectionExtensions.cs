@@ -2,11 +2,13 @@
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.EmailTemplates;
+using Infrastructure.RabbitMq;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.RabbitMq;
 
 
 namespace Infrastructure.Extensions
@@ -37,11 +39,15 @@ namespace Infrastructure.Extensions
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
-            services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            //@TODO remove comments
+            //services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
+            services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
             // email
-            services.AddTransient<IEmailService, EmailService>();
-            services.AddSingleton<EmailTemplateBuilder>();
+            //services.AddTransient<IEmailService, EmailService>();
+            services.AddSingleton<IEmailTemplateBuilder, EmailTemplateBuilder>();
+            // rabbitmq
+            services.AddSingleton<IMessageProducerService, MessageProducerService>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

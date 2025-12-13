@@ -1,5 +1,7 @@
 ﻿using Domain.Interfaces.Services;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Infrastructure.Services
 {

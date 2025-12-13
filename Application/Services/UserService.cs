@@ -7,6 +7,7 @@ using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Helpers;
 using Application.Interfaces;
+using Application.Options;
 using Domain.DTO;
 using Domain.DTO.User;
 using Domain.Entities.Common;
@@ -14,8 +15,10 @@ using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
+using Infrastructure.RabbitMq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Shared.Utilities;
 using Role = Domain.Entities.User.Role;
 
@@ -28,11 +31,13 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IAuthService authService;
         private readonly ICacheService cacheService;
-        private readonly IEmailService emailService;
         private readonly IFileStorageService fileStorageService;
         private readonly IMediaRepository mediaRepository;
         private readonly IUserAccountMediaRepository userAccountMediaRepository;
+        private readonly IEmailTemplateBuilder emailBuilder;
+        private readonly IMessageProducerService messageProducer;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly AppUrls appUrls;
 
         public UserService(
            IConfiguration configuration,
@@ -41,21 +46,25 @@ namespace Application.Services
            IHttpContextAccessor httpContextAccessor,
            IAuthService authService,
            ICacheService cacheService,
-           IEmailService emailService,
            IFileStorageService fileStorageService,
            IMediaRepository mediaRepository,
-           IUserAccountMediaRepository userAccountMediaRepository)
+           IUserAccountMediaRepository userAccountMediaRepository,
+           IEmailTemplateBuilder emailBuilder,
+           IOptions<AppUrls> appUrls,
+           IMessageProducerService messageProducer)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
             this.userLoginDataRepository = userLoginDataRepository;
             this.authService = authService;
             this.cacheService = cacheService;
-            this.emailService = emailService;
             this.fileStorageService = fileStorageService;
             this.mediaRepository = mediaRepository;
             this.userAccountMediaRepository = userAccountMediaRepository;
+            this.emailBuilder = emailBuilder;
+            this.messageProducer = messageProducer;
             this.httpContextAccessor = httpContextAccessor;
+            this.appUrls = appUrls.Value;
         }
 
         public async Task<Result> Register(RegisterUserRequest request)
@@ -91,7 +100,9 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
-            emailService.SendVerificationEmailAsync(request.Email, request.FirstName, verificationToken);
+            var emailMessage = emailBuilder.BuildVerificationEmailMessage(request.Email, request.FirstName, appUrls.VerificationLink);
+            await messageProducer.PublishEmailAsync(emailMessage);
+
             return Result.Success(AuthResults.Registered);
         }
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
@@ -329,7 +340,8 @@ namespace Application.Services
             userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
 
             await userLoginDataRepository.Update(userLoginData);
-            emailService.SendVerificationEmailAsync(request.Email, AuthUser.FirstName, verificationToken);
+            var emailMessage = emailBuilder.BuildVerificationEmailMessage(request.Email, AuthUser.FirstName, appUrls.VerificationLink);
+            await messageProducer.PublishEmailAsync(emailMessage);
 
             return Result.Success(AuthResults.CheckEmail);
         }
