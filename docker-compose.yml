@@ -53,10 +53,11 @@ services:
     container_name: worker_email
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - RABBITMQ_CONNECTION_STRING=rabbitmq:5672  # The connection to RabbitMQ
+      - RABBITMQ__HOST=rabbitmq
     depends_on:
-      - rabbitmq
-      - reservationapi
+      rabbitmq:
+        condition: service_healthy
+
     networks: [backend]
     restart: on-failure:3
 
@@ -69,6 +70,11 @@ services:
     networks: [backend]
     restart: on-failure:3
     pull_policy: if_not_present
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      retries: 5
+
   
 networks:
   backend:
