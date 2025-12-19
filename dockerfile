@@ -24,7 +24,5 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 
 FROM base AS final
 WORKDIR /app
-COPY wait-for-it.sh .
-RUN chmod +x wait-for-it.sh
 COPY --from=build /app/publish .
-ENTRYPOINT ["sh", "-c", "./wait-for-it.sh sqlserver:1433 --timeout=30 -- dotnet API.dll || echo 'Startup failed, exiting...'"]
+ENTRYPOINT ["dotnet", "API.dll"]

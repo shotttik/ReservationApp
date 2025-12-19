@@ -1,14 +1,25 @@
+x-dev:
+  sa_password: &sa_password "Strong123!"
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=Strong123!
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: *sa_password
+      MSSQL_PID: "Developer"
     ports: ["1433:1433"]
+    volumes:
+      - sqlserver-data:/var/opt/mssql
     networks: [backend]
     restart: on-failure:3
-    pull_policy: if_not_present
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'timeout 1 bash -c \"</dev/tcp/localhost/1433\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
 
   redis:
     image: redis:latest
@@ -16,15 +27,44 @@ services:
     ports: ["6379:6379"]
     networks: [backend]
     restart: on-failure:3
-    pull_policy: if_not_present
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    ports: ["27017:27017"]
+    ports: ["27018:27017"]
+    volumes:
+      - mongodb-data:/data/db
     networks: [backend]
     restart: on-failure:3
-    pull_policy: if_not_present
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" | grep -q 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: app
+      RABBITMQ_DEFAULT_PASS: AppPass123!
+    ports: ["5672:5672", "15672:15672"]
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks: [backend]
+    restart: on-failure:3
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   reservationapi:
     build:
@@ -32,50 +72,45 @@ services:
       dockerfile: Dockerfile
     container_name: reservationapi
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Reservation;User=sa;Password=Strong123!;TrustServerCertificate=True;
-      - Redis__ConnectionString=redis:6379
-      - Serilog__WriteTo__0__Args__databaseUrl=mongodb://mongodb:27017/ReservationApp
-      - Jwt__Key=0F37AA521B33461D8530CD54312D8AFB
-      - Jwt__Issuer=https://myapp.example.com
-      - Jwt__Audience=https://api.example.com
-      - RabbitMQ__ConnectionString=rabbitmq:5672
+      DOTNET_ENVIRONMENT: "Docker"
+      ASPNETCORE_ENVIRONMENT: "Docker"
+      ASPNETCORE_URLS: "http://+:8080"
     ports: ["5000:8080"]
-    depends_on: [sqlserver, redis, mongodb, rabbitmq]
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./logs/reservationapi:/app/Logs
     networks: [backend]
     restart: on-failure:3
-    pull_policy: build   # only build if image missing
 
   worker_email:
     build:
-      context: .  # The context for the worker (folder where Worker.Email is located)
-      dockerfile: Worker.Email/Dockerfile    # Worker Dockerfile (inside Worker.Email folder)
+      context: .
+      dockerfile: Worker.Email/Dockerfile
     container_name: worker_email
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - RABBITMQ__HOST=rabbitmq
+      DOTNET_ENVIRONMENT: "Docker"
+      ASPNETCORE_ENVIRONMENT: "Docker"
     depends_on:
       rabbitmq:
         condition: service_healthy
-
+    volumes:
+      - ./logs/worker_email:/app/Logs
     networks: [backend]
     restart: on-failure:3
 
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"  # RabbitMQ messaging port
-      - "15672:15672"  # RabbitMQ Web UI for management
-    networks: [backend]
-    restart: on-failure:3
-    pull_policy: if_not_present
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      retries: 5
-
-  
 networks:
   backend:
     driver: bridge
+
+volumes:
+  sqlserver-data:
+  mongodb-data:
+  rabbitmq-data:

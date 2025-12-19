@@ -33,6 +33,12 @@
   <ItemGroup>
     <Folder Include="Logs\" />
   </ItemGroup>
+
+  <ItemGroup>
+	  <None Update="appsettings*.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+  </ItemGroup>
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
