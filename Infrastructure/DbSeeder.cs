@@ -122,7 +122,7 @@ namespace Infrastructure
                 {
                     Email = "superadmin@example.com",
                     UserAccount = user,
-                    VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                    EmailVerificationStatus = Domain.Enums.VerificationStatus.Verified,
                     PasswordHash = hash,
                     PasswordSalt = salt
                 });
@@ -146,7 +146,7 @@ namespace Infrastructure
                 {
                     Email = "publicUser@example.com",
                     UserAccount = user,
-                    VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                    EmailVerificationStatus = Domain.Enums.VerificationStatus.Verified,
                     PasswordHash = hash,
                     PasswordSalt = salt
                 });
@@ -181,7 +181,7 @@ namespace Infrastructure
             {
                 Email = email,
                 UserAccount = account,
-                VerificationStatus = Domain.Enums.VerificationStatus.Verified,
+                EmailVerificationStatus = Domain.Enums.VerificationStatus.Verified,
                 PasswordHash = hash,
                 PasswordSalt = salt
             };

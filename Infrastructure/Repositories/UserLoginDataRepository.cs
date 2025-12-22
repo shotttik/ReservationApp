@@ -58,10 +58,10 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<UserLoginData?> GetByVerificationToken(string verificationToken)
+        public async Task<UserLoginData?> GetByEmailVerificationToken(string verificationToken)
         {
             return await _dbSet
-                .Where(uld => uld.VerificationToken == verificationToken)
+                .Where(uld => uld.EmailVerificationToken == verificationToken)
                 .FirstOrDefaultAsync();
         }
 

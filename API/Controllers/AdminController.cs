@@ -199,7 +199,7 @@ namespace API.Controllers
         /// </ul>
         /// </remarks>
         /// <param name="parameters">Paging parameters.</param>
-        /// <param name="cancellationToken">Cancellation token.</param
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated company data.</returns>
         [HttpGet("companies/paged")]
         [Tags("Administration-Company")]

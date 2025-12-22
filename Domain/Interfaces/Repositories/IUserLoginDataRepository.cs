@@ -10,7 +10,7 @@ namespace Domain.Interfaces.Repositories
         Task<UserLoginData?> GetFullUserDataByEmail(string email);
         Task<UserLoginData?> GetFullUserData(int ID);
         Task<UserLoginData?> GetWithUserAccount(int ID, int companyID);
-        Task<UserLoginData?> GetByVerificationToken(string verificationToken);
+        Task<UserLoginData?> GetByEmailVerificationToken(string verificationToken);
         Task<UserLoginData?> GetByRecoveryToken(string recoveryToken);
         Task<PagedList<UserLoginDataDTO>> RetrievePaged(
            PagedParameters parameters,

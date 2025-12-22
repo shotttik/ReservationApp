@@ -11,6 +11,7 @@ namespace Application.Extensions.Mappers
             var userDTO = new AuthUser
             {
                 Email = user.Email,
+                Phone = user.Phone,
                 ID = user.ID,
                 UserAccountId = user.UserAccount.ID,
                 FirstName = user.UserAccount.FirstName,
@@ -41,13 +42,15 @@ namespace Application.Extensions.Mappers
             var userDTO = new UserLoginDataDTO
             {
                 Email = user.Email,
+                Phone = user.Phone,
                 ID = user.ID,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
                 ActiveStatus = user.ActiveStatus,
-                VerificationStatus = user.VerificationStatus,
+                EmailVerificationStatus = user.EmailVerificationStatus,
+                PhoneVerificationStatus = user.PhoneVerificationStatus,
                 Role = new RoleDTO
                 {
                     ID = user.UserAccount.Role!.ID,

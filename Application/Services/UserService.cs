@@ -91,11 +91,11 @@ namespace Application.Services
             var userLoginData = new UserLoginData
             {
                 Email = request.Email,
-                VerificationStatus = VerificationStatus.Pending,
+                EmailVerificationStatus = VerificationStatus.Pending,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                VerificationToken = verificationToken,
-                VerificationTokenExpTime = verificationTokenExpirationTime,
+                EmailVerificationToken = verificationToken,
+                EmailVerificationTokenExpTime = verificationTokenExpirationTime,
                 UserAccount = userAccount
             };
 
@@ -113,7 +113,7 @@ namespace Application.Services
             {
                 return Result.Failure<LoginResponse>(AuthResults.UserNotFound);
             }
-            if (user.VerificationStatus != VerificationStatus.Verified)
+            if (!user.IsEmailVerified)
             {
                 return Result.Failure<LoginResponse>(AuthResults.EmailNotVerified);
             }
@@ -285,12 +285,12 @@ namespace Application.Services
         }
         public async Task<Result> VerifyEmail(string token)
         {
-            var userLoginData = await userLoginDataRepository.GetByVerificationToken(token);
+            var userLoginData = await userLoginDataRepository.GetByEmailVerificationToken(token);
             if (userLoginData is null)
             {
                 return Result.Failure(AuthResults.UserNotFound);
             }
-            if (userLoginData.VerificationTokenExpTime < DateTime.UtcNow)
+            if (userLoginData.EmailVerificationTokenExpTime < DateTime.UtcNow)
             {
                 return Result.Failure(AuthResults.TokenExpired);
             }
@@ -302,10 +302,10 @@ namespace Application.Services
             }
             else
             {
-                userLoginData.VerificationStatus = VerificationStatus.Verified;
+                userLoginData.EmailVerificationStatus = VerificationStatus.Verified;
             }
-            userLoginData.VerificationToken = null;
-            userLoginData.VerificationTokenExpTime = null;
+            userLoginData.EmailVerificationToken = null;
+            userLoginData.EmailVerificationTokenExpTime = null;
             await userLoginDataRepository.Update(userLoginData);
             await DeleteAllActiveSessions(UserID: userLoginData.ID);
 
@@ -323,11 +323,11 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserNotFound);
             }
-            if (userLoginData.VerificationStatus != VerificationStatus.Verified)
+            if (!userLoginData.IsEmailVerified)
             {
                 return Result.Failure(AuthResults.EmailNotVerified);
             }
-            if (userLoginData.VerificationTokenExpTime != null && userLoginData.VerificationTokenExpTime > DateTime.UtcNow)
+            if (userLoginData.EmailVerificationTokenExpTime != null && userLoginData.EmailVerificationTokenExpTime > DateTime.UtcNow)
             {
                 return Result.Failure(AuthResults.EmailChangeAlreadyRequested);
             }
@@ -336,8 +336,8 @@ namespace Application.Services
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             userLoginData.PendingNewEmail = request.Email;
-            userLoginData.VerificationToken = verificationToken;
-            userLoginData.VerificationTokenExpTime = verificationTokenExpirationTime;
+            userLoginData.EmailVerificationToken = verificationToken;
+            userLoginData.EmailVerificationTokenExpTime = verificationTokenExpirationTime;
 
             await userLoginDataRepository.Update(userLoginData);
             var emailMessage = emailBuilder.BuildVerificationEmailMessage(request.Email, AuthUser.FirstName, appUrls.VerificationLink);
