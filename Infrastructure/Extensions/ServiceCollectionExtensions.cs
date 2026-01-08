@@ -1,10 +1,10 @@
 ﻿using Application.Options;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Infrastructure.EmailTemplates;
 using Infrastructure.RabbitMq;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Infrastructure.Templates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +32,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<IMediaRepository, MediaRepository>();
             services.AddScoped<ICompanyMediaRepository, CompanyMediaRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IBookingGuestInfoRepository, BookingGuestInfoRepository>();
+            services.AddScoped<IBookingVerificationRepository, BookingVerificationRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IReviewInviteRepository, ReviewInviteRepository>();
             services.AddScoped<IReviewMediaRepository, ReviewMediaRepository>();
@@ -39,15 +41,16 @@ namespace Infrastructure.Extensions
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
-            //@TODO remove comments
-            //services.Configure<SmtpSettings>(configuration.GetSection("SmtpSettings"));
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
+            services.Configure<BookingOptions>(configuration.GetSection("Booking"));
             // email
-            //services.AddTransient<IEmailService, EmailService>();
             services.AddSingleton<IEmailTemplateBuilder, EmailTemplateBuilder>();
+            services.AddSingleton<ISmsTemplateBuilder, SmsTemplateBuilder>();
             // rabbitmq
             services.AddSingleton<IMessageProducerService, MessageProducerService>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

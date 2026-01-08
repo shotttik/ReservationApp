@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251228195716_AddedBookingGuestInfosAndBookingVerifications")]
+    partial class AddedBookingGuestInfosAndBookingVerifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,7 +88,7 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -121,9 +124,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DisplayName")
                         .HasMaxLength(100)
@@ -153,11 +154,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("ExpiresAt")
+                    b.Property<DateTime>("ExspiresAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ID")
@@ -2164,7 +2163,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Common.BookingGuestInfo", b =>
                 {
                     b.HasOne("Domain.Entities.Common.Booking", "Booking")
-                        .WithOne("GuestInfo")
+                        .WithOne("BookingGuestInfo")
                         .HasForeignKey("Domain.Entities.Common.BookingGuestInfo", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2175,8 +2174,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Common.BookingVerification", b =>
                 {
                     b.HasOne("Domain.Entities.Common.Booking", "Booking")
-                        .WithMany("Verifications")
-                        .HasForeignKey("BookingId")
+                        .WithOne("BookingVerification")
+                        .HasForeignKey("Domain.Entities.Common.BookingVerification", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2412,12 +2411,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Common.Booking", b =>
                 {
-                    b.Navigation("GuestInfo");
+                    b.Navigation("BookingGuestInfo");
+
+                    b.Navigation("BookingVerification");
 
                     b.Navigation("ReviewInvite")
                         .IsRequired();
-
-                    b.Navigation("Verifications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>

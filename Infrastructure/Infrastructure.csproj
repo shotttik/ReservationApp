@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <None Update="EmailTemplates\VerificationEmail.html">
+	  <None Update="Templates\CodeVerification.html">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Templates\VerificationEmail.html">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
   </ItemGroup>

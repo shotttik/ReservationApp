@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Shared.RabbitMq;
 using System.Reflection;
 
-namespace Infrastructure.EmailTemplates
+namespace Infrastructure.Templates
 {
     public class EmailTemplateBuilder :IEmailTemplateBuilder
     {
@@ -13,7 +13,7 @@ namespace Infrastructure.EmailTemplates
         public EmailTemplateBuilder(ILogger<IEmailService> logger)
         {
             var assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-            _templateFolderPath = Path.Combine(assemblyLocation, "EmailTemplates");
+            _templateFolderPath = Path.Combine(assemblyLocation, "Templates");
             _logger = logger;
         }
 
@@ -34,7 +34,7 @@ namespace Infrastructure.EmailTemplates
             return html;
         }
 
-        public EmailMessage BuildVerificationEmailMessage(string toEmail, string firstName, string verificationLink)
+        public EmailMessage BuildVerification(string toEmail, string firstName, string verificationLink)
         {
             const string Subject = "Verify your email";
             var placeholders = new Dictionary<string, string>
@@ -45,6 +45,27 @@ namespace Infrastructure.EmailTemplates
 
             };
             var htmlBody = BuildFromTemplate("VerificationEmail", placeholders);
+            var emailMessage = new EmailMessage()
+            {
+                ToEmail = toEmail,
+                Subject = Subject,
+                Body = htmlBody
+            };
+
+            return emailMessage;
+        }
+
+        public EmailMessage BuildCodeVerification(string toEmail, string? firstName, string verificationCode, int expMinutes)
+        {
+            const string Subject = "Verification code";
+            var placeholders = new Dictionary<string, string>
+            {
+                { "FirstName", firstName ?? "Guest" },
+                { "VerificationCode", verificationCode },
+                { "ExpirationMinutes", expMinutes.ToString() },
+                { "Year", DateTime.UtcNow.Year.ToString() }
+            };
+            var htmlBody = BuildFromTemplate("CodeVerification", placeholders);
             var emailMessage = new EmailMessage()
             {
                 ToEmail = toEmail,

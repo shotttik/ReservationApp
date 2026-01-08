@@ -4,8 +4,9 @@
     {
         Failed = -2,
         Canceled = -1,
-        Pending = 0,
-        Accepted = 1,
-        Completed = 2,
+        PendingVerification = 0,
+        Pending = 1,
+        Accepted = 2,
+        Completed = 3,
     }
 }

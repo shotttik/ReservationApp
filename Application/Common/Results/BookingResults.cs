@@ -14,10 +14,16 @@
         public static readonly Error NotFound = Error.NotFound("Booking.NotFound", "Booking not found.");
         public static readonly Error CompletedCantChange = Error.Validation("Booking.CompletedCantChange", "Completed bookings status cannot be changed.");
         public static readonly Error SameStatus = Error.Conflict("Booking.SameStatus", "Booking already have same status.");
+        public static readonly Error AlreadyVerified = Error.Conflict("Booking.AlreadyVerified", "Booking already verified.");
+        public static readonly Error WaitingForVerification = Error.Validation("Booking.WaitingForVerification", "Booking verification code already send and waiting for verification.");
+        public static readonly Error ClientDoesntExists = Error.Validation("Booking.ClientDoesntExists", "Client doesn't exists with given ClientId.");
+        public static readonly Error ClientOrGuestInfoMustBeProvided = Error.Validation("Booking.ClientOrGuestInfoMustBeProvided", "Client or guest info must be provided.");
+
         #endregion
         #region Success
         public static readonly SuccessInfo StatusChanged = new("Booking.StatusChanged", "Booking status changed successfully.");
         public static readonly SuccessInfo Deleted = new("Booking.Deleted", "Booking deleted successfully.");
+        public static readonly SuccessInfo VerificationCodeSent = new("Booking.VerificationCodeSent", "Booking verification code sent successfully.");
         #endregion
     }
 }

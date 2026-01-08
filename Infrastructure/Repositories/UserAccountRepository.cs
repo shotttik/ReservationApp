@@ -67,12 +67,17 @@ namespace Infrastructure.Repositories
             return userAccount;
         }
 
+        /// <summary>
+        /// Get full user account data with UserLoginDataID, user must be active.
+        /// </summary>
+        /// <param name="userLoginDataID"></param>
+        /// <returns>UserAccount or null</returns>
         public async Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID)
         {
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Where(e => e.UserLoginData.ID == userLoginDataID && e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
                 .Include(e => e.Company)
                     .ThenInclude(c => c!.Services)
                 .Include(e => e.BookingsAsEmployee)

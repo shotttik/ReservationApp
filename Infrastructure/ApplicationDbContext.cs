@@ -40,6 +40,8 @@ namespace Infrastructure
         public DbSet<ReviewMedia> ReviewMedia { get; set; }
         public DbSet<ReviewInvite> ReviewInvites { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<BookingGuestInfo> BookingGuestInfos { get; set; }
+        public DbSet<BookingVerification> BookingVerifications { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -60,6 +62,8 @@ namespace Infrastructure
 
             // Common
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingGuestInfoConfiguration());
+            modelBuilder.ApplyConfiguration(new BookingVerificationConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleExceptionConfiguration());
             modelBuilder.ApplyConfiguration(new MediaConfiguration());

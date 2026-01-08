@@ -67,5 +67,16 @@ namespace Infrastructure.Repositories
 
             return booking;
         }
+
+        public async Task<Booking?> GetWithVerificationsAndGuestInfo(int bookingId)
+        {
+            var booking = await _dbSet.
+                Where(e => e.ID == bookingId)
+                .Include(e => e.Verifications)
+                .Include(e => e.GuestInfo)
+                .FirstOrDefaultAsync();
+
+            return booking;
+        }
     }
 }

@@ -100,7 +100,7 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
-            var emailMessage = emailBuilder.BuildVerificationEmailMessage(request.Email, request.FirstName, appUrls.VerificationLink);
+            var emailMessage = emailBuilder.BuildVerification(request.Email, request.FirstName, appUrls.VerificationLink);
             await messageProducer.PublishEmailAsync(emailMessage);
 
             return Result.Success(AuthResults.Registered);
@@ -340,7 +340,7 @@ namespace Application.Services
             userLoginData.EmailVerificationTokenExpTime = verificationTokenExpirationTime;
 
             await userLoginDataRepository.Update(userLoginData);
-            var emailMessage = emailBuilder.BuildVerificationEmailMessage(request.Email, AuthUser.FirstName, appUrls.VerificationLink);
+            var emailMessage = emailBuilder.BuildVerification(request.Email, AuthUser.FirstName, appUrls.VerificationLink);
             await messageProducer.PublishEmailAsync(emailMessage);
 
             return Result.Success(AuthResults.CheckEmail);

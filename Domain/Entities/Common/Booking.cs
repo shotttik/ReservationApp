@@ -25,6 +25,8 @@ namespace Domain.Entities.Common
         public string? Note { get; set; }
 
         public virtual ReviewInvite ReviewInvite { get; set; } = null!;
+        public virtual BookingGuestInfo? GuestInfo { get; set; }
+        public virtual ICollection<BookingVerification> Verifications { get; set; } = [];
         public bool IsCompleted => Status == BookingStatus.Completed;
     }
 }
