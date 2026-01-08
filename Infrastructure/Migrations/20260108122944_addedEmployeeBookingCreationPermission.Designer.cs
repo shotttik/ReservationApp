@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251222151711_AddedPhoneNumberFieldToUserLoginData")]
-    partial class AddedPhoneNumberFieldToUserLoginData
+    [Migration("20260108122944_addedEmployeeBookingCreationPermission")]
+    partial class addedEmployeeBookingCreationPermission
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,9 +86,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -102,6 +100,89 @@ namespace Infrastructure.Migrations
                     b.HasIndex("EmployeeID");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Common.BookingGuestInfo", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ContactType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("ContactType", "Contact");
+
+                    b.ToTable("BookingGuestInfos");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Common.BookingVerification", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VerificationType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("VerificationType");
+
+                    b.ToTable("BookingVerifications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>
@@ -1844,6 +1925,11 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
+                            PermissionID = 30
+                        },
+                        new
+                        {
+                            RoleID = 4,
                             PermissionID = 31
                         },
                         new
@@ -2083,6 +2169,28 @@ namespace Infrastructure.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Common.BookingGuestInfo", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Booking", "Booking")
+                        .WithOne("GuestInfo")
+                        .HasForeignKey("Domain.Entities.Common.BookingGuestInfo", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Common.BookingVerification", b =>
+                {
+                    b.HasOne("Domain.Entities.Common.Booking", "Booking")
+                        .WithMany("Verifications")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
             modelBuilder.Entity("Domain.Entities.Common.WorkSchedule", b =>
                 {
                     b.HasOne("Domain.Entities.User.UserAccount", "UserAccount")
@@ -2312,8 +2420,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Common.Booking", b =>
                 {
+                    b.Navigation("GuestInfo");
+
                     b.Navigation("ReviewInvite")
                         .IsRequired();
+
+                    b.Navigation("Verifications");
                 });
 
             modelBuilder.Entity("Domain.Entities.Common.Media", b =>

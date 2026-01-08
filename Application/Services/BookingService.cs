@@ -123,9 +123,9 @@ namespace Application.Services
             booking.Status = BookingStatus.Accepted;
             if (bookingGuestInfo != null && bookingVerification != null)
             {
+                booking.Status = BookingStatus.PendingVerification;
                 booking.GuestInfo = bookingGuestInfo;
                 booking.Verifications.Add(bookingVerification);
-                booking.Status = BookingStatus.PendingVerification;
             }
             await _bookingRepository.Add(booking);
 

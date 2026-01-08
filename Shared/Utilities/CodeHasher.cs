@@ -29,12 +29,20 @@ namespace Shared.Utilities
         // Method To compare two hashes
         public static bool CompareHashes(string hash1, string hash2)
             => StringComparer.OrdinalIgnoreCase.Compare(hash1, hash2) == 0;
+        // Method To compare one code and one hash
+        public static bool CompareCodeAndHash(string code1, string hash2)
+        {
+            string hash1 = ComputeSha256Hash(code1);
+
+            // Compare the resulting hash strings (case-insensitive for hex strings)
+            return StringComparer.OrdinalIgnoreCase.Compare(hash1, hash2) == 0;
+        }
         // Method To generate hash code
         public static string GenerateAndHash(int length, out string code)
         {
             var random = new Random();
-            int min = (int)Math.Pow(10, length - 1); 
-            int max = (int)Math.Pow(10, length);     
+            int min = (int)Math.Pow(10, length - 1);
+            int max = (int)Math.Pow(10, length);
             code = random.Next(min, max).ToString();
             var hash = ComputeSha256Hash(code);
 

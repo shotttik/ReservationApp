@@ -107,5 +107,37 @@ namespace Application.Services
 
             return Result.Success(BookingResults.VerificationCodeSent);
         }
+        public async Task<Result> Verify(int bookingId, string code)
+        {
+            var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
+            if (booking == null || booking.GuestInfo == null)
+            {
+                return Result.Failure(BookingResults.NotFound);
+            }
+            if (booking.Status != BookingStatus.PendingVerification)
+            {
+                return Result.Failure(BookingResults.AlreadyVerified);
+            }
+            var bookingVerification = booking.Verifications.
+                OrderByDescending(e => e.CreatedAt).
+                Where(e => e.ExpiresAt > DateTime.Now && e.VerifiedAt == null).
+                FirstOrDefault();
+            if (bookingVerification == null)
+            {
+                return Result.Failure(BookingResults.VerificationCodeExpired);
+            }
+            var valid = CodeHasher.CompareCodeAndHash(code, bookingVerification.CodeHash);
+            if (!valid)
+            {
+                return Result.Failure(BookingResults.VerificationCodeIsWrong);
+            }
+
+            bookingVerification.Verify();
+            booking.Status = BookingStatus.Pending;
+
+            await _bookingRepository.Update(booking);
+
+            return Result.Success();
+        }
     }
 }

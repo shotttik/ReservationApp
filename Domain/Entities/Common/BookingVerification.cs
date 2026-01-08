@@ -10,5 +10,11 @@ namespace Domain.Entities.Common
         public string CodeHash { get; set; } = null!;
         public DateTime ExpiresAt { get; set; }
         public DateTime? VerifiedAt { get; set; }
+
+        public void Verify()
+        {
+            VerifiedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now;
+        }
     }
 }

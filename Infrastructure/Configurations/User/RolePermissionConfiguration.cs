@@ -145,6 +145,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserCreate),
             Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserUpdate),
             Create(Role.CompanyEmployee, Permission.WorkScheduleExceptionUserDelete),
+            Create(Role.CompanyEmployee, Permission.BookingCreate),
             Create(Role.CompanyEmployee, Permission.BookingRead),
             Create(Role.CompanyEmployee, Permission.BookingUpdate),
             Create(Role.CompanyEmployee, Permission.BookingCancel),

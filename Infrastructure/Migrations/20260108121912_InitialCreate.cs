@@ -74,7 +74,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Medias",
+                name: "Media",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
@@ -88,7 +88,7 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medias", x => x.ID);
+                    table.PrimaryKey("PK_Media", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,19 +123,22 @@ namespace Infrastructure.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "varbinary(255)", maxLength: 255, nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    ConfirmationToken = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    VerificationToken = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    VerificationTokenExpTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    VerificationStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    EmailVerificationToken = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    EmailVerificationTokenExpTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EmailVerificationStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    PhoneVerificationToken = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    PhoneVerificationTokenExpTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PhoneVerificationStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     RecoveryToken = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
                     RecoveryTokenExpTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PendingNewEmail = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    PendingNewPhone = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
-                    StatusChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -186,10 +189,10 @@ namespace Infrastructure.Migrations
                     Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LocationID = table.Column<int>(type: "int", nullable: false),
+                    Viewed = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
-                    StatusChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -274,8 +277,7 @@ namespace Infrastructure.Migrations
                     Order = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
-                    StatusChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -314,7 +316,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompanyMedias",
+                name: "CompanyMedia",
                 columns: table => new
                 {
                     CompanyID = table.Column<int>(type: "int", nullable: false),
@@ -323,17 +325,17 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompanyMedias", x => new { x.CompanyID, x.MediaID });
+                    table.PrimaryKey("PK_CompanyMedia", x => new { x.CompanyID, x.MediaID });
                     table.ForeignKey(
-                        name: "FK_CompanyMedias_Companies_CompanyID",
+                        name: "FK_CompanyMedia_Companies_CompanyID",
                         column: x => x.CompanyID,
                         principalTable: "Companies",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompanyMedias_Medias_MediaID",
+                        name: "FK_CompanyMedia_Media_MediaID",
                         column: x => x.MediaID,
-                        principalTable: "Medias",
+                        principalTable: "Media",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -351,8 +353,7 @@ namespace Infrastructure.Migrations
                     CompanyID = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
-                    StatusChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -416,8 +417,7 @@ namespace Infrastructure.Migrations
                     CategoryID = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
-                    StatusChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -447,7 +447,7 @@ namespace Infrastructure.Migrations
                     PriceFull = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
                     PriceFinal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CancellationReason = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     Note = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -474,6 +474,30 @@ namespace Infrastructure.Migrations
                         principalTable: "UserAccounts",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAccountMedia",
+                columns: table => new
+                {
+                    UserAccountId = table.Column<int>(type: "int", nullable: false),
+                    MediaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAccountMedia", x => new { x.UserAccountId, x.MediaId });
+                    table.ForeignKey(
+                        name: "FK_UserAccountMedia_Media_MediaId",
+                        column: x => x.MediaId,
+                        principalTable: "Media",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAccountMedia_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "UserAccounts",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -521,6 +545,55 @@ namespace Infrastructure.Migrations
                         name: "FK_WorkSchedules_UserAccounts_UserAccountID",
                         column: x => x.UserAccountID,
                         principalTable: "UserAccounts",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingGuestInfos",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    ContactType = table.Column<int>(type: "int", nullable: false),
+                    Contact = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingGuestInfos", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_BookingGuestInfos_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingVerifications",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    VerificationType = table.Column<int>(type: "int", nullable: false),
+                    CodeHash = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingVerifications", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_BookingVerifications_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -582,7 +655,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReviewMedias",
+                name: "ReviewMedia",
                 columns: table => new
                 {
                     ReviewId = table.Column<int>(type: "int", nullable: false),
@@ -590,15 +663,15 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReviewMedias", x => new { x.ReviewId, x.MediaId });
+                    table.PrimaryKey("PK_ReviewMedia", x => new { x.ReviewId, x.MediaId });
                     table.ForeignKey(
-                        name: "FK_ReviewMedias_Medias_MediaId",
+                        name: "FK_ReviewMedia_Media_MediaId",
                         column: x => x.MediaId,
-                        principalTable: "Medias",
+                        principalTable: "Media",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReviewMedias_Reviews_ReviewId",
+                        name: "FK_ReviewMedia_Reviews_ReviewId",
                         column: x => x.ReviewId,
                         principalTable: "Reviews",
                         principalColumn: "ID",
@@ -754,7 +827,6 @@ namespace Infrastructure.Migrations
                     { 67, 1 },
                     { 68, 1 },
                     { 13, 2 },
-                    { 27, 2 },
                     { 31, 2 },
                     { 32, 2 },
                     { 65, 2 },
@@ -806,7 +878,6 @@ namespace Infrastructure.Migrations
                     { 23, 4 },
                     { 24, 4 },
                     { 25, 4 },
-                    { 27, 4 },
                     { 31, 4 },
                     { 32, 4 },
                     { 34, 4 },
@@ -814,6 +885,17 @@ namespace Infrastructure.Migrations
                     { 66, 4 },
                     { 68, 4 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingGuestInfos_BookingId",
+                table: "BookingGuestInfos",
+                column: "BookingId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingGuestInfos_ContactType_Contact",
+                table: "BookingGuestInfos",
+                columns: new[] { "ContactType", "Contact" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_ClientID",
@@ -829,6 +911,16 @@ namespace Infrastructure.Migrations
                 name: "IX_Bookings_EmployeeID",
                 table: "Bookings",
                 column: "EmployeeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingVerifications_BookingId",
+                table: "BookingVerifications",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingVerifications_VerificationType",
+                table: "BookingVerifications",
+                column: "VerificationType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cities_CountryId",
@@ -906,8 +998,8 @@ namespace Infrastructure.Migrations
                 filter: "[Token] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompanyMedias_MediaID",
-                table: "CompanyMedias",
+                name: "IX_CompanyMedia_MediaID",
+                table: "CompanyMedia",
                 column: "MediaID");
 
             migrationBuilder.CreateIndex(
@@ -922,8 +1014,8 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewMedias_MediaId",
-                table: "ReviewMedias",
+                name: "IX_ReviewMedia_MediaId",
+                table: "ReviewMedia",
                 column: "MediaId");
 
             migrationBuilder.CreateIndex(
@@ -956,6 +1048,11 @@ namespace Infrastructure.Migrations
                 name: "IX_States_CountryId",
                 table: "States",
                 column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAccountMedia_MediaId",
+                table: "UserAccountMedia",
+                column: "MediaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAccounts_CompanyID",
@@ -1001,6 +1098,12 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BookingGuestInfos");
+
+            migrationBuilder.DropTable(
+                name: "BookingVerifications");
+
+            migrationBuilder.DropTable(
                 name: "Cities");
 
             migrationBuilder.DropTable(
@@ -1010,16 +1113,19 @@ namespace Infrastructure.Migrations
                 name: "CompanyInvitations");
 
             migrationBuilder.DropTable(
-                name: "CompanyMedias");
+                name: "CompanyMedia");
 
             migrationBuilder.DropTable(
-                name: "ReviewMedias");
+                name: "ReviewMedia");
 
             migrationBuilder.DropTable(
                 name: "RolePermissions");
 
             migrationBuilder.DropTable(
                 name: "Services");
+
+            migrationBuilder.DropTable(
+                name: "UserAccountMedia");
 
             migrationBuilder.DropTable(
                 name: "WorkScheduleExceptions");
@@ -1034,13 +1140,13 @@ namespace Infrastructure.Migrations
                 name: "CompanyFAQCategories");
 
             migrationBuilder.DropTable(
-                name: "Medias");
-
-            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "Media");
 
             migrationBuilder.DropTable(
                 name: "Countries");

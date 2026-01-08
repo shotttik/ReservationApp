@@ -18,6 +18,8 @@
         public static readonly Error WaitingForVerification = Error.Validation("Booking.WaitingForVerification", "Booking verification code already send and waiting for verification.");
         public static readonly Error ClientDoesntExists = Error.Validation("Booking.ClientDoesntExists", "Client doesn't exists with given ClientId.");
         public static readonly Error ClientOrGuestInfoMustBeProvided = Error.Validation("Booking.ClientOrGuestInfoMustBeProvided", "Client or guest info must be provided.");
+        public static readonly Error VerificationCodeExpired = Error.Validation("Booking.VerificationCodeExpired", "Booking verification code expired.");
+        public static readonly Error VerificationCodeIsWrong = Error.Validation("Booking.VerificationCodeIsWrong", "Booking verification code is wrong.");
 
         #endregion
         #region Success

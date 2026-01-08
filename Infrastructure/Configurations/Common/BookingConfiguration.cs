@@ -25,8 +25,7 @@ namespace Infrastructure.Configurations.Common
                 .HasMaxLength(255);
             builder.Property(e => e.Status)
                 .IsRequired()
-                .HasConversion<int>()
-                .HasDefaultValue(BookingStatus.Pending);
+                .HasConversion<int>();
 
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()")

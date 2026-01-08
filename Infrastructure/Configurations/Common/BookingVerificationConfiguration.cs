@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.Common
     {
         public void Configure(EntityTypeBuilder<BookingVerification> builder)
         {
-            builder.HasKey(e => e.BookingId);
+            builder.HasKey(e => e.ID);
             builder.Property(e => e.VerificationType)
                 .IsRequired()
                 .HasConversion<int>();
@@ -25,7 +25,6 @@ namespace Infrastructure.Configurations.Common
                 .HasForeignKey(e => e.BookingId)
                 .IsRequired();
 
-            builder.HasIndex(g => g.BookingId).IsUnique();
             builder.HasIndex(g => new { g.VerificationType });
         }
     }

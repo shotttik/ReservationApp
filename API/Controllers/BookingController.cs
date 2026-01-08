@@ -18,11 +18,14 @@ namespace API.Controllers
     [Tags("Bookings")]
     public class BookingController :ControllerBase
     {
-        private readonly IBookingService bookingService;
+        private readonly IBookingService _bookingService;
+        private readonly IBookingVerificationService _bookingVerificationService;
 
-        public BookingController(IBookingService bookingService)
+        public BookingController(IBookingService bookingService,
+            IBookingVerificationService bookingVerificationService)
         {
-            this.bookingService = bookingService;
+            _bookingService = bookingService;
+            _bookingVerificationService = bookingVerificationService;
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateByClient([FromBody] ClientBookingCreateRequest request)
         {
-            var result = await bookingService.CreateByClient(request);
+            var result = await _bookingService.CreateByClient(request);
 
             return result.ToResponse();
         }
@@ -69,7 +72,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateByAdmin([FromBody] AdminBookingCreateRequest request)
         {
-            var result = await bookingService.CreateByAdmin(request);
+            var result = await _bookingService.CreateByAdmin(request);
 
             return result.ToResponse();
         }
@@ -91,7 +94,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetWeeklyPublicData(int companyId, [FromQuery] DateOnly targetDate)
         {
-            var result = await bookingService.GetWeeklyPublicData(companyId, targetDate);
+            var result = await _bookingService.GetWeeklyPublicData(companyId, targetDate);
 
             return result.ToResponse();
         }
@@ -118,7 +121,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> ChangeStatus([FromRoute] int id, [FromBody] BookingStatusChangeRequest request)
         {
-            var result = await bookingService.ChangeStatus(id, request);
+            var result = await _bookingService.ChangeStatus(id, request);
 
             return result.ToResponse();
         }
@@ -158,7 +161,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await bookingService.RetrievePaged(parameters, cancellationToken);
+            var result = await _bookingService.RetrievePaged(parameters, cancellationToken);
 
             return result.ToResponse();
         }
@@ -180,7 +183,29 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var result = await bookingService.Delete(id);
+            var result = await _bookingService.Delete(id);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Verifies the booking guest
+        /// </summary>
+        /// <remarks>
+        /// after success verifying, booking status changes from PendingVerify to Pending. 
+        /// Then must be changed status to accepted.
+        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// </remarks>
+        /// <param name="id">Booking Id</param>
+        /// <param name="code">Code that generated and returned after booking creation, or resent.</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpGet("{id:int}/verify")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Verify([FromRoute] int id, [FromQuery] string code)
+        {
+            var result = await _bookingVerificationService.Verify(id, code);
             return result.ToResponse();
         }
     }
