@@ -20,7 +20,7 @@
         public static readonly Error ClientOrGuestInfoMustBeProvided = Error.Validation("Booking.ClientOrGuestInfoMustBeProvided", "Client or guest info must be provided.");
         public static readonly Error VerificationCodeExpired = Error.Validation("Booking.VerificationCodeExpired", "Booking verification code expired.");
         public static readonly Error VerificationCodeIsWrong = Error.Validation("Booking.VerificationCodeIsWrong", "Booking verification code is wrong.");
-
+        public static readonly Error DoesntRequireVerification = Error.Validation("Booking.DoesntRequireVerification", "Booking does not require verification.");
         #endregion
         #region Success
         public static readonly SuccessInfo StatusChanged = new("Booking.StatusChanged", "Booking status changed successfully.");

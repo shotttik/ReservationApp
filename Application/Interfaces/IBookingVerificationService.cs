@@ -15,5 +15,6 @@ namespace Application.Interfaces
             );
         Task<Result> SendGuestVerification(int bookingId);
         Task<Result> Verify(int bookingId, string code);
+        Task<Result> ResendCode(int bookingId);
     }
 }

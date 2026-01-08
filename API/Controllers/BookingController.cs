@@ -208,5 +208,28 @@ namespace API.Controllers
             var result = await _bookingVerificationService.Verify(id, code);
             return result.ToResponse();
         }
+
+        /// <summary>
+        /// Resends booking verification code to the guest
+        /// </summary>
+        /// <remarks>
+        /// Generates a new verification code if the booking is in <strong>PendingVerify</strong> status.
+        /// Previous verification codes become invalid.
+        /// <br/><br/>
+        /// Required role: <strong>Accessible by everyone</strong>
+        /// </remarks>
+        /// <param name="id">Booking Id</param>
+        /// <returns>No content on success; appropriate error response on failure.</returns>
+        [HttpPost("{id:int}/verify/resend")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ResendVerification([FromRoute] int id)
+        {
+            var result = await _bookingVerificationService.ResendCode(id);
+            return result.ToResponse();
+        }
     }
 }

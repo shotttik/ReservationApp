@@ -7,6 +7,7 @@ using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.RabbitMq;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 
 namespace Application.Services
@@ -116,7 +117,7 @@ namespace Application.Services
             }
             if (booking.Status != BookingStatus.PendingVerification)
             {
-                return Result.Failure(BookingResults.AlreadyVerified);
+                return Result.Failure(BookingResults.DoesntRequireVerification);
             }
             var bookingVerification = booking.Verifications.
                 OrderByDescending(e => e.CreatedAt).
@@ -136,6 +137,36 @@ namespace Application.Services
             booking.Status = BookingStatus.Pending;
 
             await _bookingRepository.Update(booking);
+
+            return Result.Success();
+        }
+        public async Task<Result> ResendCode(int bookingId)
+        {
+            var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
+            if (booking == null || booking.GuestInfo == null)
+            {
+                return Result.Failure(BookingResults.NotFound);
+            }
+            if (booking.Status != BookingStatus.PendingVerification)
+                return Result.Failure(BookingResults.DoesntRequireVerification);
+
+            var bookingVerifications = booking.Verifications.Where(e => e.ExpiresAt > DateTime.Now);
+            if (!bookingVerifications.IsNullOrEmpty())
+            {
+                return Result.Failure(BookingResults.WaitingForVerification);
+            }
+
+            string code = string.Empty;
+
+            (var bookingVerification, code) = CreateBookingVerification(booking.GuestInfo.ContactType);
+            bookingVerification.BookingId = bookingId;
+            await _bookingVerificationRepository.Add(bookingVerification);
+
+            await SendVerificationNotification(
+                booking.GuestInfo.ContactType,
+                booking.GuestInfo.Contact,
+                booking.GuestInfo.DisplayName,
+                code);
 
             return Result.Success();
         }
