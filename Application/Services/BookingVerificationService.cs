@@ -79,36 +79,6 @@ namespace Application.Services
                     break;
             }
         }
-        public async Task<Result> SendGuestVerification(int bookingId)
-        {
-            var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
-            if (booking == null || booking.GuestInfo == null)
-            {
-                return Result.Failure(BookingResults.NotFound);
-            }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
-            if (error != Error.None)
-            {
-                return Result.Failure(error);
-            }
-            var bookingVerification = booking.Verifications.Where(e => e.ExpiresAt > DateTime.Now).FirstOrDefault();
-            if (bookingVerification != null)
-            {
-                return Result.Failure(BookingResults.WaitingForVerification);
-            }
-
-            if (booking.Status != BookingStatus.PendingVerification)
-            {
-                return Result.Failure(BookingResults.AlreadyVerified);
-            }
-            var verificationType = booking.GuestInfo.ContactType;
-            var (verification, code) = CreateBookingVerification(verificationType);
-            await _bookingVerificationRepository.Add(verification);
-
-            await SendVerificationNotification(verificationType, booking.GuestInfo.Contact, booking.GuestInfo.DisplayName, code);
-
-            return Result.Success(BookingResults.VerificationCodeSent);
-        }
         public async Task<Result> Verify(int bookingId, BookingVerificationRequest request)
         {
             var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
