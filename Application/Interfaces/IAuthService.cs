@@ -11,5 +11,6 @@ namespace Application.Interfaces
         int GetUserLoginDataID();
         Task RefreshUserCache(int? userLoginDataID = null);
         Task RefreshAuthUserCache();
+        bool IsGuestForBooking(int bookingId);
     }
 }

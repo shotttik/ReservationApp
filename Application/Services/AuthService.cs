@@ -76,7 +76,18 @@ namespace Application.Services
             }
         }
         public Task RefreshAuthUserCache() => RefreshUserCache();
+        public bool IsGuestForBooking(int bookingId)
+        {
+            var user = httpContextAccessor.HttpContext?.User;
 
+            var scope = user?.FindFirst("scope")?.Value;
+            if (scope != "booking:guest") return false;
+
+            var bookingIdClaim = user?.FindFirst("bookingId")?.Value;
+            if (!int.TryParse(bookingIdClaim, out var tokenBookingId)) return false;
+
+            return tokenBookingId == bookingId;
+        }
         private async Task ResetSessionAsync(string sessionKey, SessionInfoDTO session)
         {
             // Reset TTL (optional — can be kept same or re-applied)

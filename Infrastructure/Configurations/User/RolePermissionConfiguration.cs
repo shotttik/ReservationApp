@@ -55,6 +55,9 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.BookingDelete),
             Create(Role.SuperAdmin, Permission.BookingCancel),
             Create(Role.SuperAdmin, Permission.BookingApprove),
+            Create(Role.SuperAdmin, Permission.BookingResendCode),
+            Create(Role.SuperAdmin, Permission.BookingVerify),
+
 
             Create(Role.SuperAdmin, Permission.RoleCreate),
             Create(Role.SuperAdmin, Permission.RoleRead),
@@ -115,6 +118,8 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.BookingUpdate),
             Create(Role.CompanyAdmin, Permission.BookingCancel),
             Create(Role.CompanyAdmin, Permission.BookingApprove),
+            Create(Role.CompanyAdmin, Permission.BookingResendCode),
+            Create(Role.CompanyAdmin, Permission.BookingVerify),
 
             Create(Role.CompanyAdmin, Permission.FaqCreate),
             Create(Role.CompanyAdmin, Permission.FaqRead),
@@ -150,6 +155,9 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyEmployee, Permission.BookingUpdate),
             Create(Role.CompanyEmployee, Permission.BookingCancel),
             Create(Role.CompanyEmployee, Permission.BookingApprove),
+            Create(Role.CompanyEmployee, Permission.BookingResendCode),
+            Create(Role.CompanyEmployee, Permission.BookingVerify),
+
             Create(Role.CompanyEmployee, Permission.ReviewInviteCreate),
             Create(Role.CompanyEmployee, Permission.ReviewInviteReadLimited),
 
@@ -160,6 +168,8 @@ namespace Infrastructure.Configurations.User
             Create(Role.PublicUser, Permission.BookingRead),
             Create(Role.PublicUser, Permission.BookingUpdate),
             Create(Role.PublicUser, Permission.ReviewCreate),
+            Create(Role.PublicUser, Permission.BookingResendCode),
+            Create(Role.PublicUser, Permission.BookingVerify),
             Create(Role.PublicUser, Permission.ReviewInviteReadLimited)
             );
         }

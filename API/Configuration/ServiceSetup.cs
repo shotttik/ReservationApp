@@ -61,6 +61,8 @@ namespace API.Configuration
             services.AddHttpContextAccessor();
             services.AddAuthorization();
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, GuestOrPermissionAuthorizationHandler>();
+
             services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
             // CORS

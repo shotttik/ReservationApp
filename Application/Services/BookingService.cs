@@ -1,8 +1,11 @@
-﻿using Application.Common.Requests.Booking;
+﻿using Application.Authentication;
+using Application.Common.Requests.Booking;
+using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Application.Options;
 using Domain.Abstractions;
 using Domain.DTO;
 using Domain.Entities.Common;
@@ -10,6 +13,7 @@ using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -20,14 +24,15 @@ namespace Application.Services
         private readonly IUserAccountRepository _userAccountRepository;
         private readonly IAccessGuard _accessGuard;
         private readonly IBookingVerificationService _bookingVerificationService;
-
+        private readonly BookingSettings _bookingSettings;
 
         public BookingService(
             IBookingRepository bookingRepository,
             IAuthService authService,
             IUserAccountRepository userAccountRepository,
             IAccessGuard accessGuard,
-            IBookingVerificationService bookingVerificationService
+            IBookingVerificationService bookingVerificationService,
+            IOptions<BookingSettings> bookingSettings
             )
         {
             _bookingRepository = bookingRepository;
@@ -35,8 +40,57 @@ namespace Application.Services
             _userAccountRepository = userAccountRepository;
             _accessGuard = accessGuard;
             _bookingVerificationService = bookingVerificationService;
+            _bookingSettings = bookingSettings.Value;
         }
+        public async Task<Result<CreateBookingByGuestResponse>> CreateByGuest(GuestBookingCreateRequest request)
+        {
+            var employeeResult = await GetValidEmployee(request.EmployeeID);
+            if (!employeeResult.IsSuccess)
+                return Result.Failure<CreateBookingByGuestResponse>(employeeResult.Error);
+            var employee = employeeResult.Value!;
 
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
+            if (service == null)
+            {
+                return Result.Failure<CreateBookingByGuestResponse>(BookingResults.ServiceDoesntExists);
+            }
+            var requestValidationError = await ValidateCreateRequest(service, employee, request, null);
+
+            if (requestValidationError != Error.None)
+            {
+                return Result.Failure<CreateBookingByGuestResponse>(requestValidationError);
+            }
+            var booking = request.MapToEntity(service, null, employee.CompanyID!.Value, employee.ID);
+            var bookingGuestInfo = new BookingGuestInfo()
+            {
+                ContactType = request.GuestInfo.ContactType,
+                Contact = request.GuestInfo.Contact,
+                DisplayName = request.GuestInfo.DisplayName
+            };
+
+            (var bookingVerification, var code) = _bookingVerificationService.CreateBookingVerification(request.GuestInfo.ContactType);
+            booking.Status = BookingStatus.PendingVerification;
+            booking.GuestInfo = bookingGuestInfo;
+            booking.Verifications.Add(bookingVerification);
+
+            await _bookingRepository.Add(booking);
+
+            await _bookingVerificationService.SendVerificationNotification(
+                bookingGuestInfo.ContactType,
+                bookingGuestInfo.Contact,
+                bookingGuestInfo.DisplayName,
+                code);
+
+            var token = JWTGenerator.GenerateGuestToken(booking.ID, _bookingSettings);
+            var bookingDTO = booking.MapToDTO();
+            var response = new CreateBookingByGuestResponse()
+            {
+                Booking = bookingDTO,
+                GuestToken = token
+            };
+
+            return response;
+        }
         public async Task<Result<BookingDTO>> CreateByClient(ClientBookingCreateRequest request)
         {
             var authUser = await _authService.GetCurrentUser();
@@ -80,6 +134,12 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(accessError);
             }
+            var service = employee.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
+            if (service == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
+            }
+
             BookingGuestInfo? bookingGuestInfo = null;
             BookingVerification? bookingVerification = null;
             string code = string.Empty;
@@ -105,11 +165,6 @@ namespace Application.Services
             else
             {
                 return Result.Failure<BookingDTO>(BookingResults.ClientOrGuestInfoMustBeProvided);
-            }
-            var service = employee.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
-            if (service == null)
-            {
-                return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
             }
             var requestValidationError = await ValidateCreateRequest(service, employee, request, request.ClientId);
 
@@ -156,7 +211,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
             if (error != Error.None)
             {
                 return Result.Failure(error);

@@ -52,6 +52,8 @@
         BookingDelete,
         BookingCancel,
         BookingApprove,
+        BookingResendCode,
+        BookingVerify,
 
         // ==== Media Permissions ====
         MediaUpload,

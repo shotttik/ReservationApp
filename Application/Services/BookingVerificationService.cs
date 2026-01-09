@@ -1,4 +1,5 @@
-﻿using Application.Common.Results;
+﻿using Application.Common.Requests.Booking;
+using Application.Common.Results;
 using Application.Interfaces;
 using Application.Options;
 using Domain.Entities.Common;
@@ -14,7 +15,7 @@ namespace Application.Services
 {
     public class BookingVerificationService :IBookingVerificationService
     {
-        private readonly BookingOptions _bookingOptions;
+        private readonly BookingSettings _bookingSettings;
         private readonly ISmsTemplateBuilder _smsBuilder;
         private readonly IEmailTemplateBuilder _emailBuilder;
         private readonly IMessageProducerService _messageProducer;
@@ -23,7 +24,7 @@ namespace Application.Services
         private readonly IBookingVerificationRepository _bookingVerificationRepository;
 
         public BookingVerificationService(
-            IOptions<BookingOptions> bookingOptions,
+            IOptions<BookingSettings> bookingSettings,
             IEmailTemplateBuilder emailBuilder,
             IMessageProducerService messageProducer,
             ISmsTemplateBuilder smsBuilder,
@@ -31,7 +32,7 @@ namespace Application.Services
             IAccessGuard accessGuard,
             IBookingVerificationRepository bookingVerificationRepository)
         {
-            _bookingOptions = bookingOptions.Value;
+            _bookingSettings = bookingSettings.Value;
             _emailBuilder = emailBuilder;
             _messageProducer = messageProducer;
             _smsBuilder = smsBuilder;
@@ -43,10 +44,10 @@ namespace Application.Services
         {
             var verification = new BookingVerification();
             var code = string.Empty;
-            var codeHash = CodeHasher.GenerateAndHash(_bookingOptions.VerificationCodeLength, out code);
+            var codeHash = CodeHasher.GenerateAndHash(_bookingSettings.VerificationCodeLength, out code);
 
             verification.CodeHash = codeHash;
-            verification.ExpiresAt = DateTime.Now.AddMinutes(_bookingOptions.VerificationCodeExpirationMinutes);
+            verification.ExpiresAt = DateTime.Now.AddMinutes(_bookingSettings.VerificationCodeExpirationMinutes);
             verification.VerificationType = verificationType;
 
             return (verification, code);
@@ -65,7 +66,7 @@ namespace Application.Services
                         contact,
                         displayName,
                         code,
-                        _bookingOptions.VerificationCodeExpirationMinutes);
+                        _bookingSettings.VerificationCodeExpirationMinutes);
 
                     await _messageProducer.PublishEmailAsync(emailMessage);
                     break;
@@ -73,7 +74,7 @@ namespace Application.Services
                     var smsMessage = _smsBuilder.BuildCodeVerification(
                         contact,
                         code,
-                        _bookingOptions.VerificationCodeExpirationMinutes);
+                        _bookingSettings.VerificationCodeExpirationMinutes);
                     await _messageProducer.PublishSmsAsync(smsMessage);
                     break;
             }
@@ -85,7 +86,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -108,7 +109,7 @@ namespace Application.Services
 
             return Result.Success(BookingResults.VerificationCodeSent);
         }
-        public async Task<Result> Verify(int bookingId, string code)
+        public async Task<Result> Verify(int bookingId, BookingVerificationRequest request)
         {
             var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
             if (booking == null || booking.GuestInfo == null)
@@ -119,6 +120,12 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.DoesntRequireVerification);
             }
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure(error);
+            }
+
             var bookingVerification = booking.Verifications.
                 OrderByDescending(e => e.CreatedAt).
                 Where(e => e.ExpiresAt > DateTime.Now && e.VerifiedAt == null).
@@ -127,7 +134,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.VerificationCodeExpired);
             }
-            var valid = CodeHasher.CompareCodeAndHash(code, bookingVerification.CodeHash);
+            var valid = CodeHasher.CompareCodeAndHash(request.Code, bookingVerification.CodeHash);
             if (!valid)
             {
                 return Result.Failure(BookingResults.VerificationCodeIsWrong);
@@ -149,6 +156,12 @@ namespace Application.Services
             }
             if (booking.Status != BookingStatus.PendingVerification)
                 return Result.Failure(BookingResults.DoesntRequireVerification);
+
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure(error);
+            }
 
             var bookingVerifications = booking.Verifications.Where(e => e.ExpiresAt > DateTime.Now);
             if (!bookingVerifications.IsNullOrEmpty())

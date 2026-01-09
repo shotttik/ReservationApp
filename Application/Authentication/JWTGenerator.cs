@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Application.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,7 +34,25 @@ namespace Application.Authentication
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public static string GenerateGuestToken(int bookingId, BookingSettings bookingSettings)
+        {
+            var claims = new []
+            {
+                new Claim("bookingId", bookingId.ToString()),
+                new Claim("scope", "booking:guest")
+            };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(bookingSettings.GuestToken.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(bookingSettings.GuestToken.ExpirationMinutes),
+                signingCredentials: creds
+                );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         public static string GenerateAndHashSecureToken()
         {
             var randomNumber = new byte [64];

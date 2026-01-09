@@ -37,8 +37,11 @@ namespace Application.Common.Security
 
             return GenericResults.Forbidden;
         }
-        public async Task<Error> EnsureAccessToBooking(int? clientId, int employeeId, int companyId)
+        public async Task<Error> EnsureAccessToBooking(int bookingId, int? clientId, int employeeId, int companyId)
         {
+            if (_authService.IsGuestForBooking(bookingId))
+                return Error.None;
+
             var user = await _authService.GetCurrentUser();
             if (user.IsSuperUser)
                 return Error.None;

@@ -1,6 +1,7 @@
 ﻿using API.Attributes;
 using Application.Authentication;
 using Application.Common.Requests.Booking;
+using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
@@ -28,6 +29,29 @@ namespace API.Controllers
             _bookingVerificationService = bookingVerificationService;
         }
 
+        /// <summary>
+        /// Create a new booking by guest only.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// Creates a booking with the specified time, employee, client, service details, guest and verification info.  
+        /// Only available time slots for the employee will be accepted.  
+        /// Returns a success message or validation failure.
+        /// </remarks>
+        /// <param name="request">Booking creation request with guest info and verification info.</param>
+        /// <returns>BookingDTO when success or error result.</returns>
+        [HttpPost("guest")]
+        [MapToApiVersion("1.0")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse<CreateBookingByGuestResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateByGuest([FromBody] GuestBookingCreateRequest request)
+        {
+            var result = await _bookingService.CreateByGuest(request);
+
+            return result.ToResponse();
+        }
         /// <summary>
         /// Create a new booking.
         /// </summary>
@@ -61,7 +85,7 @@ namespace API.Controllers
         /// Only available time slots for the employee and client will be accepted.  
         /// Returns a success message or validation failure.
         /// </remarks>
-        /// <param name="request">Booking creation request with time ,service info and client info.</param>
+        /// <param name="request">Booking creation request with guest info and verification info.</param>
         /// <returns>BookingDTO when success or error result.</returns>
         [HttpPost("admin")]
         [MapToApiVersion("1.0")]
@@ -195,17 +219,18 @@ namespace API.Controllers
         /// Required role: <strong>Accessible by everyone</strong><br/><br/>
         /// </remarks>
         /// <param name="id">Booking Id</param>
-        /// <param name="code">Code that generated and returned after booking creation, or resent.</param>
+        /// <param name="request">request code that generated and returned after booking creation, or resent.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpGet("{id:int}/verify")]
+        [HttpPost("{id:int}/verify")]
+        [GuestOrPermission(Permission.BookingVerify)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Verify([FromRoute] int id, [FromQuery] string code)
+        public async Task<IActionResult> Verify([FromRoute] int id, [FromBody] BookingVerificationRequest request)
         {
-            var result = await _bookingVerificationService.Verify(id, code);
+            var result = await _bookingVerificationService.Verify(id, request);
             return result.ToResponse();
         }
 
@@ -213,14 +238,15 @@ namespace API.Controllers
         /// Resends booking verification code to the guest
         /// </summary>
         /// <remarks>
-        /// Generates a new verification code if the booking is in <strong>PendingVerify</strong> status.
+        /// Generates a new verification code if the booking is in <strong>PendingVerification</strong> status.
         /// Previous verification codes become invalid.
         /// <br/><br/>
         /// Required role: <strong>Accessible by everyone</strong>
         /// </remarks>
         /// <param name="id">Booking Id</param>
-        /// <returns>No content on success; appropriate error response on failure.</returns>
+        /// <returns>No content on success; appropriate error response on failure.</returns>'
         [HttpPost("{id:int}/verify/resend")]
+        [GuestOrPermission(Permission.BookingResendCode)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

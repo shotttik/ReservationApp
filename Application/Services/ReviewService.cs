@@ -57,7 +57,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var accessError = await accessGuard.EnsureAccessToBooking(booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var accessError = await accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);

@@ -43,7 +43,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
-            services.Configure<BookingOptions>(configuration.GetSection("Booking"));
+            services.AddOptions<BookingSettings>().BindConfiguration(BookingSettings.ConfigurationSection);
             // email
             services.AddSingleton<IEmailTemplateBuilder, EmailTemplateBuilder>();
             services.AddSingleton<ISmsTemplateBuilder, SmsTemplateBuilder>();

@@ -1,4 +1,5 @@
-﻿using Application.Common.Results;
+﻿using Application.Common.Requests.Booking;
+using Application.Common.Results;
 using Domain.Entities.Common;
 using Domain.Enums;
 
@@ -14,7 +15,7 @@ namespace Application.Interfaces
             string code
             );
         Task<Result> SendGuestVerification(int bookingId);
-        Task<Result> Verify(int bookingId, string code);
+        Task<Result> Verify(int bookingId, BookingVerificationRequest request);
         Task<Result> ResendCode(int bookingId);
     }
 }
