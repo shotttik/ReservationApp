@@ -55,7 +55,7 @@ namespace Infrastructure.Templates
             return emailMessage;
         }
 
-        public EmailMessage BuildCodeVerification(string toEmail, string? firstName, string verificationCode, int expMinutes)
+        public EmailMessage BuildCodeVerification(string toEmail, string? firstName, string verificationCode, int expMinutes, string bookingReference)
         {
             const string Subject = "Verification code";
             var placeholders = new Dictionary<string, string>
@@ -63,7 +63,8 @@ namespace Infrastructure.Templates
                 { "FirstName", firstName ?? "Guest" },
                 { "VerificationCode", verificationCode },
                 { "ExpirationMinutes", expMinutes.ToString() },
-                { "Year", DateTime.UtcNow.Year.ToString() }
+                { "Year", DateTime.UtcNow.Year.ToString() },
+                { "BookingReference", bookingReference}
             };
             var htmlBody = BuildFromTemplate("CodeVerification", placeholders);
             var emailMessage = new EmailMessage()

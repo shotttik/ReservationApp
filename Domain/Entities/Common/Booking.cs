@@ -2,10 +2,15 @@
 using Domain.Entities.ReviewReleated;
 using Domain.Entities.User;
 using Domain.Enums;
+using System.Security.Cryptography;
 namespace Domain.Entities.Common
 {
     public class Booking :BaseEntity
     {
+        public Booking()
+        {
+            Reference = GenerateReference();
+        }
         public int? ClientID { get; set; }
         public UserAccount? Client { get; set; } = null!;
         public int EmployeeID { get; set; }
@@ -23,10 +28,18 @@ namespace Domain.Entities.Common
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
         public string? CancellationReason { get; set; }
         public string? Note { get; set; }
-
+        public string Reference { get; private set; } = null!;
         public virtual ReviewInvite ReviewInvite { get; set; } = null!;
         public virtual BookingGuestInfo? GuestInfo { get; set; }
         public virtual ICollection<BookingVerification> Verifications { get; set; } = [];
         public bool IsCompleted => Status == BookingStatus.Completed;
+
+        public static string GenerateReference()
+        {
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            var bytes = RandomNumberGenerator.GetBytes(8);
+
+            return "BK-" + string.Concat(bytes.Select(b => chars [b % chars.Length]));
+        }
     }
 }

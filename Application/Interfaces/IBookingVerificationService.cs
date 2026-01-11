@@ -12,7 +12,8 @@ namespace Application.Interfaces
             VerificationType verificationType,
             string contact,
             string? displayName,
-            string code
+            string code,
+            string bookingReference
             );
         Task<Result> Verify(int bookingId, BookingVerificationRequest request);
         Task<Result> ResendCode(int bookingId);

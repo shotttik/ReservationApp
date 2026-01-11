@@ -40,6 +40,27 @@
             border: 1px solid #dee2e6;
         }
 
+        .reference-box {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-radius: 6px;
+            color: #212529;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border: 1px dashed #ced4da;
+            letter-spacing: 2px;
+        }
+
+        .label {
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
         .footer {
             text-align: center;
             font-size: 12px;
@@ -56,6 +77,9 @@
         <p>Use the verification code below to complete your authentication process:</p>
 
         <div class="verify-box">{{VerificationCode}}</div>
+
+        <div class="label">Booking Reference</div>
+        <div class="reference-box">{{BookingReference}}</div>
 
         <p>If you didn’t request this, you can safely ignore this email.</p>
         <p>This code will expire in <strong>{{ExpirationMinutes}} minutes</strong>.</p>

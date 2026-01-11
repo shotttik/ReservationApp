@@ -56,7 +56,8 @@ namespace Application.Services
             VerificationType verificationType,
             string contact,
             string? displayName,
-            string code
+            string code,
+            string bookingReference
             )
         {
             switch (verificationType)
@@ -66,7 +67,8 @@ namespace Application.Services
                         contact,
                         displayName,
                         code,
-                        _bookingSettings.VerificationCodeExpirationMinutes);
+                        _bookingSettings.VerificationCodeExpirationMinutes,
+                        bookingReference);
 
                     await _messageProducer.PublishEmailAsync(emailMessage);
                     break;
@@ -149,7 +151,8 @@ namespace Application.Services
                 booking.GuestInfo.ContactType,
                 booking.GuestInfo.Contact,
                 booking.GuestInfo.DisplayName,
-                code);
+                code,
+                booking.Reference);
 
             return Result.Success();
         }

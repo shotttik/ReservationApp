@@ -1,5 +1,4 @@
 ﻿using Domain.Entities.Common;
-using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,6 +25,13 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.Status)
                 .IsRequired()
                 .HasConversion<int>();
+            builder
+                .HasIndex(e => e.Reference)
+                .IsUnique();
+            builder
+                .Property(e => e.Reference)
+                .HasMaxLength(12)
+                .IsRequired();
 
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()")
