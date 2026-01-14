@@ -21,6 +21,9 @@
         public static readonly Error VerificationCodeExpired = Error.Validation("Booking.VerificationCodeExpired", "Booking verification code expired.");
         public static readonly Error VerificationCodeIsWrong = Error.Validation("Booking.VerificationCodeIsWrong", "Booking verification code is wrong.");
         public static readonly Error DoesntRequireVerification = Error.Validation("Booking.DoesntRequireVerification", "Booking does not require verification.");
+        public static readonly Error DoesntExists = Error.Validation("Booking.DoesntExists", "Booking doesn't exists.");
+        public static readonly Error NotValidForVerification = Error.Validation("Booking.NotValidForVerification", "Booking doesn't exists or is not valid for verification process.");
+        public static readonly Error NotValidForGuestAccess = Error.Validation("Booking.NotValidForGuestAccess","Booking doesn't exists or is not valid for guest access.");
         #endregion
         #region Success
         public static readonly SuccessInfo StatusChanged = new("Booking.StatusChanged", "Booking status changed successfully.");

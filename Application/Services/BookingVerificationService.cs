@@ -1,4 +1,6 @@
-﻿using Application.Common.Requests.Booking;
+﻿using Application.Authentication;
+using Application.Common.Requests.Booking;
+using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Application.Options;
@@ -8,7 +10,6 @@ using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.RabbitMq;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 
 namespace Application.Services
@@ -83,26 +84,21 @@ namespace Application.Services
         }
         public async Task<Result> Verify(int bookingId, BookingVerificationRequest request)
         {
-            var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
-            if (booking == null || booking.GuestInfo == null)
-            {
-                return Result.Failure(BookingResults.NotFound);
-            }
-            if (booking.Status != BookingStatus.PendingVerification)
-            {
-                return Result.Failure(BookingResults.DoesntRequireVerification);
-            }
+            var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(bookingId);
+
+            if (data == null || data.LatestPendingVerification == null)
+                return Result.Failure(BookingResults.NotValidForVerification);
+
+            var booking = data.Booking;
+            var bookingVerification = data.LatestPendingVerification;
+
             var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
             if (error != Error.None)
             {
                 return Result.Failure(error);
             }
 
-            var bookingVerification = booking.Verifications.
-                OrderByDescending(e => e.CreatedAt).
-                Where(e => e.ExpiresAt > DateTime.Now && e.VerifiedAt == null).
-                FirstOrDefault();
-            if (bookingVerification == null)
+            if (bookingVerification.ExpiresAt < DateTime.Now)
             {
                 return Result.Failure(BookingResults.VerificationCodeExpired);
             }
@@ -119,15 +115,14 @@ namespace Application.Services
 
             return Result.Success();
         }
-        public async Task<Result> ResendCode(int bookingId)
+        public async Task<Result> ResendVerificationCode(int bookingId)
         {
-            var booking = await _bookingRepository.GetWithVerificationsAndGuestInfo(bookingId);
-            if (booking == null || booking.GuestInfo == null)
-            {
-                return Result.Failure(BookingResults.NotFound);
-            }
-            if (booking.Status != BookingStatus.PendingVerification)
-                return Result.Failure(BookingResults.DoesntRequireVerification);
+            var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(bookingId);
+
+            if (data == null || data.LatestPendingVerification == null)
+                return Result.Failure(BookingResults.NotValidForVerification);
+            var booking = data.Booking;
+            var bookingVerification = data.LatestPendingVerification;
 
             var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
             if (error != Error.None)
@@ -135,17 +130,14 @@ namespace Application.Services
                 return Result.Failure(error);
             }
 
-            var bookingVerifications = booking.Verifications.Where(e => e.ExpiresAt > DateTime.Now);
-            if (!bookingVerifications.IsNullOrEmpty())
+            if (bookingVerification.ExpiresAt > DateTime.Now)
             {
                 return Result.Failure(BookingResults.WaitingForVerification);
             }
 
-            string code = string.Empty;
-
-            (var bookingVerification, code) = CreateBookingVerification(booking.GuestInfo.ContactType);
-            bookingVerification.BookingId = bookingId;
-            await _bookingVerificationRepository.Add(bookingVerification);
+            var (newBookingVerification, code) = CreateBookingVerification(booking.GuestInfo!.ContactType);
+            newBookingVerification.BookingId = bookingId;
+            await _bookingVerificationRepository.Add(newBookingVerification);
 
             await SendVerificationNotification(
                 booking.GuestInfo.ContactType,
@@ -155,6 +147,69 @@ namespace Application.Services
                 booking.Reference);
 
             return Result.Success();
+        }
+        public async Task<Result> SendGuestAccessCode(GuestBookingAccessRequest request)
+        {
+            var (reference, contact) = request;
+            var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(reference, contact);
+            if (data == null || data.LatestPendingVerification == null)
+            {
+                return Result.Failure(BookingResults.NotValidForGuestAccess);
+            }
+            var booking = data.Booking;
+            var bookingVerification = data.LatestPendingVerification;
+
+            if (bookingVerification.ExpiresAt > DateTime.Now)
+            {
+                return Result.Failure(BookingResults.WaitingForVerification);
+            }
+
+            var (newBookingVerification, code) = CreateBookingVerification(booking.GuestInfo!.ContactType);
+            newBookingVerification.BookingId = booking.ID;
+            await _bookingVerificationRepository.Add(newBookingVerification);
+
+            await SendVerificationNotification(
+                booking.GuestInfo.ContactType,
+                booking.GuestInfo.Contact,
+                booking.GuestInfo.DisplayName,
+                code,
+                booking.Reference);
+
+            return Result.Success(BookingResults.VerificationCodeSent);
+        }
+
+        public async Task<Result<CreateGuestTokenResponse>> VerifyGuestBookingAccess(GuestBookingAccessVerifyRequest request)
+        {
+            var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(request.Reference);
+
+            if (data == null || data.LatestPendingVerification == null)
+                return Result.Failure<CreateGuestTokenResponse>(BookingResults.NotValidForVerification);
+
+            var booking = data.Booking;
+            var bookingVerification = data.LatestPendingVerification;
+            if (bookingVerification.ExpiresAt < DateTime.Now)
+            {
+                return Result.Failure<CreateGuestTokenResponse>(BookingResults.VerificationCodeExpired);
+            }
+            var valid = CodeHasher.CompareCodeAndHash(request.Code, bookingVerification.CodeHash);
+            if (!valid)
+            {
+                return Result.Failure<CreateGuestTokenResponse>(BookingResults.VerificationCodeIsWrong);
+            }
+
+            bookingVerification.Verify();
+            booking.Status = BookingStatus.Pending;
+
+            await _bookingRepository.Update(booking);
+
+            var token = JWTGenerator.GenerateGuestToken(booking.ID, _bookingSettings);
+            var response = new CreateGuestTokenResponse()
+            {
+                Token = token,
+                ExpiresInMinutes = _bookingSettings.GuestToken.ExpirationMinutes
+            };
+
+            return Result.Success(response);
         }
     }
 }

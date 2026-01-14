@@ -12,6 +12,8 @@ namespace Domain.Interfaces.Repositories
             PagedParameters parameters,
             CancellationToken cancellationToken);
         Task<Booking?> GetWithReviewInvite(int bookingId);
-        Task<Booking?> GetWithVerificationsAndGuestInfo(int bookingId);
+        Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId);
+        Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference, string contact);
+        Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference);
     }
 }

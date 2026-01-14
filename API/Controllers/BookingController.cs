@@ -252,9 +252,48 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ResendVerification([FromRoute] int id)
+        public async Task<IActionResult> ResendVerificationCode([FromRoute] int id)
         {
-            var result = await _bookingVerificationService.ResendCode(id);
+            var result = await _bookingVerificationService.ResendVerificationCode(id);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Processes a guest booking access request and returns the result as an HTTP response.
+        /// </summary>
+        /// <remarks>
+        /// Sending verification code to contact.
+        /// </remarks>
+        /// <param name="request">The guest booking access request containing the necessary information to verify and access a guest booking.
+        /// Cannot be null.</param>
+        /// <returns>A result that indicates the outcome of the guest access request. Returns a 204 No Content response if access
+        /// is granted; otherwise, returns a 400 Bad Request, 403 Forbidden, or 404 Not Found response with problem
+        /// details as appropriate.</returns>
+        [HttpPost("guest/access")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SendGuestAccessCode([FromBody] GuestBookingAccessRequest request)
+        {
+            var result = await _bookingVerificationService.SendGuestAccessCode(request);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Verifies whether a guest has access to a specific booking based on the provided request details.
+        /// </summary>
+        /// <param name="request">The request containing guest and booking information to be verified. Cannot be null.</param>
+        /// <returns>A 204 No Content response if access is granted; otherwise, a 400 Bad Request, 403 Forbidden, or 404 Not
+        /// Found response with problem details describing the reason for denial.</returns>
+        [HttpPost("guest/access/verify")]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> VerifyGuestBookingAccess([FromBody] GuestBookingAccessVerifyRequest request)
+        {
+            var result = await _bookingVerificationService.VerifyGuestBookingAccess(request);
             return result.ToResponse();
         }
     }

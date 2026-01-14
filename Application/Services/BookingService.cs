@@ -87,7 +87,11 @@ namespace Application.Services
             var response = new CreateBookingByGuestResponse()
             {
                 Booking = bookingDTO,
-                GuestToken = token
+                GuestToken = new CreateGuestTokenResponse()
+                {
+                    Token = token,
+                    ExpiresInMinutes = _bookingSettings.VerificationCodeExpirationMinutes
+                }
             };
 
             return response;

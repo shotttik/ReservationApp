@@ -68,15 +68,53 @@ namespace Infrastructure.Repositories
             return booking;
         }
 
-        public async Task<Booking?> GetWithVerificationsAndGuestInfo(int bookingId)
+        public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId)
         {
-            var booking = await _dbSet.
-                Where(e => e.ID == bookingId)
-                .Include(e => e.Verifications)
-                .Include(e => e.GuestInfo)
+            return await _dbSet
+                .Where(b => b.ID == bookingId &&
+                            b.GuestInfo != null &&
+b                           .Status == BookingStatus.PendingVerification)
+                .Include(b => b.GuestInfo)
+                .Select(b => new BookingWithLatestPendingVerification(
+                    b,
+                    b.Verifications
+                        .Where(v => v.VerifiedAt == null)
+                        .OrderByDescending(v => v.CreatedAt)
+                        .FirstOrDefault()
+                ))
                 .FirstOrDefaultAsync();
+        }
 
-            return booking;
+        public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference, string contact)
+        {
+            return await _dbSet
+                .Where(b => b.Reference == reference &&
+                       b.GuestInfo != null &&
+                       b.GuestInfo.Contact == contact &&
+                       (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
+                .Include(b=> b.GuestInfo)
+                .Select(b => new BookingWithLatestPendingVerification(
+                    b,
+                    b.Verifications
+                        .Where(v => v.VerifiedAt == null)
+                        .OrderByDescending(v => v.CreatedAt)
+                        .FirstOrDefault()
+                ))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference)
+        {
+            return await _dbSet
+                .Where(b => b.Reference == reference && (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
+                .Select(b => new BookingWithLatestPendingVerification(
+                    b,
+                    b.Verifications
+                        .Where(v => v.VerifiedAt == null)
+                        .OrderByDescending(v => v.CreatedAt)
+                        .FirstOrDefault()
+                ))
+                .FirstOrDefaultAsync();
         }
     }
 }
