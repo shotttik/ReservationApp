@@ -222,7 +222,7 @@ namespace API.Controllers
         /// <param name="request">request code that generated and returned after booking creation, or resent.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpPost("{id:int}/verify")]
-        [GuestOrPermission(Permission.BookingVerify)]
+        [GuestOrUser]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -246,7 +246,7 @@ namespace API.Controllers
         /// <param name="id">Booking Id</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>'
         [HttpPost("{id:int}/verify/resend")]
-        [GuestOrPermission(Permission.BookingResendCode)]
+        [GuestOrUser]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

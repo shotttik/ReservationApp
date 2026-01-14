@@ -12,14 +12,12 @@ namespace Application.Authentication
         }
         public override async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
         {
-            if (policyName.StartsWith(GuestOrPermissionAttribute.GuestOrPermissionPolicyPrefix, StringComparison.OrdinalIgnoreCase))
+            if (policyName.StartsWith(GuestOrUserAttribute.GuestOrUserPolicyPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                var csv = policyName.Substring(GuestOrPermissionAttribute.GuestOrPermissionPolicyPrefix.Length);
-
                 return new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "Guest")
                     .RequireAuthenticatedUser()
-                    .AddRequirements(new GuestOrPermissionRequirement(csv))
+                    .AddRequirements(new GuestOrUserRequirement())
                     .Build();
             }
 

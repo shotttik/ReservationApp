@@ -2,24 +2,23 @@
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Shared.Utilities;
 
 namespace Application.Authentication
 {
-    public sealed class GuestOrPermissionAuthorizationHandler
-        :AuthorizationHandler<GuestOrPermissionRequirement>
+    public sealed class GuestOrUserAuthorizationHandler
+        :AuthorizationHandler<GuestOrUserRequirement>
     {
         private readonly ICacheService _cache;
 
-        public GuestOrPermissionAuthorizationHandler(ICacheService cache)
+        public GuestOrUserAuthorizationHandler(ICacheService cache)
         {
             _cache = cache;
         }
 
         protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
-            GuestOrPermissionRequirement requirement)
+            GuestOrUserRequirement requirement)
         {
             // A) Guest access
             if (IsGuestForThisBooking(context))
@@ -29,7 +28,7 @@ namespace Application.Authentication
             }
 
             // B) Staff permission access (same model you already have)
-            if (await HasAnyPermissionAsync(context, requirement.Permissions))
+            if (await IsAuthorized(context))
             {
                 context.Succeed(requirement);
             }
@@ -57,9 +56,8 @@ namespace Application.Authentication
             return false;
         }
 
-        private async Task<bool> HasAnyPermissionAsync(
-            AuthorizationHandlerContext context,
-            IReadOnlyList<string> requiredPermissions)
+        private async Task<bool> IsAuthorized(
+            AuthorizationHandlerContext context)
         {
             var sessionID = context.User.Claims.FirstOrDefault(x => x.Type == "SessionID")?.Value;
             if (string.IsNullOrWhiteSpace(sessionID)) return false;
@@ -67,8 +65,7 @@ namespace Application.Authentication
             var sessionInfo = await _cache.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionID));
             if (sessionInfo == null) return false;
 
-            var userPermissions = sessionInfo.AuthUser.Role.Permissions.Select(p => p.Name);
-            return userPermissions.Any(p => requiredPermissions.Contains(p));
+            return true;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace API.Configuration
             services.AddHttpContextAccessor();
             services.AddAuthorization();
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-            services.AddScoped<IAuthorizationHandler, GuestOrPermissionAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, GuestOrUserAuthorizationHandler>();
 
             services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
