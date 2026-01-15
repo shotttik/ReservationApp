@@ -108,12 +108,17 @@ namespace Application.Services
                 return Result.Failure(BookingResults.VerificationCodeIsWrong);
             }
 
+            if (bookingVerification.PendingNewContact != null) // roca axali contactis change request aris gamogzavnili
+            {
+                booking.GuestInfo!.Contact = bookingVerification.PendingNewContact;
+                booking.GuestInfo.ContactType = bookingVerification.VerificationType;
+            }
             bookingVerification.Verify();
             booking.Status = BookingStatus.Pending;
 
             await _bookingRepository.Update(booking);
 
-            return Result.Success();
+            return Result.Success(BookingResults.VerifiedSuccess);
         }
         public async Task<Result> ResendVerificationCode(int bookingId)
         {
@@ -146,7 +151,7 @@ namespace Application.Services
                 code,
                 booking.Reference);
 
-            return Result.Success();
+            return Result.Success(BookingResults.VerificationCodeSent);
         }
         public async Task<Result> SendGuestAccessCode(GuestBookingAccessRequest request)
         {
@@ -210,6 +215,40 @@ namespace Application.Services
             };
 
             return Result.Success(response);
+        }
+        public async Task<Result> UpdateGuestInfoContact(int routeBookingId, BookingGuestInfoContactUpdateRequest request)
+        {
+            var data = await _bookingRepository.GetContactUpdatableWithLatestPendingVerification(routeBookingId);
+            if (data == null)
+                return Result.Failure(BookingResults.NotValidForVerification);
+
+            var booking = data.Booking;
+
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure(error);
+            }
+            if (data.LatestPendingVerification != null && data.LatestPendingVerification!.ExpiresAt > DateTime.Now)
+            {
+                return Result.Failure(BookingResults.WaitingForVerification);
+            }
+
+            var (newBookingVerification, code) = CreateBookingVerification(request.ContactType);
+            newBookingVerification.BookingId = routeBookingId;
+            newBookingVerification.VerificationType = request.ContactType;
+            newBookingVerification.PendingNewContact = request.PendingNewContact;
+            booking.Status = BookingStatus.PendingVerification;
+            booking.Verifications.Add(newBookingVerification);
+            await _bookingRepository.Update(booking);
+            await SendVerificationNotification(
+                request.ContactType,
+                request.PendingNewContact,
+                booking.GuestInfo!.DisplayName,
+                code,
+                booking.Reference);
+
+            return Result.Success(BookingResults.VerificationCodeSent);
         }
     }
 }

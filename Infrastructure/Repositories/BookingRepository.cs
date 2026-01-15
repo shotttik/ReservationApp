@@ -73,7 +73,24 @@ namespace Infrastructure.Repositories
             return await _dbSet
                 .Where(b => b.ID == bookingId &&
                             b.GuestInfo != null &&
-b                           .Status == BookingStatus.PendingVerification)
+                            b.Status == BookingStatus.PendingVerification)
+                .Include(b => b.GuestInfo)
+                .Select(b => new BookingWithLatestPendingVerification(
+                    b,
+                    b.Verifications
+                        .Where(v => v.VerifiedAt == null)
+                        .OrderByDescending(v => v.CreatedAt)
+                        .FirstOrDefault()
+                ))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<BookingWithLatestPendingVerification?> GetContactUpdatableWithLatestPendingVerification(int bookingId)
+        {
+            return await _dbSet
+                .Where(b => b.ID == bookingId &&
+                            b.GuestInfo != null &&
+                            (b.Status == BookingStatus.PendingVerification || b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
                 .Include(b => b.GuestInfo)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
@@ -92,7 +109,7 @@ b                           .Status == BookingStatus.PendingVerification)
                        b.GuestInfo != null &&
                        b.GuestInfo.Contact == contact &&
                        (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
-                .Include(b=> b.GuestInfo)
+                .Include(b => b.GuestInfo)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
                     b.Verifications

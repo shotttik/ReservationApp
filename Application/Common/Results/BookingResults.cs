@@ -23,12 +23,13 @@
         public static readonly Error DoesntRequireVerification = Error.Validation("Booking.DoesntRequireVerification", "Booking does not require verification.");
         public static readonly Error DoesntExists = Error.Validation("Booking.DoesntExists", "Booking doesn't exists.");
         public static readonly Error NotValidForVerification = Error.Validation("Booking.NotValidForVerification", "Booking doesn't exists or is not valid for verification process.");
-        public static readonly Error NotValidForGuestAccess = Error.Validation("Booking.NotValidForGuestAccess","Booking doesn't exists or is not valid for guest access.");
+        public static readonly Error NotValidForGuestAccess = Error.Validation("Booking.NotValidForGuestAccess", "Booking doesn't exists or is not valid for guest access.");
         #endregion
         #region Success
         public static readonly SuccessInfo StatusChanged = new("Booking.StatusChanged", "Booking status changed successfully.");
         public static readonly SuccessInfo Deleted = new("Booking.Deleted", "Booking deleted successfully.");
-        public static readonly SuccessInfo VerificationCodeSent = new("Booking.VerificationCodeSent", "Booking verification code sent successfully.");
+        public static readonly SuccessInfo VerificationCodeSent = new("Booking.VerificationCodeSent", "Verification code sent successfully.");
+        public static readonly SuccessInfo VerifiedSuccess = new("Booking.VerifiedSuccess", "Verified successfully.");
         #endregion
     }
 }

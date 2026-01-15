@@ -296,5 +296,29 @@ namespace API.Controllers
             var result = await _bookingVerificationService.VerifyGuestBookingAccess(request);
             return result.ToResponse();
         }
+        /// <summary>
+        /// Updates the contact information for the guest associated with the specified booking.
+        /// If success returned booking status changes from Pending or Accepted to Pending Verifing;
+        /// only booking with this status can be accessed: PendingVerification,Pending ,Accepted;
+        /// after this method can be used booking/{id:int}/verify to verify and have a new email;
+        /// </summary>
+        /// <param name="id">The unique identifier of the booking whose guest contact information is to be updated.</param>
+        /// <param name="request">An object containing the updated guest contact information. Cannot be null.</param>
+        /// <returns>A result indicating the outcome of the operation. Returns a 204 No Content response if the update is
+        /// successful; returns a 400 Bad Request response with validation details if the request is invalid; returns a
+        /// 403 Forbidden response if the user is not authorized; or a 404 Not Found response if the booking does not
+        /// exist.</returns>
+        [HttpPost("{id:int}/guest-info/contact")]
+        [Logging(LoggingType.Full)]
+        [GuestOrUser]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateGuestInfoContact([FromRoute] int id, [FromBody] BookingGuestInfoContactUpdateRequest request)
+        {
+            var result = await _bookingVerificationService.UpdateGuestInfoContact(id, request);
+            return result.ToResponse();
+        }
     }
 }
