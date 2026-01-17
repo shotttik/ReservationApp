@@ -14,7 +14,7 @@ using Shared.Utilities;
 
 namespace Application.Services
 {
-    public class BookingVerificationService :IBookingVerificationService
+    public class GuestBookingService :IGuestBookingService
     {
         private readonly BookingSettings _bookingSettings;
         private readonly ISmsTemplateBuilder _smsBuilder;
@@ -24,7 +24,7 @@ namespace Application.Services
         private readonly IAccessGuard _accessGuard;
         private readonly IBookingVerificationRepository _bookingVerificationRepository;
 
-        public BookingVerificationService(
+        public GuestBookingService(
             IOptions<BookingSettings> bookingSettings,
             IEmailTemplateBuilder emailBuilder,
             IMessageProducerService messageProducer,
@@ -183,7 +183,7 @@ namespace Application.Services
             return Result.Success(BookingResults.VerificationCodeSent);
         }
 
-        public async Task<Result<CreateGuestTokenResponse>> VerifyGuestBookingAccess(GuestBookingAccessVerifyRequest request)
+        public async Task<Result<CreateGuestTokenResponse>> VerifyGuestAccess(GuestBookingAccessVerifyRequest request)
         {
             var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(request.Reference);
 

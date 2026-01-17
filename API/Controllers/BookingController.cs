@@ -20,13 +20,10 @@ namespace API.Controllers
     public class BookingController :ControllerBase
     {
         private readonly IBookingService _bookingService;
-        private readonly IBookingVerificationService _bookingVerificationService;
 
-        public BookingController(IBookingService bookingService,
-            IBookingVerificationService bookingVerificationService)
+        public BookingController(IBookingService bookingService)
         {
             _bookingService = bookingService;
-            _bookingVerificationService = bookingVerificationService;
         }
 
         /// <summary>
@@ -208,116 +205,6 @@ namespace API.Controllers
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var result = await _bookingService.Delete(id);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Verifies the booking guest
-        /// </summary>
-        /// <remarks>
-        /// after success verifying, booking status changes from PendingVerify to Pending. 
-        /// Then must be changed status to accepted.
-        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
-        /// </remarks>
-        /// <param name="id">Booking Id</param>
-        /// <param name="request">request code that generated and returned after booking creation, or resent.</param>
-        /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPost("{id:int}/verify")]
-        [GuestOrUser]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Verify([FromRoute] int id, [FromBody] BookingVerificationRequest request)
-        {
-            var result = await _bookingVerificationService.Verify(id, request);
-            return result.ToResponse();
-        }
-
-        /// <summary>
-        /// Resends booking verification code to the guest
-        /// </summary>
-        /// <remarks>
-        /// Generates a new verification code if the booking is in <strong>PendingVerification</strong> status.
-        /// Previous verification codes become invalid.
-        /// <br/><br/>
-        /// Required role: <strong>Accessible by everyone</strong>
-        /// </remarks>
-        /// <param name="id">Booking Id</param>
-        /// <returns>No content on success; appropriate error response on failure.</returns>'
-        [HttpPost("{id:int}/verify/resend")]
-        [GuestOrUser]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ResendVerificationCode([FromRoute] int id)
-        {
-            var result = await _bookingVerificationService.ResendVerificationCode(id);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Processes a guest booking access request and returns the result as an HTTP response.
-        /// </summary>
-        /// <remarks>
-        /// Sending verification code to contact.
-        /// </remarks>
-        /// <param name="request">The guest booking access request containing the necessary information to verify and access a guest booking.
-        /// Cannot be null.</param>
-        /// <returns>A result that indicates the outcome of the guest access request. Returns a 204 No Content response if access
-        /// is granted; otherwise, returns a 400 Bad Request, 403 Forbidden, or 404 Not Found response with problem
-        /// details as appropriate.</returns>
-        [HttpPost("guest/access")]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SendGuestAccessCode([FromBody] GuestBookingAccessRequest request)
-        {
-            var result = await _bookingVerificationService.SendGuestAccessCode(request);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Verifies whether a guest has access to a specific booking based on the provided request details.
-        /// </summary>
-        /// <param name="request">The request containing guest and booking information to be verified. Cannot be null.</param>
-        /// <returns>A 204 No Content response if access is granted; otherwise, a 400 Bad Request, 403 Forbidden, or 404 Not
-        /// Found response with problem details describing the reason for denial.</returns>
-        [HttpPost("guest/access/verify")]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> VerifyGuestBookingAccess([FromBody] GuestBookingAccessVerifyRequest request)
-        {
-            var result = await _bookingVerificationService.VerifyGuestBookingAccess(request);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Updates the contact information for the guest associated with the specified booking.
-        /// If success returned booking status changes from Pending or Accepted to Pending Verifing;
-        /// only booking with this status can be accessed: PendingVerification,Pending ,Accepted;
-        /// after this method can be used booking/{id:int}/verify to verify and have a new email;
-        /// </summary>
-        /// <param name="id">The unique identifier of the booking whose guest contact information is to be updated.</param>
-        /// <param name="request">An object containing the updated guest contact information. Cannot be null.</param>
-        /// <returns>A result indicating the outcome of the operation. Returns a 204 No Content response if the update is
-        /// successful; returns a 400 Bad Request response with validation details if the request is invalid; returns a
-        /// 403 Forbidden response if the user is not authorized; or a 404 Not Found response if the booking does not
-        /// exist.</returns>
-        [HttpPost("{id:int}/guest-info/contact")]
-        [Logging(LoggingType.Full)]
-        [GuestOrUser]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateGuestInfoContact([FromRoute] int id, [FromBody] BookingGuestInfoContactUpdateRequest request)
-        {
-            var result = await _bookingVerificationService.UpdateGuestInfoContact(id, request);
             return result.ToResponse();
         }
     }

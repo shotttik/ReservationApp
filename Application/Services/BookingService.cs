@@ -23,7 +23,7 @@ namespace Application.Services
         private readonly IAuthService _authService;
         private readonly IUserAccountRepository _userAccountRepository;
         private readonly IAccessGuard _accessGuard;
-        private readonly IBookingVerificationService _bookingVerificationService;
+        private readonly IGuestBookingService _bookingVerificationService;
         private readonly BookingSettings _bookingSettings;
 
         public BookingService(
@@ -31,7 +31,7 @@ namespace Application.Services
             IAuthService authService,
             IUserAccountRepository userAccountRepository,
             IAccessGuard accessGuard,
-            IBookingVerificationService bookingVerificationService,
+            IGuestBookingService bookingVerificationService,
             IOptions<BookingSettings> bookingSettings
             )
         {

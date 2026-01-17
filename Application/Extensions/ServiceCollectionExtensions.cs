@@ -20,7 +20,7 @@ namespace Application.Extensions
             services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IReviewService, ReviewService>();
-            services.AddScoped<IBookingVerificationService, BookingVerificationService>();
+            services.AddScoped<IGuestBookingService, GuestBookingService>();
 
             services.AddScoped<IAccessGuard, AccessGuard>();
 
