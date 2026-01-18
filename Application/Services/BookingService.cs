@@ -267,6 +267,27 @@ namespace Application.Services
 
             return Result.Success(BookingResults.Deleted);
         }
+        public async Task<Result> CancelBooking(int bookingId)
+        {
+            var booking = await _bookingRepository.Get(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure(BookingResults.NotFound);
+            }
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure(error);
+            }
+            if (!booking.IsCancelable())
+            {
+                return Result.Failure(BookingResults.IsNotCancelable);
+            }
+            booking.Cancel();
+            await _bookingRepository.Update(booking);
+
+            return Result.Success(BookingResults.Canceled);
+        }
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
         {
             if (service == null)

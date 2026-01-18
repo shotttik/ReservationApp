@@ -41,5 +41,18 @@ namespace Domain.Entities.Common
 
             return "BK-" + string.Concat(bytes.Select(b => chars [b % chars.Length]));
         }
+        public bool IsCancelable()
+        {
+            if (Status == BookingStatus.Pending || Status == BookingStatus.Accepted)
+            {
+                return true;
+            }
+            return false;
+        }
+        public void Cancel()
+        {
+            Status = BookingStatus.Canceled;
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

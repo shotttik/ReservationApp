@@ -207,5 +207,33 @@ namespace API.Controllers
             var result = await _bookingService.Delete(id);
             return result.ToResponse();
         }
+        /// <summary>
+        /// Cancels an existing booking.
+        /// </summary>
+        /// <remarks>
+        /// Accessible to the guest who created the booking or the authenticated user associated with the booking.
+        /// Completed/Rejected/PendingVerified/Failed status bookings cannot be cancelled.
+        /// Cancelling a booking will update its status to a cancelled state if the caller is authorized and the
+        /// booking is in a cancellable state. Appropriate validation and authorization failures will be returned
+        /// when cancellation is not allowed.
+        /// </remarks>
+        /// <param name="id">The identifier of the booking to cancel.</param>
+        /// <returns>
+        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully cancelled.
+        /// Returns validation errors (400), forbidden (403) when the caller is not allowed, or not found (404)
+        /// when the booking does not exist.
+        /// </returns>
+        [HttpPatch("{id:int}/cancel")]
+        [GuestOrUser]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Cancel([FromRoute] int id)
+        {
+            var result = await _bookingService.CancelBooking(id);
+            return result.ToResponse();
+        }
     }
 }
