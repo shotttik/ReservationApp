@@ -121,7 +121,7 @@ namespace Application.Services
             var booking = request.MapToEntity(service, authUser.UserAccountId, employee.CompanyID!.Value, employee.ID);
             await _bookingRepository.Add(booking);
 
-            var bookingDTO = booking.MapToDTO();
+            var bookingDTO = booking.MapToDTO(showRef: true);
 
             return Result.Success(bookingDTO);
         }

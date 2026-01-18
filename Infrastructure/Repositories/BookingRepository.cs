@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var bookings = await query
-                .Select(e => e.MapToDTO())
+                .Select(e => e.MapToDTO(false))
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync(cancellationToken);

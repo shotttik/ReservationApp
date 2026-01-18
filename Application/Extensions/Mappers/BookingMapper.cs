@@ -7,7 +7,7 @@ namespace Application.Extensions.Mappers
 {
     public static class BookingMapper
     {
-        public static BookingDTO MapToDTO(this Domain.Entities.Common.Booking booking)
+        public static BookingDTO MapToDTO(this Domain.Entities.Common.Booking booking, bool showRef = false)
         {
             return new BookingDTO
             {
@@ -26,6 +26,7 @@ namespace Application.Extensions.Mappers
                 Status = booking.Status,
                 CancellationReason = booking.CancellationReason,
                 Note = booking.Note,
+                Reference = showRef ? booking.Reference : null,
                 CreatedAt = booking.CreatedAt,
                 UpdatedAt = booking.UpdatedAt
             };
