@@ -38,12 +38,12 @@ namespace Infrastructure.Repositories
                 (
                 b.Status == BookingStatus.Accepted ||
                 b.Status == BookingStatus.Completed)
-                ).ToListAsync();
+                ).Include(e => e.Service).ToListAsync();
         }
 
         public async Task<PagedList<BookingDTO>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var query = _dbSet.AsQueryable();
+            var query = _dbSet.Include(e => e.Service).AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
 

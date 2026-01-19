@@ -19,9 +19,6 @@ namespace Infrastructure.Configurations.Common
                 .HasMaxLength(2000);
             builder.Property(e => e.Note)
                     .HasMaxLength(2000);
-            builder.Property(e => e.ServiceName)
-                .IsRequired()
-                .HasMaxLength(255);
             builder.Property(e => e.Status)
                 .IsRequired()
                 .HasConversion<int>();
@@ -47,6 +44,10 @@ namespace Infrastructure.Configurations.Common
             builder.HasOne(e => e.Company)
                 .WithMany(e => e.Bookings)
                 .HasForeignKey(e => e.CompanyID)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(e => e.Service)
+                .WithMany(e => e.Bookings)
+                .HasForeignKey(e => e.ServiceID)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

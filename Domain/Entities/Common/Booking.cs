@@ -17,7 +17,8 @@ namespace Domain.Entities.Common
         public UserAccount Employee { get; set; } = null!;
         public int CompanyID { get; set; }
         public Company Company { get; set; } = null!;
-        public string ServiceName { get; set; } = null!;
+        public int ServiceID { get; set; }
+        public Service Service { get; set; } = null!;
         public DateTime StartTime { get; set; }
         public DateTime EndTimeExpected { get; set; }
         public DateTime? EndTime { get; set; }

@@ -10,5 +10,6 @@ namespace Domain.Entities.CompanyReleated
         public decimal Price { get; set; }
         public int CompanyID { get; set; }
         public Company Company { get; set; } = null!;
+        public ICollection<Booking> Bookings { get; set; } = [];
     }
 }
