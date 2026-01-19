@@ -1,6 +1,7 @@
 ﻿using API.Attributes;
 using Application.Authentication;
 using Application.Common.Requests.Booking;
+using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -94,7 +95,7 @@ namespace API.Controllers
         [HttpPost("{id:int}/verify/resend-code")]
         [GuestOrUser]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -130,7 +131,7 @@ namespace API.Controllers
         /// <returns>Success message or validation error.</returns>
         [HttpPost("access/send-code")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -164,7 +165,7 @@ namespace API.Controllers
         /// <returns>Guest token and expiration info.</returns>
         [HttpPost("access/verify")]
         [Logging(LoggingType.Full)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(SuccessResponse<CreateGuestTokenResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -201,7 +202,7 @@ namespace API.Controllers
         [HttpPost("{id:int}/guest-contact")]
         [Logging(LoggingType.Full)]
         [GuestOrUser]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
