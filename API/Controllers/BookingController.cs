@@ -218,6 +218,7 @@ namespace API.Controllers
         /// when cancellation is not allowed.
         /// </remarks>
         /// <param name="id">The identifier of the booking to cancel.</param>
+        /// <param name="request">request contains cancelattion reason and its nullable can be provided.</param>
         /// <returns>
         /// Returns a <see cref="SuccessResponse"/> when the booking is successfully cancelled.
         /// Returns validation errors (400), forbidden (403) when the caller is not allowed, or not found (404)
@@ -230,9 +231,9 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Cancel([FromRoute] int id)
+        public async Task<IActionResult> Cancel([FromRoute] int id, [FromBody] BookingCancelRequest? request)
         {
-            var result = await _bookingService.CancelBooking(id);
+            var result = await _bookingService.CancelBooking(id, request);
             return result.ToResponse();
         }
     }

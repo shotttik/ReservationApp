@@ -90,7 +90,7 @@ namespace Application.Services
                 GuestToken = new CreateGuestTokenResponse()
                 {
                     Token = token,
-                    ExpiresInMinutes = _bookingSettings.VerificationCodeExpirationMinutes
+                    ExpiresInMinutes = _bookingSettings.GuestToken.ExpirationMinutes
                 }
             };
 
@@ -267,7 +267,7 @@ namespace Application.Services
 
             return Result.Success(BookingResults.Deleted);
         }
-        public async Task<Result> CancelBooking(int bookingId)
+        public async Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request)
         {
             var booking = await _bookingRepository.Get(bookingId);
             if (booking == null)
@@ -283,7 +283,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.IsNotCancelable);
             }
-            booking.Cancel();
+            booking.Cancel(request?.CancellationReason);
             await _bookingRepository.Update(booking);
 
             return Result.Success(BookingResults.Canceled);

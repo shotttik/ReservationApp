@@ -3,7 +3,6 @@ using Application.Common.Responses;
 using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO;
-using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
@@ -16,6 +15,6 @@ namespace Application.Interfaces
         Task<Result> ChangeStatus(int bookingId, BookingStatusChangeRequest request);
         Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> Delete(int bookingId);
-        Task<Result> CancelBooking(int bookingId);
+        Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request);
     }
 }

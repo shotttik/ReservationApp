@@ -157,14 +157,13 @@ namespace Application.Services
         {
             var (reference, contact) = request;
             var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(reference, contact);
-            if (data == null || data.LatestPendingVerification == null)
+            if (data == null)
             {
                 return Result.Failure(BookingResults.NotValidForGuestAccess);
             }
             var booking = data.Booking;
-            var bookingVerification = data.LatestPendingVerification;
 
-            if (bookingVerification.ExpiresAt > DateTime.Now)
+            if (data.LatestPendingVerification?.ExpiresAt > DateTime.Now)
             {
                 return Result.Failure(BookingResults.WaitingForVerification);
             }

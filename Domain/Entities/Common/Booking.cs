@@ -50,8 +50,9 @@ namespace Domain.Entities.Common
             }
             return false;
         }
-        public void Cancel()
+        public void Cancel(string? cancelationReason)
         {
+            CancellationReason = cancelationReason ?? null;
             Status = BookingStatus.Canceled;
             UpdatedAt = DateTime.UtcNow;
         }
