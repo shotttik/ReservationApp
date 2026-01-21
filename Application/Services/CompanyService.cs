@@ -209,9 +209,19 @@ namespace Application.Services
             return Result.Success(company.MapToDTO());
         }
 
-        public async Task<Result<List<int>>> UploadMedia(UploadCompanyMediaRequest request, CancellationToken cancellationToken)
+        public async Task<Result<List<string>>> UploadMedia(int routeCompanyId, UploadCompanyMediaRequest request, CancellationToken cancellationToken)
         {
-            var mediaIds = new List<int>();
+            var accessError = await accessGuard.EnsureAccessToCompany(routeCompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure<List<string>>(accessError);
+            }
+            var company = await companyRepository.GetWithMedia(routeCompanyId);
+            if (company == null)
+                return Result.Failure<List<string>>(CompanyResults.CompanyDoesNotExists);
+
+            var companyMediaEntities = new List<CompanyMedia>();
+            var response = new List<string>();
             foreach (var item in request.Media)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -219,7 +229,7 @@ namespace Application.Services
                 var error = item.IsValidImage(configuration);
                 if (error != Error.None)
                 {
-                    return Result.Failure<List<int>>(error);
+                    return Result.Failure<List<string>>(error);
                 }
                 var fileName = item.FileName;
                 var contentType = item.ContentType;
@@ -240,10 +250,20 @@ namespace Application.Services
                     FileSizeInBytes = item.Length
                 };
                 await mediaRepository.Add(media, cancellationToken);
-                mediaIds.Add(media.ID);
+                response.Add(WebpPath);
+                companyMediaEntities.Add(new CompanyMedia()
+                {
+                    CompanyID = routeCompanyId,
+                    MediaID = media.ID,
+                });
             }
+            if (company.CompanyMedia.Count == 0) // tu media atvirtulia mashin update-s gamoikenben.
+            {
+                companyMediaEntities.First().IsMain = true;
+            }
+            await companyMediaRepository.AddOrUpdate(companyMediaEntities);
 
-            return Result.Success(mediaIds);
+            return Result.Success(response);
         }
 
         public async Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request)
@@ -384,7 +404,7 @@ namespace Application.Services
                 return Result.Failure(accessError);
             }
             var mainCount = mediaUpdates.Count(m => m.IsMain);
-            if (mainCount != 1)
+            if (mediaUpdates.Count > 0 && mainCount != 1)
                 return Result.Failure(CompanyResults.OnlyOneMainMedia);
 
             var company = await companyRepository.GetWithMedia(routeCompanyId);

@@ -125,18 +125,19 @@ namespace API.Controllers
         /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
         /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
         /// </remarks>
+        /// <param name="id">The ID of the company to retrieve.</param>
         /// <param name="request">The request containing the media files to upload.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A result returns address of the image or failure of the upload operation.</returns>
-        [HttpPost("media")]
+        [HttpPost("{id:int}/media")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<List<int>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<string>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UploadMedia([FromBody] UploadCompanyMediaRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UploadMedia([FromRoute] int id, [FromForm] UploadCompanyMediaRequest request, CancellationToken cancellationToken)
         {
-            var result = await companyService.UploadMedia(request, cancellationToken);
+            var result = await companyService.UploadMedia(id, request, cancellationToken);
 
             return result.ToResponse();
         }
@@ -149,17 +150,17 @@ namespace API.Controllers
         /// The company is determined from the route param context.
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the target company for which the employee is being created.</param>
+        /// <param name="id">The ID of the target company for which the employee is being created.</param>
         /// <param name="request">The request containing the new description.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPatch("{companyId:int}")]
+        [HttpPatch("{id:int}")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyUpdatePartial)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PartialUpdate([FromRoute] int companyId, [FromBody] CompanyPartialUpdateRequest request)
+        public async Task<IActionResult> PartialUpdate([FromRoute] int id, [FromBody] CompanyPartialUpdateRequest request)
         {
-            var result = await companyService.Update(companyId, request);
+            var result = await companyService.Update(id, request);
             return result.ToResponse();
         }
         /// <summary>
@@ -167,30 +168,30 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint allows a CompanyAdmin or SuperAdmin to create a new user account (CompanyEmployee role)
-        /// for a specific company identified by <paramref name="companyId"/>.  
+        /// for a specific company identified by <paramref name="id"/>.  
         /// 
         /// The request must contain all required information including personal details and login credentials.  
         /// Email addresses must be unique in the system.  
         /// A verification token is automatically generated and assigned to the new user.
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the target company for which the employee is being created.</param>
+        /// <param name="id">The ID of the target company for which the employee is being created.</param>
         /// <param name="request">The request containing new employee details and login credentials.</param>
         /// <returns>
         /// Success response if the user is created; appropriate error response if email already exists
         /// or access is denied.
         /// </returns>
-        [HttpPost("{companyId:int}/employees")]
+        [HttpPost("{id:int}/employees")]
         [HasPermission(Permission.CompanyEmployeeCreate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateEmployee(
-            [FromRoute] int companyId,
+            [FromRoute] int id,
             [FromBody] EmployeeCreateRequest request)
         {
-            var result = await companyService.CreateEmployee(companyId, request);
+            var result = await companyService.CreateEmployee(id, request);
             return result.ToResponse();
         }
 
@@ -203,7 +204,7 @@ namespace API.Controllers
         /// The employee is identified by their UserLoginData ID.
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the company in the route.</param>
+        /// <param name="id">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
         [HttpPatch("{companyId:int}/employees")]
@@ -214,10 +215,10 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEmployee(
-            [FromRoute] int companyId,
+            [FromRoute] int id,
             [FromBody] EmployeeUpdateRequest request)
         {
-            var result = await companyService.UpdateEmployee(companyId, request);
+            var result = await companyService.UpdateEmployee(id, request);
             return result.ToResponse();
         }
 
@@ -257,7 +258,7 @@ namespace API.Controllers
         /// This endpoint returns paginated company employees for the authenticated user's company.  
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the company in the route.</param>
+        /// <param name="id">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>Paginated list of company employees or an error response.</returns>
@@ -268,15 +269,15 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> RetrievePagedEmployees(
-            [FromRoute] int companyId,
+            [FromRoute] int id,
             [FromQuery] PagedParameters parameters,
             CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePagedCompanyEmployees(companyId, parameters, cancellationToken);
+            var result = await companyService.RetrievePagedCompanyEmployees(id, parameters, cancellationToken);
             return result.ToResponse();
         }
         /// <summary>
-        /// Updates media for the company.
+        /// Updates/deletes media for the company.
         /// </summary>
         /// <remarks>
         /// This endpoint allows you to update media for a company, including:
@@ -286,23 +287,23 @@ namespace API.Controllers
         ///
         /// **Business rules:**
         /// - Exactly one media must be marked as the main image (`IsMain = true`) in the request.
-        /// - Media not included in the request will be removed from the company.
+        /// - if Empty list provided in the request will be removed all medias from the company.
         /// 
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
         /// </remarks>
-        /// <param name="companyId">The ID of the company to update media for.</param>
+        /// <param name="id">The ID of the company to update media for.</param>
         /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
-        [HttpPut("{companyId}/media")]
+        [HttpPut("{id}/media")]
         [HasPermission(Permission.CompanyMediaUpdate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateMedia([FromRoute] int companyId, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates)
+        public async Task<IActionResult> UpdateMedia([FromRoute] int id, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates)
         {
-            var result = await companyService.UpdateMedia(companyId, mediaUpdates);
+            var result = await companyService.UpdateMedia(id, mediaUpdates);
             return result.ToResponse();
         }
     }
