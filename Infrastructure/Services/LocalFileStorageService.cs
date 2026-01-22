@@ -1,5 +1,6 @@
 ﻿using Domain.Enums;
 using Domain.Interfaces.Services;
+using Infrastructure.Constants;
 using Infrastructure.Extensions;
 using NUlid;
 
@@ -8,29 +9,19 @@ namespace Infrastructure.Services
     public class LocalFileStorageService :IFileStorageService
     {
         private readonly IImageProcessingService imageProcessingService;
-        private readonly string OriginalUploadsRoot;
-        private readonly string WebpUploadsRoot;
-        private const string UploadsFolder = "uploads";
-        private const string OriginalsFolder = "originals";
-        private const string WebpFolder = "webp";
-        private readonly string CurrentDirectory;
 
 
         public LocalFileStorageService(IImageProcessingService imageProcessingService)
         {
-            CurrentDirectory = Directory.GetCurrentDirectory();
             this.imageProcessingService = imageProcessingService;
 
-            OriginalUploadsRoot = Path.Combine(CurrentDirectory, UploadsFolder, OriginalsFolder);
-            WebpUploadsRoot = Path.Combine(CurrentDirectory, UploadsFolder, WebpFolder);
-
-            EnsureDirectoryExists(OriginalUploadsRoot);
-            EnsureDirectoryExists(WebpUploadsRoot);
+            EnsureDirectoryExists(LocalMediaFolders.OriginalUploadsRoot);
+            EnsureDirectoryExists(LocalMediaFolders.WebpUploadsRoot);
 
             foreach (UploadSubFolder folder in Enum.GetValues(typeof(UploadSubFolder)))
             {
-                EnsureDirectoryExists(Path.Combine(OriginalUploadsRoot, folder.GetFolderName()));
-                EnsureDirectoryExists(Path.Combine(WebpUploadsRoot, folder.GetFolderName()));
+                EnsureDirectoryExists(Path.Combine(LocalMediaFolders.OriginalUploadsRoot, folder.GetFolderName()));
+                EnsureDirectoryExists(Path.Combine(LocalMediaFolders.WebpUploadsRoot, folder.GetFolderName()));
             }
         }
         private static readonly HashSet<string> AllowedContentTypes = new()
@@ -67,7 +58,7 @@ namespace Infrastructure.Services
         {
             fileStream.Position = 0;
             var folderName = subFolder.GetFolderName();
-            var folderPath = Path.Combine(OriginalUploadsRoot, folderName);
+            var folderPath = Path.Combine(LocalMediaFolders.OriginalUploadsRoot, folderName);
 
             var uniqueFileName = $"{Ulid.NewUlid()}{Path.GetExtension(fileName)}";
             var filePath = Path.Combine(folderPath, uniqueFileName);
@@ -75,7 +66,7 @@ namespace Infrastructure.Services
             await using var writeStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await fileStream.CopyToAsync(writeStream, cancellationToken);
 
-            var relativePath = Path.Combine(UploadsFolder, OriginalsFolder, folderName, uniqueFileName).Replace("\\", "/");
+            var relativePath = Path.Combine(LocalMediaFolders.OriginalUploadsRelative, folderName, uniqueFileName).Replace("\\", "/");
 
             return relativePath;
         }
@@ -88,7 +79,7 @@ namespace Infrastructure.Services
         {
             fileStream.Position = 0;
             var folderName = subFolder.GetFolderName();
-            var webpFolderPath = Path.Combine(WebpUploadsRoot, folderName);
+            var webpFolderPath = Path.Combine(LocalMediaFolders.WebpUploadsRoot, folderName);
 
             var baseName = Path.GetFileNameWithoutExtension(originalFilePath);
             var webpFileName = $"{baseName}.webp";
@@ -99,7 +90,7 @@ namespace Infrastructure.Services
             await using var webpFileStreamToWrite = new FileStream(webpFilePath, FileMode.Create, FileAccess.Write);
             await convertedStream.CopyToAsync(webpFileStreamToWrite, cancellationToken);
 
-            var webpRelativePath = Path.Combine(UploadsFolder, WebpFolder, folderName, webpFileName).Replace("\\", "/");
+            var webpRelativePath = Path.Combine(LocalMediaFolders.WebpUploadsRelative, folderName, webpFileName).Replace("\\", "/");
 
             return webpRelativePath;
         }
@@ -107,11 +98,18 @@ namespace Infrastructure.Services
         public void Delete(string filePath)
         {
             var normalizedPath = filePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-            var fullPath = Path.Combine(CurrentDirectory, normalizedPath);
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), normalizedPath);
 
             if (File.Exists(fullPath))
             {
                 File.Delete(fullPath);
+            }
+        }
+        public void DeleteAll(IEnumerable<string> filePaths)
+        {
+            foreach (var filePath in filePaths)
+            {
+                Delete(filePath);
             }
         }
         private void EnsureDirectoryExists(string path)

@@ -18,5 +18,14 @@ namespace Infrastructure.Repositories
 
             return allExist;
         }
+
+        public async Task<HashSet<string>> GetAllRemoteUrls()
+        {
+            var list = await _dbSet
+                .Select(e => e.RemoteUrl)
+                .ToListAsync();
+
+            return [.. list];
+        }
     }
 }

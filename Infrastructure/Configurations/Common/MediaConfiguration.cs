@@ -24,6 +24,7 @@ namespace Infrastructure.Configurations.Common
                 .IsRequired()
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
+            builder.HasIndex(e => e.RemoteUrl);
         }
     }
 }

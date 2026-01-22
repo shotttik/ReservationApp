@@ -41,9 +41,11 @@ namespace Infrastructure.Extensions
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
+            services.AddScoped<IMediaCleanupService, LocalMediaCleanupService>();
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
             services.AddOptions<BookingSettings>().BindConfiguration(BookingSettings.ConfigurationSection);
+            services.AddOptions<MediaCleanupJobSettings>().BindConfiguration(MediaCleanupJobSettings.ConfigurationSection);
             // email
             services.AddSingleton<IEmailTemplateBuilder, EmailTemplateBuilder>();
             services.AddSingleton<ISmsTemplateBuilder, SmsTemplateBuilder>();

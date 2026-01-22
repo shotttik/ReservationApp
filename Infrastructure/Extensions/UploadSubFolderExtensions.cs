@@ -1,4 +1,6 @@
-﻿using Domain.Enums;
+﻿using Domain.Entities.Common;
+using Domain.Enums;
+using Infrastructure.Constants;
 
 namespace Infrastructure.Extensions
 {
@@ -15,5 +17,4 @@ namespace Infrastructure.Extensions
             };
         }
     }
-
 }

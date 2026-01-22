@@ -24,7 +24,7 @@ namespace Application.Extensions
 
             services.AddScoped<IAccessGuard, AccessGuard>();
 
-            services.AddScoped<EmailNotificationJob>();
+            services.AddScoped<MediaCleanupJob>();
 
 
             return services;
