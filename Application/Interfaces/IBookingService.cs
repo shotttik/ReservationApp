@@ -16,5 +16,6 @@ namespace Application.Interfaces
         Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> Delete(int bookingId);
         Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request);
+        Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request);
     }
 }

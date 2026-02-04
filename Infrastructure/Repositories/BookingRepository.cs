@@ -15,18 +15,30 @@ namespace Infrastructure.Repositories
         {
 
         }
-        public async Task<bool> HasBookingOverlap(int userId, DateTime start, DateTime end, bool asEmployee)
+        public async Task<bool> HasBookingOverlap(int userId, DateTime start, DateTime end, int? bookingId, bool asEmployee)
         {
-            var now = DateTime.UtcNow.Date;
-            return await _dbSet
-                .Where(b =>
-                    (asEmployee ? b.EmployeeID == userId : b.ClientID == userId) &&
-                    (b.Status == BookingStatus.Accepted) &&
-                    b.StartTime < end &&
-                    b.EndTimeExpected > start &&
-                    b.StartTime.Date >= now
-                    )
-                .AnyAsync();
+            var now = DateTime.UtcNow;
+            var query = _dbSet
+                 .Where(b =>
+                     (b.Status == BookingStatus.Accepted) &&
+                     b.StartTime < end && // overlap check
+                     b.EndTimeExpected > start &&
+                     b.StartTime >= now // only future bookings
+                     ).AsQueryable();
+
+            if (asEmployee)
+                query = query.Where(b => b.EmployeeID == userId);
+            else
+                query = query.Where(b => b.ClientID == userId);
+
+            // exclude the current booking from the overlap check.
+            // this is required when rescheduling/updating a booking,
+            // otherwise it would always be detected as overlapping with itself.
+            if (bookingId is not null)
+            {
+                query = query.Where(b => b.ID != bookingId);
+            }
+            return await query.AnyAsync();
         }
 
         public async Task<List<Booking>> GetDataForAllActiveEmployees(int companyId, DateOnly startDate, DateOnly endDate)

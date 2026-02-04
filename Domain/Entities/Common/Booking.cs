@@ -42,19 +42,16 @@ namespace Domain.Entities.Common
 
             return "BK-" + string.Concat(bytes.Select(b => chars [b % chars.Length]));
         }
-        public bool IsCancelable()
-        {
-            if (Status == BookingStatus.Pending || Status == BookingStatus.Accepted)
-            {
-                return true;
-            }
-            return false;
-        }
+        public bool IsCancelable => Status == BookingStatus.Pending || Status == BookingStatus.Accepted;
         public void Cancel(string? cancelationReason)
         {
             CancellationReason = cancelationReason ?? null;
             Status = BookingStatus.Canceled;
             UpdatedAt = DateTime.UtcNow;
         }
+        public void UpdateEndTimeExpected() => EndTimeExpected = StartTime.AddMinutes(Service.Duration);
+        public bool IsReschedulable =>
+            (Status == BookingStatus.Pending || Status == BookingStatus.Accepted)
+            && StartTime > DateTime.UtcNow.AddMinutes(30);
     }
 }

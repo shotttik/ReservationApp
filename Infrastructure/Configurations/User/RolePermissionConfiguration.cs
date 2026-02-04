@@ -166,7 +166,6 @@ namespace Infrastructure.Configurations.User
             // ==== PublicUser: Can Only View Companies and Schedule Appointments ====
             Create(Role.PublicUser, Permission.CompanyReadLimited),
             Create(Role.PublicUser, Permission.BookingRead),
-            Create(Role.PublicUser, Permission.BookingUpdate),
             Create(Role.PublicUser, Permission.ReviewCreate),
             Create(Role.PublicUser, Permission.BookingResendCode),
             Create(Role.PublicUser, Permission.BookingVerify),

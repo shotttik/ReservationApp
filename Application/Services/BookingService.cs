@@ -54,7 +54,7 @@ namespace Application.Services
             {
                 return Result.Failure<CreateBookingByGuestResponse>(BookingResults.ServiceDoesntExists);
             }
-            var requestValidationError = await ValidateCreateRequest(service, employee, request, null);
+            var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, null);
 
             if (requestValidationError != Error.None)
             {
@@ -111,7 +111,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
             }
 
-            var requestValidationError = await ValidateCreateRequest(service, employee, request, authUser.UserAccountId);
+            var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, authUser.UserAccountId);
 
             if (requestValidationError != Error.None)
             {
@@ -171,7 +171,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(BookingResults.ClientOrGuestInfoMustBeProvided);
             }
-            var requestValidationError = await ValidateCreateRequest(service, employee, request, request.ClientId);
+            var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, request.ClientId);
 
             if (requestValidationError != Error.None)
             {
@@ -226,7 +226,6 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.SameStatus);
             }
-            booking.Status = request.Status;
             if (request.IsCompleted)
             {
                 booking.EndTime = DateTime.Now;
@@ -236,6 +235,7 @@ namespace Application.Services
                 booking.CancellationReason = request.CancellationReason;
             }
             await _bookingRepository.Update(booking);
+            booking.Status = request.Status;
 
             return Result.Success(BookingResults.StatusChanged);
         }
@@ -279,7 +279,7 @@ namespace Application.Services
             {
                 return Result.Failure(error);
             }
-            if (!booking.IsCancelable())
+            if (!booking.IsCancelable)
             {
                 return Result.Failure(BookingResults.IsNotCancelable);
             }
@@ -288,33 +288,83 @@ namespace Application.Services
 
             return Result.Success(BookingResults.Canceled);
         }
-        private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, ClientBookingCreateRequest request, int? clientUserAccountId)
+        public async Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request)
+        {
+            var booking = await _bookingRepository.Get(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.NotFound);
+            }
+            var employeeResult = await GetValidEmployee(request.EmployeeId);
+            if (!employeeResult.IsSuccess)
+                return Result.Failure<BookingDTO>(employeeResult.Error);
+            var employee = employeeResult.Value!;
+            if (employee.CompanyID != booking.CompanyID)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.EmployeeIsInDifferentCompany);
+            }
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
+            if (service == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
+            }
+            var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, booking.ClientID, bookingId);
+
+            if (requestValidationError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(requestValidationError);
+            }
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            if (error != Error.None)
+            {
+                return Result.Failure<BookingDTO>(error);
+            }
+
+            if (!booking.IsReschedulable)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.IsNotReschedulable);
+            }
+
+            booking.Service = service;
+            booking.ServiceID = service.ID;
+            booking.Employee = employee;
+            booking.EmployeeID = employee.ID;
+            booking.StartTime = request.StartTime;
+            booking.UpdateEndTimeExpected();
+            booking.Status = BookingStatus.Pending;
+            booking.UpdateTimestamp();
+
+            await _bookingRepository.Update(booking);
+
+            return booking.MapToDTO();
+        }
+        private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, DateTime startTime, int? clientUserAccountId, int? bookingId = null)
         {
             if (service == null)
             {
                 return BookingResults.ServiceDoesntExists;
             }
 
-            if (!employee.IsAvailable(request.StartTime))
+            if (!employee.IsAvailable(startTime))
             {
                 return BookingResults.EmployeeNotAvailable;
             }
 
-            if (request.StartTime <= DateTime.UtcNow)
+            if (startTime <= DateTime.UtcNow)
             {
                 return BookingResults.InvalidStartTime;
             }
 
-            var endTimeExpected = request.StartTime.AddMinutes(service.Duration);
+            var endTimeExpected = startTime.AddMinutes(service.Duration);
 
             if (clientUserAccountId != null)
             {
-                var clientConflict = await _bookingRepository.HasBookingOverlap(clientUserAccountId.Value, request.StartTime, endTimeExpected, asEmployee: false);
+                var clientConflict = await _bookingRepository.HasBookingOverlap(clientUserAccountId.Value, startTime, endTimeExpected, bookingId, asEmployee: false);
                 if (clientConflict)
                     return BookingResults.ClientAlreadyBooked;
             }
 
-            var employeeConflict = await _bookingRepository.HasBookingOverlap(employee.ID, request.StartTime, endTimeExpected, asEmployee: true);
+            var employeeConflict = await _bookingRepository.HasBookingOverlap(employee.ID, startTime, endTimeExpected, bookingId, asEmployee: true);
             if (employeeConflict)
                 return BookingResults.EmployeeAlreadyBooked;
 

@@ -80,8 +80,7 @@ namespace Application.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                EmailVerificationToken = verificationToken,
-                EmailVerificationTokenExpTime = verificationTokenExpirationTime,
+                EmailVerificationStatus = VerificationStatus.Verified,
                 UserAccount = userAccount,
             };
 
