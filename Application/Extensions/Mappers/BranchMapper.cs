@@ -1,14 +1,14 @@
 ﻿using Application.Common.Requests.Admin;
-using Domain.DTO.Location;
-using Domain.Entities.LocationReleated;
+using Domain.DTO.Branch;
+using Domain.Entities.BranchReleated;
 
 namespace Application.Extensions.Mappers
 {
-    public static class LocationMapper
+    public static class BranchMapper
     {
-        public static Location MapToEntity(this LocationCreateRequest request)
+        public static Branch MapToEntity(this BranchCreateRequest request)
         {
-            return new Location
+            return new Branch
             {
                 AddressLine1 = request.AddressLine1,
                 AddressLine2 = request.AddressLine2,
@@ -21,21 +21,21 @@ namespace Application.Extensions.Mappers
             };
         }
 
-        public static LocationDTO MapToDTO(this Location location)
+        public static BranchDTO MapToDTO(this Branch branch)
         {
-            return new LocationDTO
+            return new BranchDTO
             {
-                AddressLine1 = location.AddressLine1,
-                AddressLine2 = location.AddressLine2,
-                City = location.City,
-                PostalCode = location.PostalCode,
-                Country = location.Country,
-                State = location.State,
-                Latitude = location.Latitude,
-                Longitude = location.Longitude
+                AddressLine1 = branch.AddressLine1,
+                AddressLine2 = branch.AddressLine2,
+                City = branch.City,
+                PostalCode = branch.PostalCode,
+                Country = branch.Country,
+                State = branch.State,
+                Latitude = branch.Latitude,
+                Longitude = branch.Longitude
             };
         }
-        public static Location MapToEntity(this LocationCreateRequest request, Location entity)
+        public static Branch MapToEntity(this BranchCreateRequest request, Branch entity)
         {
             entity.AddressLine1 = request.AddressLine1;
             entity.AddressLine2 = request.AddressLine2;

@@ -1,4 +1,4 @@
-﻿using Infrastructure.RabbitMq;
+﻿using Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Shared.RabbitMq;

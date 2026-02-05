@@ -1,7 +1,6 @@
 ﻿using Application.Options;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Infrastructure.RabbitMq;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Templates;
@@ -26,7 +25,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
             services.AddScoped<IWorkScheduleExceptionRepository, WorkScheduleExceptionRepository>();
-            services.AddScoped<ILocationRepository, LocationRepository>();
+            services.AddScoped<IBranchRepository, BranchRepository>();
             services.AddScoped<ICompanyFAQRepository, CompanyFAQRepository>();
             services.AddScoped<ICompanyFAQCategoryRepository, CompanyFAQCategoryRepository>();
             services.AddScoped<IMediaRepository, MediaRepository>();

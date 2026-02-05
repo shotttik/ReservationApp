@@ -1,13 +1,13 @@
-﻿using Domain.DTO.Location;
-using Domain.Entities.LocationReleated;
+﻿using Domain.DTO.Branch;
+using Domain.Entities.BranchReleated;
 using Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    public class LocationRepository :BaseRepository<Location>, ILocationRepository
+    public class BranchRepository :BaseRepository<Branch>, IBranchRepository
     {
-        public LocationRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public BranchRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
         // Countries da citis  wamsaghebi calke repository ar gvchirdeba,zedmetia, radgan mxolod wamoghebas vaketebt sxva arapers

@@ -1,9 +1,9 @@
 using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 
-namespace Domain.Entities.LocationReleated
+namespace Domain.Entities.BranchReleated
 {
-    public class Location :BaseEntity
+    public class Branch :BaseEntity
     {
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }

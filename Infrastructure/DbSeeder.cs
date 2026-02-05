@@ -1,7 +1,7 @@
 ﻿using Application.Authentication;
+using Domain.Entities.BranchReleated;
 using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
-using Domain.Entities.LocationReleated;
 using Domain.Entities.User;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -20,18 +20,18 @@ namespace Infrastructure
                 await EnsureSuperAdminAsync(context);
                 await EnsurePublicUserAsync(context);
 
-                // 2) Base Locations + Companies together (keep 1:1)
-                if (!await context.Locations.AnyAsync() && !await context.Companies.AnyAsync())
+                // 2) Base Branches + Companies together (keep 1:1)
+                if (!await context.Branches.AnyAsync() && !await context.Companies.AnyAsync())
                 {
                     string [] countries = { "USA", "Canada", "Germany", "France", "UK" };
                     string [] states = { "California", "Ontario", "Bavaria", "Île-de-France", "London" };
                     string [] cities = { "Los Angeles", "Toronto", "Munich", "Paris", "London" };
                     string [] streets = { "Main St", "2nd Ave", "Elm Rd", "Maple Blvd", "Oak St" };
 
-                    var locations = new List<Location>(50);
+                    var branches = new List<Branch>(50);
                     for (int i = 0; i < 50; i++)
                     {
-                        locations.Add(new Location
+                        branches.Add(new Branch
                         {
                             Country = countries [random.Next(countries.Length)],
                             State = states [random.Next(states.Length)],
@@ -43,7 +43,7 @@ namespace Infrastructure
                         });
                     }
 
-                    await context.Locations.AddRangeAsync(locations);
+                    await context.Branches.AddRangeAsync(branches);
                     await context.SaveChangesAsync();
 
                     var companies = new List<Company>(50);
@@ -68,7 +68,7 @@ namespace Infrastructure
                             Phone = phone,
                             Description = description,
                             ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                            LocationID = locations [i].ID
+                            BranchId = branches [i].ID
                         });
                     }
 
@@ -236,7 +236,7 @@ namespace Infrastructure
                 Phone = "555-0112-1231",
                 Description = "<p>Welcome to <strong>Viehe corporation</strong>...</p>",
                 ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                Location = new Location
+                Branch = new Branch
                 {
                     Country = "Georgia",
                     State = "Shida-Kartli",

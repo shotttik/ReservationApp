@@ -8,7 +8,6 @@ using Domain.Entities.Common;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Infrastructure.RabbitMq;
 using Microsoft.Extensions.Options;
 using Shared.Utilities;
 

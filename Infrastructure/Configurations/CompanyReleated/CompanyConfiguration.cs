@@ -31,9 +31,9 @@ namespace Infrastructure.Configurations.CompanyReleated
                 .HasForeignKey(ua => ua.CompanyID)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasOne(c => c.Location)
+            builder.HasOne(c => c.Branch)
                 .WithOne(l => l.Company)
-                .HasForeignKey<Company>(c => c.LocationID)
+                .HasForeignKey<Company>(c => c.BranchId)
                 .IsRequired();
         }
     }

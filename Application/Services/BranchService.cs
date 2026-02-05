@@ -1,21 +1,21 @@
 ﻿using Application.Common.Results;
 using Application.Interfaces;
-using Domain.DTO.Location;
+using Domain.DTO.Branch;
 using Domain.Interfaces.Repositories;
 
 namespace Application.Services
 {
-    public class LocationService :ILocationService
+    public class BranchService :IBranchService
     {
-        private readonly ILocationRepository locationRepository;
+        private readonly IBranchRepository branchRepository;
 
-        public LocationService(ILocationRepository locationRepository)
+        public BranchService(IBranchRepository branchRepository)
         {
-            this.locationRepository = locationRepository;
+            this.branchRepository = branchRepository;
         }
         public async Task<Result<List<CountryDTO>>> GetCountries()
         {
-            var countries = await locationRepository.GetCountries();
+            var countries = await branchRepository.GetCountries();
             if (countries is null || countries.Count == 0)
             {
                 return Result.Failure<List<CountryDTO>>(GenericResults.NotFound);
@@ -25,7 +25,7 @@ namespace Application.Services
 
         public async Task<Result<List<CityDTO>>> GetCitiesByState(int stateID)
         {
-            var cities = await locationRepository.GetCitiesByState(stateID);
+            var cities = await branchRepository.GetCitiesByState(stateID);
             if (cities is null || cities.Count == 0)
             {
                 return Result.Failure<List<CityDTO>>(GenericResults.NotFound);
@@ -35,7 +35,7 @@ namespace Application.Services
 
         public async Task<Result<List<StateDTO>>> GetStatesByCountry(int countryID)
         {
-            var states = await locationRepository.GetSatesByCountry(countryID);
+            var states = await branchRepository.GetSatesByCountry(countryID);
             if (states is null || states.Count == 0)
             {
                 return Result.Failure<List<StateDTO>>(GenericResults.NotFound);

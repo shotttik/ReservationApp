@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities.BranchReleated;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations.LocationReleated
+namespace Infrastructure.Configurations.BranchReleated
 {
-    public sealed class LocationConfiguration :IEntityTypeConfiguration<Domain.Entities.LocationReleated.Location>
+    public sealed class BranchConfiguration :IEntityTypeConfiguration<Branch>
     {
-        public void Configure(EntityTypeBuilder<Domain.Entities.LocationReleated.Location> builder)
+        public void Configure(EntityTypeBuilder<Branch> builder)
         {
             builder.HasKey(e => e.ID);
             builder.Property(e => e.AddressLine1)

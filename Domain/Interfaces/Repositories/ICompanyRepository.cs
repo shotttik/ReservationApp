@@ -13,7 +13,7 @@ namespace Domain.Interfaces.Repositories
             PagedParameters parameters,
             CancellationToken cancellationToken,
             bool forPublic);
-        Task<Company?> GetWithLocation(int id);
+        Task<Company?> GetWithBranch(int id);
         Task<Company?> GetWithMedia(int id);
     }
 }

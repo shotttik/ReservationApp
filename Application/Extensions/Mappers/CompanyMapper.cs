@@ -19,7 +19,7 @@ namespace Application.Extensions.Mappers
                 Phone = company.Phone,
                 Type = company.Type,
                 ActiveStatus = company.ActiveStatus,
-                Location = company.Location.MapToDTO(),
+                Branch = company.Branch.MapToDTO(),
                 CreatedAt = company.CreatedAt,
                 Viewed = company.Viewed,
                 Services = company.Services.Select(s => new ServiceDTO
@@ -48,7 +48,7 @@ namespace Application.Extensions.Mappers
             Phone = request.Phone,
             Type = request.Type,
             ActiveStatus = request.ActiveStatus,
-            Location = request.Location.MapToEntity()
+            Branch = request.Branch.MapToEntity()
         };
 
         public static Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)
@@ -75,7 +75,7 @@ namespace Application.Extensions.Mappers
             entity.Phone = request.Phone;
             entity.Type = request.Type;
             entity.ActiveStatus = request.ActiveStatus;
-            entity.Location = request.Location.MapToEntity(entity.Location);
+            entity.Branch = request.Branch.MapToEntity(entity.Branch);
 
             return entity;
         }
@@ -87,30 +87,30 @@ namespace Application.Extensions.Mappers
             if (!string.IsNullOrWhiteSpace(req.Phone))
                 company.Phone = req.Phone;
 
-            if (req.Location is not null)
+            if (req.Branch is not null)
             {
-                var loc = req.Location;
+                var loc = req.Branch;
 
                 if (!string.IsNullOrWhiteSpace(loc.AddressLine1))
-                    company.Location.AddressLine1 = loc.AddressLine1;
+                    company.Branch.AddressLine1 = loc.AddressLine1;
 
                 if (!string.IsNullOrWhiteSpace(loc.AddressLine2))
-                    company.Location.AddressLine2 = loc.AddressLine2;
+                    company.Branch.AddressLine2 = loc.AddressLine2;
 
                 if (!string.IsNullOrWhiteSpace(loc.City))
-                    company.Location.City = loc.City;
+                    company.Branch.City = loc.City;
 
                 if (!string.IsNullOrWhiteSpace(loc.State))
-                    company.Location.State = loc.State;
+                    company.Branch.State = loc.State;
 
                 if (!string.IsNullOrWhiteSpace(loc.PostalCode))
-                    company.Location.PostalCode = loc.PostalCode;
+                    company.Branch.PostalCode = loc.PostalCode;
 
                 if (loc.Latitude.HasValue)
-                    company.Location.Latitude = loc.Latitude;
+                    company.Branch.Latitude = loc.Latitude;
 
                 if (loc.Longitude.HasValue)
-                    company.Location.Longitude = loc.Longitude;
+                    company.Branch.Longitude = loc.Longitude;
             }
         }
 

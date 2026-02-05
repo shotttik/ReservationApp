@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(c => c.Services)
-                .Include(c => c.Location)
+                .Include(c => c.Branch)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id)
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.Services
                     .Where(s => s.ActiveStatus == ActiveStatus.Active))
-                .Include(c => c.Location)
+                .Include(c => c.Branch)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id && e.ActiveStatus == ActiveStatus.Active)
@@ -66,7 +66,7 @@ namespace Infrastructure.Repositories
         {
             var query = _dbSet
                 .Include(e => e.Services)
-                .Include(e => e.Location)
+                .Include(e => e.Branch)
                 .AsQueryable();
 
             if (forPublic)
@@ -87,10 +87,10 @@ namespace Infrastructure.Repositories
             return new PagedList<CompanyDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
         }
 
-        public async Task<Company?> GetWithLocation(int id)
+        public async Task<Company?> GetWithBranch(int id)
         {
             return await _dbSet.Where(e => e.ID == id)
-                .Include(e => e.Location)
+                .Include(e => e.Branch)
                 .FirstOrDefaultAsync();
         }
         public async Task<Company?> GetWithMedia(int id)

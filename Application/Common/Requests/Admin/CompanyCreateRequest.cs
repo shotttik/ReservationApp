@@ -22,10 +22,10 @@ namespace Application.Common.Requests.Admin
         [Required]
         public CompanyType Type { get; set; }
         public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
-        public required LocationCreateRequest Location { get; set; }
+        public required BranchCreateRequest Branch { get; set; }
     }
 
-    public class LocationCreateRequest()
+    public class BranchCreateRequest()
     {
         [Required]
         [MaxLength(255)]

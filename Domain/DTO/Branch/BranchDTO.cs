@@ -1,6 +1,6 @@
-﻿namespace Domain.DTO.Location
+﻿namespace Domain.DTO.Branch
 {
-    public class LocationDTO
+    public class BranchDTO
     {
         public string? AddressLine1 { get; set; }
         public string? AddressLine2 { get; set; }

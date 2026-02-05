@@ -1,4 +1,4 @@
-﻿namespace Domain.DTO.Location
+﻿namespace Domain.DTO.Branch
 {
     public struct StateDTO
     {

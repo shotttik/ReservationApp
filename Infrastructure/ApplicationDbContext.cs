@@ -1,11 +1,11 @@
+using Domain.Entities.BranchReleated;
 using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
-using Domain.Entities.LocationReleated;
 using Domain.Entities.ReviewReleated;
 using Domain.Entities.User;
+using Infrastructure.Configurations.BranchReleated;
 using Infrastructure.Configurations.Common;
 using Infrastructure.Configurations.CompanyReleated;
-using Infrastructure.Configurations.LocationReleated;
 using Infrastructure.Configurations.ReviewReleated;
 using Infrastructure.Configurations.User;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +31,7 @@ namespace Infrastructure
         public DbSet<WorkScheduleException> WorkScheduleExceptions { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<Location> Locations { get; set; }
+        public DbSet<Branch> Branches { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<CompanyFAQ> CompanyFAQs { get; set; }
         public DbSet<CompanyFAQCategory> CompanyFAQCategories { get; set; }
@@ -68,10 +68,10 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new WorkScheduleExceptionConfiguration());
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
 
-            // Location Releated
+            // Branch Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());
             modelBuilder.ApplyConfiguration(new CityConfiguration());
-            modelBuilder.ApplyConfiguration(new LocationConfiguration());
+            modelBuilder.ApplyConfiguration(new BranchConfiguration());
             modelBuilder.ApplyConfiguration(new StateConfiguration());
 
             // Review Releated

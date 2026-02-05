@@ -1,9 +1,9 @@
-﻿using Domain.DTO.Location;
-using Domain.Entities.LocationReleated;
+﻿using Domain.DTO.Branch;
+using Domain.Entities.BranchReleated;
 
 namespace Domain.Interfaces.Repositories
 {
-    public interface ILocationRepository :IBaseRepository<Location>
+    public interface IBranchRepository :IBaseRepository<Branch>
     {
         Task<List<CountryDTO>> GetCountries();
         Task<List<StateDTO>> GetSatesByCountry(int countryID);

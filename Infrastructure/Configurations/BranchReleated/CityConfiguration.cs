@@ -1,8 +1,8 @@
-using Domain.Entities.LocationReleated;
+using Domain.Entities.BranchReleated;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations.LocationReleated
+namespace Infrastructure.Configurations.BranchReleated
 {
     public sealed class CityConfiguration :IEntityTypeConfiguration<City>
     {

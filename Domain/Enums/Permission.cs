@@ -83,8 +83,8 @@
         InvitationRead,
         InvitationRevoke,
 
-        // ==== Location / Geography Permissions ====
-        LocationRead,
+        // ==== Branch / Geography Permissions ====
+        BranchRead,
         CityRead,
         StateRead,
         CountryRead,

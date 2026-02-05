@@ -123,7 +123,7 @@ namespace Application.Services
 
         public async Task<Result> CompanyUpdate(int id, CompanyUpdateRequest request)
         {
-            var existingCompany = await companyRepository.GetWithLocation(id);
+            var existingCompany = await companyRepository.GetWithBranch(id);
             if (existingCompany == null)
             {
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);

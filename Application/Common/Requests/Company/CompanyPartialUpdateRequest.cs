@@ -7,11 +7,11 @@ namespace Application.Common.Requests.Company
     {
         public string? Description { get; set; }
         public string? Phone { get; set; }
-        public LocationUpdateRequest? Location { get; set; }
+        public BranchUpdateRequest? Branch { get; set; }
 
     }
 
-    public class LocationUpdateRequest()
+    public class BranchUpdateRequest()
     {
         [MaxLength(255)]
         public string? AddressLine1 { get; set; }

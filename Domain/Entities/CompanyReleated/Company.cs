@@ -1,5 +1,5 @@
-﻿using Domain.Entities.Common;
-using Domain.Entities.LocationReleated;
+﻿using Domain.Entities.BranchReleated;
+using Domain.Entities.Common;
 using Domain.Entities.User;
 using Domain.Enums;
 
@@ -13,8 +13,8 @@ namespace Domain.Entities.CompanyReleated
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public CompanyType Type { get; set; }
-        public int LocationID { get; set; }
-        public Location Location { get; set; } = null!;
+        public int BranchId { get; set; }
+        public Branch Branch { get; set; } = null!;
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];

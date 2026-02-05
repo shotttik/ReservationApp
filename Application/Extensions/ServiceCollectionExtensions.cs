@@ -15,7 +15,7 @@ namespace Application.Extensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IWorkScheduleService, WorkScheduleService>();
-            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IBranchService, BranchService>();
             services.AddScoped<ICompanyFAQService, CompanyFAQService>();
             services.AddScoped<ICompanyFAQCategoryService, CompanyFAQCategoryService>();
             services.AddScoped<IBookingService, BookingService>();

@@ -1,6 +1,6 @@
-﻿namespace Domain.DTO.Location
+﻿namespace Domain.DTO.Branch
 {
-    public struct CityDTO
+    public struct CountryDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }

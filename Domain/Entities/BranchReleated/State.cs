@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Common;
 
-namespace Domain.Entities.LocationReleated
+namespace Domain.Entities.BranchReleated
 {
     public class State :BaseEntity
     {

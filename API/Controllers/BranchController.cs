@@ -1,23 +1,23 @@
 ﻿using API.Attributes;
 using Application.Common.Results;
 using Application.Interfaces;
-using Domain.DTO.Location;
+using Domain.DTO.Branch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/locations")]
+    [Route("api/v{version:apiVersion}/branches")]
     [ApiController]
-    [Tags("Locations")]
-    public class LocationController :ControllerBase
+    [Tags("Branches")]
+    public class BranchController :ControllerBase
     {
-        private readonly ILocationService locationService;
+        private readonly IBranchService branchService;
 
-        public LocationController(ILocationService locationService)
+        public BranchController(IBranchService branchService)
         {
-            this.locationService = locationService;
+            this.branchService = branchService;
         }
 
         [HttpGet("countries")]
@@ -27,7 +27,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCountries()
         {
-            var result = await locationService.GetCountries();
+            var result = await branchService.GetCountries();
             return result.ToResponse();
         }
 
@@ -38,7 +38,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetStatesByCountry(int countryId)
         {
-            var result = await locationService.GetStatesByCountry(countryId);
+            var result = await branchService.GetStatesByCountry(countryId);
             return result.ToResponse();
         }
         [HttpGet("states/{stateId}/cities")]
@@ -48,7 +48,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCitiesByState(int stateId)
         {
-            var result = await locationService.GetCitiesByState(stateId);
+            var result = await branchService.GetCitiesByState(stateId);
             return result.ToResponse();
         }
     }
