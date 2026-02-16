@@ -30,6 +30,12 @@ namespace Infrastructure.Configurations.BranchReleated
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
+
+            builder.HasOne(e => e.Company)
+                .WithMany(e => e.Branches)
+                .HasForeignKey(e => e.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

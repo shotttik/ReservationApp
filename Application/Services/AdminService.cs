@@ -46,17 +46,16 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.EmailAlreadyExists);
             }
-            // company - role compatibility check
-            if (request.CompanyID.HasValue)
+            if (request.CompanyId.HasValue)
             {
-                if (request.Role != Domain.Enums.Role.CompanyAdmin && request.Role != Domain.Enums.Role.CompanyEmployee)
-                {
-                    return Result.Failure(AuthResults.RoleIncompatibility);
-                }
-                var company = await companyRepository.Get(request.CompanyID.Value);
+                var company = await companyRepository.GetWithBranches(request.CompanyId.Value);
                 if (company is null)
                 {
                     return Result.Failure(CompanyResults.CompanyDoesNotExists);
+                }
+                if (request.BranchId is not null && !company.HasBranch((int)request.BranchId))
+                {
+                    return Result.Failure(CompanyResults.InvalidBranchId);
                 }
             }
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
@@ -70,7 +69,8 @@ namespace Application.Services
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 RoleID = (int)request.Role,
-                CompanyID = request.CompanyID
+                CompanyID = request.CompanyId,
+                BranchId = request.BranchId
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -97,7 +97,24 @@ namespace Application.Services
                 return Result.Failure(AuthResults.UserNotFound);
             }
 
-            if (request.Role.HasValue) userAccount.RoleID = (int)request.Role;
+            if (request.Role.HasValue)
+            {
+                if (request.CompanyId.HasValue)
+                {
+                    var company = await companyRepository.GetWithBranches(request.CompanyId.Value);
+                    if (company is null)
+                    {
+                        return Result.Failure(CompanyResults.CompanyDoesNotExists);
+                    }
+                    if (request.BranchId is not null && !company.HasBranch((int)request.BranchId))
+                    {
+                        return Result.Failure(CompanyResults.InvalidBranchId);
+                    }
+                }
+                userAccount.RoleID = (int)request.Role;
+                userAccount.CompanyID = request.CompanyId;
+                userAccount.BranchId = request.BranchId;
+            }
             if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
             if (request.LastName is not null) userAccount.LastName = request.LastName;
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
@@ -123,15 +140,15 @@ namespace Application.Services
 
         public async Task<Result> CompanyUpdate(int id, CompanyUpdateRequest request)
         {
-            var existingCompany = await companyRepository.GetWithBranch(id);
-            if (existingCompany == null)
+            var company = await companyRepository.GetWithBranches(id);
+            if (company == null)
             {
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);
             }
             if (await companyRepository.ExistsByDetailsAsync(request.IN, request.Name, request.Email, request.Phone, excludeId: id))
                 return Result.Failure(CompanyResults.AlreadyExists);
 
-            var company = request.MapToEntity(existingCompany);
+            request.MapToEntity(company);
 
             await companyRepository.Update(company);
 
@@ -159,21 +176,19 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
-            if (!request.IsRoleValid)
-            {
-                return Result.Failure(AuthResults.RoleIncompatibility);
-            }
-            var company = await companyRepository.Get(request.CompanyID);
+
+            var company = await companyRepository.GetWithBranches(request.CompanyID);
             if (company is null)
             {
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);
             }
-            if (user.CompanyID == request.CompanyID && user.RoleID == (int)request.Role)
+            if (request.IsRoleCompanyEmployee && !company.HasBranch((int)request.BranchId!)) // tu companyemployee aris mashin branchid null arikneba
             {
-                return Result.Failure(AuthResults.UserAlreadyAssignedToCompany);
+                return Result.Failure(CompanyResults.InvalidBranchId);
             }
             user.CompanyID = request.CompanyID;
             user.RoleID = (int)request.Role;
+            user.BranchId = request.IsRoleCompanyEmployee ? request.BranchId : null; // only employee assigned to branch
             await userAccountRepository.Update(user);
             await authService.RefreshUserCache(request.UserID);
 

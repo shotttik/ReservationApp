@@ -61,19 +61,25 @@ namespace Application.Services
             this.accessGuard = accessGuard;
         }
 
-        public async Task<Result<string>> InviteEmployee(int employeeID)
+        public async Task<Result<string>> InviteEmployee(InviteEmployeeRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var employee = await userAccountRepository.Get(employeeID);
+            var employee = await userAccountRepository.Get(request.UserAccountId);
             if (employee is null)
             {
                 return Result.Failure<string>(CompanyResults.InviteEmployeeNotFound);
             }
-            if (AuthUser.Role!.ID != Role.CompanyAdmin.ID || employee.RoleID != Role.PublicUser.ID)
+            // must be used only for company admins , superadmin have different endpoint for this logic.
+            if (!AuthUser.CompanyID.HasValue || AuthUser.Role!.ID != Role.CompanyAdmin.ID || employee.RoleID != Role.PublicUser.ID)
             {
                 return Result.Failure<string>(CompanyResults.InviteInvalidRole);
             }
-            await companyInvitationRepository.RevokePreviousInvite(employeeID);
+            var company = await companyRepository.GetWithBranches(AuthUser.CompanyID.Value);
+            if (company == null || !company.HasBranch(request.BranchId))
+            {
+                return Result.Failure<string>(CompanyResults.InvalidBranchId);
+            }
+            await companyInvitationRepository.RevokePreviousInvite(request.UserAccountId);
 
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
@@ -82,10 +88,11 @@ namespace Application.Services
                 UserAccountID = employee.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.UtcNow.AddDays(expDays),
-                IsAccepted = false
+                IsAccepted = false,
+                BranchId = request.BranchId
             };
-
             await companyInvitationRepository.Add(invitation);
+            //TODO send email
 
             return Result.Success(invitation.Token);
         }
@@ -114,6 +121,7 @@ namespace Application.Services
             var authUserEntity = await userAccountRepository.GetByUserLoginDataID(AuthUser.ID);
             authUserEntity!.CompanyID = invitation.CompanyID;
             authUserEntity.RoleID = Role.CompanyEmployee.ID;
+            authUserEntity.BranchId = invitation.BranchId;
 
             await userAccountRepository.Update(authUserEntity);
 
@@ -307,7 +315,8 @@ namespace Application.Services
                 Gender = request.Gender,
                 DateOfBirth = request.DateOfBirth,
                 RoleID = (int)Domain.Enums.Role.CompanyEmployee,
-                CompanyID = routeCompanyId
+                CompanyID = routeCompanyId,
+                BranchId = request.BranchId
             };
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
@@ -338,7 +347,15 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
-
+            var company = await companyRepository.GetWithBranches(routeCompanyId);
+            if (request.BranchId.HasValue)
+            {
+                if (company == null || !company.HasBranch((int)request.BranchId))
+                {
+                    return Result.Failure(CompanyResults.InvalidBranchId);
+                }
+                userAccount.BranchId = request.BranchId.Value;
+            }
             if (request.FirstName is not null) userAccount.FirstName = request.FirstName;
             if (request.LastName is not null) userAccount.LastName = request.LastName;
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;

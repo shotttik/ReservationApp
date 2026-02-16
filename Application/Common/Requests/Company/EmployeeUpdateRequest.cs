@@ -13,5 +13,6 @@ namespace Application.Common.Requests.Company
         public string? LastName { get; set; }
         public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
+        public int? BranchId { get; set; }
     }
 }

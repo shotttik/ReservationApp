@@ -52,12 +52,12 @@ namespace Application.Services
 
         public async Task<Result> CreateInvite(int bookingId)
         {
-            var booking = await bookingRepository.GetWithReviewInvite(bookingId);
+            var booking = await bookingRepository.GetWithBranchAndReviewInvite(bookingId);
             if (booking == null)
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var accessError = await accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var accessError = await accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);

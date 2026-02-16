@@ -85,6 +85,11 @@
 
         // ==== Branch / Geography Permissions ====
         BranchRead,
+        BranchCreate,
+        BranchUpdate,
+        BranchDelete,
+        BranchDisable,
+        BranchEnable,
         CityRead,
         StateRead,
         CountryRead,

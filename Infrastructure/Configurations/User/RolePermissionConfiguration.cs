@@ -58,6 +58,11 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.BookingResendCode),
             Create(Role.SuperAdmin, Permission.BookingVerify),
 
+            Create(Role.SuperAdmin, Permission.BranchCreate),
+            Create(Role.SuperAdmin, Permission.BranchDelete),
+            Create(Role.SuperAdmin, Permission.BranchUpdate),
+            Create(Role.SuperAdmin, Permission.BranchDisable),
+            Create(Role.SuperAdmin, Permission.BranchEnable),
 
             Create(Role.SuperAdmin, Permission.RoleCreate),
             Create(Role.SuperAdmin, Permission.RoleRead),
@@ -83,6 +88,8 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyMediaRead),
             Create(Role.SuperAdmin, Permission.CompanyMediaDelete),
             Create(Role.SuperAdmin, Permission.CompanyMediaUpdate),
+            Create(Role.SuperAdmin, Permission.CompanyUpdatePartial),
+
             Create(Role.SuperAdmin, Permission.ReviewInviteCreate),
             Create(Role.SuperAdmin, Permission.ReviewInviteRead),
             Create(Role.SuperAdmin, Permission.ReviewInviteReadLimited),
@@ -134,6 +141,10 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.InvitationSend),
             Create(Role.CompanyAdmin, Permission.InvitationRead),
             Create(Role.CompanyAdmin, Permission.InvitationRevoke),
+
+            Create(Role.CompanyAdmin, Permission.BranchCreate),
+            Create(Role.CompanyAdmin, Permission.BranchUpdate),
+            Create(Role.CompanyAdmin, Permission.BranchDisable),
 
             Create(Role.CompanyAdmin, Permission.CompanyMediaUpload),
             Create(Role.CompanyAdmin, Permission.CompanyMediaRead),

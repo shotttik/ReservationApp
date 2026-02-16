@@ -91,7 +91,7 @@ namespace Application.Services
             var booking = data.Booking;
             var bookingVerification = data.LatestPendingVerification;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -128,7 +128,7 @@ namespace Application.Services
             var booking = data.Booking;
             var bookingVerification = data.LatestPendingVerification;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -222,7 +222,7 @@ namespace Application.Services
 
             var booking = data.Booking;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);

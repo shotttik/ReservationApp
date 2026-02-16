@@ -8,14 +8,14 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/branches")]
+    [Route("api/v{version:apiVersion}/locations")]
     [ApiController]
     [Tags("Branches")]
-    public class BranchController :ControllerBase
+    public class LocationController :ControllerBase
     {
         private readonly IBranchService branchService;
 
-        public BranchController(IBranchService branchService)
+        public LocationController(IBranchService branchService)
         {
             this.branchService = branchService;
         }

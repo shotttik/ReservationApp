@@ -1,5 +1,6 @@
 ﻿using API.Attributes;
 using Application.Authentication;
+using Application.Common.Requests.Admin;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
 using Application.Interfaces;
@@ -18,12 +19,15 @@ namespace API.Controllers
     [Tags("Companies")]
     public class CompanyController :ControllerBase
     {
-        private readonly ICompanyService companyService;
+        private readonly ICompanyService _companyService;
+        private readonly IBranchService _branchService;
 
         public CompanyController(
-            ICompanyService companyService)
+            ICompanyService companyService,
+            IBranchService branchService)
         {
-            this.companyService = companyService;
+            _companyService = companyService;
+            _branchService = branchService;
         }
         /// <summary>
         /// Retrieves a paginated list of companies.
@@ -53,7 +57,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
+            var result = await _companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
 
             return result.ToResponse();
         }
@@ -70,7 +74,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await companyService.Get(id, forPublic: true);
+            var result = await _companyService.Get(id, forPublic: true);
 
             return result.ToResponse();
         }
@@ -93,7 +97,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteEmployee([FromBody] InviteEmployeeRequest request)
         {
-            var result = await companyService.InviteEmployee(request.UserAccountID);
+            var result = await _companyService.InviteEmployee(request);
 
             return result.ToResponse();
         }
@@ -111,7 +115,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InviteAccept([FromQuery] string token)
         {
-            var result = await companyService.InviteAccept(token);
+            var result = await _companyService.InviteAccept(token);
 
             return result.ToResponse();
         }
@@ -137,7 +141,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UploadMedia([FromRoute] int id, [FromForm] UploadCompanyMediaRequest request, CancellationToken cancellationToken)
         {
-            var result = await companyService.UploadMedia(id, request, cancellationToken);
+            var result = await _companyService.UploadMedia(id, request, cancellationToken);
 
             return result.ToResponse();
         }
@@ -146,7 +150,8 @@ namespace API.Controllers
         /// Updates the description of the authenticated user's company.
         /// </summary>
         /// <remarks>
-        /// This endpoint allows a CompanyAdmin to update the <c>Description</c> field of their own company.  
+        /// This endpoint allows a CompanyAdmin to update the <c>Description</c> <c>Phone</c>field of their own company.  
+        /// <strong>IMPORTANT</strong>: Also allows update branches, so branches should be provided, provided list of branches will changes existing.
         /// The company is determined from the route param context.
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
         /// </remarks>
@@ -160,7 +165,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PartialUpdate([FromRoute] int id, [FromBody] CompanyPartialUpdateRequest request)
         {
-            var result = await companyService.Update(id, request);
+            var result = await _companyService.Update(id, request);
             return result.ToResponse();
         }
         /// <summary>
@@ -191,7 +196,7 @@ namespace API.Controllers
             [FromRoute] int id,
             [FromBody] EmployeeCreateRequest request)
         {
-            var result = await companyService.CreateEmployee(id, request);
+            var result = await _companyService.CreateEmployee(id, request);
             return result.ToResponse();
         }
 
@@ -207,7 +212,7 @@ namespace API.Controllers
         /// <param name="id">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
-        [HttpPatch("{companyId:int}/employees")]
+        [HttpPatch("{id:int}/employees")]
         [HasPermission(Permission.CompanyEmployeeUpdate)]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -218,7 +223,7 @@ namespace API.Controllers
             [FromRoute] int id,
             [FromBody] EmployeeUpdateRequest request)
         {
-            var result = await companyService.UpdateEmployee(id, request);
+            var result = await _companyService.UpdateEmployee(id, request);
             return result.ToResponse();
         }
 
@@ -247,7 +252,7 @@ namespace API.Controllers
             [FromRoute] int employeeID,
             [FromQuery] bool force = false)
         {
-            var result = await companyService.DeleteEmployee(companyId, employeeID, force);
+            var result = await _companyService.DeleteEmployee(companyId, employeeID, force);
             return result.ToResponse();
         }
 
@@ -262,7 +267,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>Paginated list of company employees or an error response.</returns>
-        [HttpGet("{companyId:int}/employees")]
+        [HttpGet("{id:int}/employees")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyEmployeeRead)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<UserLoginDataDTO>>), StatusCodes.Status200OK)]
@@ -273,7 +278,7 @@ namespace API.Controllers
             [FromQuery] PagedParameters parameters,
             CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePagedCompanyEmployees(id, parameters, cancellationToken);
+            var result = await _companyService.RetrievePagedCompanyEmployees(id, parameters, cancellationToken);
             return result.ToResponse();
         }
         /// <summary>
@@ -294,7 +299,7 @@ namespace API.Controllers
         /// <param name="id">The ID of the company to update media for.</param>
         /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
-        [HttpPut("{id}/media")]
+        [HttpPut("{id:int}/media")]
         [HasPermission(Permission.CompanyMediaUpdate)]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
@@ -303,7 +308,85 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateMedia([FromRoute] int id, [FromBody] List<UpdateCompanyMediaRequest> mediaUpdates)
         {
-            var result = await companyService.UpdateMedia(id, mediaUpdates);
+            var result = await _companyService.UpdateMedia(id, mediaUpdates);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Creates branch for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to create branch for company:
+        ///
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">The ID of the company</param>
+        /// <param name="request">the request body of the branch</param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpPost("{companyId:int}/branches/")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.BranchCreate)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateBranch([FromRoute] int companyId, [FromBody] BranchCreateRequest request)
+        {
+            var result = await _branchService.Create(companyId, request);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Updates branch for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to update branch for company:
+        ///
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">The ID of the company</param>
+        /// <param name="branchId">The id of the branch </param>
+        /// <param name="request">The request body of the branch </param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpPut("{companyId:int}/branches/{branchId:int}")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.BranchUpdate)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateBranch([FromRoute] int companyId, [FromRoute] int branchId, [FromBody] BranchUpdateRequest request)
+        {
+            var result = await _branchService.Update(companyId, branchId, request);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Disable branch for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to disable branch for a company
+        ///
+        /// **Business rules:**
+        /// - company admin able to disable branch
+        /// - after disabling company admin is not able to see that branch.
+        /// - we are doing this because of avoid deletion of branch and releated bookings (for statistic), 
+        /// because they are connected FK cascade delete.
+        /// 
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="branchId">Branch Id.</param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpDelete("{companyId:int}/branches/{branchId:int}")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.BranchDisable)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteBranch([FromRoute] int companyId, [FromRoute] int branchId)
+        {
+            var result = await _branchService.Delete(companyId, branchId, force: false);
             return result.ToResponse();
         }
     }

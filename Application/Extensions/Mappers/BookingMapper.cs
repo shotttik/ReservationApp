@@ -14,7 +14,7 @@ namespace Application.Extensions.Mappers
                 ID = booking.ID,
                 ClientID = booking.ClientID,
                 EmployeeID = booking.EmployeeID,
-                CompanyID = booking.CompanyID,
+                BranchId = booking.BranchId,
                 ServiceID = booking.Service.ID,
                 ServiceName = booking.Service.Name,
                 StartTime = booking.StartTime,
@@ -37,13 +37,13 @@ namespace Application.Extensions.Mappers
             this ClientBookingCreateRequest request,
             Service service,
             int? clientID,
-            int companyID,
+            int branchId,
             int employeeID)
         {
             return new Booking
             {
                 ClientID = clientID,
-                CompanyID = companyID,
+                BranchId = branchId,
                 EmployeeID = employeeID,
                 Service = service,
                 StartTime = request.StartTime,

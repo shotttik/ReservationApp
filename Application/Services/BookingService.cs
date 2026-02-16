@@ -60,7 +60,7 @@ namespace Application.Services
             {
                 return Result.Failure<CreateBookingByGuestResponse>(requestValidationError);
             }
-            var booking = request.MapToEntity(service, null, employee.CompanyID!.Value, employee.ID);
+            var booking = request.MapToEntity(service, null, (int)employee.BranchId!, employee.ID);
             var bookingGuestInfo = new BookingGuestInfo()
             {
                 ContactType = request.GuestInfo.ContactType,
@@ -118,7 +118,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
 
-            var booking = request.MapToEntity(service, authUser.UserAccountId, employee.CompanyID!.Value, employee.ID);
+            var booking = request.MapToEntity(service, authUser.UserAccountId, (int)employee.BranchId!, employee.ID);
             await _bookingRepository.Add(booking);
 
             var bookingDTO = booking.MapToDTO(showRef: true);
@@ -178,7 +178,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
 
-            var booking = request.MapToEntity(service, request.ClientId, companyID, employee.ID);
+            var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.ID);
 
             booking.Status = BookingStatus.Accepted;
             if (bookingGuestInfo != null && bookingVerification != null)
@@ -202,22 +202,22 @@ namespace Application.Services
 
             return Result.Success(bookingDTO);
         }
-        public async Task<Result<List<BookingDTO>>> GetWeeklyPublicData(int companyId, DateOnly targetDate)
+        public async Task<Result<List<BookingDTO>>> GetWeeklyPublicData(int branchId, DateOnly targetDate)
         {
             var endDate = targetDate.AddDays(7);
-            var data = await _bookingRepository.GetDataForAllActiveEmployees(companyId, targetDate, endDate);
+            var data = await _bookingRepository.GetDataForAllActiveEmployees(branchId, targetDate, endDate);
             var bookings = data.Select(e => e.MapToDTO()).ToList();
 
             return Result.Success(bookings);
         }
         public async Task<Result> ChangeStatus(int bookingId, BookingStatusChangeRequest request)
         {
-            var booking = await _bookingRepository.Get(bookingId);
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
             if (booking == null)
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -234,8 +234,8 @@ namespace Application.Services
             {
                 booking.CancellationReason = request.CancellationReason;
             }
-            await _bookingRepository.Update(booking);
             booking.Status = request.Status;
+            await _bookingRepository.Update(booking);
 
             return Result.Success(BookingResults.StatusChanged);
         }
@@ -269,12 +269,12 @@ namespace Application.Services
         }
         public async Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request)
         {
-            var booking = await _bookingRepository.Get(bookingId);
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
             if (booking == null)
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -290,7 +290,7 @@ namespace Application.Services
         }
         public async Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request)
         {
-            var booking = await _bookingRepository.Get(bookingId);
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
             if (booking == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.NotFound);
@@ -299,7 +299,7 @@ namespace Application.Services
             if (!employeeResult.IsSuccess)
                 return Result.Failure<BookingDTO>(employeeResult.Error);
             var employee = employeeResult.Value!;
-            if (employee.CompanyID != booking.CompanyID)
+            if (employee.CompanyID != booking.Branch.CompanyId)
             {
                 return Result.Failure<BookingDTO>(BookingResults.EmployeeIsInDifferentCompany);
             }
@@ -314,7 +314,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.CompanyID);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure<BookingDTO>(error);

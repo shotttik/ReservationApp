@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216094726_activateMethodFOrBranchOnlySuperAdmin")]
+    partial class activateMethodFOrBranchOnlySuperAdmin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1307,96 +1310,91 @@ namespace Infrastructure.Migrations
                         new
                         {
                             ID = 57,
-                            Name = "BranchCreate"
-                        },
-                        new
-                        {
-                            ID = 58,
                             Name = "BranchUpdate"
                         },
                         new
                         {
-                            ID = 59,
+                            ID = 58,
                             Name = "BranchDelete"
                         },
                         new
                         {
-                            ID = 60,
+                            ID = 59,
                             Name = "BranchDisable"
                         },
                         new
                         {
-                            ID = 61,
+                            ID = 60,
                             Name = "BranchEnable"
                         },
                         new
                         {
-                            ID = 62,
+                            ID = 61,
                             Name = "CityRead"
                         },
                         new
                         {
-                            ID = 63,
+                            ID = 62,
                             Name = "StateRead"
                         },
                         new
                         {
-                            ID = 64,
+                            ID = 63,
                             Name = "CountryRead"
                         },
                         new
                         {
-                            ID = 65,
+                            ID = 64,
                             Name = "RoleCreate"
                         },
                         new
                         {
-                            ID = 66,
+                            ID = 65,
                             Name = "RoleRead"
                         },
                         new
                         {
-                            ID = 67,
+                            ID = 66,
                             Name = "RoleUpdate"
                         },
                         new
                         {
-                            ID = 68,
+                            ID = 67,
                             Name = "RoleDelete"
                         },
                         new
                         {
-                            ID = 69,
+                            ID = 68,
                             Name = "RolePermissionManage"
                         },
                         new
                         {
-                            ID = 70,
+                            ID = 69,
                             Name = "UserLoginDataRead"
                         },
                         new
                         {
-                            ID = 71,
+                            ID = 70,
                             Name = "UserLoginDataManage"
                         },
                         new
                         {
-                            ID = 72,
+                            ID = 71,
                             Name = "ReviewCreate"
                         },
                         new
                         {
-                            ID = 73,
+                            ID = 72,
                             Name = "ReviewInviteCreate"
                         },
                         new
                         {
-                            ID = 74,
+                            ID = 73,
                             Name = "ReviewInviteRead"
                         },
                         new
                         {
-                            ID = 75,
+                            ID = 74,
                             Name = "ReviewInviteReadLimited"
                         });
                 });
@@ -1635,6 +1633,11 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
+                            PermissionID = 58
+                        },
+                        new
+                        {
+                            RoleID = 1,
                             PermissionID = 57
                         },
                         new
@@ -1645,17 +1648,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 58
-                        },
-                        new
-                        {
-                            RoleID = 1,
                             PermissionID = 60
                         },
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 61
+                            PermissionID = 64
                         },
                         new
                         {
@@ -1676,11 +1674,6 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 1,
                             PermissionID = 68
-                        },
-                        new
-                        {
-                            RoleID = 1,
-                            PermissionID = 69
                         },
                         new
                         {
@@ -1760,7 +1753,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 1,
-                            PermissionID = 8
+                            PermissionID = 72
                         },
                         new
                         {
@@ -1771,11 +1764,6 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 1,
                             PermissionID = 74
-                        },
-                        new
-                        {
-                            RoleID = 1,
-                            PermissionID = 75
                         },
                         new
                         {
@@ -1970,12 +1958,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 58
-                        },
-                        new
-                        {
-                            RoleID = 3,
-                            PermissionID = 60
+                            PermissionID = 59
                         },
                         new
                         {
@@ -2000,12 +1983,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 73
+                            PermissionID = 72
                         },
                         new
                         {
                             RoleID = 3,
-                            PermissionID = 75
+                            PermissionID = 74
                         },
                         new
                         {
@@ -2075,12 +2058,12 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 73
+                            PermissionID = 72
                         },
                         new
                         {
                             RoleID = 4,
-                            PermissionID = 75
+                            PermissionID = 74
                         },
                         new
                         {
@@ -2095,7 +2078,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 2,
-                            PermissionID = 72
+                            PermissionID = 71
                         },
                         new
                         {
@@ -2110,7 +2093,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             RoleID = 2,
-                            PermissionID = 75
+                            PermissionID = 74
                         });
                 });
 

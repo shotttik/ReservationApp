@@ -8,5 +8,7 @@ namespace Domain.Interfaces.Repositories
         Task<List<CountryDTO>> GetCountries();
         Task<List<StateDTO>> GetSatesByCountry(int countryID);
         Task<List<CityDTO>> GetCitiesByState(int stateID);
+        Task<Branch?> Get(int id, int companyId);
+        Task Delete(int id);
     }
 }

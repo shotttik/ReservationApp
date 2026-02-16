@@ -22,5 +22,7 @@ namespace Application.Common.Requests.Company
         [Required]
         [PasswordComplexity]
         public required string Password { get; set; }
+        [Required]
+        public int BranchId { get; set; }
     }
 }

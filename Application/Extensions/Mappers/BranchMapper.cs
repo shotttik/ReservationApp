@@ -25,6 +25,7 @@ namespace Application.Extensions.Mappers
         {
             return new BranchDTO
             {
+                Id = branch.ID,
                 AddressLine1 = branch.AddressLine1,
                 AddressLine2 = branch.AddressLine2,
                 City = branch.City,
@@ -35,18 +36,32 @@ namespace Application.Extensions.Mappers
                 Longitude = branch.Longitude
             };
         }
-        public static Branch MapToEntity(this BranchCreateRequest request, Branch entity)
+        public static Branch MapToEntity(this BranchUpdateRequest request, Branch existing)
         {
-            entity.AddressLine1 = request.AddressLine1;
-            entity.AddressLine2 = request.AddressLine2;
-            entity.City = request.City;
-            entity.PostalCode = request.PostalCode;
-            entity.Country = request.Country;
-            entity.State = request.State;
-            entity.Latitude = request.Latitude;
-            entity.Longitude = request.Longitude;
+            existing.AddressLine1 = request.AddressLine1;
+            existing.AddressLine2 = request.AddressLine2;
+            existing.City = request.City;
+            existing.PostalCode = request.PostalCode;
+            existing.Country = request.Country;
+            existing.State = request.State;
+            existing.Latitude = request.Latitude;
+            existing.Longitude = request.Longitude;
 
-            return entity;
+            return existing;
+        }
+        public static Branch MapToEntity(this BranchUpdateRequest request)
+        {
+            return new Branch
+            {
+                AddressLine1 = request.AddressLine1,
+                AddressLine2 = request.AddressLine2,
+                City = request.City,
+                State = request.State,
+                PostalCode = request.PostalCode,
+                Country = request.Country,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude
+            };
         }
     }
 }

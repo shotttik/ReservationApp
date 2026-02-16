@@ -104,18 +104,18 @@ namespace API.Controllers
         /// Takes first day of week.
         /// Required role: <strong>Accessible by everyone</strong><br/><br/>
         /// </remarks>
-        /// <param name="companyId">company id</param>
+        /// <param name="branchId">company id</param>
         /// <param name="targetDate">this is start date of week</param>
         /// <returns>List of BookingDTO when success or empty</returns>
-        [HttpGet("companies/{companyId:int}")]
+        [HttpGet("branches/{branchId:int}")]
         [MapToApiVersion("1.0")]
         [Logging(LoggingType.General)]
         [ProducesResponseType(typeof(SuccessResponse<List<BookingDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetWeeklyPublicData(int companyId, [FromQuery] DateOnly targetDate)
+        public async Task<IActionResult> GetWeeklyPublicData(int branchId, [FromQuery] DateOnly targetDate)
         {
-            var result = await _bookingService.GetWeeklyPublicData(companyId, targetDate);
+            var result = await _bookingService.GetWeeklyPublicData(branchId, targetDate);
 
             return result.ToResponse();
         }

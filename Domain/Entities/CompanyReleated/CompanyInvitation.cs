@@ -9,6 +9,7 @@ namespace Domain.Entities.CompanyReleated
         public string? Token { get; set; } = null!;
         public DateTime? ExpirationTime { get; set; }
         public bool IsAccepted { get; set; }
+        public int BranchId { get; set; }
         public Company Company { get; set; } = null!;
     }
 }

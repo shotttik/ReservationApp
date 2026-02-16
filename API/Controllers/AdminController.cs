@@ -19,21 +19,24 @@ namespace API.Controllers
     [ApiController]
     public class AdminController :ControllerBase
     {
-        private readonly IAdminService adminService;
-        private readonly ICompanyService companyService;
-        private readonly IUserService userService;
-        private readonly IReviewService reviewService;
+        private readonly IAdminService _adminService;
+        private readonly ICompanyService _companyService;
+        private readonly IUserService _userService;
+        private readonly IReviewService _reviewService;
+        private readonly IBranchService _branchService;
 
         public AdminController(
             IAdminService adminService,
             ICompanyService companyService,
             IUserService userService,
-            IReviewService reviewService)
+            IReviewService reviewService,
+            IBranchService branchService)
         {
-            this.adminService = adminService;
-            this.companyService = companyService;
-            this.userService = userService;
-            this.reviewService = reviewService;
+            _adminService = adminService;
+            _companyService = companyService;
+            _userService = userService;
+            _reviewService = reviewService;
+            _branchService = branchService;
         }
         /// <summary>
         /// Creates a new user under administrator control.
@@ -52,7 +55,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserCreate([FromBody] UserCreateRequest request)
         {
-            var result = await adminService.UserCreate(request);
+            var result = await _adminService.UserCreate(request);
 
             return result.ToResponse();
         }
@@ -75,7 +78,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UserUpdate(int id, [FromBody] UserUpdateRequest request)
         {
-            var result = await adminService.UserUpdate(id, request);
+            var result = await _adminService.UserUpdate(id, request);
 
             return result.ToResponse();
         }
@@ -97,7 +100,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UserDelete(int id, [FromQuery] bool force = false)
         {
-            var result = await userService.Delete(id, force);
+            var result = await _userService.Delete(id, force);
 
             return result.ToResponse();
         }
@@ -118,7 +121,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> CompanyCreate([FromBody] CompanyCreateRequest request)
         {
-            var result = await adminService.CompanyCreate(request);
+            var result = await _adminService.CompanyCreate(request);
 
             return result.ToResponse();
         }
@@ -153,12 +156,13 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePagedUsers([FromQuery] PagedParameters request, CancellationToken cancellationToken)
         {
-            var result = await adminService.RetrievePagedUsers(request, cancellationToken);
+            var result = await _adminService.RetrievePagedUsers(request, cancellationToken);
 
             return result.ToResponse();
         }
         /// <summary>
         /// Assigns a user to a company with a specified role.
+        /// Only CompanyEmployee can have branch.
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
@@ -174,7 +178,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AssignUserToCompany([FromBody] AssignUserToCompanyRequest request)
         {
-            var result = await adminService.AssignUserToCompany(request);
+            var result = await _adminService.AssignUserToCompany(request);
 
             return result.ToResponse();
         }
@@ -210,7 +214,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
+            var result = await _companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
 
             return result.ToResponse();
         }
@@ -231,7 +235,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCompany(int id)
         {
-            var result = await companyService.Get(id, forPublic: false);
+            var result = await _companyService.Get(id, forPublic: false);
 
             return result.ToResponse();
         }
@@ -253,7 +257,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUser(int id)
         {
-            var result = await adminService.GetUser(id);
+            var result = await _adminService.GetUser(id);
 
             return result.ToResponse();
         }
@@ -276,7 +280,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ChangeUserActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int userId)
         {
-            var result = await adminService.ChangeUserActiveStatus(request, userId);
+            var result = await _adminService.ChangeUserActiveStatus(request, userId);
 
             return result.ToResponse();
         }
@@ -299,7 +303,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteSpecificUserAllActiveSessions(int id)
         {
-            var result = await userService.DeleteAllActiveSessions(id);
+            var result = await _userService.DeleteAllActiveSessions(id);
 
             return result.ToResponse();
         }
@@ -325,7 +329,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyUpdateRequest request)
         {
-            var result = await adminService.CompanyUpdate(id, request);
+            var result = await _adminService.CompanyUpdate(id, request);
 
             return result.ToResponse();
         }
@@ -349,7 +353,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ChangeCompanyActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int companyId)
         {
-            var result = await companyService.ChangeActiveStatus(companyId, request);
+            var result = await _companyService.ChangeActiveStatus(companyId, request);
 
             return result.ToResponse();
         }
@@ -391,8 +395,65 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ReviewsRetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await reviewService.RetrievePaged(parameters, false, cancellationToken);
+            var result = await _reviewService.RetrievePaged(parameters, false, cancellationToken);
 
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Delete/Disable branch for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to delete/disable branch for a company
+        ///
+        /// **Business rules:**
+        /// - SuperAdmin able to delete or disable branch
+        /// - after disabling company admin is not able to see that branch.
+        /// - we are doing this because of avoid deletion of branch and releated bookings (for statistic), 
+        /// because they are connected FK cascade delete.
+        /// - after deletion employee leaves branch, bookings also deleting. that why soft dalate is good to use if its not mandatory.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="branchId">Branch Id.</param>
+        /// <param name="force">force query parameter indicates soft(false) or hard(true) dalete.</param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpDelete("companies/{companyId:int}/branches/{branchId:int}")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.BranchDelete)]
+        [Tags("Administration-Company")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteBranch([FromRoute] int companyId, [FromRoute] int branchId, [FromQuery] bool force)
+        {
+            var result = await _branchService.Delete(companyId, branchId, force);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Activate disabled branch for the company.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint allows you to activate disabled branch for a company
+        ///
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="companyId">Company Id</param>
+        /// <param name="branchId">Branch Id.</param>
+        /// <returns>Result indicating success or failure of the operation.</returns>
+        [HttpPatch("companies/{companyId:int}/branches/{branchId:int}/activate")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.BranchDelete)]
+        [Tags("Administration-Company")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ActivateBranch([FromRoute] int companyId, [FromRoute] int branchId)
+        {
+            var result = await _branchService.Activate(companyId, branchId);
             return result.ToResponse();
         }
     }

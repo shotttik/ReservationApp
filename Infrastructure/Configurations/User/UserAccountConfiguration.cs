@@ -20,6 +20,14 @@ namespace Infrastructure.Configurations.User
                    .HasForeignKey<UserAccount>(uld => uld.UserLoginDataID)
                    .OnDelete(DeleteBehavior.Cascade)
                    .IsRequired();
+            builder.HasOne(e => e.Branch)
+                .WithMany(e => e.UserAccounts)
+                .HasForeignKey(e => e.BranchId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(u => u.Company)
+               .WithMany(c => c.UserAccounts)
+               .HasForeignKey(u => u.CompanyID)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

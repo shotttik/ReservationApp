@@ -41,10 +41,10 @@ namespace Infrastructure.Repositories
             return await query.AnyAsync();
         }
 
-        public async Task<List<Booking>> GetDataForAllActiveEmployees(int companyId, DateOnly startDate, DateOnly endDate)
+        public async Task<List<Booking>> GetDataForAllActiveEmployees(int branchId, DateOnly startDate, DateOnly endDate)
         {
             return await _dbSet.Where(b =>
-                b.CompanyID == companyId &&
+                b.BranchId == branchId &&
                 DateOnly.FromDateTime(b.StartTime) >= startDate &&
                 DateOnly.FromDateTime(b.StartTime) <= endDate &&
                 (
@@ -79,7 +79,25 @@ namespace Infrastructure.Repositories
 
             return booking;
         }
+        public async Task<Booking?> GetWithBranchAndReviewInvite(int bookingId)
+        {
+            var booking = await _dbSet
+                .Where(e => e.ID == bookingId)
+                .Include(e => e.ReviewInvite)
+                .Include(e => e.Branch)
+                .FirstOrDefaultAsync();
 
+            return booking;
+        }
+        public async Task<Booking?> GetWithBranch(int bookingId)
+        {
+            var booking = await _dbSet
+                .Where(e => e.ID == bookingId)
+                .Include(e => e.Branch)
+                .FirstOrDefaultAsync();
+
+            return booking;
+        }
         public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId)
         {
             return await _dbSet
@@ -87,6 +105,7 @@ namespace Infrastructure.Repositories
                             b.GuestInfo != null &&
                             b.Status == BookingStatus.PendingVerification)
                 .Include(b => b.GuestInfo)
+                .Include(b => b.Branch)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
                     b.Verifications
@@ -104,6 +123,7 @@ namespace Infrastructure.Repositories
                             b.GuestInfo != null &&
                             (b.Status == BookingStatus.PendingVerification || b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
                 .Include(b => b.GuestInfo)
+                .Include(b => b.Branch)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
                     b.Verifications
@@ -122,6 +142,7 @@ namespace Infrastructure.Repositories
                        b.GuestInfo.Contact == contact &&
                        (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
                 .Include(b => b.GuestInfo)
+                .Include(b => b.Branch)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
                     b.Verifications
@@ -136,6 +157,7 @@ namespace Infrastructure.Repositories
         {
             return await _dbSet
                 .Where(b => b.Reference == reference && (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
+                .Include(b => b.Branch)
                 .Select(b => new BookingWithLatestPendingVerification(
                     b,
                     b.Verifications

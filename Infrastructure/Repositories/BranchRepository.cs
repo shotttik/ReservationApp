@@ -38,5 +38,23 @@ namespace Infrastructure.Repositories
                 .Distinct()
                 .ToListAsync();
         }
+        public async Task<Branch?> Get(int id, int companyId)
+        {
+            return await _dbSet
+                .Where(b => b.ID == id && b.CompanyId == companyId)
+                .FirstOrDefaultAsync();
+        }
+        public async Task Delete(int id)
+        {
+            await dbContext.UserAccounts
+                .Where(u => u.BranchId == id)
+                .ExecuteUpdateAsync(u =>
+                    u.SetProperty(x => x.BranchId, (int?)null));
+            await dbContext.Bookings
+                .Where(e => e.BranchId == id)
+                .ExecuteDeleteAsync();
+            await _dbSet.Where(e => e.ID == id)
+                .ExecuteDeleteAsync();
+        }
     }
 }

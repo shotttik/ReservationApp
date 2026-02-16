@@ -19,7 +19,7 @@ namespace Application.Extensions.Mappers
                 Phone = company.Phone,
                 Type = company.Type,
                 ActiveStatus = company.ActiveStatus,
-                Branch = company.Branch.MapToDTO(),
+                Branches = company.Branches.Select(e => e.MapToDTO()),
                 CreatedAt = company.CreatedAt,
                 Viewed = company.Viewed,
                 Services = company.Services.Select(s => new ServiceDTO
@@ -47,8 +47,7 @@ namespace Application.Extensions.Mappers
             Email = request.Email,
             Phone = request.Phone,
             Type = request.Type,
-            ActiveStatus = request.ActiveStatus,
-            Branch = request.Branch.MapToEntity()
+            ActiveStatus = request.ActiveStatus
         };
 
         public static Company MapToEntity(this Domain.DTO.Company.CompanyDTO companyDTO)
@@ -75,7 +74,6 @@ namespace Application.Extensions.Mappers
             entity.Phone = request.Phone;
             entity.Type = request.Type;
             entity.ActiveStatus = request.ActiveStatus;
-            entity.Branch = request.Branch.MapToEntity(entity.Branch);
 
             return entity;
         }
@@ -86,33 +84,6 @@ namespace Application.Extensions.Mappers
 
             if (!string.IsNullOrWhiteSpace(req.Phone))
                 company.Phone = req.Phone;
-
-            if (req.Branch is not null)
-            {
-                var loc = req.Branch;
-
-                if (!string.IsNullOrWhiteSpace(loc.AddressLine1))
-                    company.Branch.AddressLine1 = loc.AddressLine1;
-
-                if (!string.IsNullOrWhiteSpace(loc.AddressLine2))
-                    company.Branch.AddressLine2 = loc.AddressLine2;
-
-                if (!string.IsNullOrWhiteSpace(loc.City))
-                    company.Branch.City = loc.City;
-
-                if (!string.IsNullOrWhiteSpace(loc.State))
-                    company.Branch.State = loc.State;
-
-                if (!string.IsNullOrWhiteSpace(loc.PostalCode))
-                    company.Branch.PostalCode = loc.PostalCode;
-
-                if (loc.Latitude.HasValue)
-                    company.Branch.Latitude = loc.Latitude;
-
-                if (loc.Longitude.HasValue)
-                    company.Branch.Longitude = loc.Longitude;
-            }
         }
-
     }
 }

@@ -13,14 +13,13 @@ namespace Domain.Entities.CompanyReleated
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public CompanyType Type { get; set; }
-        public int BranchId { get; set; }
-        public Branch Branch { get; set; } = null!;
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];
-        public ICollection<Booking> Bookings { get; set; } = [];
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
         public ICollection<CompanyMedia> CompanyMedia { get; set; } = [];
+        public ICollection<Branch> Branches { get; set; } = [];
         public int Viewed { get; set; }
+        public bool HasBranch(int branchId) => Branches.Any(e => e.ID == branchId);
     }
 }

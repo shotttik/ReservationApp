@@ -9,7 +9,7 @@ namespace Application.Interfaces
 {
     public interface ICompanyService
     {
-        Task<Result<string>> InviteEmployee(int employeeId);
+        Task<Result<string>> InviteEmployee(InviteEmployeeRequest request);
         Task<Result> InviteAccept(string token);
         Task<Result> CreateServices(int routeCompanyId, ServicesCreateRequest request);
         Task<Result> UpdateServices(int routeCompanyId, ServicesUpdateRequest request);

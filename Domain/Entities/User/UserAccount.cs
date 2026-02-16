@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Common;
+﻿using Domain.Entities.BranchReleated;
+using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Enums;
 
@@ -16,6 +17,8 @@ namespace Domain.Entities.User
         public virtual UserLoginData UserLoginData { get; set; } = null!;
         public virtual Role? Role { get; set; }
         public virtual Company? Company { get; set; }
+        public int? BranchId { get; set; }
+        public virtual Branch? Branch { get; set; }
         public ICollection<Booking> BookingsAsClient { get; set; } = [];
         public ICollection<Booking> BookingsAsEmployee { get; set; } = [];
         public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];

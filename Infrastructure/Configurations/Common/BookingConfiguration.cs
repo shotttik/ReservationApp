@@ -41,9 +41,9 @@ namespace Infrastructure.Configurations.Common
                 .WithMany(e => e.BookingsAsEmployee)
                 .HasForeignKey(e => e.EmployeeID)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(e => e.Company)
+            builder.HasOne(e => e.Branch)
                 .WithMany(e => e.Bookings)
-                .HasForeignKey(e => e.CompanyID)
+                .HasForeignKey(e => e.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(e => e.Service)
                 .WithMany(e => e.Bookings)

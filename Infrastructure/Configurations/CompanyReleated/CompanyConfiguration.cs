@@ -25,16 +25,6 @@ namespace Infrastructure.Configurations.CompanyReleated
             builder.HasIndex(e => e.IN).IsUnique();
             builder.HasIndex(e => e.Email).IsUnique();
             builder.HasIndex(e => e.Phone).IsUnique();
-
-            builder.HasMany(c => c.UserAccounts)
-                .WithOne(ua => ua.Company)
-                .HasForeignKey(ua => ua.CompanyID)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            builder.HasOne(c => c.Branch)
-                .WithOne(l => l.Company)
-                .HasForeignKey<Company>(c => c.BranchId)
-                .IsRequired();
         }
     }
 }

@@ -23,29 +23,6 @@ namespace Infrastructure
                 // 2) Base Branches + Companies together (keep 1:1)
                 if (!await context.Branches.AnyAsync() && !await context.Companies.AnyAsync())
                 {
-                    string [] countries = { "USA", "Canada", "Germany", "France", "UK" };
-                    string [] states = { "California", "Ontario", "Bavaria", "Île-de-France", "London" };
-                    string [] cities = { "Los Angeles", "Toronto", "Munich", "Paris", "London" };
-                    string [] streets = { "Main St", "2nd Ave", "Elm Rd", "Maple Blvd", "Oak St" };
-
-                    var branches = new List<Branch>(50);
-                    for (int i = 0; i < 50; i++)
-                    {
-                        branches.Add(new Branch
-                        {
-                            Country = countries [random.Next(countries.Length)],
-                            State = states [random.Next(states.Length)],
-                            City = cities [random.Next(cities.Length)],
-                            AddressLine1 = $"{random.Next(1, 9999)} {streets [random.Next(streets.Length)]}",
-                            PostalCode = random.Next(10000, 99999).ToString(),
-                            Latitude = Convert.ToDecimal(random.NextDouble() * 180 - 90),
-                            Longitude = Convert.ToDecimal(random.NextDouble() * 360 - 180)
-                        });
-                    }
-
-                    await context.Branches.AddRangeAsync(branches);
-                    await context.SaveChangesAsync();
-
                     var companies = new List<Company>(50);
                     for (int i = 0; i < 50; i++)
                     {
@@ -68,21 +45,45 @@ namespace Infrastructure
                             Phone = phone,
                             Description = description,
                             ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                            BranchId = branches [i].ID
                         });
                     }
 
                     await context.Companies.AddRangeAsync(companies);
                     await context.SaveChangesAsync();
+
+                    string [] countries = { "USA", "Canada", "Germany", "France", "UK" };
+                    string [] states = { "California", "Ontario", "Bavaria", "Île-de-France", "London" };
+                    string [] cities = { "Los Angeles", "Toronto", "Munich", "Paris", "London" };
+                    string [] streets = { "Main St", "2nd Ave", "Elm Rd", "Maple Blvd", "Oak St" };
+
+                    var branches = new List<Branch>(50);
+                    for (int i = 0; i < 50; i++)
+                    {
+                        branches.Add(new Branch
+                        {
+                            Country = countries [random.Next(countries.Length)],
+                            State = states [random.Next(states.Length)],
+                            City = cities [random.Next(cities.Length)],
+                            AddressLine1 = $"{random.Next(1, 9999)} {streets [random.Next(streets.Length)]}",
+                            PostalCode = random.Next(10000, 99999).ToString(),
+                            Latitude = Convert.ToDecimal(random.NextDouble() * 180 - 90),
+                            Longitude = Convert.ToDecimal(random.NextDouble() * 360 - 180),
+                            CompanyId = companies [i].ID
+                        });
+                    }
+
+                    await context.Branches.AddRangeAsync(branches);
+                    await context.SaveChangesAsync();
+
                 }
 
                 // 3) Ensure the special company exists (before users/services/media)
                 var viehe = await EnsureVieheCompanyAsync(context);
 
                 // 4) Company users (depend on Viehe)
-                var companyAdmin = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyAdmin.ID,
+                var companyAdmin = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyAdmin.ID, null,
                                         "companyAdmin@example.com", "CompanyAdmin", "Company Admin");
-                var companyEmployee = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyEmployee.ID,
+                var companyEmployee = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyEmployee.ID, viehe?.Branches.FirstOrDefault()?.ID,
                                         "companyEmployee@example.com", "CompanyEmployee", "Company Employee");
 
                 // 5) Services (attach to actual company IDs)
@@ -158,6 +159,7 @@ namespace Infrastructure
             ApplicationDbContext context,
             int? companyId,
             int roleId,
+            int? branchId,
             string email,
             string firstName,
             string lastName)
@@ -174,9 +176,9 @@ namespace Infrastructure
                 FirstName = firstName,
                 LastName = lastName,
                 RoleID = roleId,
-                CompanyID = companyId
+                CompanyID = companyId,
+                BranchId = branchId
             };
-
             var login = new UserLoginData
             {
                 Email = email,
@@ -236,7 +238,7 @@ namespace Infrastructure
                 Phone = "555-0112-1231",
                 Description = "<p>Welcome to <strong>Viehe corporation</strong>...</p>",
                 ActiveStatus = Domain.Enums.ActiveStatus.Active,
-                Branch = new Branch
+                Branches = [new Branch
                 {
                     Country = "Georgia",
                     State = "Shida-Kartli",
@@ -245,7 +247,7 @@ namespace Infrastructure
                     PostalCode = random.Next(10000, 99999).ToString(),
                     Latitude = Convert.ToDecimal(41.7855048),
                     Longitude = Convert.ToDecimal(44.7529183)
-                },
+                }],
                 Services =
                 [
                     new Service { Name = "Consultation",     Description = "One-on-one consultation service",   Duration = 15, Price = 100.00m  },

@@ -9,6 +9,7 @@
         public static readonly Error InviteInvalidUser = Error.Validation("Company.InviteInvalidUser", "This invite is not for your user.");
         public static readonly Error InviteEmployeeNotFound = Error.Validation("Company.InviteEmployeeNotFound", "Employee not found for invitation.");
         public static readonly Error InviteInvalidRole = Error.Validation("Company.InviteInvalidRole", "Auth user is not a company admin or invited person is not a user.");
+        public static readonly Error InvalidBranchId = Error.Validation("Company.InvalidBranchId", "Branch doesn't exists.");
         public static readonly Error ServiceNotFound = Error.NotFound("Company.ServiceNotFound", "Company service not found.");
         public static readonly Error CompanyNotFound = Error.NotFound("Company.CompanyNotFound", "Company not found by given ID.");
         public static readonly Error CompanyDoesNotExists = Error.Validation("Company.CompanyNotExists", "Company does not exist.");
