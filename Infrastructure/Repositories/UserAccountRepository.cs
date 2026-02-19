@@ -68,18 +68,27 @@ namespace Infrastructure.Repositories
         }
 
         /// <summary>
-        /// Get full user account data with UserLoginDataID, user must be active.
+        /// Get full user account data with UserLoginDataID.
+        /// User, Branch and Company must all be active.
         /// </summary>
         /// <param name="userLoginDataID"></param>
         /// <returns>UserAccount or null</returns>
+
         public async Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID)
         {
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID && e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
+                .Where(e =>
+                e.UserLoginData.ID == userLoginDataID && 
+                e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
+                e.Branch != null &&
+                e.Branch.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
+                e.Company != null &&
+                e.Company.ActiveStatus == Domain.Enums.ActiveStatus.Active)
                 .Include(e => e.Company)
                     .ThenInclude(c => c!.Services)
+                .Include(e => e.Branch)
                 .Include(e => e.BookingsAsEmployee)
                 .Include(e => e.WorkSchedules)
                 .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
