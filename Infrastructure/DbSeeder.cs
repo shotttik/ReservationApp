@@ -19,10 +19,12 @@ namespace Infrastructure
                 // 1) Users that don't depend on companies
                 await EnsureSuperAdminAsync(context);
                 await EnsurePublicUserAsync(context);
-
+                // Subscription
+                await EnsureSubscriptionPlansExists(context);
                 // 2) Base Branches + Companies together (keep 1:1)
                 if (!await context.Branches.AnyAsync() && !await context.Companies.AnyAsync())
                 {
+                    var freeSubscriptionPlan = await context.SubscriptionPlans.Where(e => e.Name == "FREE").FirstAsync();
                     var companies = new List<Company>(50);
                     for (int i = 0; i < 50; i++)
                     {
@@ -36,7 +38,14 @@ namespace Infrastructure
                             <blockquote>“The best way to predict the future is to invent it.” — Alan Kay</blockquote>
                             {i + 1}
                             """;
-
+                        var companySubscription = new CompanySubscription()
+                        {
+                            SubscriptionPlan = freeSubscriptionPlan,
+                            StartDate = DateTime.Now,
+                            EndDate = DateTime.Now.AddMonths(12),
+                            Status = Domain.Enums.SubscriptionStatus.Active,
+                            AutoRenew = false
+                        };
                         companies.Add(new Company
                         {
                             Name = name,
@@ -45,6 +54,7 @@ namespace Infrastructure
                             Phone = phone,
                             Description = description,
                             ActiveStatus = Domain.Enums.ActiveStatus.Active,
+                            Subscription = companySubscription
                         });
                     }
 
@@ -228,6 +238,15 @@ namespace Infrastructure
         {
             var existing = await context.Companies.FirstOrDefaultAsync(c => c.Email == "vieheCorporation@example.com");
             if (existing != null) return existing;
+            var enterpriseSubscriptionPlan = await context.SubscriptionPlans.Where(e => e.Name == "ENTERPRISE").FirstAsync();
+            var companySubscription = new CompanySubscription()
+            {
+                SubscriptionPlan = enterpriseSubscriptionPlan,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddMonths(12),
+                Status = Domain.Enums.SubscriptionStatus.Active,
+                AutoRenew = false
+            };
 
             var random = new Random();
             var company = new Company
@@ -253,7 +272,8 @@ namespace Infrastructure
                     new Service { Name = "Consultation",     Description = "One-on-one consultation service",   Duration = 15, Price = 100.00m  },
                     new Service { Name = "Web Development",  Description = "Custom web development services",   Duration = 15, Price = 5000.00m },
                     new Service { Name = "SEO Optimization", Description = "Search engine optimization services",Duration = 15, Price = 1500.00m },
-                ]
+                ],
+                Subscription = companySubscription
             };
 
             context.Companies.Add(company);
@@ -300,7 +320,47 @@ namespace Infrastructure
             context.Services.AddRange(servicesToSeed);
             await context.SaveChangesAsync();
         }
-
+        private static async Task EnsureSubscriptionPlansExists(ApplicationDbContext context)
+        {
+            if (await context.SubscriptionPlans.AnyAsync())
+            {
+                return;
+            }
+            var free = new SubscriptionPlan()
+            {
+                Name = "FREE",
+                PriceMonthly = 0,
+                MaxEmployees = 1,
+                MaxBookingsPerMonth = 20,
+                MaxBranches = 1
+            };
+            var basic = new SubscriptionPlan()
+            {
+                Name = "BASIC",
+                PriceMonthly = 25,
+                MaxEmployees = 2,
+                MaxBookingsPerMonth = 999,
+                MaxBranches = 1
+            };
+            var pro = new SubscriptionPlan()
+            {
+                Name = "Pro",
+                PriceMonthly = 50,
+                MaxEmployees = 10,
+                MaxBookingsPerMonth = 9999,
+                MaxBranches = 5
+            };
+            var enterprise = new SubscriptionPlan()
+            {
+                Name = "ENTERPRISE",
+                PriceMonthly = 100,
+                MaxEmployees = 100,
+                MaxBookingsPerMonth = 9999999,
+                MaxBranches = 10
+            };
+            context.AddRange([free, basic, pro, enterprise]);
+            await context.SaveChangesAsync();
+        }
         public static async Task SeedMediaAsync(ApplicationDbContext context)
         {
             if (await context.Media.AnyAsync()) return;

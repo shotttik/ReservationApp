@@ -42,6 +42,8 @@ namespace Infrastructure
         public DbSet<Review> Reviews { get; set; }
         public DbSet<BookingGuestInfo> BookingGuestInfos { get; set; }
         public DbSet<BookingVerification> BookingVerifications { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<CompanySubscription> CompanySubscriptions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -67,6 +69,8 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new WorkScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new WorkScheduleExceptionConfiguration());
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
+            modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanySubscriptionConfiguration());
 
             // Branch Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());

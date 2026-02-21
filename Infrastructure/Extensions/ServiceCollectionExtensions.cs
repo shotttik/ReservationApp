@@ -36,6 +36,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IReviewInviteRepository, ReviewInviteRepository>();
             services.AddScoped<IReviewMediaRepository, ReviewMediaRepository>();
+            services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+            services.AddScoped<ICompanySubscriptionRepository, CompanySubscriptionRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();

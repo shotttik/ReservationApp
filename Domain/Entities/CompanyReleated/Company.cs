@@ -13,6 +13,7 @@ namespace Domain.Entities.CompanyReleated
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public CompanyType Type { get; set; }
+        public CompanySubscription? Subscription { get; set; }
         public ICollection<UserAccount> UserAccounts { get; set; } = [];
         public ICollection<CompanyInvitation> Invitations { get; set; } = [];
         public ICollection<Service> Services { get; set; } = [];
