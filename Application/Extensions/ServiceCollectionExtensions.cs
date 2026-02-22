@@ -21,8 +21,10 @@ namespace Application.Extensions
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IGuestBookingService, GuestBookingService>();
+            services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
 
             services.AddScoped<IAccessGuard, AccessGuard>();
+            services.AddScoped<ISubscriptionGuard, SubscriptionGuard>();
 
             services.AddScoped<MediaCleanupJob>();
 

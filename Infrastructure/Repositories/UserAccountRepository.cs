@@ -74,7 +74,7 @@ namespace Infrastructure.Repositories
         /// <param name="userLoginDataID"></param>
         /// <returns>UserAccount or null</returns>
 
-        public async Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID)
+        public async Task<UserAccount?> GetEmployeeByUserLoginDataIDWithBookingData(int userLoginDataID)
         {
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -105,6 +105,27 @@ namespace Infrastructure.Repositories
                 .Where(e => e.UserLoginData.Email == email)
                 .Include(e => e.BookingsAsClient)
                 .Include(e => e.UserLoginData)
+                .FirstOrDefaultAsync();
+
+            return userAccount;
+        }
+        /// <summary>
+        /// Get full user account data with UserLoginDataID, user must be active.
+        /// </summary>
+        /// <param name="userLoginDataID"></param>
+        /// <returns>UserAccount or null</returns>
+        public async Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var userAccount = await _dbSet
+                .Where(e => e.UserLoginData.ID == userLoginDataID 
+                && e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
+                .Include(e => e.Company)
+                    .ThenInclude(c => c!.Services)
+                .Include(e => e.BookingsAsEmployee)
+                .Include(e => e.WorkSchedules)
+                .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
                 .FirstOrDefaultAsync();
 
             return userAccount;

@@ -8,7 +8,8 @@ namespace Domain.Interfaces.Repositories
         Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkScheduleExceptions(int userLoginDataID);
-        Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID);
+        Task<UserAccount?> GetEmployeeByUserLoginDataIDWithBookingData(int userLoginDataID);
         Task<UserAccount?> GetByEmailWithClientBookingData(string email);
+        Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID);
     }
 }

@@ -25,6 +25,7 @@ namespace Application.Services
         private readonly IAccessGuard _accessGuard;
         private readonly IGuestBookingService _bookingVerificationService;
         private readonly BookingSettings _bookingSettings;
+        private readonly ISubscriptionGuard _subscriptionGuard;
 
         public BookingService(
             IBookingRepository bookingRepository,
@@ -32,7 +33,8 @@ namespace Application.Services
             IUserAccountRepository userAccountRepository,
             IAccessGuard accessGuard,
             IGuestBookingService bookingVerificationService,
-            IOptions<BookingSettings> bookingSettings
+            IOptions<BookingSettings> bookingSettings,
+            ISubscriptionGuard subscriptionGuard
             )
         {
             _bookingRepository = bookingRepository;
@@ -41,6 +43,7 @@ namespace Application.Services
             _accessGuard = accessGuard;
             _bookingVerificationService = bookingVerificationService;
             _bookingSettings = bookingSettings.Value;
+            _subscriptionGuard = subscriptionGuard;
         }
         public async Task<Result<CreateBookingByGuestResponse>> CreateByGuest(GuestBookingCreateRequest request)
         {
@@ -53,6 +56,12 @@ namespace Application.Services
             if (service == null)
             {
                 return Result.Failure<CreateBookingByGuestResponse>(BookingResults.ServiceDoesntExists);
+            }
+            var companyId = (int)employee.CompanyID!;
+            var subscriptionError = await _subscriptionGuard.EnsureCanCreateBookingAsync(companyId);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<CreateBookingByGuestResponse>(subscriptionError);
             }
             var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, null);
 
@@ -111,6 +120,12 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
             }
 
+            var companyId = (int)employee.CompanyID!;
+            var subscriptionError = await _subscriptionGuard.EnsureCanCreateBookingAsync(companyId);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(subscriptionError);
+            }
             var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, authUser.UserAccountId);
 
             if (requestValidationError != Error.None)
@@ -143,6 +158,13 @@ namespace Application.Services
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
+            }
+
+            var companyId = (int)employee.CompanyID!;
+            var subscriptionError = await _subscriptionGuard.EnsureCanCreateBookingAsync(companyId);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(subscriptionError);
             }
 
             BookingGuestInfo? bookingGuestInfo = null;
@@ -372,7 +394,7 @@ namespace Application.Services
         }
         private async Task<Result<UserAccount>> GetValidEmployee(int employeeLoginId)
         {
-            var employee = await _userAccountRepository.GetByUserLoginDataIDWithBookingData(employeeLoginId);
+            var employee = await _userAccountRepository.GetEmployeeByUserLoginDataIDWithBookingData(employeeLoginId);
             if (employee == null || employee.CompanyID == null)
                 return Result.Failure<UserAccount>(BookingResults.EmployeeDoesntExists);
 
