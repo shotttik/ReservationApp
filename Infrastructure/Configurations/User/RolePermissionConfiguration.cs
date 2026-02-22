@@ -94,6 +94,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.ReviewInviteRead),
             Create(Role.SuperAdmin, Permission.ReviewInviteReadLimited),
 
+            Create(Role.SuperAdmin, Permission.SubscriptionPlanUpdate),
 
 
             // ==== CompanyAdmin: Manage Own Company ====

@@ -1,4 +1,5 @@
-﻿using Application.Common.Results;
+﻿using Application.Common.Requests.SubscriptionPlan;
+using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO;
@@ -25,6 +26,20 @@ namespace Application.Services
             }
 
             return Result.Success(subscriptionPlans.Select(e => e.MapToDTO()));
+        }
+
+        public async Task<Result<SubscriptionPlanDTO>> Update(int id, SubscriptionPlanUpdateRequest request)
+        {
+            var subscriptionPlan = await _subscriptionPlanRepository.Get(id);
+            if (subscriptionPlan == null)
+            {
+                return Result.Failure<SubscriptionPlanDTO>(SubscriptionPlanResults.NotFound);
+            }
+            request.ApplyTo(subscriptionPlan);
+
+            await _subscriptionPlanRepository.Update(subscriptionPlan);
+
+            return subscriptionPlan.MapToDTO();
         }
     }
 }

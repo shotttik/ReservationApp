@@ -109,7 +109,10 @@
         ReviewCreate,
         ReviewInviteCreate,
         ReviewInviteRead,
-        ReviewInviteReadLimited
+        ReviewInviteReadLimited,
+
+        // ==== Company Subscription ====
+        SubscriptionPlanUpdate
     }
 }
 
