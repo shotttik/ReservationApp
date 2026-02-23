@@ -7,6 +7,7 @@ using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.User;
+using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
@@ -22,6 +23,7 @@ namespace Application.Services
         private readonly ICompanyRepository companyRepository;
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
+        private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
@@ -29,7 +31,8 @@ namespace Application.Services
             IAuthService authService,
             ICompanyRepository companyRepository,
             IConfiguration configuration,
-            IUserService userService
+            IUserService userService,
+            ISubscriptionPlanRepository subscriptionPlanRepository
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -38,6 +41,7 @@ namespace Application.Services
             this.companyRepository = companyRepository;
             this.configuration = configuration;
             this.userService = userService;
+            _subscriptionPlanRepository = subscriptionPlanRepository;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -131,8 +135,24 @@ namespace Application.Services
             {
                 return Result.Failure(CompanyResults.AlreadyExists);
             }
+            var subscriptionPlan = await _subscriptionPlanRepository.Get(request.SubscriptionPlanId);
+            if (subscriptionPlan == null)
+            {
+                return Result.Failure(SubscriptionPlanResults.IsntExists);
+            }
 
             var company = request.MapToEntity();
+
+            var companySubscription = new CompanySubscription()
+            {
+                SubscriptionPlanId = subscriptionPlan.ID,
+                SubscriptionPlan = subscriptionPlan,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMonths(1),
+                Status = SubscriptionStatus.Active,
+                AutoRenew = false
+            };
+            company.Subscription = companySubscription;
             await companyRepository.Add(company);
 
             return Result.Success();

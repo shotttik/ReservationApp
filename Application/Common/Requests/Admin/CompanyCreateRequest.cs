@@ -20,6 +20,9 @@ namespace Application.Common.Requests.Admin
         public string? Phone { get; set; }
         [Required]
         public CompanyType Type { get; set; }
+        [Required]
         public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
+        [Required]
+        public int SubscriptionPlanId { get; set; }
     }
 }
