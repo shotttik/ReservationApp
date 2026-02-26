@@ -1,10 +1,8 @@
 ﻿using API.Attributes;
 using Application.Authentication;
-using Application.Common.Requests.Company;
 using Application.Common.Requests.SubscriptionPlan;
 using Application.Common.Results;
 using Application.Interfaces;
-using Application.Services;
 using Domain.Abstractions;
 using Domain.DTO.Company;
 using Domain.Enums;

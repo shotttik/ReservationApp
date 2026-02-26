@@ -13,7 +13,7 @@
             ["Phone"] = "Phone",
             ["Type"] = "Type",
             ["CreatedAt"] = "CreatedAt",
-
+            ["UpdatedAt"] = "UpdatedAt",
         };
     }
 }

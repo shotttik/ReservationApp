@@ -16,6 +16,8 @@ namespace Application.Extensions.Mappers
                 EndDate = entity.EndDate,
                 Status = entity.Status,
                 AutoRenew = entity.AutoRenew,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt
             };
         }
     }

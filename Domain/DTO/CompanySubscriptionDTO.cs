@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace Domain.DTO
 {
@@ -14,5 +15,7 @@ namespace Domain.DTO
         public bool AutoRenew { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        [JsonIgnore]
+        public bool IsActive => Status == SubscriptionStatus.Active && EndDate >= DateTime.UtcNow;
     }
 }

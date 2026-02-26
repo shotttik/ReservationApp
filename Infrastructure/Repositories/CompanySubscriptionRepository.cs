@@ -1,7 +1,10 @@
-﻿using Domain.DTO;
+﻿using Application.Extensions.Mappers;
+using Domain.Abstractions;
+using Domain.DTO;
 using Domain.Entities.CompanyReleated;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
@@ -36,6 +39,30 @@ namespace Infrastructure.Repositories
                         && b.StartTime >= cs.StartDate)
                 })
                 .FirstOrDefaultAsync();
+        }
+        public async Task<CompanySubscription?> GetByCompanyId(int companyId)
+        {
+            return await _dbSet
+                .Where(cs => cs.CompanyId == companyId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<PagedList<CompanySubscriptionDTO>> RetrievePaged(PagedParameters parameters)
+        {
+            var query = _dbSet
+               .AsQueryable();
+
+            query = query.ApplyQueryParamsAsync(parameters);
+
+            var totalCount = await query.CountAsync();
+
+            var companies = await query
+                .Select(e => e.MapToDTO())
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            return new PagedList<CompanySubscriptionDTO>(companies, parameters.PageNumber, parameters.PageSize, totalCount);
         }
     }
 }

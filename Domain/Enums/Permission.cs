@@ -111,8 +111,12 @@
         ReviewInviteRead,
         ReviewInviteReadLimited,
 
-        // ==== Company Subscription ====
-        SubscriptionPlanUpdate
+        // ==== Subscription ====
+        SubscriptionPlanUpdate,
+
+        // ==== CompanySubscriptionUpdate ====
+        CompanySubscriptionUpdate,
+        CompanySubscriptionGet,
     }
 }
 

@@ -2,9 +2,11 @@
 using Application.Authentication;
 using Application.Common.Requests.Admin;
 using Application.Common.Requests.Company;
+using Application.Common.Requests.SubscriptionPlan;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
+using Domain.DTO;
 using Domain.DTO.Company;
 using Domain.DTO.User;
 using Domain.Enums;
@@ -21,13 +23,16 @@ namespace API.Controllers
     {
         private readonly ICompanyService _companyService;
         private readonly IBranchService _branchService;
+        private readonly ICompanySubscriptionService _companySubscriptionService;
 
         public CompanyController(
             ICompanyService companyService,
-            IBranchService branchService)
+            IBranchService branchService,
+            ICompanySubscriptionService companySubscriptionService)
         {
             _companyService = companyService;
             _branchService = branchService;
+            _companySubscriptionService = companySubscriptionService;
         }
         /// <summary>
         /// Retrieves a paginated list of companies.
@@ -387,6 +392,172 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteBranch([FromRoute] int companyId, [FromRoute] int branchId)
         {
             var result = await _branchService.Delete(companyId, branchId, force: false);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Retrieves a paginated list of companies subscriptions.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>CompanyId</c></li>
+        /// <li><c>SubscriptionPlanId</c></li>
+        /// <li><c>StartDate</c></li>
+        /// <li><c>EndDate</c></li>
+        /// <li><c>Status</c></li>
+        /// <li><c>AutoRenew</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// </ul>
+        /// </remarks>
+        /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Paged list of company subscription records.</returns>
+        [HttpGet("subscriptions/paged")]
+        [Logging(LoggingType.General)]
+        [HasPermission(Permission.CompanySubscriptionGet)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CompanySubscriptionsRetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
+        {
+            var result = await _companySubscriptionService.RetrievePaged(parameters);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Change subscription plan of a company.
+        /// </summary>
+        /// <remarks>
+        /// Updates the subscription plan assigned to the company.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="id">Company Id.</param>
+        /// <param name="subscriptionPlanId">Subscription plan id.</param>
+        [HttpPut("{id:int}/subscription/plan/{subscriptionPlanId:int}")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangePlan(
+            [FromRoute] int id,
+            [FromRoute] int subscriptionPlanId)
+        {
+            var result = await _companySubscriptionService.ChangePlan(id, subscriptionPlanId);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Activate or reactivate a company subscription.
+        /// </summary>
+        /// <remarks>
+        /// Sets subscription period and marks it as Active.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        [HttpPost("{id:int}/subscription/activate")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(CompanySubscriptionDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Activate(
+            [FromRoute] int id,
+            [FromBody] ActivateSubscriptionRequest request)
+        {
+            var result = await _companySubscriptionService
+                .Activate(id, request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Cancel company subscription.
+        /// </summary>
+        /// <remarks>
+        /// Cancels the subscription and disables auto-renew.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        [HttpPost("{id:int}/subscription/cancel")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Cancel([FromRoute] int id)
+        {
+            var result = await _companySubscriptionService.Cancel(id);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Extend subscription period.
+        /// </summary>
+        /// <remarks>
+        /// Extends subscription by specified number of months.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        [HttpPost("{id:int}/subscription/extend")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Extend(
+            [FromRoute] int id,
+            [FromBody] ExtendSubscriptionRequest request)
+        {
+            var result = await _companySubscriptionService
+                .Extend(id, request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Enable or disable auto-renew.
+        /// </summary>
+        /// <remarks>
+        /// Sets auto-renew flag for subscription.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        [HttpPut("{id:int}/subscription/autorenew")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SetAutoRenew(
+            [FromRoute] int id,
+            [FromBody] SetAutoRenewRequest request)
+        {
+            var result = await _companySubscriptionService
+                .SetAutoRenew(id, request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Update subscription period.
+        /// </summary>
+        /// <remarks>
+        /// Manually updates the start and end dates of the company subscription.
+        /// 
+        /// Business rules:
+        /// - Subscription must exist.
+        /// - Subscription must be Active.
+        /// - Start date must be earlier than end date.
+        /// 
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="id">Company Id.</param>
+        /// <param name="request">New subscription period.</param>
+        [HttpPut("{id:int}/subscription/period")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.CompanySubscriptionUpdate)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdatePeriod(
+            [FromRoute] int id,
+            [FromBody] UpdateSubscriptionPeriodRequest request)
+        {
+            var result = await _companySubscriptionService
+                .UpdatePeriod(id, request);
+
             return result.ToResponse();
         }
     }
