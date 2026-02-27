@@ -15,7 +15,7 @@ namespace Application.Common.Security
             _companySubscriptionRepository = companySubscriptionRepository;
         }
 
-        public async Task<Error> EnsurCanCreateEmployeeAsync(int companyId)
+        public async Task<Error> EnsureCanCreateEmployeeAsync(int companyId)
         {
             var (usage, error) = await GetValidatedUsage(companyId);
             if (usage == null || error != Error.None)

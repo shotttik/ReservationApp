@@ -32,6 +32,7 @@ namespace Application.Services
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IUserService userService;
         private readonly IAccessGuard accessGuard;
+        private readonly ISubscriptionGuard subscriptionGuard;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -45,7 +46,8 @@ namespace Application.Services
             ICompanyMediaRepository companyMediaRepository,
             IUserLoginDataRepository userLoginDataRepository,
             IUserService userService,
-            IAccessGuard accessGuard)
+            IAccessGuard accessGuard,
+            ISubscriptionGuard subscriptionGuard)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
@@ -59,6 +61,7 @@ namespace Application.Services
             this.userLoginDataRepository = userLoginDataRepository;
             this.userService = userService;
             this.accessGuard = accessGuard;
+            this.subscriptionGuard = subscriptionGuard;
         }
 
         public async Task<Result<string>> InviteEmployee(InviteEmployeeRequest request)
@@ -69,12 +72,17 @@ namespace Application.Services
             {
                 return Result.Failure<string>(CompanyResults.InviteEmployeeNotFound);
             }
+            var subscriptionError = await subscriptionGuard.EnsureCanCreateEmployeeAsync(AuthUser.CompanyID!.Value);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<string>(subscriptionError);
+            }
             // must be used only for company admins , superadmin have different endpoint for this logic.
-            if (!AuthUser.CompanyID.HasValue || AuthUser.Role!.ID != Role.CompanyAdmin.ID || employee.RoleID != Role.PublicUser.ID)
+            if (employee.RoleID != Role.PublicUser.ID)
             {
                 return Result.Failure<string>(CompanyResults.InviteInvalidRole);
             }
-            var company = await companyRepository.GetWithBranches(AuthUser.CompanyID.Value);
+            var company = await companyRepository.GetWithBranches(AuthUser.CompanyID!.Value);
             if (company == null || !company.HasBranch(request.BranchId))
             {
                 return Result.Failure<string>(CompanyResults.InvalidBranchId);
@@ -298,6 +306,11 @@ namespace Application.Services
             {
                 return Result.Failure(accessError);
             }
+            var subscriptionError = await subscriptionGuard.EnsureCanCreateEmployeeAsync(routeCompanyId);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<string>(subscriptionError);
+            }
             var existingUser = await userLoginDataRepository.GetByEmail(request.Email);
             if (existingUser != null)
             {
@@ -332,6 +345,7 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
+            //TODO Send email
 
             return Result.Success(AuthResults.UserCreated);
         }
