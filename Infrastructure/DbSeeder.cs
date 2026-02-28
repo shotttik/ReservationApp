@@ -19,6 +19,8 @@ namespace Infrastructure
                 // 1) Users that don't depend on companies
                 await EnsureSuperAdminAsync(context);
                 await EnsurePublicUserAsync(context);
+                // EnsureGeorgiaLocationSeeded
+                await EnsureGeorgiaLocationSeeded(context);
                 // Subscription
                 await EnsureSubscriptionPlansExists(context);
                 // 2) Base Branches + Companies together (keep 1:1)
@@ -359,6 +361,133 @@ namespace Infrastructure
                 MaxBranches = 10
             };
             context.AddRange([free, basic, pro, enterprise]);
+            await context.SaveChangesAsync();
+        }
+        private static async Task EnsureGeorgiaLocationSeeded(ApplicationDbContext context)
+        {
+            if (await context.Countries.AnyAsync(c => c.Iso2 == "GE"))
+            {
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+
+            var georgia = new Country
+            {
+                Name = "Georgia",
+                Iso2 = "GE",
+                Iso3 = "GEO",
+                NumericCode = "268",
+                PhoneCode = "995",
+                Capital = "Tbilisi",
+                Currency = "GEL",
+                CurrencyName = "Georgian Lari",
+                CurrencySymbol = "₾",
+                Tld = ".ge",
+                Native = "საქართველო",
+                Region = "Asia",
+                Subregion = "Western Asia",
+                Nationality = "Georgian",
+                Latitude = 42.3154m,
+                Longitude = 43.3569m,
+                Emoji = "🇬🇪",
+                EmojiU = "U+1F1EC U+1F1EA",
+                Flag = true,
+                CreatedAt = now
+            };
+
+            context.Countries.Add(georgia);
+            await context.SaveChangesAsync();
+
+            var tbilisiState = new State
+            {
+                Name = "Tbilisi",
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2!,
+                CountryName = georgia.Name,
+                StateCode = "TB",
+                Type = "City",
+                Latitude = 41.7151m,
+                Longitude = 44.8271m,
+                CreatedAt = now
+            };
+
+            var adjaraState = new State
+            {
+                Name = "Adjara",
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2!,
+                CountryName = georgia.Name,
+                StateCode = "AJ",
+                Type = "Autonomous Republic",
+                Latitude = 41.6006m,
+                Longitude = 42.0688m,
+                CreatedAt = now
+            };
+
+            var imeretiState = new State
+            {
+                Name = "Imereti",
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2!,
+                CountryName = georgia.Name,
+                StateCode = "IM",
+                Type = "Region",
+                Latitude = 42.2301m,
+                Longitude = 42.9000m,
+                CreatedAt = now
+            };
+
+            context.States.AddRange(tbilisiState, adjaraState, imeretiState);
+            await context.SaveChangesAsync();
+
+            var tbilisiCity = new City
+            {
+                Name = "Tbilisi",
+                StateId = tbilisiState.ID,
+                StateCode = tbilisiState.StateCode!,
+                StateName = tbilisiState.Name,
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2,
+                CountryName = georgia.Name,
+                Latitude = 41.7151m,
+                Longitude = 44.8271m,
+                Flag = true,
+                CreatedAt = now
+            };
+
+            var batumiCity = new City
+            {
+                Name = "Batumi",
+                StateId = adjaraState.ID,
+                StateCode = adjaraState.StateCode!,
+                StateName = adjaraState.Name,
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2,
+                CountryName = georgia.Name,
+                Latitude = 41.6168m,
+                Longitude = 41.6367m,
+                Flag = true,
+                CreatedAt = now
+            };
+
+            var kutaisiCity = new City
+            {
+                Name = "Kutaisi",
+                StateId = imeretiState.ID,
+                StateCode = imeretiState.StateCode!,
+                StateName = imeretiState.Name,
+                CountryId = georgia.ID,
+                CountryCode = georgia.Iso2,
+                CountryName = georgia.Name,
+                Latitude = 42.2662m,
+                Longitude = 42.7180m,
+                Flag = true,
+                CreatedAt = now
+            };
+
+            context.Cities.AddRange(tbilisiCity, batumiCity, kutaisiCity);
+
             await context.SaveChangesAsync();
         }
         public static async Task SeedMediaAsync(ApplicationDbContext context)
