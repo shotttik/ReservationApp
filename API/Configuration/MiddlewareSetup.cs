@@ -33,7 +33,7 @@ namespace API.Configuration
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             await db.Database.MigrateAsync();
 
-            if (app.Environment.IsDevelopment())
+            if (!app.Environment.IsProduction())
             {
                 await DbSeeder.SeedAsync(db);
             }
