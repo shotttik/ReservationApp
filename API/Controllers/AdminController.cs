@@ -83,6 +83,28 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
+        /// Resets password for an existing user.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="id">ID of the user.</param>
+        /// <param name="request">request of user password.</param>
+        /// <returns>Returns success or failure of the update.</returns>
+        [HttpPost("users/{id:int}/reset-password")]
+        [Tags("Administration-User")]
+        [HasPermission(Permission.UserUpdate)]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AdminResetPassword(int id, [FromBody] AdminResetPasswordRequest request)
+        {
+            var result = await _adminService.ResetUserPassword(id, request);
+
+            return result.ToResponse();
+        }
+        /// <summary>
         /// Deletes a user account. Supports soft and hard delete.
         /// </summary>
         /// <remarks>

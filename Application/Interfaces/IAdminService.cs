@@ -10,6 +10,7 @@ namespace Application.Interfaces
     {
         Task<Result> UserCreate(UserCreateRequest request);
         Task<Result> UserUpdate(int id, UserUpdateRequest request);
+        Task<Result> ResetUserPassword(int id, AdminResetPasswordRequest request);
         Task<Result> CompanyUpdate(int id, CompanyUpdateRequest request);
         Task<Result> CompanyCreate(CompanyCreateRequest request);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedUsers(PagedParameters parameters, CancellationToken cancellationToken);

@@ -129,6 +129,23 @@ namespace Application.Services
             return Result.Success(AuthResults.UserUpdated);
         }
 
+        public async Task<Result> ResetUserPassword(int id, AdminResetPasswordRequest request)
+        {
+            var userLoginData = await userLoginDataRepository.Get(id);
+            if (userLoginData is null)
+            {
+                return Result.Failure(AuthResults.UserNotFound);
+            }
+            (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
+
+            userLoginData!.PasswordHash = hash;
+            userLoginData.PasswordSalt = salt;
+
+            await userLoginDataRepository.Update(userLoginData);
+
+            return Result.Success(AuthResults.PasswordReseted);
+        }
+
         public async Task<Result> CompanyCreate(CompanyCreateRequest request)
         {
             if (await companyRepository.ExistsByDetailsAsync(request.IN, request.Name, request.Email, request.Phone))
