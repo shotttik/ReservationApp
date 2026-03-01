@@ -16,6 +16,7 @@ namespace Domain.DTO.Company
         public ActiveStatus ActiveStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public int Viewed { get; set; }
+        public CompanySubscriptionDTO? Subscription { get; set; }
         public required IEnumerable<BranchDTO> Branches { get; set; }
         public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];

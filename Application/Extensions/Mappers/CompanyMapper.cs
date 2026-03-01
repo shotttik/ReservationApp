@@ -36,7 +36,8 @@ namespace Application.Extensions.Mappers
                     ID = cm.MediaID,
                     IsMain = cm.IsMain,
                     Path = cm.Media.RemoteUrl
-                }).ToList()
+                }).ToList(),
+                Subscription = company.Subscription?.MapToDTO()
             };
         }
         public static Company MapToEntity(this CompanyCreateRequest request) => new()

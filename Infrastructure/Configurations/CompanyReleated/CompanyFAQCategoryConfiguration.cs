@@ -14,9 +14,6 @@ namespace Infrastructure.Configurations.CompanyReleated
                 .IsRequired()
                 .HasMaxLength(500);
 
-            builder.HasIndex(c => c.Name)
-                .IsUnique();
-
             builder.HasMany(c => c.FAQs)
                 .WithOne(f => f.Category)
                 .HasForeignKey(f => f.CategoryID)

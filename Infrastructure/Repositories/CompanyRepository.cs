@@ -35,6 +35,7 @@ namespace Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.Services)
                 .Include(c => c.Branches)
+                .Include(c => c.Subscription)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id)
@@ -51,6 +52,7 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Services
                     .Where(s => s.ActiveStatus == ActiveStatus.Active))
                 .Include(c => c.Branches)
+                .Include(c => c.Subscription)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.ID == id && e.ActiveStatus == ActiveStatus.Active)

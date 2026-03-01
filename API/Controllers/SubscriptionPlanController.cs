@@ -3,8 +3,7 @@ using Application.Authentication;
 using Application.Common.Requests.SubscriptionPlan;
 using Application.Common.Results;
 using Application.Interfaces;
-using Domain.Abstractions;
-using Domain.DTO.Company;
+using Domain.DTO;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -25,18 +24,18 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a paginated list of subscription plans.
+        /// Retrieves a list of subscription plans.
         /// </summary>
         /// <remarks>
         /// Required role: <strong>Accessible by everyone</strong><br/><br/>
         /// </remarks>
-        /// <returns>Paged list of subscription plans.</returns>
+        /// <returns>List of subscription plans.</returns>
         [HttpGet()]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<SubscriptionPlanDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RetrievePagedUsers()
+        public async Task<IActionResult> RetrievePagedSubscriptionPlans()
         {
             var result = await _subscriptionPlanService.GetAll();
 

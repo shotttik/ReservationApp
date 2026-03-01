@@ -138,7 +138,7 @@ namespace Application.Services
             var subscriptionPlan = await _subscriptionPlanRepository.Get(request.SubscriptionPlanId);
             if (subscriptionPlan == null)
             {
-                return Result.Failure(SubscriptionPlanResults.IsntExists);
+                return Result.Failure(SubscriptionPlanResults.DoesntExists);
             }
 
             var company = request.MapToEntity();

@@ -6,7 +6,7 @@ namespace Application.Common.Results
     {
         #region Errors
         public static readonly Error NotFound = Error.NotFound("SubscriptionPlan.NotFound", "Subscription not found");
-        public static readonly Error IsntExists = Error.Validation("SubscriptionPlan.IsnotExists", "Subscription is not exists.");
+        public static readonly Error DoesntExists = Error.Validation("SubscriptionPlan.DoesntExists", "Subscription does not exists.");
         #endregion
         #region Success
         public static readonly SuccessInfo Activated = new("CompanySubscription.Activated", "Branch activated successfully.");
