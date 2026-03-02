@@ -12,7 +12,7 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/profile")]
     [ApiController]
-    [Tags("Users")]
+    [Tags("Profile")]
     public class UserController :ControllerBase
     {
         private readonly IUserService userService;

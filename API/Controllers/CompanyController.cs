@@ -49,7 +49,9 @@ namespace API.Controllers
         /// <li><c>Email</c></li>
         /// <li><c>Phone</c></li>
         /// <li><c>Type</c></li>
+        /// <li><c>ActiveStatus</c></li>
         /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
         /// </ul>
         /// </remarks>
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
@@ -62,7 +64,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await _companyService.RetrievePaged(parameters, cancellationToken, forPublic: true);
+            var result = await _companyService.RetrievePaged(parameters, cancellationToken);
 
             return result.ToResponse();
         }

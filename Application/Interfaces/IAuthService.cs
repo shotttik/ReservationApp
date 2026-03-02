@@ -7,6 +7,7 @@ namespace Application.Interfaces
         Task<AuthUser> GetCurrentUser();
         string GetSessionID();
         string GetEmail();
+        string? GetRoleOrNull();
         int GetUserAccountID();
         int GetUserLoginDataID();
         Task RefreshUserCache(int? userLoginDataID = null);

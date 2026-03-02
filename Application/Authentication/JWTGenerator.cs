@@ -10,13 +10,14 @@ namespace Application.Authentication
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, string sessionID, IConfiguration configuration)
+        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, string sessionID, string role, IConfiguration configuration)
         {
             var claims = new []
             {
                 new Claim(ClaimTypes.PrimarySid, userLoginDataID.ToString()),
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Sid, userAccountID.ToString()),
+                new Claim(ClaimTypes.Role, role),
                 new Claim("SessionID", sessionID), // custom claim for session ID
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
@@ -100,15 +101,15 @@ namespace Application.Authentication
                 .TrimEnd('=');
         }
 
-        public static (string email, int userLoginDataID, int userAccountID, string sessionId) ParseValuesFromPrincipal(ClaimsPrincipal principal)
+        public static (string email, int userLoginDataID, int userAccountID, string sessionId, string role) ParseValuesFromPrincipal(ClaimsPrincipal principal)
         {
             var email = principal!.FindFirst(ClaimTypes.Email)?.Value!;
             var userLoginDataID = Convert.ToInt32(principal.FindFirst(ClaimTypes.PrimarySid)?.Value!);
             var userAccountID = Convert.ToInt32(principal.FindFirst(ClaimTypes.Sid)?.Value!);
-
             var sessionId = principal.FindFirst("SessionID")?.Value!;
+            var role = principal.FindFirst(ClaimTypes.Sid)?.Value!;
 
-            return (email, userLoginDataID, userAccountID, sessionId);
+            return (email, userLoginDataID, userAccountID, sessionId, role);
         }
     }
 }

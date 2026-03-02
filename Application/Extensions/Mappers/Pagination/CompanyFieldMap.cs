@@ -12,6 +12,7 @@
             ["Email"] = "Email",
             ["Phone"] = "Phone",
             ["Type"] = "Type",
+            ["ActiveStatus"] = "ActiveStatus",
             ["CreatedAt"] = "CreatedAt",
             ["UpdatedAt"] = "UpdatedAt",
         };

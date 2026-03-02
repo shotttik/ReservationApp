@@ -127,7 +127,7 @@ namespace Application.Services
 
             var AuthUser = user.MapToAuthorizationData();
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
-            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionId, configuration);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, configuration);
 
             await cacheService.SetAsync(
                CacheUtils.SessionKey(sessionInfo.SessionId),
@@ -168,7 +168,7 @@ namespace Application.Services
                 return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
 
-            (string email, int userLoginDataID, int userAccountID, string sessionId) = JWTGenerator.ParseValuesFromPrincipal(principal);
+            (string email, int userLoginDataID, int userAccountID, string sessionId, string role) = JWTGenerator.ParseValuesFromPrincipal(principal);
 
             var session = await cacheService.GetAsync<SessionInfoDTO>(CacheUtils.SessionKey(sessionId));
 
@@ -179,7 +179,7 @@ namespace Application.Services
             {
                 return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
-            var newAccessToken = JWTGenerator.GenerateAccessToken(userLoginDataID, userAccountID, email, sessionId, configuration);
+            var newAccessToken = JWTGenerator.GenerateAccessToken(userLoginDataID, userAccountID, email, sessionId, role, configuration);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
             var refreshTokenExpirationTime = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
 

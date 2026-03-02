@@ -43,6 +43,7 @@ namespace Application.Services
         }
 
         public string GetEmail() => GetClaim(ClaimTypes.Email);
+        public string? GetRoleOrNull() => GetClaimOrNull(ClaimTypes.Role);
         public string GetSessionID() => GetClaim("SessionID");
         public int GetUserAccountID() => GetIntClaim(ClaimTypes.Sid);
         public int GetUserLoginDataID() => GetIntClaim(ClaimTypes.PrimarySid);
@@ -104,6 +105,11 @@ namespace Application.Services
             var value = httpContextAccessor.HttpContext?.User?.FindFirst(type)?.Value;
             if (string.IsNullOrEmpty(value))
                 throw new AuthorizationException($"{type} claim is not available.");
+            return value;
+        }
+        private string? GetClaimOrNull(string type)
+        {
+            var value = httpContextAccessor.HttpContext?.User?.FindFirst(type)?.Value;
             return value;
         }
         private int GetIntClaim(string type)

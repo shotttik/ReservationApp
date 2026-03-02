@@ -17,8 +17,7 @@ namespace Application.Interfaces
         Task<Result<List<ServiceDTO>>> RetrieveServices(int routeCompanyId, bool forPublic);
         Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
-           CancellationToken cancellationToken,
-           bool forPublic);
+           CancellationToken cancellationToken);
         Task<Result<CompanyDTO>> Get(int id, bool forPublic);
         Task<Result<List<string>>> UploadMedia(int routeCompanyId, UploadCompanyMediaRequest request, CancellationToken cancellationToken);
         Task<Result> Update(int routeCompanyId, CompanyPartialUpdateRequest request);

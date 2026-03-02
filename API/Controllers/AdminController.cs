@@ -205,42 +205,6 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Retrieves a paginated list of companies visible to the admin.
-        /// </summary>
-        /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
-        /// <b>Paging and filtering parameters:</b><br/>
-        /// <b>Sortable / Filterable Fields:</b>
-        /// <ul>
-        /// <li><c>ID</c></li>
-        /// <li><c>CompanyID</c></li>
-        /// <li><c>FirstName</c></li>
-        /// <li><c>LastName</c></li>
-        /// <li><c>Email</c></li>
-        /// <li><c>VerificationStatus</c></li>
-        /// <li><c>Role.Name</c></li>
-        /// <li><c>ActiveStatus</c></li>
-        /// <li><c>CreatedAt</c></li>
-        /// <li><c>UpdatedAt</c></li>
-        /// </ul>
-        /// </remarks>
-        /// <param name="parameters">Paging parameters.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Paginated company data.</returns>
-        [HttpGet("companies")]
-        [Tags("Administration-Company")]
-        [Logging(LoggingType.Full)]
-        [HasAnyPermission(Permission.CompanyReadAll)]
-        [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<PagedList<CompanyDTO>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
-        {
-            var result = await _companyService.RetrievePaged(parameters, cancellationToken, forPublic: false);
-
-            return result.ToResponse();
-        }
-        /// <summary>
         /// Retrieves detailed information about a company by ID.
         /// </summary>
         /// <remarks>

@@ -192,9 +192,9 @@ namespace Application.Services
         }
         public async Task<Result<PagedList<CompanyDTO>>> RetrievePaged(
            PagedParameters parameters,
-           CancellationToken cancellationToken,
-           bool forPublic)
+           CancellationToken cancellationToken)
         {
+            var role = authService.GetRoleOrNull();
             var allowedFields = CompanyFieldMap.DtoToEntityPath;
             var errors = parameters.Validate(allowedFields, typeof(CompanyDTO));
             if (errors.Any())
@@ -205,7 +205,7 @@ namespace Application.Services
             var companies = await companyRepository.RetrievePaged(
                 parameters,
                 cancellationToken,
-                forPublic
+                forPublic: role != Domain.Enums.Role.SuperAdmin.ToString()
                 );
 
             return companies;
