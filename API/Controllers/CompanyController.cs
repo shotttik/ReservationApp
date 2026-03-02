@@ -81,7 +81,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _companyService.Get(id, forPublic: true);
+            var result = await _companyService.Get(id);
 
             return result.ToResponse();
         }

@@ -205,27 +205,6 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Retrieves detailed information about a company by ID.
-        /// </summary>
-        /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
-        /// </remarks>
-        /// <param name="id">Company ID.</param>
-        /// <returns>Company details or not found error.</returns>
-        [HttpGet("companies/{id:int}")]
-        [Tags("Administration-Company")]
-        [Logging(LoggingType.Full)]
-        [HasAnyPermission(Permission.CompanyReadAll)]
-        [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<CompanyDTO>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCompany(int id)
-        {
-            var result = await _companyService.Get(id, forPublic: false);
-
-            return result.ToResponse();
-        }
-        /// <summary>
         /// Retrieves detailed information about a specific user.
         /// </summary>
         /// <remarks>

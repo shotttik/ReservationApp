@@ -43,7 +43,6 @@ namespace Application.Services
         }
 
         public string GetEmail() => GetClaim(ClaimTypes.Email);
-        public string? GetRoleOrNull() => GetClaimOrNull(ClaimTypes.Role);
         public string GetSessionID() => GetClaim("SessionID");
         public int GetUserAccountID() => GetIntClaim(ClaimTypes.Sid);
         public int GetUserLoginDataID() => GetIntClaim(ClaimTypes.PrimarySid);
@@ -89,6 +88,8 @@ namespace Application.Services
 
             return tokenBookingId == bookingId;
         }
+        public bool IsInRole(string role)
+    => httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private async Task ResetSessionAsync(string sessionKey, SessionInfoDTO session)
         {
             // Reset TTL (optional — can be kept same or re-applied)

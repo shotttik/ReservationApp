@@ -194,7 +194,7 @@ namespace Application.Services
            PagedParameters parameters,
            CancellationToken cancellationToken)
         {
-            var role = authService.GetRoleOrNull();
+            bool isSuperAdmin = authService.IsInRole(Role.SuperAdmin.Name);
             var allowedFields = CompanyFieldMap.DtoToEntityPath;
             var errors = parameters.Validate(allowedFields, typeof(CompanyDTO));
             if (errors.Any())
@@ -205,17 +205,18 @@ namespace Application.Services
             var companies = await companyRepository.RetrievePaged(
                 parameters,
                 cancellationToken,
-                forPublic: role != Domain.Enums.Role.SuperAdmin.ToString()
+                forPublic: isSuperAdmin
                 );
 
             return companies;
         }
 
-        public async Task<Result<CompanyDTO>> Get(int id, bool forPublic)
+        public async Task<Result<CompanyDTO>> Get(int id)
         {
-            var company = forPublic ?
-                await companyRepository.GetFullDataPublic(id)
-                : await companyRepository.GetFullData(id);
+            var isSuperAdmin = authService.IsInRole(Role.SuperAdmin.Name);
+            var company = isSuperAdmin ?
+                await companyRepository.GetFullData(id)
+                :await companyRepository.GetFullDataPublic(id);
 
             if (company is null)
             {
