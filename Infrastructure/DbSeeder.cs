@@ -507,6 +507,7 @@ namespace Infrastructure
                     {
                         OriginalName = $"Media_{company.Name}_{i + 1}",
                         RemoteUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
+                        OriginalUrl = $"https://unsplash.it/1000/1000?nounce={Guid.NewGuid()}",
                         FileSizeInBytes = random.Next(1000, 5000),
                         FileType = "image/jpeg",
                         CompanyMedia = new List<CompanyMedia>

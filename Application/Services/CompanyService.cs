@@ -263,6 +263,7 @@ namespace Application.Services
                 {
                     OriginalName = fileName,
                     RemoteUrl = WebpPath,
+                    OriginalUrl = OriginalPath,
                     FileType = contentType,
                     FileSizeInBytes = item.Length
                 };

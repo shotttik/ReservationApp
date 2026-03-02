@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.DTO.Company;
+using Domain.Enums;
 
 namespace Domain.DTO.Review
 {
@@ -22,6 +23,6 @@ namespace Domain.DTO.Review
         public int ReviewInviteId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public IEnumerable<string> Media { get; set; } = [];
+        public IEnumerable<ReviewMediaDTO> Media { get; set; } = [];
     }
 }

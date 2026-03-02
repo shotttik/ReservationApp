@@ -31,11 +31,12 @@ namespace Application.Extensions.Mappers
                     Price = s.Price,
                     ActiveStatus = s.ActiveStatus,
                 }).ToList(),
-                Media = company.CompanyMedia.Select(cm => new MediaDTO
+                Media = company.CompanyMedia.Select(cm => new CompanyMediaDTO
                 {
                     Id = cm.MediaID,
                     IsMain = cm.IsMain,
-                    Path = cm.Media.RemoteUrl
+                    ImageUrlWebp = cm.Media.RemoteUrl,
+                    ImageUrlOriginal = cm.Media.OriginalUrl
                 }).ToList(),
                 Subscription = company.Subscription?.MapToDTO()
             };

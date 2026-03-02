@@ -14,7 +14,8 @@ namespace Domain.DTO.User
         public required RoleDTO Role { get; set; }
         public int? CompanyId { get; set; }
         public int? BranchId { get; set; }
-        public string? ProfileImageUrl { get; set; }
+        public string? ProfileImageUrlWebp { get; set; }
+        public string? ProfileImageUrlOriginal { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         [JsonIgnore]
         public bool IsPublicUser => Role.Id == (int)Enums.Role.PublicUser;

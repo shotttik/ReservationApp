@@ -15,6 +15,9 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.RemoteUrl)
                 .IsRequired()
                 .HasMaxLength(2000);
+            builder.Property(e => e.OriginalUrl)
+                .IsRequired()
+                .HasMaxLength(2000);
             builder.Property(e => e.FileType)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -25,6 +28,7 @@ namespace Infrastructure.Configurations.Common
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
             builder.HasIndex(e => e.RemoteUrl);
+            builder.HasIndex(e => e.OriginalUrl);
         }
     }
 }

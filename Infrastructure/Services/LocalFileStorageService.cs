@@ -10,7 +10,6 @@ namespace Infrastructure.Services
     {
         private readonly IImageProcessingService imageProcessingService;
 
-
         public LocalFileStorageService(IImageProcessingService imageProcessingService)
         {
             this.imageProcessingService = imageProcessingService;
@@ -24,11 +23,6 @@ namespace Infrastructure.Services
                 EnsureDirectoryExists(Path.Combine(LocalMediaFolders.WebpUploadsRoot, folder.GetFolderName()));
             }
         }
-        private static readonly HashSet<string> AllowedContentTypes = new()
-            {
-                "image/jpeg",
-                "image/png"
-            };
 
         public async Task<(string OriginalPath, string WebpPath)> UploadWithWebp(
             Stream fileStream,
@@ -37,8 +31,6 @@ namespace Infrastructure.Services
             UploadSubFolder subFolder,
             CancellationToken cancellationToken)
         {
-            if (!AllowedContentTypes.Contains(contentType.ToLower()))
-                throw new InvalidOperationException("Unsupported file type");
 
             using var memoryStream = new MemoryStream();
             await fileStream.CopyToAsync(memoryStream, cancellationToken);

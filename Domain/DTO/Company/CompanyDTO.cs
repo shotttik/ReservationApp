@@ -20,6 +20,6 @@ namespace Domain.DTO.Company
         public required IEnumerable<BranchDTO> Branches { get; set; }
         public IEnumerable<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         public IEnumerable<ServiceDTO> Services { get; set; } = [];
-        public IEnumerable<MediaDTO> Media { get; set; } = [];
+        public IEnumerable<CompanyMediaDTO> Media { get; set; } = [];
     }
 }
