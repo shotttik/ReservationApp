@@ -5,6 +5,7 @@ using Application.Common.Results;
 using Application.Extensions.Mappers;
 using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Application.Options;
 using Domain.Abstractions;
 using Domain.DTO.User;
 using Domain.Entities.CompanyReleated;
@@ -12,6 +13,7 @@ using Domain.Entities.User;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -24,6 +26,7 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
         private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
+        private readonly AppUrls appUrls;
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
@@ -32,7 +35,8 @@ namespace Application.Services
             ICompanyRepository companyRepository,
             IConfiguration configuration,
             IUserService userService,
-            ISubscriptionPlanRepository subscriptionPlanRepository
+            ISubscriptionPlanRepository subscriptionPlanRepository,
+            IOptions<AppUrls> appUrls
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -42,6 +46,7 @@ namespace Application.Services
             this.configuration = configuration;
             this.userService = userService;
             _subscriptionPlanRepository = subscriptionPlanRepository;
+            this.appUrls = appUrls.Value;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -251,7 +256,7 @@ namespace Application.Services
             {
                 return Result.Failure<UserLoginDataDTO>(AuthResults.UserNotFound);
             }
-            return Result.Success(user.MapToDTO());
+            return Result.Success(user.MapToDTO(appUrls));
         }
     }
 }

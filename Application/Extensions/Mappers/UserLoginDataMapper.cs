@@ -1,4 +1,5 @@
-﻿using Domain.DTO.User;
+﻿using Application.Options;
+using Domain.DTO.User;
 using Domain.Entities.User;
 using Domain.Enums;
 
@@ -6,8 +7,11 @@ namespace Application.Extensions.Mappers
 {
     public static class UserLoginDataMapper
     {
-        public static AuthUser MapToAuthorizationData(this UserLoginData user)
+        public static AuthUser MapToAuthorizationData(this UserLoginData user, AppUrls appUrls)
         {
+            var baseUri = new Uri(appUrls.ApiBaseUrl);
+            var webpUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl);
+            var originalUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.OriginalUrl);
             var userDTO = new AuthUser
             {
                 Email = user.Email,
@@ -18,8 +22,8 @@ namespace Application.Extensions.Mappers
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
-                ProfileImageUrlWebp = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl,
-                ProfileImageUrlOriginal = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.OriginalUrl,
+                ProfileImageUrlWebp = webpUri.ToString(),
+                ProfileImageUrlOriginal = originalUri.ToString(),
                 Role = new RoleDTO
                 {
                     Id = user.UserAccount.Role!.ID,
@@ -35,6 +39,45 @@ namespace Application.Extensions.Mappers
                 WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
                 ActiveStatus = user.ActiveStatus,
                 CreatedAt = user.CreatedAt
+            };
+
+            return userDTO;
+        }
+        public static UserLoginDataDTO MapToDTO(this UserLoginData user, AppUrls appUrls)
+        {
+            var baseUri = new Uri(appUrls.ApiBaseUrl);
+            var webpUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl);
+            var originalUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.OriginalUrl);
+
+            var userDTO = new UserLoginDataDTO
+            {
+                Email = user.Email,
+                Phone = user.Phone,
+                Id = user.Id,
+                FirstName = user.UserAccount.FirstName,
+                LastName = user.UserAccount.LastName,
+                Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
+                DateOfBirth = user.UserAccount.DateOfBirth,
+                BranchId = user.UserAccount.BranchId,
+                ActiveStatus = user.ActiveStatus,
+                EmailVerificationStatus = user.EmailVerificationStatus,
+                PhoneVerificationStatus = user.PhoneVerificationStatus,
+                ProfileImageUrlWebp = webpUri.ToString(),
+                ProfileImageUrlOriginal = originalUri.ToString(),
+                Role = new RoleDTO
+                {
+                    Id = user.UserAccount.Role!.ID,
+                    Name = user.UserAccount.Role.Name,
+                    Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
+                    {
+                        Id = p.Id,
+                        Name = p.Name
+                    })]
+                },
+                CompanyId = user.UserAccount.CompanyID,
+                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt
             };
 
             return userDTO;

@@ -1,12 +1,14 @@
 ﻿using Application.Exceptions;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Application.Options;
 using Domain.DTO;
 using Domain.DTO.User;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
 using System.Security.Claims;
@@ -19,16 +21,20 @@ namespace Application.Services
         private readonly ICacheService cacheService;
         private readonly IUserLoginDataRepository userLoginDataRepository;
         private readonly IConfiguration configuration;
+        private readonly AppUrls appUrls;
 
         public AuthService(IHttpContextAccessor httpContextAccessor,
             ICacheService cacheService,
-            IUserLoginDataRepository userLoginDataRepository, IConfiguration configuration
+            IUserLoginDataRepository userLoginDataRepository,
+            IConfiguration configuration,
+            IOptions<AppUrls> appUrls
             )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.cacheService = cacheService;
             this.userLoginDataRepository = userLoginDataRepository;
             this.configuration = configuration;
+            this.appUrls = appUrls.Value;
         }
 
         public async Task<AuthUser> GetCurrentUser()
@@ -59,7 +65,7 @@ namespace Application.Services
             var user = await userLoginDataRepository.GetFullUserData(userId);
             if (user == null) return;
 
-            var authUser = user.MapToAuthorizationData();
+            var authUser = user.MapToAuthorizationData(appUrls);
             var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId));
 
             if (sessionIds == null) return;

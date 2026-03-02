@@ -125,7 +125,7 @@ namespace Application.Services
                 return Result.Failure<LoginResponse>(AuthResults.UserDisabledCantBeUsed);
             }
 
-            var AuthUser = user.MapToAuthorizationData();
+            var AuthUser = user.MapToAuthorizationData(appUrls);
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
             var accessToken = JWTGenerator.GenerateAccessToken(user.Id, user.UserAccount.Id, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, configuration);
 
