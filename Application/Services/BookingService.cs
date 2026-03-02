@@ -47,12 +47,12 @@ namespace Application.Services
         }
         public async Task<Result<CreateBookingByGuestResponse>> CreateByGuest(GuestBookingCreateRequest request)
         {
-            var employeeResult = await GetValidEmployee(request.EmployeeID);
+            var employeeResult = await GetValidEmployee(request.EmployeeId);
             if (!employeeResult.IsSuccess)
                 return Result.Failure<CreateBookingByGuestResponse>(employeeResult.Error);
             var employee = employeeResult.Value!;
 
-            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<CreateBookingByGuestResponse>(BookingResults.ServiceDoesntExists);
@@ -109,12 +109,12 @@ namespace Application.Services
         {
             var authUser = await _authService.GetCurrentUser();
 
-            var employeeResult = await GetValidEmployee(request.EmployeeID);
+            var employeeResult = await GetValidEmployee(request.EmployeeId);
             if (!employeeResult.IsSuccess)
                 return Result.Failure<BookingDTO>(employeeResult.Error);
             var employee = employeeResult.Value!;
 
-            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
@@ -143,7 +143,7 @@ namespace Application.Services
 
         public async Task<Result<BookingDTO>> CreateByAdmin(AdminBookingCreateRequest request)
         {
-            var employeeResult = await GetValidEmployee(request.EmployeeID);
+            var employeeResult = await GetValidEmployee(request.EmployeeId);
             if (!employeeResult.IsSuccess)
                 return Result.Failure<BookingDTO>(employeeResult.Error);
             var employee = employeeResult.Value!;
@@ -154,7 +154,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(accessError);
             }
-            var service = employee.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceID);
+            var service = employee.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);

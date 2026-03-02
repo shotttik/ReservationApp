@@ -5,8 +5,8 @@ namespace Application.Common.Requests.Admin
 {
     public class AssignUserToCompanyRequest :IValidatableObject
     {
-        public int UserID { get; set; }
-        public int CompanyID { get; set; }
+        public int UserId { get; set; }
+        public int CompanyId { get; set; }
         public Role Role { get; set; }
         public int? BranchId { get; set; }
         public bool IsRoleValid => Role == Role.CompanyAdmin || Role == Role.CompanyEmployee;

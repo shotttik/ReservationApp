@@ -6,7 +6,7 @@ namespace Application.Common.Requests.WorkSchedule
     {
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
         [Required]
-        public int UserID { get; set; } // userlogindataID
+        public int UserId { get; set; } // userlogindataID
         [Required]
         public DayOfWeek DayOfWeek { get; set; }
         [Required]

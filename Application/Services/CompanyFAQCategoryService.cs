@@ -73,7 +73,7 @@ namespace Application.Services
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
-            var category = await companyFAQCategoryRepository.Get(request.ID);
+            var category = await companyFAQCategoryRepository.Get(request.Id);
             if (category == null || category.CompanyID != routeCompanyId)
                 return Result.Failure(GenericResults.NotFound);
 

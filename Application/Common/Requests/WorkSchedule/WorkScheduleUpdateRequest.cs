@@ -6,10 +6,10 @@ namespace Application.Common.Requests.WorkSchedule
     {
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
         [Required]
-        public int ID { get; set; }
+        public int Id { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
         [Required]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
         [Required]
         public TimeOnly StartTime { get; set; }
         [Required]

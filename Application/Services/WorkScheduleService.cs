@@ -36,13 +36,13 @@ namespace Application.Services
             if (request.StartTime >= request.EndTime)
                 return Result.Failure(WorkScheduleResults.InvalidTimeRange);
 
-            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkSchedules(request.UserID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkSchedules(request.UserId);
 
             if (userAccount == null || userAccount.CompanyID == null)
             {
                 return Result.Failure(GenericResults.DontExists);
             }
-            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -66,7 +66,7 @@ namespace Application.Services
             };
 
             await workScheduleRepository.Add(workSchedule);
-            await authService.RefreshUserCache(request.UserID);
+            await authService.RefreshUserCache(request.UserId);
 
             return Result.Success();
         }
@@ -74,7 +74,7 @@ namespace Application.Services
         public async Task<Result> Update(
             WorkScheduleUpdateRequest request)
         {
-            var schedule = await workScheduleRepository.Get(request.ID);
+            var schedule = await workScheduleRepository.Get(request.Id);
 
             if (schedule == null)
                 return Result.Failure(WorkScheduleResults.DoesntExists);
@@ -82,7 +82,7 @@ namespace Application.Services
             if (request.StartTime >= request.EndTime)
                 return Result.Failure(WorkScheduleResults.InvalidTimeRange);
 
-            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkSchedules(request.UserID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkSchedules(request.UserId);
 
             if (userAccount == null || userAccount.CompanyID == null)
             {
@@ -93,7 +93,7 @@ namespace Application.Services
                 return Result.Failure(GenericResults.Forbidden);
             }
 
-            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -101,7 +101,7 @@ namespace Application.Services
 
             // Check against other schedules of same user & day
             var otherSchedules = userAccount.WorkSchedules
-                .Where(e => e.ID != request.ID && e.DayOfWeek == schedule.DayOfWeek)
+                .Where(e => e.ID != request.Id && e.DayOfWeek == schedule.DayOfWeek)
                 .ToList();
             foreach (var s in otherSchedules)
             {
@@ -115,7 +115,7 @@ namespace Application.Services
             schedule.EndTime = request.EndTime;
 
             await workScheduleRepository.Update(schedule);
-            await authService.RefreshUserCache(request.UserID);
+            await authService.RefreshUserCache(request.UserId);
 
             return Result.Success(WorkScheduleResults.Updated); ;
         }
@@ -159,12 +159,12 @@ namespace Application.Services
             if (request.StartDate > request.EndDate)
                 return Result.Failure(WorkScheduleResults.InvalidDateRange);
 
-            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId);
 
             if (userAccount == null || userAccount.CompanyID == null)
                 return Result.Failure(GenericResults.DontExists);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserId);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
@@ -189,12 +189,12 @@ namespace Application.Services
             if (request.StartDate > request.EndDate)
                 return Result.Failure(WorkScheduleResults.InvalidDateRange);
 
-            var workScheduleException = await workScheduleExceptionRepository.Get(request.ID);
+            var workScheduleException = await workScheduleExceptionRepository.Get(request.Id);
 
             if (workScheduleException == null)
                 return Result.Failure(WorkScheduleResults.DoesntExists);
 
-            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId);
 
             if (userAccount == null || userAccount.CompanyID == null)
                 return Result.Failure(GenericResults.DontExists);
@@ -202,13 +202,13 @@ namespace Application.Services
             if (workScheduleException.UserAccountID != userAccount.ID)
                 return Result.Failure(GenericResults.Forbidden);
 
-            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserID);
+            var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserId);
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
             // Check for overlapping exceptions (excluding self)
             bool hasOverlap = userAccount.WorkScheduleExceptions
-                .Where(e => e.ID != request.ID)
+                .Where(e => e.ID != request.Id)
                 .Any(e => request.StartDate <= e.EndDate && request.EndDate >= e.StartDate);
 
             if (hasOverlap)

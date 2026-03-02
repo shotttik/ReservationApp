@@ -6,10 +6,10 @@ namespace Application.Common.Requests.WorkSchedule
     public class WorkScheduleExceptionUpdateRequest
     {
         [Range(1, int.MaxValue)]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [Range(1, int.MaxValue)]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public DateOnly StartDate { get; set; }

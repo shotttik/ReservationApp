@@ -357,7 +357,7 @@ namespace Application.Services
             {
                 return Result.Failure(accessError);
             }
-            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.ID);
+            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.Id);
             if (userAccount is null || userAccount.CompanyID != routeCompanyId)
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
@@ -376,7 +376,7 @@ namespace Application.Services
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
             await userAccountRepository.Update(userAccount);
-            await authService.RefreshUserCache(request.ID);
+            await authService.RefreshUserCache(request.Id);
 
             return Result.Success(AuthResults.UserUpdated);
         }

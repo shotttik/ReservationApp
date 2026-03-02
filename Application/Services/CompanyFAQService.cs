@@ -35,13 +35,13 @@ namespace Application.Services
                 return Result.Failure(accessError);
 
             // Check limit
-            var faqCountPerCategory = await companyFAQRepository.Count(request.CategoryID);
+            var faqCountPerCategory = await companyFAQRepository.Count(request.CategoryId);
             if (faqCountPerCategory >= FAQLimitPerCategory)
             {
                 return Result.Failure(CompanyResults.FAQLimitReached);
             }
             // Check if category exists and belongs to correct company
-            var category = await companyFAQCategoryRepository.Get(request.CategoryID);
+            var category = await companyFAQCategoryRepository.Get(request.CategoryId);
             if (category == null || category.CompanyID != routeCompanyId)
                 return Result.Failure(GenericResults.NotFound);
 
@@ -78,7 +78,7 @@ namespace Application.Services
             if (accessError != Error.None)
                 return Result.Failure(accessError);
 
-            var companyFAQ = await companyFAQRepository.GetFull(request.ID);
+            var companyFAQ = await companyFAQRepository.GetFull(request.Id);
             if (companyFAQ == null || companyFAQ.Category.CompanyID != routeCompanyId)
             {
                 return Result.Failure(GenericResults.NotFound);

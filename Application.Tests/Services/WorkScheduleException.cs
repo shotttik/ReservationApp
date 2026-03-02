@@ -49,7 +49,7 @@ namespace Application.Tests.Services
         {
             return new WorkScheduleExceptionCreateRequest
             {
-                UserID = userId,
+                UserId = userId,
                 StartDate = start,
                 EndDate = end,
                 Type = WorkScheduleExceptionType.Vacation,
@@ -61,8 +61,8 @@ namespace Application.Tests.Services
         {
             return new WorkScheduleExceptionUpdateRequest
             {
-                ID = id,
-                UserID = userId,
+                Id = id,
+                UserId = userId,
                 StartDate = start,
                 EndDate = end,
                 Type = WorkScheduleExceptionType.Vacation,
@@ -95,7 +95,7 @@ namespace Application.Tests.Services
             var request = BuildCreateRequest(2, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
             var userAccount = BuildUserAccount(2, Domain.Entities.User.Role.CompanyAdmin.ID);
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync(userAccount);
 
             accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
@@ -138,7 +138,7 @@ namespace Application.Tests.Services
             var request = BuildCreateRequest(3, new DateOnly(2025, 07, 11), new DateOnly(2025, 07, 11));
             var userAccount = BuildUserAccount(3, Domain.Entities.User.Role.CompanyEmployee.ID);
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync(userAccount);
 
             accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
@@ -181,7 +181,7 @@ namespace Application.Tests.Services
             var request = BuildCreateRequest(5, new DateOnly(2025, 07, 13), new DateOnly(2025, 07, 13));
             var userAccount = BuildUserAccount(5, Domain.Entities.User.Role.CompanyEmployee.ID, 2);
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync(userAccount);
 
             accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
@@ -199,7 +199,7 @@ namespace Application.Tests.Services
             var request = BuildCreateRequest(6, new DateOnly(2025, 07, 14), new DateOnly(2025, 07, 14));
             var userAccount = BuildUserAccount(6, Domain.Entities.User.Role.CompanyEmployee.ID);
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync(userAccount);
 
             accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>()))
@@ -229,7 +229,7 @@ namespace Application.Tests.Services
         {
             var request = BuildCreateRequest(7, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync((UserAccount)null);
 
             var result = await service.CreateException(request);
@@ -279,7 +279,7 @@ namespace Application.Tests.Services
             var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(exception);
 
-            workScheduleExceptionMock.Setup(x => x.Get(request.ID))
+            workScheduleExceptionMock.Setup(x => x.Get(request.Id))
                 .ReturnsAsync(exception);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
@@ -312,7 +312,7 @@ namespace Application.Tests.Services
         {
             var request = BuildUpdateRequest(10, 1, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
 
-            workScheduleExceptionMock.Setup(x => x.Get(request.ID))
+            workScheduleExceptionMock.Setup(x => x.Get(request.Id))
                 .ReturnsAsync((WorkScheduleException)null);
 
             var result = await service.UpdateException(request);
@@ -327,10 +327,10 @@ namespace Application.Tests.Services
             var request = BuildUpdateRequest(10, 1, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
             var exception = BuildException(10, 1, new DateOnly(2025, 07, 09), new DateOnly(2025, 07, 11));
 
-            workScheduleExceptionMock.Setup(x => x.Get(request.ID))
+            workScheduleExceptionMock.Setup(x => x.Get(request.Id))
                 .ReturnsAsync(exception);
 
-            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserID))
+            userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(request.UserId))
                 .ReturnsAsync((UserAccount)null);
 
             var result = await service.UpdateException(request);
@@ -348,7 +348,7 @@ namespace Application.Tests.Services
             var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(exception);
 
-            workScheduleExceptionMock.Setup(x => x.Get(request.ID))
+            workScheduleExceptionMock.Setup(x => x.Get(request.Id))
                 .ReturnsAsync(exception);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))
@@ -375,7 +375,7 @@ namespace Application.Tests.Services
             var userAccount = BuildUserAccount(userId, Domain.Entities.User.Role.CompanyEmployee.ID);
             userAccount.WorkScheduleExceptions.Add(overlapping);
 
-            workScheduleExceptionMock.Setup(x => x.Get(request.ID))
+            workScheduleExceptionMock.Setup(x => x.Get(request.Id))
                 .ReturnsAsync(exception);
 
             userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkScheduleExceptions(userId))

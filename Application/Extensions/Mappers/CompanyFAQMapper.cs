@@ -14,17 +14,17 @@ namespace Application.Extensions.Mappers
                 Answer = request.Answer,
                 ActiveStatus = request.ActiveStatus,
                 Order = request.Order,
-                CategoryID = request.CategoryID
+                CategoryID = request.CategoryId
             };
         }
         public static void MapToEntity(this CompanyFAQUpdateRequest request, CompanyFAQ companyFAQ)
         {
-            companyFAQ.ID = request.ID;
+            companyFAQ.ID = request.Id;
             companyFAQ.Question = request.Question;
             companyFAQ.Answer = request.Answer;
             companyFAQ.ActiveStatus = request.ActiveStatus;
             companyFAQ.Order = request.Order;
-            companyFAQ.CategoryID = request.CategoryID;
+            companyFAQ.CategoryID = request.CategoryId;
         }
         public static CompanyFAQDTO MapToDTO(this CompanyFAQ entity)
         {

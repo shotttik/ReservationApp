@@ -220,13 +220,13 @@ namespace Application.Services
         }
         public async Task<Result> AssignUserToCompany(AssignUserToCompanyRequest request)
         {
-            var user = await userAccountRepository.GetByUserLoginDataID(request.UserID);
+            var user = await userAccountRepository.GetByUserLoginDataID(request.UserId);
             if (user is null)
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
 
-            var company = await companyRepository.GetWithBranches(request.CompanyID);
+            var company = await companyRepository.GetWithBranches(request.CompanyId);
             if (company is null)
             {
                 return Result.Failure(CompanyResults.CompanyDoesNotExists);
@@ -235,11 +235,11 @@ namespace Application.Services
             {
                 return Result.Failure(CompanyResults.InvalidBranchId);
             }
-            user.CompanyID = request.CompanyID;
+            user.CompanyID = request.CompanyId;
             user.RoleID = (int)request.Role;
             user.BranchId = request.IsRoleCompanyEmployee ? request.BranchId : null; // only employee assigned to branch
             await userAccountRepository.Update(user);
-            await authService.RefreshUserCache(request.UserID);
+            await authService.RefreshUserCache(request.UserId);
 
             return Result.Success(AuthResults.UserAssignedToCompany);
         }

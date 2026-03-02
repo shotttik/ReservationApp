@@ -47,7 +47,7 @@ public class WorkScheduleServiceTests
     {
         return new WorkScheduleCreateRequest
         {
-            UserID = userId,
+            UserId = userId,
             DayOfWeek = DayOfWeek.Monday,
             StartTime = start,
             EndTime = end
@@ -198,8 +198,8 @@ public class WorkScheduleServiceTests
 
         var request = new WorkScheduleUpdateRequest
         {
-            ID = schedule.ID,
-            UserID = userId,
+            Id = schedule.ID,
+            UserId = userId,
             StartTime = new TimeOnly(10, 0),
             EndTime = new TimeOnly(12, 0)
         };
@@ -216,7 +216,7 @@ public class WorkScheduleServiceTests
     {
         workScheduleRepositoryMock.Setup(x => x.Get(It.IsAny<int>())).ReturnsAsync((WorkSchedule)null);
 
-        var request = new WorkScheduleUpdateRequest { ID = 1, UserID = 1, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(12, 0) };
+        var request = new WorkScheduleUpdateRequest { Id = 1, UserId = 1, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(12, 0) };
         var result = await service.Update(request);
 
         Assert.True(result.IsFailure);
@@ -229,7 +229,7 @@ public class WorkScheduleServiceTests
         var schedule = BuildWorkSchedule(10, 1, new TimeOnly(9, 0), new TimeOnly(11, 0));
         workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
 
-        var request = new WorkScheduleUpdateRequest { ID = 10, UserID = 1, StartTime = new TimeOnly(13, 0), EndTime = new TimeOnly(12, 0) };
+        var request = new WorkScheduleUpdateRequest { Id = 10, UserId = 1, StartTime = new TimeOnly(13, 0), EndTime = new TimeOnly(12, 0) };
         var result = await service.Update(request);
 
         Assert.True(result.IsFailure);
@@ -253,8 +253,8 @@ public class WorkScheduleServiceTests
 
         var request = new WorkScheduleUpdateRequest
         {
-            ID = schedule.ID,
-            UserID = userId,
+            Id = schedule.ID,
+            UserId = userId,
             StartTime = new TimeOnly(10, 30),
             EndTime = new TimeOnly(12, 30)
         };

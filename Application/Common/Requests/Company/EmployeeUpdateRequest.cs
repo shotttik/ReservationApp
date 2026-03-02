@@ -6,7 +6,7 @@ namespace Application.Common.Requests.Company
     public class EmployeeUpdateRequest
     {
         [Required]
-        public int ID { get; set; }
+        public int Id { get; set; }
         [MaxLength(100)]
         public string? FirstName { get; set; }
         [MaxLength(200)]

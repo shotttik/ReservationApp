@@ -15,6 +15,6 @@ namespace Application.Common.Requests.Company
         [Required]
         public int Order { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "ID must be greater than 0.")]
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; }
     }
 }
