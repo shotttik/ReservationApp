@@ -10,7 +10,7 @@ namespace Infrastructure.Configurations.CompanyReleated
     {
         public void Configure(EntityTypeBuilder<CompanySubscription> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Status)
                 .HasConversion<int>()

@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.CompanyReleated
     {
         public void Configure(EntityTypeBuilder<CompanyInvitation> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
             builder.Property(e => e.UserAccountID).IsRequired();
             builder.Property(e => e.Token).HasMaxLength(150);

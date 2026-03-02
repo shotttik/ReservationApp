@@ -27,7 +27,7 @@ namespace Application.Extensions.Mappers
         {
             return new ReviewDTO()
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 Status = entity.Status,
                 Overall = entity.Overall,
                 Cleanliness = entity.Cleanliness,
@@ -44,7 +44,7 @@ namespace Application.Extensions.Mappers
                 UpdatedAt = entity.UpdatedAt,
                 Media = entity.Media.Select(e => new ReviewMediaDTO
                 {
-                    Id = e.Media.ID,
+                    Id = e.Media.Id,
                     ImageUrlWebp = e.Media.RemoteUrl,
                     ImageUrlOriginal = e.Media.OriginalUrl
                 })
@@ -55,7 +55,7 @@ namespace Application.Extensions.Mappers
         {
             return new ReviewInviteDTO()
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 BookingId = entity.BookingId,
                 ClientReviewed = entity.ClientReviewed,
                 OpenAt = entity.OpenAt,

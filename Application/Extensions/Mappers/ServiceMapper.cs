@@ -23,7 +23,7 @@ namespace Application.Extensions.Mappers
         {
             return new Service
             {
-                ID = service.Id,
+                Id = service.Id,
                 Name = service.Name,
                 Description = service.Description,
                 Price = service.Price,
@@ -36,7 +36,7 @@ namespace Application.Extensions.Mappers
         {
             return new ServiceDTO
             {
-                Id = service.ID,
+                Id = service.Id,
                 Name = service.Name,
                 Description = service.Description,
                 Price = service.Price,

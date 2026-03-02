@@ -9,7 +9,7 @@ namespace Infrastructure.Configurations.CompanyReleated
     {
         public void Configure(EntityTypeBuilder<Company> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
             builder.Property(e => e.Description).HasColumnType("nvarchar(max)");
             builder.Property(e => e.IN).HasMaxLength(30).IsRequired();

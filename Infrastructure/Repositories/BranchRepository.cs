@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
             return await dbContext.States
                 .AsNoTracking()
                 .Where(s => s.CountryId == countryID)
-                .Select(s => new StateDTO { Id = s.ID, Name = s.Name })
+                .Select(s => new StateDTO { Id = s.Id, Name = s.Name })
                 .Distinct()
                 .ToListAsync();
         }
@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             return await dbContext.Cities
                 .AsNoTracking()
                 .Where(c => c.StateId == stateID)
-                .Select(c => new CityDTO { Id = c.ID, Name = c.Name })
+                .Select(c => new CityDTO { Id = c.Id, Name = c.Name })
                 .Distinct()
                 .ToListAsync();
         }
@@ -34,14 +34,14 @@ namespace Infrastructure.Repositories
         {
             return await dbContext.Countries
                 .AsNoTracking()
-                .Select(c => new CountryDTO { Id = c.ID, Name = c.Name })
+                .Select(c => new CountryDTO { Id = c.Id, Name = c.Name })
                 .Distinct()
                 .ToListAsync();
         }
         public async Task<Branch?> Get(int id, int companyId)
         {
             return await _dbSet
-                .Where(b => b.ID == id && b.CompanyId == companyId)
+                .Where(b => b.Id == id && b.CompanyId == companyId)
                 .FirstOrDefaultAsync();
         }
         public async Task Delete(int id)
@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
             await dbContext.Bookings
                 .Where(e => e.BranchId == id)
                 .ExecuteDeleteAsync();
-            await _dbSet.Where(e => e.ID == id)
+            await _dbSet.Where(e => e.Id == id)
                 .ExecuteDeleteAsync();
         }
     }

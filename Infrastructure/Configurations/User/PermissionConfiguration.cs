@@ -9,13 +9,13 @@ namespace Infrastructure.Configurations.User
         public void Configure(EntityTypeBuilder<Permission> builder)
         {
 
-            builder.HasKey(p => p.ID);
+            builder.HasKey(p => p.Id);
 
             IEnumerable<Permission> permissions = Enum
                 .GetValues<Domain.Enums.Permission>()
                 .Select(p => new Permission
                 {
-                    ID = (int)p,
+                    Id = (int)p,
                     Name = p.ToString()
                 });
 

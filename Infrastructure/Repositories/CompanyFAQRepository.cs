@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
         public async Task<CompanyFAQ?> GetFull(int id)
         {
             return await _dbSet.Include(x => x.Category)
-                               .FirstOrDefaultAsync(x => x.ID == id);
+                               .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

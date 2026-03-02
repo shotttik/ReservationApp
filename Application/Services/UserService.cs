@@ -127,7 +127,7 @@ namespace Application.Services
 
             var AuthUser = user.MapToAuthorizationData();
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
-            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, configuration);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.Id, user.UserAccount.Id, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, configuration);
 
             await cacheService.SetAsync(
                CacheUtils.SessionKey(sessionInfo.SessionId),
@@ -135,7 +135,7 @@ namespace Application.Services
                sessionInfo.RefreshTokenExpTime - DateTime.UtcNow
             );
 
-            var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(user.ID))
+            var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(user.Id))
                 ?? new List<string>();
 
             if (!sessions.Contains(sessionInfo.SessionId))
@@ -147,7 +147,7 @@ namespace Application.Services
             var userActiveSessionsTTL = TimeSpan.FromDays(expDays);
 
             await cacheService.SetAsync(
-                CacheUtils.ActiveSessionsKey(user.ID),
+                CacheUtils.ActiveSessionsKey(user.Id),
                 sessions,
                 userActiveSessionsTTL
             );
@@ -306,7 +306,7 @@ namespace Application.Services
             userLoginData.EmailVerificationToken = null;
             userLoginData.EmailVerificationTokenExpTime = null;
             await userLoginDataRepository.Update(userLoginData);
-            await DeleteAllActiveSessions(UserID: userLoginData.ID);
+            await DeleteAllActiveSessions(UserID: userLoginData.Id);
 
             return Result.Success(AuthResults.EmailVerified);
         }
@@ -502,7 +502,7 @@ namespace Application.Services
             var userAccountMedia = new UserAccountMedia
             {
                 UserAccountId = userAccountId,
-                MediaId = media.ID,
+                MediaId = media.Id,
             };
             await userAccountMediaRepository.EmptyThenAdd(userAccountMedia);
             await authService.RefreshAuthUserCache();

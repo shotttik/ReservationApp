@@ -174,7 +174,7 @@ namespace Application.Services
 
             var companySubscription = new CompanySubscription()
             {
-                SubscriptionPlanId = subscriptionPlan.ID,
+                SubscriptionPlanId = subscriptionPlan.Id,
                 SubscriptionPlan = subscriptionPlan,
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddMonths(1),

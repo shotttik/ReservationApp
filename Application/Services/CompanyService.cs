@@ -93,7 +93,7 @@ namespace Application.Services
             var invitation = new CompanyInvitation()
             {
                 CompanyID = AuthUser.CompanyId!.Value,
-                UserAccountID = employee.ID,
+                UserAccountID = employee.Id,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.UtcNow.AddDays(expDays),
                 IsAccepted = false,
@@ -272,7 +272,7 @@ namespace Application.Services
                 companyMediaEntities.Add(new CompanyMedia()
                 {
                     CompanyID = routeCompanyId,
-                    MediaID = media.ID,
+                    MediaID = media.Id,
                 });
             }
             if (company.CompanyMedia.Count == 0) // tu media atvirtulia mashin update-s gamoikenben.

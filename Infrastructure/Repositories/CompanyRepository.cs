@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories
                 (c.Name == name || c.IN == IN ||
                  (email != null && c.Email == email) ||
                  (phone != null && c.Phone == phone))
-                && (!excludeId.HasValue || c.ID != excludeId.Value));
+                && (!excludeId.HasValue || c.Id != excludeId.Value));
         }
         public async Task<Company?> GetFullData(int id)
         {
@@ -38,13 +38,13 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Subscription)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
-                .Where(e => e.ID == id)
+                .Where(e => e.Id == id)
                    .FirstOrDefaultAsync();
         }
         public async Task<Company?> GetFullDataPublic(int id)
         {
             await _dbSet
-            .Where(c => c.ID == id)
+            .Where(c => c.Id == id)
             .ExecuteUpdateAsync(s => s.SetProperty(c => c.Viewed, c => c.Viewed + 1));
 
             var company = await _dbSet
@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Subscription)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
-                .Where(e => e.ID == id && e.ActiveStatus == ActiveStatus.Active)
+                .Where(e => e.Id == id && e.ActiveStatus == ActiveStatus.Active)
                    .FirstOrDefaultAsync();
 
             return company;
@@ -91,13 +91,13 @@ namespace Infrastructure.Repositories
 
         public async Task<Company?> GetWithBranches(int id)
         {
-            return await _dbSet.Where(e => e.ID == id)
+            return await _dbSet.Where(e => e.Id == id)
                 .Include(e => e.Branches)
                 .FirstOrDefaultAsync();
         }
         public async Task<Company?> GetWithMedia(int id)
         {
-            return await _dbSet.Where(e => e.ID == id)
+            return await _dbSet.Where(e => e.Id == id)
                 .Include(e => e.CompanyMedia)
                     .ThenInclude(e => e.Media)
                 .FirstOrDefaultAsync();

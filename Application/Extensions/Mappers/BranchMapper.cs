@@ -25,7 +25,7 @@ namespace Application.Extensions.Mappers
         {
             return new BranchDTO
             {
-                Id = branch.ID,
+                Id = branch.Id,
                 AddressLine1 = branch.AddressLine1,
                 AddressLine2 = branch.AddressLine2,
                 City = branch.City,

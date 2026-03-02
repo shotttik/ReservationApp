@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
             var user = await _dbSet
                     .Include(u => u.Role)
                         .ThenInclude(r => r!.Permissions)
-                    .FirstOrDefaultAsync(u => u.ID == ID);
+                    .FirstOrDefaultAsync(u => u.Id == ID);
 
             return user;
         }
@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
                 .Include(u => u.Role)
                     .ThenInclude(r => r!.Permissions)
                 .Include(c => c.Company)
-                .FirstOrDefaultAsync(u => u.ID == ID);
+                .FirstOrDefaultAsync(u => u.Id == ID);
 
             return user;
         }
@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(ua => ua.UserLoginData.ID == userLoginDataID)
+                .Where(ua => ua.UserLoginData.Id == userLoginDataID)
                 .Include(ua=> ua.UserLoginData)
                 .FirstOrDefaultAsync();
 
@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Where(e => e.UserLoginData.Id == userLoginDataID)
                 .Include(e => e.WorkSchedules)
                 .FirstOrDefaultAsync();
 
@@ -61,7 +61,7 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataIDWithWorkScheduleExceptions(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Where(e => e.UserLoginData.Id == userLoginDataID)
                 .Include(e => e.WorkScheduleExceptions)
                 .FirstOrDefaultAsync();
 
@@ -81,7 +81,7 @@ namespace Infrastructure.Repositories
 
             var userAccount = await _dbSet
                 .Where(e =>
-                e.UserLoginData.ID == userLoginDataID && 
+                e.UserLoginData.Id == userLoginDataID && 
                 e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
                 e.Branch != null &&
                 e.Branch.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
@@ -120,7 +120,7 @@ namespace Infrastructure.Repositories
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID 
+                .Where(e => e.UserLoginData.Id == userLoginDataID 
                 && e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
                 .Include(e => e.Company)
                     .ThenInclude(c => c!.Services)

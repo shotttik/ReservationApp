@@ -13,7 +13,7 @@ namespace Infrastructure.Repositories
         public async Task<bool> Exists(IEnumerable<int> ids)
         {
             var allExist = await _dbSet
-                    .Where(e => ids.Contains(e.ID))
+                    .Where(e => ids.Contains(e.Id))
                     .CountAsync() == ids.Count();
 
             return allExist;

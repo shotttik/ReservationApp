@@ -70,7 +70,7 @@ namespace Application.Services
 
             if (force)
             {
-                await _branchRepository.Delete(branch.ID);
+                await _branchRepository.Delete(branch.Id);
             }
             else
             {

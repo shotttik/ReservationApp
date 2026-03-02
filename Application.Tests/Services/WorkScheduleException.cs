@@ -36,7 +36,7 @@ namespace Application.Tests.Services
         {
             return new UserAccount
             {
-                ID = userId,
+                Id = userId,
                 CompanyID = companyId,
                 RoleID = roleId,
                 FirstName = "Test",
@@ -74,7 +74,7 @@ namespace Application.Tests.Services
         {
             return new WorkScheduleException
             {
-                ID = id,
+                Id = id,
                 UserAccountID = userId,
                 StartDate = start,
                 EndDate = end,
@@ -245,7 +245,7 @@ namespace Application.Tests.Services
             var request = BuildCreateRequest(userId, new DateOnly(2025, 07, 10), new DateOnly(2025, 07, 12));
             var existing = new WorkScheduleException
             {
-                ID = 1,
+                Id = 1,
                 UserAccountID = userId,
                 StartDate = new DateOnly(2025, 07, 11),
                 EndDate = new DateOnly(2025, 07, 13),

@@ -10,7 +10,7 @@ namespace Application.Extensions.Mappers
         {
             return new WorkScheduleDTO
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 DayOfWeek = entity.DayOfWeek,
                 StartTime = entity.StartTime,
                 EndTime = entity.EndTime,
@@ -39,7 +39,7 @@ namespace Application.Extensions.Mappers
         {
             return new WorkScheduleExceptionDTO()
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 StartDate = entity.StartDate,
                 EndDate = entity.EndDate,
                 Notes = entity.Notes,

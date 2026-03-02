@@ -57,7 +57,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var accessError = await accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var accessError = await accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (accessError != Error.None)
             {
                 return Result.Failure(accessError);
@@ -121,7 +121,7 @@ namespace Application.Services
                 .Select(mediaId => new ReviewMedia
                 {
                     MediaId = mediaId,
-                    ReviewId = review.ID
+                    ReviewId = review.Id
                 })
                 .ToList();
 
@@ -161,7 +161,7 @@ namespace Application.Services
                     FileSizeInBytes = item.Length
                 };
                 await mediaRepository.Add(media, cancellationToken);
-                mediaIds.Add(media.ID);
+                mediaIds.Add(media.Id);
             }
 
             return Result.Success(mediaIds);

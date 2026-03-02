@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.BranchReleated
     {
         public void Configure(EntityTypeBuilder<City> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Name)
                 .HasMaxLength(255)

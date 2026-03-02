@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
         public async Task<UserLoginData?> GetFullUserData(int ID)
         {
             var userLoginData = await _dbSet
-                .Where(uld => uld.ID == ID)
+                .Where(uld => uld.Id == ID)
                 .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.Role)
                         .ThenInclude(ur => ur!.Permissions)
@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
         public async Task<UserLoginData?> GetWithUserAccount(int ID, int companyID)
         {
             return await _dbSet
-                .Where(uld => uld.ID == ID && uld.UserAccount.CompanyID == companyID)
+                .Where(uld => uld.Id == ID && uld.UserAccount.CompanyID == companyID)
                 .Include(uld => uld.UserAccount)
                 .FirstOrDefaultAsync();
         }
@@ -82,7 +82,7 @@ namespace Infrastructure.Repositories
             var query = _dbSet
             .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
-            .Where(u => u.ID != authUserID)
+            .Where(u => u.Id != authUserID)
             .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
@@ -106,7 +106,7 @@ namespace Infrastructure.Repositories
             var query = _dbSet
             .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
-            .Where(u => u.ID != authUserID && u.UserAccount.CompanyID == companyID)
+            .Where(u => u.Id != authUserID && u.UserAccount.CompanyID == companyID)
             .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);

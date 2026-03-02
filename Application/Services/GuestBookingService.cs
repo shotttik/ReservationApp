@@ -91,7 +91,7 @@ namespace Application.Services
             var booking = data.Booking;
             var bookingVerification = data.LatestPendingVerification;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -128,7 +128,7 @@ namespace Application.Services
             var booking = data.Booking;
             var bookingVerification = data.LatestPendingVerification;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -168,7 +168,7 @@ namespace Application.Services
             }
 
             var (newBookingVerification, code) = CreateBookingVerification(booking.GuestInfo!.ContactType);
-            newBookingVerification.BookingId = booking.ID;
+            newBookingVerification.BookingId = booking.Id;
             await _bookingVerificationRepository.Add(newBookingVerification);
 
             await SendVerificationNotification(
@@ -205,7 +205,7 @@ namespace Application.Services
 
             await _bookingRepository.Update(booking);
 
-            var token = JWTGenerator.GenerateGuestToken(booking.ID, _bookingSettings);
+            var token = JWTGenerator.GenerateGuestToken(booking.Id, _bookingSettings);
             var response = new CreateGuestTokenResponse()
             {
                 Token = token,
@@ -222,7 +222,7 @@ namespace Application.Services
 
             var booking = data.Booking;
 
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);

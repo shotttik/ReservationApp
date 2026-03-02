@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
         public async Task<ReviewInvite?> GetWithBooking(int id)
         {
             return await _dbSet
-                .Where(e => e.ID == id)
+                .Where(e => e.Id == id)
                 .Include(e => e.Booking)
                 .FirstOrDefaultAsync();
         }

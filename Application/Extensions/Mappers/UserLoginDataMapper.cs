@@ -12,8 +12,8 @@ namespace Application.Extensions.Mappers
             {
                 Email = user.Email,
                 Phone = user.Phone,
-                Id = user.ID,
-                UserAccountId = user.UserAccount.ID,
+                Id = user.Id,
+                UserAccountId = user.UserAccount.Id,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
@@ -26,7 +26,7 @@ namespace Application.Extensions.Mappers
                     Name = user.UserAccount.Role.Name,
                     Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        Id = p.ID,
+                        Id = p.Id,
                         Name = p.Name
                     })]
                 },
@@ -45,7 +45,7 @@ namespace Application.Extensions.Mappers
             {
                 Email = user.Email,
                 Phone = user.Phone,
-                Id = user.ID,
+                Id = user.Id,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
@@ -60,7 +60,7 @@ namespace Application.Extensions.Mappers
                     Name = user.UserAccount.Role.Name,
                     Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        Id = p.ID,
+                        Id = p.Id,
                         Name = p.Name
                     })]
                 },

@@ -34,7 +34,7 @@ public class WorkScheduleServiceTests
     {
         return new UserAccount
         {
-            ID = id,
+            Id = id,
             CompanyID = companyId,
             RoleID = roleId,
             FirstName = "Test",
@@ -58,7 +58,7 @@ public class WorkScheduleServiceTests
     {
         return new WorkSchedule
         {
-            ID = id,
+            Id = id,
             UserAccountID = userId,
             DayOfWeek = DayOfWeek.Monday,
             StartTime = start,
@@ -191,14 +191,14 @@ public class WorkScheduleServiceTests
         var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
         userAccount.WorkSchedules.Add(schedule);
 
-        workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
+        workScheduleRepositoryMock.Setup(x => x.Get(schedule.Id)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId)).ReturnsAsync(userAccount);
         accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
         workScheduleRepositoryMock.Setup(x => x.Update(schedule)).Returns(Task.CompletedTask);
 
         var request = new WorkScheduleUpdateRequest
         {
-            Id = schedule.ID,
+            Id = schedule.Id,
             UserId = userId,
             StartTime = new TimeOnly(10, 0),
             EndTime = new TimeOnly(12, 0)
@@ -227,7 +227,7 @@ public class WorkScheduleServiceTests
     public async Task Update_ShouldFail_WhenStartTimeAfterEndTime()
     {
         var schedule = BuildWorkSchedule(10, 1, new TimeOnly(9, 0), new TimeOnly(11, 0));
-        workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
+        workScheduleRepositoryMock.Setup(x => x.Get(schedule.Id)).ReturnsAsync(schedule);
 
         var request = new WorkScheduleUpdateRequest { Id = 10, UserId = 1, StartTime = new TimeOnly(13, 0), EndTime = new TimeOnly(12, 0) };
         var result = await service.Update(request);
@@ -247,13 +247,13 @@ public class WorkScheduleServiceTests
         userAccount.WorkSchedules.Add(schedule); // ✅ Add the schedule being updated
         userAccount.WorkSchedules.Add(overlapping); // ✅ Add the overlapping one
 
-        workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
+        workScheduleRepositoryMock.Setup(x => x.Get(schedule.Id)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.GetByUserLoginDataIDWithWorkSchedules(userId)).ReturnsAsync(userAccount);
         accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), userId)).ReturnsAsync(Error.None);
 
         var request = new WorkScheduleUpdateRequest
         {
-            Id = schedule.ID,
+            Id = schedule.Id,
             UserId = userId,
             StartTime = new TimeOnly(10, 30),
             EndTime = new TimeOnly(12, 30)
@@ -277,12 +277,12 @@ public class WorkScheduleServiceTests
         var schedule = BuildWorkSchedule(10, userId, new TimeOnly(9, 0), new TimeOnly(12, 0));
         var userAccount = BuildUserAccount(userId, Role.CompanyEmployee.ID);
 
-        workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
+        workScheduleRepositoryMock.Setup(x => x.Get(schedule.Id)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.Get(schedule.UserAccountID)).ReturnsAsync(userAccount);
         accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Error.None);
         workScheduleRepositoryMock.Setup(x => x.Delete(schedule)).Returns(Task.CompletedTask);
 
-        var result = await service.Delete(schedule.ID);
+        var result = await service.Delete(schedule.Id);
 
         Assert.True(result.IsSuccess);
     }
@@ -304,11 +304,11 @@ public class WorkScheduleServiceTests
         var schedule = BuildWorkSchedule(10, 1, new TimeOnly(9, 0), new TimeOnly(12, 0));
         var userAccount = BuildUserAccount(1, Role.CompanyEmployee.ID);
 
-        workScheduleRepositoryMock.Setup(x => x.Get(schedule.ID)).ReturnsAsync(schedule);
+        workScheduleRepositoryMock.Setup(x => x.Get(schedule.Id)).ReturnsAsync(schedule);
         userAccountRepositoryMock.Setup(x => x.Get(schedule.UserAccountID)).ReturnsAsync(userAccount);
         accessGuardMock.Setup(x => x.EnsureAccessToCompanyEmployee(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(GenericResults.Forbidden);
 
-        var result = await service.Delete(schedule.ID);
+        var result = await service.Delete(schedule.Id);
 
         Assert.True(result.IsFailure);
         Assert.Equal(GenericResults.Forbidden, result.Error);

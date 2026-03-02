@@ -9,8 +9,8 @@ namespace Infrastructure.Configurations.CompanyReleated
     {
         public void Configure(EntityTypeBuilder<CompanyFAQ> builder)
         {
-            builder.HasKey(e => e.ID);
-            builder.Property(e => e.ID)
+            builder.HasKey(e => e.Id);
+            builder.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .IsRequired();
             builder.Property(e => e.Question)

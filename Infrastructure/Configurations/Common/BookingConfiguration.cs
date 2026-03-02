@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.Common
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.StartTime).IsRequired();
             builder.Property(e => e.EndTimeExpected).IsRequired();
             builder.Property(e => e.PriceExpected).HasPrecision(18, 2).IsRequired();

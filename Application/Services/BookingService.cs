@@ -52,7 +52,7 @@ namespace Application.Services
                 return Result.Failure<CreateBookingByGuestResponse>(employeeResult.Error);
             var employee = employeeResult.Value!;
 
-            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<CreateBookingByGuestResponse>(BookingResults.ServiceDoesntExists);
@@ -69,7 +69,7 @@ namespace Application.Services
             {
                 return Result.Failure<CreateBookingByGuestResponse>(requestValidationError);
             }
-            var booking = request.MapToEntity(service, null, (int)employee.BranchId!, employee.ID);
+            var booking = request.MapToEntity(service, null, (int)employee.BranchId!, employee.Id);
             var bookingGuestInfo = new BookingGuestInfo()
             {
                 ContactType = request.GuestInfo.ContactType,
@@ -91,7 +91,7 @@ namespace Application.Services
                 code,
                 booking.Reference);
 
-            var token = JWTGenerator.GenerateGuestToken(booking.ID, _bookingSettings);
+            var token = JWTGenerator.GenerateGuestToken(booking.Id, _bookingSettings);
             var bookingDTO = booking.MapToDTO();
             var response = new CreateBookingByGuestResponse()
             {
@@ -114,7 +114,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(employeeResult.Error);
             var employee = employeeResult.Value!;
 
-            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
@@ -133,7 +133,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
 
-            var booking = request.MapToEntity(service, authUser.UserAccountId, (int)employee.BranchId!, employee.ID);
+            var booking = request.MapToEntity(service, authUser.UserAccountId, (int)employee.BranchId!, employee.Id);
             await _bookingRepository.Add(booking);
 
             var bookingDTO = booking.MapToDTO(showRef: true);
@@ -154,7 +154,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(accessError);
             }
-            var service = employee.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
+            var service = employee.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
@@ -200,7 +200,7 @@ namespace Application.Services
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
 
-            var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.ID);
+            var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.Id);
 
             booking.Status = BookingStatus.Accepted;
             if (bookingGuestInfo != null && bookingVerification != null)
@@ -239,7 +239,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -296,7 +296,7 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.NotFound);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure(error);
@@ -325,7 +325,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(BookingResults.EmployeeIsInDifferentCompany);
             }
-            var service = employee!.Company!.Services.FirstOrDefault(s => s.ID == request.ServiceId);
+            var service = employee!.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
             if (service == null)
             {
                 return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
@@ -336,7 +336,7 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(requestValidationError);
             }
-            var error = await _accessGuard.EnsureAccessToBooking(booking.ID, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
                 return Result.Failure<BookingDTO>(error);
@@ -348,9 +348,9 @@ namespace Application.Services
             }
 
             booking.Service = service;
-            booking.ServiceID = service.ID;
+            booking.ServiceID = service.Id;
             booking.Employee = employee;
-            booking.EmployeeID = employee.ID;
+            booking.EmployeeID = employee.Id;
             booking.StartTime = request.StartTime;
             booking.UpdateEndTimeExpected();
             booking.Status = BookingStatus.Pending;
@@ -386,7 +386,7 @@ namespace Application.Services
                     return BookingResults.ClientAlreadyBooked;
             }
 
-            var employeeConflict = await _bookingRepository.HasBookingOverlap(employee.ID, startTime, endTimeExpected, bookingId, asEmployee: true);
+            var employeeConflict = await _bookingRepository.HasBookingOverlap(employee.Id, startTime, endTimeExpected, bookingId, asEmployee: true);
             if (employeeConflict)
                 return BookingResults.EmployeeAlreadyBooked;
 

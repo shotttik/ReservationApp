@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             // otherwise it would always be detected as overlapping with itself.
             if (bookingId is not null)
             {
-                query = query.Where(b => b.ID != bookingId);
+                query = query.Where(b => b.Id != bookingId);
             }
             return await query.AnyAsync();
         }
@@ -73,7 +73,7 @@ namespace Infrastructure.Repositories
         public async Task<Booking?> GetWithReviewInvite(int bookingId)
         {
             var booking = await _dbSet
-                .Where(e => e.ID == bookingId)
+                .Where(e => e.Id == bookingId)
                 .Include(e => e.ReviewInvite)
                 .FirstOrDefaultAsync();
 
@@ -82,7 +82,7 @@ namespace Infrastructure.Repositories
         public async Task<Booking?> GetWithBranchAndReviewInvite(int bookingId)
         {
             var booking = await _dbSet
-                .Where(e => e.ID == bookingId)
+                .Where(e => e.Id == bookingId)
                 .Include(e => e.ReviewInvite)
                 .Include(e => e.Branch)
                 .FirstOrDefaultAsync();
@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
         public async Task<Booking?> GetWithBranch(int bookingId)
         {
             var booking = await _dbSet
-                .Where(e => e.ID == bookingId)
+                .Where(e => e.Id == bookingId)
                 .Include(e => e.Branch)
                 .FirstOrDefaultAsync();
 
@@ -101,7 +101,7 @@ namespace Infrastructure.Repositories
         public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId)
         {
             return await _dbSet
-                .Where(b => b.ID == bookingId &&
+                .Where(b => b.Id == bookingId &&
                             b.GuestInfo != null &&
                             b.Status == BookingStatus.PendingVerification)
                 .Include(b => b.GuestInfo)
@@ -119,7 +119,7 @@ namespace Infrastructure.Repositories
         public async Task<BookingWithLatestPendingVerification?> GetContactUpdatableWithLatestPendingVerification(int bookingId)
         {
             return await _dbSet
-                .Where(b => b.ID == bookingId &&
+                .Where(b => b.Id == bookingId &&
                             b.GuestInfo != null &&
                             (b.Status == BookingStatus.PendingVerification || b.Status == BookingStatus.Pending || b.Status == BookingStatus.Accepted))
                 .Include(b => b.GuestInfo)

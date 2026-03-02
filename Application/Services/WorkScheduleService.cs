@@ -59,7 +59,7 @@ namespace Application.Services
 
             var workSchedule = new WorkSchedule
             {
-                UserAccountID = userAccount.ID,
+                UserAccountID = userAccount.Id,
                 DayOfWeek = request.DayOfWeek,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime
@@ -88,7 +88,7 @@ namespace Application.Services
             {
                 return Result.Failure(GenericResults.DontExists);
             }
-            if (userAccount.ID != schedule.UserAccountID)
+            if (userAccount.Id != schedule.UserAccountID)
             {
                 return Result.Failure(GenericResults.Forbidden);
             }
@@ -101,7 +101,7 @@ namespace Application.Services
 
             // Check against other schedules of same user & day
             var otherSchedules = userAccount.WorkSchedules
-                .Where(e => e.ID != request.Id && e.DayOfWeek == schedule.DayOfWeek)
+                .Where(e => e.Id != request.Id && e.DayOfWeek == schedule.DayOfWeek)
                 .ToList();
             foreach (var s in otherSchedules)
             {
@@ -177,7 +177,7 @@ namespace Application.Services
             }
 
             var workScheduleException = request.MapToEntity();
-            workScheduleException.UserAccountID = userAccount.ID;
+            workScheduleException.UserAccountID = userAccount.Id;
 
             await workScheduleExceptionRepository.Add(workScheduleException);
 
@@ -199,7 +199,7 @@ namespace Application.Services
             if (userAccount == null || userAccount.CompanyID == null)
                 return Result.Failure(GenericResults.DontExists);
 
-            if (workScheduleException.UserAccountID != userAccount.ID)
+            if (workScheduleException.UserAccountID != userAccount.Id)
                 return Result.Failure(GenericResults.Forbidden);
 
             var accessError = await accessGuard.EnsureAccessToCompanyEmployee((int)userAccount.CompanyID, request.UserId);
@@ -208,7 +208,7 @@ namespace Application.Services
 
             // Check for overlapping exceptions (excluding self)
             bool hasOverlap = userAccount.WorkScheduleExceptions
-                .Where(e => e.ID != request.Id)
+                .Where(e => e.Id != request.Id)
                 .Any(e => request.StartDate <= e.EndDate && request.EndDate >= e.StartDate);
 
             if (hasOverlap)

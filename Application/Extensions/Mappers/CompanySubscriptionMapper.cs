@@ -9,7 +9,7 @@ namespace Application.Extensions.Mappers
         {
             return new CompanySubscriptionDTO
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 CompanyId = entity.CompanyId,
                 SubscriptionPlanId = entity.SubscriptionPlanId,
                 StartDate = entity.StartDate,

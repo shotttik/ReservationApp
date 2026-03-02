@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.Common
     {
         public void Configure(EntityTypeBuilder<SubscriptionPlan> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(255);

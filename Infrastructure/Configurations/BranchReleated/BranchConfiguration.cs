@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.BranchReleated
     {
         public void Configure(EntityTypeBuilder<Branch> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.AddressLine1)
                 .HasMaxLength(255);
             builder.Property(e => e.AddressLine2)

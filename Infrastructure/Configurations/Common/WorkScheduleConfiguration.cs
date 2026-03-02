@@ -9,7 +9,7 @@ namespace Infrastructure.Configurations.Common
     {
         public void Configure(EntityTypeBuilder<WorkSchedule> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.DayOfWeek)
                 .IsRequired();
 

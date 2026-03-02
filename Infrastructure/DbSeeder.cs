@@ -80,7 +80,7 @@ namespace Infrastructure
                             PostalCode = random.Next(10000, 99999).ToString(),
                             Latitude = Convert.ToDecimal(random.NextDouble() * 180 - 90),
                             Longitude = Convert.ToDecimal(random.NextDouble() * 360 - 180),
-                            CompanyId = companies [i].ID
+                            CompanyId = companies [i].Id
                         });
                     }
 
@@ -93,9 +93,9 @@ namespace Infrastructure
                 var viehe = await EnsureVieheCompanyAsync(context);
 
                 // 4) Company users (depend on Viehe)
-                var companyAdmin = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyAdmin.ID, null,
+                var companyAdmin = await EnsureCompanyUserAsync(context, viehe?.Id, Role.CompanyAdmin.ID, null,
                                         "companyAdmin@example.com", "CompanyAdmin", "Company Admin");
-                var companyEmployee = await EnsureCompanyUserAsync(context, viehe?.ID, Role.CompanyEmployee.ID, viehe?.Branches.FirstOrDefault()?.ID,
+                var companyEmployee = await EnsureCompanyUserAsync(context, viehe?.Id, Role.CompanyEmployee.ID, viehe?.Branches.FirstOrDefault()?.Id,
                                         "companyEmployee@example.com", "CompanyEmployee", "Company Employee");
 
                 // 5) Services (attach to actual company IDs)
@@ -103,10 +103,10 @@ namespace Infrastructure
 
                 // 6) Work schedules (after users; per-user/per-day)
                 if (companyAdmin?.UserAccount != null)
-                    await EnsureDefaultScheduleAsync(context, companyAdmin.UserAccount.ID);
+                    await EnsureDefaultScheduleAsync(context, companyAdmin.UserAccount.Id);
 
                 if (companyEmployee?.UserAccount != null)
-                    await EnsureDefaultScheduleAsync(context, companyEmployee.UserAccount.ID);
+                    await EnsureDefaultScheduleAsync(context, companyEmployee.UserAccount.Id);
 
                 // 7) Media last (so every company is present)
                 await SeedMediaAsync(context);
@@ -291,8 +291,8 @@ namespace Infrastructure
             }
 
             var companyIds = await context.Companies
-                .OrderBy(c => c.ID)
-                .Select(c => c.ID)
+                .OrderBy(c => c.Id)
+                .Select(c => c.Id)
                 .Take(5)
                 .ToListAsync();
 
@@ -402,7 +402,7 @@ namespace Infrastructure
             var tbilisiState = new State
             {
                 Name = "Tbilisi",
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2!,
                 CountryName = georgia.Name,
                 StateCode = "TB",
@@ -415,7 +415,7 @@ namespace Infrastructure
             var adjaraState = new State
             {
                 Name = "Adjara",
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2!,
                 CountryName = georgia.Name,
                 StateCode = "AJ",
@@ -428,7 +428,7 @@ namespace Infrastructure
             var imeretiState = new State
             {
                 Name = "Imereti",
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2!,
                 CountryName = georgia.Name,
                 StateCode = "IM",
@@ -444,10 +444,10 @@ namespace Infrastructure
             var tbilisiCity = new City
             {
                 Name = "Tbilisi",
-                StateId = tbilisiState.ID,
+                StateId = tbilisiState.Id,
                 StateCode = tbilisiState.StateCode!,
                 StateName = tbilisiState.Name,
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2,
                 CountryName = georgia.Name,
                 Latitude = 41.7151m,
@@ -459,10 +459,10 @@ namespace Infrastructure
             var batumiCity = new City
             {
                 Name = "Batumi",
-                StateId = adjaraState.ID,
+                StateId = adjaraState.Id,
                 StateCode = adjaraState.StateCode!,
                 StateName = adjaraState.Name,
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2,
                 CountryName = georgia.Name,
                 Latitude = 41.6168m,
@@ -474,10 +474,10 @@ namespace Infrastructure
             var kutaisiCity = new City
             {
                 Name = "Kutaisi",
-                StateId = imeretiState.ID,
+                StateId = imeretiState.Id,
                 StateCode = imeretiState.StateCode!,
                 StateName = imeretiState.Name,
-                CountryId = georgia.ID,
+                CountryId = georgia.Id,
                 CountryCode = georgia.Iso2,
                 CountryName = georgia.Name,
                 Latitude = 42.2662m,
@@ -514,7 +514,7 @@ namespace Infrastructure
                         {
                             new CompanyMedia
                             {
-                                CompanyID = company.ID,
+                                CompanyID = company.Id,
                                 IsMain    = i == 0
                             }
                         }

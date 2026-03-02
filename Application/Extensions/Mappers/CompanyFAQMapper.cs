@@ -19,7 +19,7 @@ namespace Application.Extensions.Mappers
         }
         public static void MapToEntity(this CompanyFAQUpdateRequest request, CompanyFAQ companyFAQ)
         {
-            companyFAQ.ID = request.Id;
+            companyFAQ.Id = request.Id;
             companyFAQ.Question = request.Question;
             companyFAQ.Answer = request.Answer;
             companyFAQ.ActiveStatus = request.ActiveStatus;
@@ -30,7 +30,7 @@ namespace Application.Extensions.Mappers
         {
             return new CompanyFAQDTO
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 Question = entity.Question,
                 Answer = entity.Answer,
                 ActiveStatus = entity.ActiveStatus,
@@ -61,7 +61,7 @@ namespace Application.Extensions.Mappers
         {
             return new CompanyFAQCategoryDTO
             {
-                Id = entity.ID,
+                Id = entity.Id,
                 Name = entity.Name,
                 Order = entity.Order,
                 ActiveStatus = entity.ActiveStatus,

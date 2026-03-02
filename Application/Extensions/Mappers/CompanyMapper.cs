@@ -11,7 +11,7 @@ namespace Application.Extensions.Mappers
         {
             return new Domain.DTO.Company.CompanyDTO
             {
-                Id = company.ID,
+                Id = company.Id,
                 Name = company.Name,
                 Description = company.Description,
                 IN = company.IN,
@@ -24,7 +24,7 @@ namespace Application.Extensions.Mappers
                 Viewed = company.Viewed,
                 Services = company.Services.Select(s => new ServiceDTO
                 {
-                    Id = s.ID,
+                    Id = s.Id,
                     Name = s.Name,
                     Description = s.Description,
                     Duration = s.Duration,
@@ -56,7 +56,7 @@ namespace Application.Extensions.Mappers
         {
             return new Domain.Entities.CompanyReleated.Company
             {
-                ID = companyDTO.Id,
+                Id = companyDTO.Id,
                 Name = companyDTO.Name,
                 Description = companyDTO.Description,
                 IN = companyDTO.IN,

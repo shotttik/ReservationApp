@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.CompanyReleated
     {
         public void Configure(EntityTypeBuilder<Service> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
             builder.HasIndex(e => e.Name);
             builder.Property(e => e.Duration).IsRequired();

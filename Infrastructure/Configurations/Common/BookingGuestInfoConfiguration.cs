@@ -8,7 +8,7 @@ namespace Infrastructure.Configurations.Common
     {
         public void Configure(EntityTypeBuilder<BookingGuestInfo> builder)
         {
-            builder.HasKey(e => e.ID);
+            builder.HasKey(e => e.Id);
             builder.Property(e => e.ContactType)
                 .IsRequired()
                 .HasConversion<int>();

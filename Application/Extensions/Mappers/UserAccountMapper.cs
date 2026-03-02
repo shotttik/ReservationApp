@@ -10,7 +10,7 @@ namespace Application.Extensions.Mappers
         {
             return new UserAccountDTO()
             {
-                Id = userAccount.ID,
+                Id = userAccount.Id,
                 FirstName = userAccount.FirstName,
                 LastName = userAccount.LastName,
                 Gender = userAccount.Gender.HasValue ? (Gender?)userAccount.Gender : null,
@@ -21,7 +21,7 @@ namespace Application.Extensions.Mappers
                     Name = userAccount.Role.Name,
                     Permissions = userAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        Id = p.ID,
+                        Id = p.Id,
                         Name = p.Name
                     }).ToList()
                 },
