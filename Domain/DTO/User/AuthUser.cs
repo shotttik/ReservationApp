@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace Domain.DTO.User
 {
@@ -9,6 +10,7 @@ namespace Domain.DTO.User
         public int UserAccountId { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
+        public ActiveStatus ActiveStatus { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }

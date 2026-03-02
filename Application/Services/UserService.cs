@@ -365,22 +365,6 @@ namespace Application.Services
         {
             var userAccountID = authService.GetUserAccountID();
             var userAccount = await userAccountRepository.Get(userAccountID);
-            if (request.ImageId != null)
-            {
-                var mediaExist = await mediaRepository.Exists([(int)request.ImageId]);
-                if (!mediaExist)
-                    return Result.Failure(MediaResults.SomeMediaDontExists);
-                var userAccountMedia = new UserAccountMedia
-                {
-                    UserAccountId = userAccountID,
-                    MediaId = (int)request.ImageId
-                };
-                await userAccountMediaRepository.EmptyThenAdd(userAccountMedia);
-            }
-            else
-            {
-                await userAccountMediaRepository.Empty(userAccountID);
-            }
             userAccount!.FirstName = request.FirstName;
             userAccount!.LastName = request.LastName;
             userAccount.DateOfBirth = request.DateOfBirth;
@@ -484,14 +468,15 @@ namespace Application.Services
             return Result.Success(AuthResults.UserDisabled);
         }
 
-        public async Task<Result<int>> UploadProfileImage(UploadUserProfileImageRequest request, CancellationToken cancellationToken)
+        public async Task<Result> UploadProfileImage(UploadUserProfileImageRequest request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var userAccountId = authService.GetUserAccountID();
 
             var error = request.File.IsValidImage(configuration);
             if (error != Error.None)
             {
-                return Result.Failure<int>(error);
+                return Result.Failure(error);
             }
             var fileName = request.File.FileName;
             var contentType = request.File.ContentType;
@@ -511,9 +496,17 @@ namespace Application.Services
                 FileType = contentType,
                 FileSizeInBytes = request.File.Length
             };
+            //TODO transaction
             await mediaRepository.Add(media, cancellationToken);
+            var userAccountMedia = new UserAccountMedia
+            {
+                UserAccountId = userAccountId,
+                MediaId = media.ID,
+            };
+            await userAccountMediaRepository.EmptyThenAdd(userAccountMedia);
+            await authService.RefreshAuthUserCache();
 
-            return Result.Success(media.ID);
+            return Result.Success();
         }
     }
 }

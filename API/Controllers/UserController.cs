@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace API.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/users/me")]
+    [Route("api/v{version:apiVersion}/profile")]
     [ApiController]
     [Tags("Users")]
     public class UserController :ControllerBase
@@ -26,7 +26,7 @@ namespace API.Controllers
         /// Gets the authorization data for the current logged-in user.
         /// </summary>
         /// <returns>Basic profile and role info of the current user.</returns>
-        [HttpGet("profile")]
+        [HttpGet()]
         [Authorize]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<AuthUser>), StatusCodes.Status200OK)]
@@ -71,8 +71,6 @@ namespace API.Controllers
         }
         /// <summary>
         /// Updates basic user profile data like name, birthdate, gender or Image.
-        /// imageId is returned from profile image upload endpoint.
-        /// if profile image is to be updated, use the profile image upload endpoint.
         /// </summary>
         /// <param name="request">Updated profile information.</param>
         /// <returns>Success if update was saved.</returns>

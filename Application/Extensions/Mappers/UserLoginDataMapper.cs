@@ -32,8 +32,8 @@ namespace Application.Extensions.Mappers
                 CompanyId = user.UserAccount.CompanyID,
                 BranchId = user.UserAccount.BranchId,
                 WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
-                CreatedAt = user.CreatedAt,
-
+                ActiveStatus = user.ActiveStatus,
+                CreatedAt = user.CreatedAt
             };
 
             return userDTO;
