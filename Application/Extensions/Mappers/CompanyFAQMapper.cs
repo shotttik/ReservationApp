@@ -30,12 +30,12 @@ namespace Application.Extensions.Mappers
         {
             return new CompanyFAQDTO
             {
-                ID = entity.ID,
+                Id = entity.ID,
                 Question = entity.Question,
                 Answer = entity.Answer,
                 ActiveStatus = entity.ActiveStatus,
                 Order = entity.Order,
-                CategoryID = entity.CategoryID,
+                CategoryId = entity.CategoryID,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
             };
@@ -61,11 +61,11 @@ namespace Application.Extensions.Mappers
         {
             return new CompanyFAQCategoryDTO
             {
-                ID = entity.ID,
+                Id = entity.ID,
                 Name = entity.Name,
                 Order = entity.Order,
                 ActiveStatus = entity.ActiveStatus,
-                CompanyID = entity.CompanyID,
+                CompanyId = entity.CompanyID,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
             };

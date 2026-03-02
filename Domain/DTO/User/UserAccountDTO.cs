@@ -6,22 +6,23 @@ namespace Domain.DTO.User
 {
     public class UserAccountDTO
     {
-        public virtual int ID { get; set; }
+        public virtual int Id { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
         public Gender? Gender { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public required RoleDTO Role { get; set; }
-        public int? CompanyID { get; set; }
+        public int? CompanyId { get; set; }
+        public int? BranchId { get; set; }
         public string? ProfileImageUrl { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
         [JsonIgnore]
-        public bool IsPublicUser => Role.ID == (int)Enums.Role.PublicUser;
+        public bool IsPublicUser => Role.Id == (int)Enums.Role.PublicUser;
         [JsonIgnore]
-        public bool IsSuperUser => Role.ID == (int)Enums.Role.SuperAdmin;
+        public bool IsSuperUser => Role.Id == (int)Enums.Role.SuperAdmin;
         [JsonIgnore]
-        public bool IsCompanyAdmin => Role.ID == (int)Enums.Role.CompanyAdmin;
+        public bool IsCompanyAdmin => Role.Id == (int)Enums.Role.CompanyAdmin;
         [JsonIgnore]
-        public bool IsCompanyEmployee => Role.ID == (int)Enums.Role.CompanyEmployee;
+        public bool IsCompanyEmployee => Role.Id == (int)Enums.Role.CompanyEmployee;
     }
 }

@@ -202,7 +202,7 @@ namespace Application.Services
                 return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
             var mappedParams = PagedParameterMapper.MapToEntityPaths(parameters, allowedFields);
-            var users = await userLoginDataRepository.RetrievePaged(mappedParams, cancellationToken, AuthUser.ID);
+            var users = await userLoginDataRepository.RetrievePaged(mappedParams, cancellationToken, AuthUser.Id);
 
             return Result.Success(users);
         }

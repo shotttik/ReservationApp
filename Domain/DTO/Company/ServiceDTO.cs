@@ -5,7 +5,7 @@ namespace Domain.DTO.Company
 {
     public class ServiceDTO :BaseServiceDTO
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
     }
     public class BaseServiceDTO
     {

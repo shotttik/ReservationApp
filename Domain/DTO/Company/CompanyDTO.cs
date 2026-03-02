@@ -6,7 +6,7 @@ namespace Domain.DTO.Company
 {
     public class CompanyDTO
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public required string IN { get; set; }

@@ -11,7 +11,7 @@ namespace Application.Extensions.Mappers
         {
             return new Domain.DTO.Company.CompanyDTO
             {
-                ID = company.ID,
+                Id = company.ID,
                 Name = company.Name,
                 Description = company.Description,
                 IN = company.IN,
@@ -24,7 +24,7 @@ namespace Application.Extensions.Mappers
                 Viewed = company.Viewed,
                 Services = company.Services.Select(s => new ServiceDTO
                 {
-                    ID = s.ID,
+                    Id = s.ID,
                     Name = s.Name,
                     Description = s.Description,
                     Duration = s.Duration,
@@ -33,7 +33,7 @@ namespace Application.Extensions.Mappers
                 }).ToList(),
                 Media = company.CompanyMedia.Select(cm => new MediaDTO
                 {
-                    ID = cm.MediaID,
+                    Id = cm.MediaID,
                     IsMain = cm.IsMain,
                     Path = cm.Media.RemoteUrl
                 }).ToList(),
@@ -55,7 +55,7 @@ namespace Application.Extensions.Mappers
         {
             return new Domain.Entities.CompanyReleated.Company
             {
-                ID = companyDTO.ID,
+                ID = companyDTO.Id,
                 Name = companyDTO.Name,
                 Description = companyDTO.Description,
                 IN = companyDTO.IN,

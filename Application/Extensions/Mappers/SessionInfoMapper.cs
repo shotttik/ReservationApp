@@ -8,7 +8,7 @@
                 ? throw new ArgumentNullException(nameof(sessionInfo))
                 : new Domain.DTO.SessionInfoSummaryDTO
                 {
-                    SessionID = sessionInfo.SessionID,
+                    SessionId = sessionInfo.SessionId,
                     DeviceInfo = sessionInfo.DeviceInfo,
                     CreatedAt = sessionInfo.CreatedAt,
                     LastAccessedAt = sessionInfo.LastAccessedAt

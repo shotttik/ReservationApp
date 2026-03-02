@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
             return await dbContext.States
                 .AsNoTracking()
                 .Where(s => s.CountryId == countryID)
-                .Select(s => new StateDTO { ID = s.ID, Name = s.Name })
+                .Select(s => new StateDTO { Id = s.ID, Name = s.Name })
                 .Distinct()
                 .ToListAsync();
         }
@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             return await dbContext.Cities
                 .AsNoTracking()
                 .Where(c => c.StateId == stateID)
-                .Select(c => new CityDTO { ID = c.ID, Name = c.Name })
+                .Select(c => new CityDTO { Id = c.ID, Name = c.Name })
                 .Distinct()
                 .ToListAsync();
         }
@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
         {
             return await dbContext.Countries
                 .AsNoTracking()
-                .Select(c => new CountryDTO { ID = c.ID, Name = c.Name })
+                .Select(c => new CountryDTO { Id = c.ID, Name = c.Name })
                 .Distinct()
                 .ToListAsync();
         }

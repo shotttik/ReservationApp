@@ -416,7 +416,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company subscription records.</returns>
-        [HttpGet("subscriptions/paged")]
+        [HttpGet("subscriptions")]
         [Logging(LoggingType.General)]
         [HasPermission(Permission.CompanySubscriptionGet)]
         [EnableRateLimiting("fixed")]

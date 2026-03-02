@@ -72,7 +72,7 @@ namespace Application.Services
             {
                 return Result.Failure<string>(CompanyResults.InviteEmployeeNotFound);
             }
-            var subscriptionError = await subscriptionGuard.EnsureCanCreateEmployeeAsync(AuthUser.CompanyID!.Value);
+            var subscriptionError = await subscriptionGuard.EnsureCanCreateEmployeeAsync(AuthUser.CompanyId!.Value);
             if (subscriptionError != Error.None)
             {
                 return Result.Failure<string>(subscriptionError);
@@ -82,7 +82,7 @@ namespace Application.Services
             {
                 return Result.Failure<string>(CompanyResults.InviteInvalidRole);
             }
-            var company = await companyRepository.GetWithBranches(AuthUser.CompanyID!.Value);
+            var company = await companyRepository.GetWithBranches(AuthUser.CompanyId!.Value);
             if (company == null || !company.HasBranch(request.BranchId))
             {
                 return Result.Failure<string>(CompanyResults.InvalidBranchId);
@@ -92,7 +92,7 @@ namespace Application.Services
             var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
             var invitation = new CompanyInvitation()
             {
-                CompanyID = AuthUser.CompanyID!.Value,
+                CompanyID = AuthUser.CompanyId!.Value,
                 UserAccountID = employee.ID,
                 Token = JWTGenerator.GenerateAndHashSecureToken(),
                 ExpirationTime = DateTime.UtcNow.AddDays(expDays),
@@ -126,7 +126,7 @@ namespace Application.Services
             invitation.ExpirationTime = null;
             await companyInvitationRepository.Update(invitation);
 
-            var authUserEntity = await userAccountRepository.GetByUserLoginDataID(AuthUser.ID);
+            var authUserEntity = await userAccountRepository.GetByUserLoginDataID(AuthUser.Id);
             authUserEntity!.CompanyID = invitation.CompanyID;
             authUserEntity.RoleID = Role.CompanyEmployee.ID;
             authUserEntity.BranchId = invitation.BranchId;

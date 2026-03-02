@@ -4,11 +4,11 @@ namespace Domain.DTO
 {
     public class BookingDTO
     {
-        public int ID { get; set; }
-        public int? ClientID { get; set; }
-        public int EmployeeID { get; set; }
+        public int Id { get; set; }
+        public int? ClientId { get; set; }
+        public int EmployeeId { get; set; }
         public int BranchId { get; set; }
-        public int ServiceID { get; set; } 
+        public int ServiceId { get; set; } 
         public string ServiceName { get; set; } = null!; // frontshi service rom ar wamoighos xolme saxelis gamo
         public DateTime StartTime { get; set; }
         public DateTime EndTimeExpected { get; set; }

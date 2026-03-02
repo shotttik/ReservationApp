@@ -127,10 +127,10 @@ namespace Application.Services
 
             var AuthUser = user.MapToAuthorizationData();
             var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
-            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionID, configuration);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.ID, user.UserAccount.ID, user.Email, sessionInfo.SessionId, configuration);
 
             await cacheService.SetAsync(
-               CacheUtils.SessionKey(sessionInfo.SessionID),
+               CacheUtils.SessionKey(sessionInfo.SessionId),
                sessionInfo,
                sessionInfo.RefreshTokenExpTime - DateTime.UtcNow
             );
@@ -138,9 +138,9 @@ namespace Application.Services
             var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(user.ID))
                 ?? new List<string>();
 
-            if (!sessions.Contains(sessionInfo.SessionID))
+            if (!sessions.Contains(sessionInfo.SessionId))
             {
-                sessions.Add(sessionInfo.SessionID);
+                sessions.Add(sessionInfo.SessionId);
             }
 
             var expDays = Convert.ToDouble(configuration ["Jwt:UserActiveSessionsExpirationDays"]);
@@ -218,7 +218,7 @@ namespace Application.Services
             if (sessionInfo == null)
                 return Result.Failure(AuthResults.NotAuthenticated);
 
-            var userId = sessionInfo.AuthUser.ID;
+            var userId = sessionInfo.AuthUser.Id;
             await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionID));
 
             var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId)) ?? new List<string>();
@@ -317,7 +317,7 @@ namespace Application.Services
             {
                 return Result.Failure(AuthResults.EmailAlreadyExists);
             }
-            var userLoginData = await userLoginDataRepository.Get(AuthUser.ID);
+            var userLoginData = await userLoginDataRepository.Get(AuthUser.Id);
             if (userLoginData is null)
             {
                 return Result.Failure(AuthResults.UserNotFound);
@@ -348,7 +348,7 @@ namespace Application.Services
         public async Task<Result> ChangePassword(ChangePasswordRequest request)
         {
             var AuthUser = await authService.GetCurrentUser();
-            var userLoginData = await userLoginDataRepository.Get(AuthUser.ID);
+            var userLoginData = await userLoginDataRepository.Get(AuthUser.Id);
             if (!PasswordHasher.VerifyPassword(request.CurrentPassword, userLoginData!.PasswordHash, userLoginData.PasswordSalt))
             {
                 return Result.Failure(AuthResults.InvalidPassword);
@@ -394,7 +394,7 @@ namespace Application.Services
         public async Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions()
         {
             var AuthUser = await authService.GetCurrentUser();
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.ID));
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.Id));
 
             var sessions = new List<SessionInfoSummaryDTO>();
             foreach (var sessionId in sessionIds!)
@@ -403,7 +403,7 @@ namespace Application.Services
                 if (sessionInfo != null)
                 {
                     var sessionSummary = sessionInfo.MapToSummaryDTO();
-                    if (sessionSummary.SessionID == authService.GetSessionID())
+                    if (sessionSummary.SessionId == authService.GetSessionID())
                     {
                         sessionSummary.IsCurrentSession = true;
                     }
@@ -419,15 +419,15 @@ namespace Application.Services
             var AuthUser = await authService.GetCurrentUser();
             var sessionKey = CacheUtils.SessionKey(sessionId);
             var sessionInfo = await cacheService.GetAsync<SessionInfoDTO>(sessionKey);
-            if (sessionInfo == null || sessionInfo.AuthUser.ID != AuthUser.ID)
+            if (sessionInfo == null || sessionInfo.AuthUser.Id != AuthUser.Id)
             {
                 return Result.Failure(AuthResults.SessionNotFound);
             }
             await cacheService.RemoveAsync(sessionKey);
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.ID)) ?? new List<string>();
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.Id)) ?? new List<string>();
             if (sessionIds.Remove(sessionId))
             {
-                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(AuthUser.ID), sessionIds);
+                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(AuthUser.Id), sessionIds);
             }
 
             return Result.Success(AuthResults.SessionRemoved);

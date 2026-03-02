@@ -19,7 +19,7 @@ namespace Application.Common.Security
             if (user.IsSuperUser)
                 return Error.None;
 
-            if (user.CompanyID == null || user.CompanyID != routeCompanyId)
+            if (user.CompanyId == null || user.CompanyId != routeCompanyId)
                 return GenericResults.Forbidden;
 
             return Error.None;
@@ -30,9 +30,9 @@ namespace Application.Common.Security
             var user = await _authService.GetCurrentUser();
             if (user.IsSuperUser)
                 return Error.None;
-            if (user.IsCompanyAdmin && user.CompanyID == employeeCompanyId)
+            if (user.IsCompanyAdmin && user.CompanyId == employeeCompanyId)
                 return Error.None;
-            if (user.IsCompanyEmployee && user.CompanyID == employeeCompanyId && user.ID == employeeId)
+            if (user.IsCompanyEmployee && user.CompanyId == employeeCompanyId && user.Id == employeeId)
                 return Error.None;
 
             return GenericResults.Forbidden;
@@ -45,7 +45,7 @@ namespace Application.Common.Security
             var user = await _authService.GetCurrentUser();
             if (user.IsSuperUser)
                 return Error.None;
-            if (user.IsCompanyAdmin && user.CompanyID == companyId)
+            if (user.IsCompanyAdmin && user.CompanyId == companyId)
                 return Error.None;
             if (user.IsCompanyEmployee && user.UserAccountId == employeeId)
                 return Error.None;

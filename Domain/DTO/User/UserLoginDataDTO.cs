@@ -4,7 +4,7 @@ namespace Domain.DTO.User
 {
     public class UserLoginDataDTO :UserAccountDTO
     {
-        public override int ID { get; set; }
+        public override int Id { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public VerificationStatus EmailVerificationStatus { get; set; }

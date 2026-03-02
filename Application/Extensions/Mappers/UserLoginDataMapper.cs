@@ -12,7 +12,7 @@ namespace Application.Extensions.Mappers
             {
                 Email = user.Email,
                 Phone = user.Phone,
-                ID = user.ID,
+                Id = user.ID,
                 UserAccountId = user.UserAccount.ID,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
@@ -21,15 +21,16 @@ namespace Application.Extensions.Mappers
                 ProfileImageUrl = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl,
                 Role = new RoleDTO
                 {
-                    ID = user.UserAccount.Role!.ID,
+                    Id = user.UserAccount.Role!.ID,
                     Name = user.UserAccount.Role.Name,
                     Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        ID = p.ID,
+                        Id = p.ID,
                         Name = p.Name
                     })]
                 },
-                CompanyID = user.UserAccount.CompanyID,
+                CompanyId = user.UserAccount.CompanyID,
+                BranchId = user.UserAccount.BranchId,
                 WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
                 CreatedAt = user.CreatedAt,
 
@@ -43,7 +44,7 @@ namespace Application.Extensions.Mappers
             {
                 Email = user.Email,
                 Phone = user.Phone,
-                ID = user.ID,
+                Id = user.ID,
                 FirstName = user.UserAccount.FirstName,
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
@@ -53,15 +54,15 @@ namespace Application.Extensions.Mappers
                 PhoneVerificationStatus = user.PhoneVerificationStatus,
                 Role = new RoleDTO
                 {
-                    ID = user.UserAccount.Role!.ID,
+                    Id = user.UserAccount.Role!.ID,
                     Name = user.UserAccount.Role.Name,
                     Permissions = [.. user.UserAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        ID = p.ID,
+                        Id = p.ID,
                         Name = p.Name
                     })]
                 },
-                CompanyID = user.UserAccount.CompanyID,
+                CompanyId = user.UserAccount.CompanyID,
                 WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt

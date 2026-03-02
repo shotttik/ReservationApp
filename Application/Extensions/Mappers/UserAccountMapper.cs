@@ -10,22 +10,22 @@ namespace Application.Extensions.Mappers
         {
             return new UserAccountDTO()
             {
-                ID = userAccount.ID,
+                Id = userAccount.ID,
                 FirstName = userAccount.FirstName,
                 LastName = userAccount.LastName,
                 Gender = userAccount.Gender.HasValue ? (Gender?)userAccount.Gender : null,
                 DateOfBirth = userAccount.DateOfBirth,
                 Role = new RoleDTO
                 {
-                    ID = userAccount.Role!.ID,
+                    Id = userAccount.Role!.ID,
                     Name = userAccount.Role.Name,
                     Permissions = userAccount.Role.Permissions.Select(p => new PermissionDTO
                     {
-                        ID = p.ID,
+                        Id = p.ID,
                         Name = p.Name
                     }).ToList()
                 },
-                CompanyID = userAccount.CompanyID,
+                CompanyId = userAccount.CompanyID,
                 WorkSchedules = userAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
             };
         }

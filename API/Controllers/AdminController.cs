@@ -170,7 +170,7 @@ namespace API.Controllers
         /// <param name="request">Paging and filtering parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated list of users.</returns>
-        [HttpGet("users/paged")]
+        [HttpGet("users")]
         [Tags("Administration-User")]
         [HasPermission(Permission.UserRead)]
         [Logging(LoggingType.Full)]
@@ -227,7 +227,7 @@ namespace API.Controllers
         /// <param name="parameters">Paging parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Paginated company data.</returns>
-        [HttpGet("companies/paged")]
+        [HttpGet("companies")]
         [Tags("Administration-Company")]
         [Logging(LoggingType.Full)]
         [HasAnyPermission(Permission.CompanyReadAll)]
@@ -409,7 +409,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
         /// <returns>Returns containing a paged list of reviews. </returns>
-        [HttpGet("reviews/paged")]
+        [HttpGet("reviews")]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ReviewInviteRead)]

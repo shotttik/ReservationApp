@@ -11,11 +11,11 @@ namespace Application.Extensions.Mappers
         {
             return new BookingDTO
             {
-                ID = booking.ID,
-                ClientID = booking.ClientID,
-                EmployeeID = booking.EmployeeID,
+                Id = booking.ID,
+                ClientId = booking.ClientID,
+                EmployeeId = booking.EmployeeID,
                 BranchId = booking.BranchId,
-                ServiceID = booking.Service.ID,
+                ServiceId = booking.Service.ID,
                 ServiceName = booking.Service.Name,
                 StartTime = booking.StartTime,
                 EndTimeExpected = booking.EndTimeExpected,

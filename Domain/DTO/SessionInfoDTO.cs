@@ -4,7 +4,7 @@ namespace Domain.DTO
 {
     public class SessionInfoDTO
     {
-        public string SessionID { get; set; } = default!;
+        public string SessionId { get; set; } = default!;
         public AuthUser AuthUser { get; set; } = default!;
         public DeviceInfo DeviceInfo { get; set; } = default!;
         public string RefreshToken { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace Domain.DTO
 
     public class SessionInfoSummaryDTO
     {
-        public string SessionID { get; set; } = default!;
+        public string SessionId { get; set; } = default!;
         public DeviceInfo DeviceInfo { get; set; } = default!;
         public DateTime CreatedAt { get; set; }
         public DateTime LastAccessedAt { get; set; }

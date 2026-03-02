@@ -36,7 +36,7 @@ namespace Application.Extensions.Mappers
         {
             return new ServiceDTO
             {
-                ID = service.ID,
+                Id = service.ID,
                 Name = service.Name,
                 Description = service.Description,
                 Price = service.Price,

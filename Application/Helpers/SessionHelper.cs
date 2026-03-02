@@ -29,7 +29,7 @@ namespace Application.Helpers
 
             return new SessionInfoDTO
             {
-                SessionID = Guid.NewGuid().ToString(),
+                SessionId = Guid.NewGuid().ToString(),
                 AuthUser = user,
                 DeviceInfo = deviceInfo,
                 RefreshToken = refreshToken,
