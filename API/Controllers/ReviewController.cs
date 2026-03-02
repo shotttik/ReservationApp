@@ -154,7 +154,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
         /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
         /// <returns>Returns containing a paged list of reviews. </returns>
-        [HttpGet("paged")]
+        [HttpGet()]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ReviewInviteRead)]
