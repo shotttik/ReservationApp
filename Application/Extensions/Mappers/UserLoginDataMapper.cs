@@ -49,6 +49,7 @@ namespace Application.Extensions.Mappers
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
+                BranchId = user.UserAccount.BranchId,
                 ActiveStatus = user.ActiveStatus,
                 EmailVerificationStatus = user.EmailVerificationStatus,
                 PhoneVerificationStatus = user.PhoneVerificationStatus,
