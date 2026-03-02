@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Common.Requests.Admin
 {
-    public class UserUpdateRequest:IValidatableObject
+    public class UserUpdateRequest :IValidatableObject
     {
         [MaxLength(100)]
         public string? FirstName { get; set; }
@@ -14,6 +14,7 @@ namespace Application.Common.Requests.Admin
         public Role? Role { get; set; }
         public int? CompanyId { get; set; }
         public int? BranchId { get; set; }
+        public ActiveStatus? ActiveStatus { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             switch (Role)

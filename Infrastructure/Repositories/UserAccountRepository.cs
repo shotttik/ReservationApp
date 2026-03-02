@@ -42,7 +42,8 @@ namespace Infrastructure.Repositories
         public async Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID)
         {
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.ID == userLoginDataID)
+                .Where(ua => ua.UserLoginData.ID == userLoginDataID)
+                .Include(ua=> ua.UserLoginData)
                 .FirstOrDefaultAsync();
 
             return userAccount;

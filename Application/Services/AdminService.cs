@@ -123,6 +123,18 @@ namespace Application.Services
             if (request.LastName is not null) userAccount.LastName = request.LastName;
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
+            if (request.ActiveStatus is not null)
+            {
+                if (request.ActiveStatus == ActiveStatus.Active)
+                {
+                    userAccount.UserLoginData.Activate();
+                }
+                else
+                {
+                    userAccount.UserLoginData.Disable();
+                    await userService.DeleteAllActiveSessions(id);
+                }
+            }
             await userAccountRepository.Update(userAccount);
             await authService.RefreshUserCache(id);
 
@@ -240,31 +252,6 @@ namespace Application.Services
                 return Result.Failure<UserLoginDataDTO>(AuthResults.UserNotFound);
             }
             return Result.Success(user.MapToDTO());
-        }
-
-        public async Task<Result> ChangeUserActiveStatus(ChangeStatusRequest request, int userId)
-        {
-            var userLoginData = await userLoginDataRepository.Get(userId);
-            if (userLoginData == null)
-            {
-                return Result.Failure(AuthResults.UserNotFound);
-            }
-            if (userLoginData.ActiveStatus == request.NewStatus)
-            {
-                return Result.Failure(GenericResults.SameStatus);
-            }
-            if (request.NewStatus == ActiveStatus.Active)
-            {
-                userLoginData.Activate();
-            }
-            else
-            {
-                userLoginData.Disable();
-                await userService.DeleteAllActiveSessions(userId);
-            }
-            await userLoginDataRepository.Update(userLoginData);
-
-            return Result.Success(GenericResults.StatusChanged);
         }
     }
 }

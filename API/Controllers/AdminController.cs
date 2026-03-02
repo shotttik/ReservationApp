@@ -226,29 +226,6 @@ namespace API.Controllers
 
             return result.ToResponse();
         }
-        /// <summary>
-        /// Changes active status to the user.
-        /// </summary>
-        /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
-        /// </remarks>
-        /// <param name="userId">ID of the user to reactivate.</param>
-        /// <param name="request">new status request.</param>
-        /// <returns>No content if successful, or validation/problem details on failure.</returns>
-        [HttpPatch("users/{userId:int}/change-status")]
-        [Tags("Administration-User")]
-        [HasPermission(Permission.UserUpdate)]
-        [EnableRateLimiting("fixed")]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ChangeUserActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int userId)
-        {
-            var result = await _adminService.ChangeUserActiveStatus(request, userId);
-
-            return result.ToResponse();
-        }
 
         /// <summary>
         /// Deletes all active login sessions for a specific user.
