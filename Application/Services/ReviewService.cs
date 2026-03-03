@@ -190,7 +190,19 @@ namespace Application.Services
                 cancellationToken);
 
             return reviews;
+        }
+        public async Task<Result<ReviewDTO>> ReviewUpdate(int id, ReviewUpdateRequest request)
+        {
+            var review = await reviewRepository.Get(id);
+            if (review == null)
+            {
+                return Result.Failure<ReviewDTO>(ReviewResults.NotFound);
+            }
+            review.ApplyTo(request);
 
+            await reviewRepository.Update(review);
+
+            return review.MapToDTO();
         }
     }
 }

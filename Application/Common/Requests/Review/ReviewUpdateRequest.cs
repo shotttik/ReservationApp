@@ -1,11 +1,10 @@
-﻿using Domain.Entities.Common;
-using Domain.Enums;
+﻿using Domain.Enums;
 
-namespace Domain.Entities.ReviewReleated
+namespace Application.Common.Requests.Review
 {
-    public class Review :BaseEntity
+    public class ReviewUpdateRequest
     {
-        public ReviewStatus Status { get; set; } = ReviewStatus.Pending;
+        public ReviewStatus Status { get; set; }
 
         // star ratings (example for stays)
         public int Overall { get; set; }                           // 1..5
@@ -18,9 +17,5 @@ namespace Domain.Entities.ReviewReleated
 
         public string? Body { get; set; }
         public string? Locale { get; set; }
-        public DateTimeOffset? PublishedAt { get; set; }
-        public int ReviewInviteId { get; set; }
-        public ReviewInvite ReviewInvite { get; set; } = null!;
-        public ICollection<ReviewMedia> Media { get; set; } = new List<ReviewMedia>();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Requests.Review;
 using Domain.DTO.Review;
 using Domain.Entities.ReviewReleated;
+using Domain.Enums;
 
 namespace Application.Extensions.Mappers
 {
@@ -63,6 +64,24 @@ namespace Application.Extensions.Mappers
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt,
             };
+        }
+
+        public static void ApplyTo(this Review entity, ReviewUpdateRequest request)
+        {
+            if (entity.Status != ReviewStatus.Published && request.Status == ReviewStatus.Published)
+            {
+                entity.PublishedAt = DateTime.UtcNow;
+            }
+
+            entity.Status = request.Status;
+            entity.Overall = request.Overall;
+            entity.Accuracy = request.Accuracy;
+            entity.CheckIn = request.CheckIn;
+            entity.Communication = request.Communication;
+            entity.Location = request.Location;
+            entity.Value = request.Value;
+            entity.Body = request.Body;
+            entity.Locale = request.Locale;
         }
     }
 }

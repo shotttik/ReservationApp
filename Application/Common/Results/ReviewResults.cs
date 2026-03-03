@@ -9,6 +9,7 @@
         public static readonly Error AlreadyReviewed = Error.Validation("Review.AlreadyReviewed", "Already reviewed by client.");
         public static readonly Error NotYourInvite = Error.Forbidden("Review.NotYourInvite", "This review invite doesn't belong to you.");
         public static readonly Error BookingCreatedForUnauthenticatedClient = Error.Validation("Booking.BookingCreatedForUnauthenticatedClient", "Booking created for unauthenticated client, so can't be reviewd by client.");
+        public static readonly Error NotFound = Error.NotFound("Review.NotFound", "Review not found.");
         #endregion
         #region Success
         public static readonly SuccessInfo InvitedCreated = new("Review.InvitedCreated", "Client successfully invited on a review.");

@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<Result<List<int>>> UploadMedia(UploadReviewMediaRequest request, CancellationToken cancellationToken);
         Task<Result<IEnumerable<ReviewInviteDTO>>> GetReviewInvites();
         Task<Result<PagedList<ReviewDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken);
+        Task<Result<ReviewDTO>> ReviewUpdate(int id, ReviewUpdateRequest request);
     }
 }

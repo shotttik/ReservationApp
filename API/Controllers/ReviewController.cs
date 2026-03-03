@@ -151,7 +151,7 @@ namespace API.Controllers
         /// <li><c>ClientId</c></li>
         /// <li><c>EmployeeId</c></li>
         /// <li><c>CompanyId</c></li>
-        /// <li><c>Status</c></li>
+        /// <li><c>Status</c></li> This filter Works only For SuperAdmin
         /// </ul>
         /// </remarks>
         /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
@@ -166,6 +166,29 @@ namespace API.Controllers
         {
             var result = await reviewService.RetrievePaged(parameters, cancellationToken);
 
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        ///     Updates user's submited review
+        /// </summary>
+        /// <remarks>
+        /// All fields must be presented , its PUT bekhtangjy, sxva velebis update argvhirdeba
+        /// 
+        /// <para><b>Required role:</b>SuperAdmin.</para>
+        /// </remarks>
+        /// <param name="id">id of the review</param>
+        /// <param name="request">request body for params that will update(all must present)</param>
+        /// <returns></returns>
+        [HttpPut("{id:int}")]
+        [Logging(LoggingType.Full)]
+        [HasPermission(Permission.ReviewUpdate)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<PagedList<ReviewDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update(int id, [FromBody] ReviewUpdateRequest request)
+        {
+            var result = await reviewService.ReviewUpdate(id, request);
             return result.ToResponse();
         }
     }
