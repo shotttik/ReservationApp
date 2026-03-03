@@ -26,6 +26,5 @@ namespace Application.Interfaces
         Task<Result> DeleteEmployee(int routeCompanyId, int employeeId, bool force);
         Task<Result<PagedList<UserLoginDataDTO>>> RetrievePagedCompanyEmployees(int routeCompanyId, PagedParameters parameters, CancellationToken cancellationToken);
         Task<Result> UpdateMedia(int routeCompanyId, List<UpdateCompanyMediaRequest> mediaUpdates);
-        Task<Result> ChangeActiveStatus(int routeCompanyId, ChangeStatusRequest request);
     }
 }

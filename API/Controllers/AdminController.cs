@@ -276,30 +276,6 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Changes active status to the company.
-        /// </summary>
-        /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
-        /// </remarks>
-        /// <param name="companyId">ID of the company to reactivate.</param>
-        /// <param name="request">new status request.</param>
-        /// <returns>No content if successful, or validation/problem details on failure.</returns>
-        [HttpPatch("companies/{companyId:int}/change-status")]
-        [Tags("Administration-Company")]
-        [HasPermission(Permission.CompanyUpdateFull)]
-        [EnableRateLimiting("fixed")]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ChangeCompanyActiveStatus([FromBody] ChangeStatusRequest request, [FromRoute] int companyId)
-        {
-            var result = await _companyService.ChangeActiveStatus(companyId, request);
-
-            return result.ToResponse();
-        }
-        /// <summary>
         /// Retrieves a paginated list of reviews.
         /// </summary>
         /// <remarks>

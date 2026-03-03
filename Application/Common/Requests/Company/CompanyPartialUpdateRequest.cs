@@ -1,4 +1,6 @@
-﻿namespace Application.Common.Requests.Company
+﻿using Domain.Enums;
+
+namespace Application.Common.Requests.Company
 {
     public class CompanyPartialUpdateRequest
     {

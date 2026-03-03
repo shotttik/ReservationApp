@@ -466,31 +466,5 @@ namespace Application.Services
 
             return Result.Success(MediaResults.ImagesUpdated);
         }
-
-        public async Task<Result> ChangeActiveStatus(int routeCompanyId, ChangeStatusRequest request)
-        {
-            var company = await companyRepository.Get(routeCompanyId);
-
-            if (company == null)
-            {
-                return Result.Failure(CompanyResults.CompanyNotFound);
-            }
-
-            if (company.ActiveStatus == request.NewStatus)
-            {
-                return Result.Failure(GenericResults.SameStatus);
-            }
-            if (request.NewStatus == Domain.Enums.ActiveStatus.Active)
-            {
-                company.Activate();
-            }
-            else
-            {
-                company.Disable();
-            }
-            await companyRepository.Update(company);
-
-            return Result.Success(GenericResults.StatusChanged);
-        }
     }
 }
