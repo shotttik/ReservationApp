@@ -80,26 +80,6 @@ namespace Application.Services
 
             return Result.Success(BranchResults.Deleted);
         }
-        public async Task<Result> Activate(int companyId, int branchId)
-        {
-            var branch = await _branchRepository.Get(branchId, companyId);
-            if (branch is null)
-            {
-                return Result.Failure(BranchResults.NotFound);
-            }
-
-            if (branch.IsActive)
-            {
-                return Result.Failure(BranchResults.AlreadyActivated);
-            }
-
-            branch.Activate();
-            await _branchRepository.Update(branch);
-
-            return Result.Success(BranchResults.Activated);
-
-        }
-
         public async Task<Result<BranchDTO>> Create(int companyId, BranchCreateRequest request)
         {
             var accessError = await _accessGuard.EnsureAccessToCompany(companyId);

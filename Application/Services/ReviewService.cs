@@ -166,17 +166,19 @@ namespace Application.Services
 
             return Result.Success(mediaIds);
         }
-        public async Task<Result<IEnumerable<ReviewInviteDTO>>> GetOpenReviewInvites()
+        public async Task<Result<IEnumerable<ReviewInviteDTO>>> GetReviewInvites()
         {
             var authUser = await authService.GetCurrentUser();
 
-            var openInvites = await reviewInviteRepository.GetOpenReviewInvites(authUser.UserAccountId, Enum.Parse<Role>(authUser.Role.Name));
+            var openInvites = await reviewInviteRepository.GetReviewInvites(authUser.UserAccountId, Enum.Parse<Role>(authUser.Role.Name));
 
             return openInvites.Select(e => e.MapToDTO()).ToList();
         }
-        public async Task<Result<PagedList<ReviewDTO>>> RetrievePaged(PagedParameters parameters, bool forPublic, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<ReviewDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var allowedFields = ReviewFieldMap.DtoToEntityPath(forPublic);
+            bool isSuperAdmin = authService.IsInRole(Domain.Entities.User.Role.SuperAdmin.Name);
+
+            var allowedFields = ReviewFieldMap.DtoToEntityPath(!isSuperAdmin);
             var errors = parameters.Validate(allowedFields, typeof(Review));
             if (errors.Any())
             {
@@ -184,7 +186,7 @@ namespace Application.Services
             }
             var reviews = await reviewRepository.RetrievePaged(
                 parameters,
-                forPublic,
+                !isSuperAdmin,
                 cancellationToken);
 
             return reviews;

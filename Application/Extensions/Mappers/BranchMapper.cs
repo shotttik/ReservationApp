@@ -33,7 +33,8 @@ namespace Application.Extensions.Mappers
                 Country = branch.Country,
                 State = branch.State,
                 Latitude = branch.Latitude,
-                Longitude = branch.Longitude
+                Longitude = branch.Longitude,
+                ActiveStatus = branch.ActiveStatus
             };
         }
         public static Branch MapToEntity(this BranchUpdateRequest request, Branch existing)
@@ -46,6 +47,7 @@ namespace Application.Extensions.Mappers
             existing.State = request.State;
             existing.Latitude = request.Latitude;
             existing.Longitude = request.Longitude;
+            existing.ActiveStatus = request.ActiveStatus;
 
             return existing;
         }
@@ -60,7 +62,8 @@ namespace Application.Extensions.Mappers
                 PostalCode = request.PostalCode,
                 Country = request.Country,
                 Latitude = request.Latitude,
-                Longitude = request.Longitude
+                Longitude = request.Longitude,
+                ActiveStatus = request.ActiveStatus
             };
         }
     }

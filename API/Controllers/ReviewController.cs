@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Domain.Abstractions;
 using Domain.DTO.Review;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -95,33 +96,32 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all currently open review invites for the authenticated user.
+        /// Retrieves all currently review invites for the authenticated users.
         /// </summary>
         /// <remarks>
-        /// This endpoint returns a list of review invites that the user is eligible to submit a review for. 
-        /// The list is filtered by the user’s role and only includes invites that:
-        /// - Have not yet been reviewed (`ClientReviewed = false`)
-        /// - Are still within the review window (`CloseAt >= now`)
+        /// This endpoint returns a list of review invites that the user is eligible to submit(ed) a review for. 
+        /// The list is filtered by the user’s role.:
         ///
         /// <para><b>Role-based behavior:</b></para>
         /// <list type="bullet">
         ///     <item><b>PublicUser:</b> Returns invites where the authenticated user is the client.</item>
         ///     <item><b>CompanyEmployee / CompanyAdmin:</b> Returns invites where the authenticated user is the employee associated with the booking.</item>
+        ///     <item><b>SuperAdmin:</b> Returns all invites.</item>
         /// </list>
-        /// <para><b>Required Roles:</b> PublicUser, CompanyEmployee, CompanyAdmin</para>
+        /// <para><b>Required Roles:</b>Any Authenticated role</para>
         /// </remarks>
         /// <returns>
         /// Returns a list of <see cref="ReviewInviteDTO"/> objects representing open review invites for the authenticated user.
         /// </returns>
-        [HttpGet("open-invites")]
-        [HasPermission(Permission.ReviewInviteReadLimited)]
+        [HttpGet("invites")]
+        [Authorize]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<List<ReviewInviteDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetOpenReviewInvites()
         {
-            var result = await reviewService.GetOpenReviewInvites();
+            var result = await reviewService.GetReviewInvites();
 
             return result.ToResponse();
         }
@@ -133,10 +133,12 @@ namespace API.Controllers
         ///
         /// <para><b>Required role:</b> Accessible by everyone.</para>
         ///
+        /// For SuperAdmin will be retrieved any reviews, for any other will be returned only published
+        /// 
         /// <para><b>Paging and filtering parameters:</b></para>
         /// - Page number: `parameters.PageNumber`
         /// - Page size: `parameters.PageSize`
-        /// - Filter string: `parameters.Filter` (e.g., "Status>=1,ClientId=123")
+        /// - Filter string: `parameters.Filter` (e.g., "Status==Pending,ClientId=123")
         ///
         /// <para><b>Sortable / Filterable Fields:</b></para>
         /// <ul>
@@ -149,6 +151,7 @@ namespace API.Controllers
         /// <li><c>ClientId</c></li>
         /// <li><c>EmployeeId</c></li>
         /// <li><c>CompanyId</c></li>
+        /// <li><c>Status</c></li>
         /// </ul>
         /// </remarks>
         /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
@@ -157,12 +160,11 @@ namespace API.Controllers
         [HttpGet()]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ReviewInviteRead)]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<ReviewDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var result = await reviewService.RetrievePaged(parameters, true, cancellationToken);
+            var result = await reviewService.RetrievePaged(parameters, cancellationToken);
 
             return result.ToResponse();
         }

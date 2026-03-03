@@ -51,7 +51,7 @@ namespace Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.Services
                     .Where(s => s.ActiveStatus == ActiveStatus.Active))
-                .Include(c => c.Branches)
+                .Include(c => c.Branches.Where(b => b.ActiveStatus == ActiveStatus.Active))
                 .Include(c => c.Subscription)
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
@@ -68,12 +68,18 @@ namespace Infrastructure.Repositories
         {
             var query = _dbSet
                 .Include(e => e.Services)
-                .Include(e => e.Branches)
                 .AsQueryable();
 
             if (forPublic)
             {
-                query = query.Where(c => c.ActiveStatus == ActiveStatus.Active);
+                query = query.Include(e => e.Branches)
+                    .Where(c => c.ActiveStatus == ActiveStatus.Active);
+            }
+            else
+            {
+                query = query.Include(e =>
+                e.Branches.Where(b => b.ActiveStatus == ActiveStatus.Active)
+                );
             }
 
             query = query.ApplyQueryParamsAsync(parameters);

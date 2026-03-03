@@ -12,7 +12,7 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/guest-bookings")]
     [ApiController]
-    [Tags("Guest Bookings")]
+    [Tags("Bookings")]
     public class GuestBookingController :ControllerBase
     {
         private readonly IGuestBookingService _guestBookingService;

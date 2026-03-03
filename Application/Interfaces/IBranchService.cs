@@ -10,7 +10,6 @@ namespace Application.Interfaces
         Task<Result<List<StateDTO>>> GetStatesByCountry(int countryID);
         Task<Result<List<CountryDTO>>> GetCountries();
         Task<Result> Delete(int companyId, int branchId, bool force);
-        Task<Result> Activate(int companyId, int branchId);
         Task<Result<BranchDTO>> Create(int companyId, BranchCreateRequest request);
         Task<Result<BranchDTO>> Update(int companyId, int branchId, BranchUpdateRequest request);
     }

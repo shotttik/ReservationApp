@@ -10,7 +10,7 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/locations")]
     [ApiController]
-    [Tags("Branches")]
+    [Tags("Locations")]
     public class LocationController :ControllerBase
     {
         private readonly IBranchService branchService;

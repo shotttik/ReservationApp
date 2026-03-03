@@ -11,30 +11,25 @@ namespace Infrastructure.Repositories
         {
 
         }
-
-        public async Task<IEnumerable<ReviewInvite>> GetOpenReviewInvites(int userAccountId, Role role)
+        public async Task<IEnumerable<ReviewInvite>> GetReviewInvites(int userAccountId, Role role)
         {
+            return role switch
+            {
+                Role.SuperAdmin => await _dbSet
+                    .ToArrayAsync(),
 
-            if (role == Role.CompanyEmployee || role == Role.CompanyAdmin)
-                return await _dbSet
+                Role.CompanyEmployee or Role.CompanyAdmin => await _dbSet
                     .Include(e => e.Booking)
-                    .Where(e => e.Booking.EmployeeID == userAccountId
-                     && e.ClientReviewed == false
-                     && e.CloseAt >= DateTime.Now)
-                    .ToArrayAsync();
-            else if (role == Role.PublicUser)
-            {
-                return await _dbSet
+                    .Where(e => e.Booking.EmployeeID == userAccountId)
+                    .ToArrayAsync(),
+
+                Role.PublicUser => await _dbSet
                     .Include(e => e.Booking)
-                    .Where(e => e.Booking.ClientID == userAccountId
-                    && e.ClientReviewed == false
-                    && e.CloseAt >= DateTime.Now)
-                    .ToArrayAsync();
-            }
-            else
-            {
-                return [];
-            }
+                    .Where(e => e.Booking.ClientID == userAccountId)
+                    .ToArrayAsync(),
+
+                _ => []
+            };
         }
 
         public async Task<ReviewInvite?> GetWithBooking(int id)

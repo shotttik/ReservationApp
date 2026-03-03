@@ -1,4 +1,6 @@
-﻿namespace Domain.DTO.Branch
+﻿using Domain.Enums;
+
+namespace Domain.DTO.Branch
 {
     public class BranchDTO
     {
@@ -11,5 +13,6 @@
         public string? State { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public ActiveStatus ActiveStatus { get; set; }
     }
 }

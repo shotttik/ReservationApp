@@ -1,11 +1,9 @@
 ﻿using API.Attributes;
 using Application.Authentication;
-using Application.Common.Requests;
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
 using Application.Interfaces;
 using Domain.Abstractions;
-using Domain.DTO.Company;
 using Domain.DTO.Review;
 using Domain.DTO.User;
 using Domain.Enums;
@@ -20,20 +18,17 @@ namespace API.Controllers
     public class AdminController :ControllerBase
     {
         private readonly IAdminService _adminService;
-        private readonly ICompanyService _companyService;
         private readonly IUserService _userService;
         private readonly IReviewService _reviewService;
         private readonly IBranchService _branchService;
 
         public AdminController(
             IAdminService adminService,
-            ICompanyService companyService,
             IUserService userService,
             IReviewService reviewService,
             IBranchService branchService)
         {
             _adminService = adminService;
-            _companyService = companyService;
             _userService = userService;
             _reviewService = reviewService;
             _branchService = branchService;
@@ -276,48 +271,6 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Retrieves a paginated list of reviews.
-        /// </summary>
-        /// <remarks>
-        /// This endpoint allows retrieving reviews with paging, sorting, and filtering options.
-        ///
-        /// <para><b>Required role:</b> SuperAdmin.</para>
-        ///
-        /// <para><b>Paging and filtering parameters:</b></para>
-        /// - Page number: `parameters.PageNumber`
-        /// - Page size: `parameters.PageSize`
-        /// - Filter string: `parameters.Filter` (e.g., "Status>=1,ClientId=123")
-        ///
-        /// <para><b>Sortable / Filterable Fields:</b></para>
-        /// <ul>
-        /// <li><c>ID</c></li>
-        /// <li><c>Overall</c></li>
-        /// <li><c>Locale</c></li>
-        /// <li><c>PublishedAt</c></li>
-        /// <li><c>CreatedAt</c></li>
-        /// <li><c>UpdatedAt</c></li>
-        /// <li><c>ClientId</c></li>
-        /// <li><c>EmployeeId</c></li>
-        /// <li><c>CompanyId</c></li>
-        /// <li><c>Status</c></li>
-        /// </ul>
-        /// </remarks>
-        /// <param name="parameters">Pagination parameters including page number, page size, and search filters.</param>
-        /// <param name="cancellationToken">Cancellation token to cancel the request.</param>
-        /// <returns>Returns containing a paged list of reviews. </returns>
-        [HttpGet("reviews")]
-        [Logging(LoggingType.General)]
-        [EnableRateLimiting("fixed")]
-        [HasPermission(Permission.ReviewInviteRead)]
-        [ProducesResponseType(typeof(SuccessResponse<PagedList<ReviewDTO>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ReviewsRetrievePaged([FromQuery] PagedParameters parameters, CancellationToken cancellationToken)
-        {
-            var result = await _reviewService.RetrievePaged(parameters, false, cancellationToken);
-
-            return result.ToResponse();
-        }
-        /// <summary>
         /// Delete/Disable branch for the company.
         /// </summary>
         /// <remarks>
@@ -347,31 +300,6 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteBranch([FromRoute] int companyId, [FromRoute] int branchId, [FromQuery] bool force)
         {
             var result = await _branchService.Delete(companyId, branchId, force);
-            return result.ToResponse();
-        }
-
-        /// <summary>
-        /// Activate disabled branch for the company.
-        /// </summary>
-        /// <remarks>
-        /// This endpoint allows you to activate disabled branch for a company
-        ///
-        /// Required role: <strong>SuperAdmin</strong>
-        /// </remarks>
-        /// <param name="companyId">Company Id</param>
-        /// <param name="branchId">Branch Id.</param>
-        /// <returns>Result indicating success or failure of the operation.</returns>
-        [HttpPatch("companies/{companyId:int}/branches/{branchId:int}/activate")]
-        [Logging(LoggingType.Full)]
-        [HasPermission(Permission.BranchDelete)]
-        [Tags("Administration-Company")]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ActivateBranch([FromRoute] int companyId, [FromRoute] int branchId)
-        {
-            var result = await _branchService.Activate(companyId, branchId);
             return result.ToResponse();
         }
     }

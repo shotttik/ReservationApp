@@ -91,8 +91,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanyUpdatePartial),
 
             Create(Role.SuperAdmin, Permission.ReviewInviteCreate),
-            Create(Role.SuperAdmin, Permission.ReviewInviteRead),
-            Create(Role.SuperAdmin, Permission.ReviewInviteReadLimited),
+            Create(Role.SuperAdmin, Permission.ReviewUpdate),
 
             Create(Role.SuperAdmin, Permission.SubscriptionPlanUpdate),
 
@@ -154,7 +153,6 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyMediaDelete),
             Create(Role.CompanyAdmin, Permission.CompanyMediaUpdate),
             Create(Role.CompanyAdmin, Permission.ReviewInviteCreate),
-            Create(Role.CompanyAdmin, Permission.ReviewInviteReadLimited),
 
 
             // ==== CompanyEmployee: Can Manage Own Schedule, View Services ====
@@ -173,7 +171,6 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyEmployee, Permission.BookingVerify),
 
             Create(Role.CompanyEmployee, Permission.ReviewInviteCreate),
-            Create(Role.CompanyEmployee, Permission.ReviewInviteReadLimited),
 
 
 
@@ -182,8 +179,7 @@ namespace Infrastructure.Configurations.User
             Create(Role.PublicUser, Permission.BookingRead),
             Create(Role.PublicUser, Permission.ReviewCreate),
             Create(Role.PublicUser, Permission.BookingResendCode),
-            Create(Role.PublicUser, Permission.BookingVerify),
-            Create(Role.PublicUser, Permission.ReviewInviteReadLimited)
+            Create(Role.PublicUser, Permission.BookingVerify)
             );
         }
 

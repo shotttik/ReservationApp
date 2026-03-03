@@ -107,10 +107,8 @@
 
         // ==== Review Permissions ====
         ReviewCreate,
+        ReviewUpdate,
         ReviewInviteCreate,
-        ReviewInviteRead,
-        ReviewInviteReadLimited,
-
         // ==== Subscription ====
         SubscriptionPlanUpdate,
 
