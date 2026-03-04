@@ -58,7 +58,7 @@ namespace API.Controllers
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateFAQCategory(int id, [FromBody] SubscriptionPlanUpdateRequest request)
+        public async Task<IActionResult> Update(int id, [FromBody] SubscriptionPlanUpdateRequest request)
         {
             var result = await _subscriptionPlanService.Update(id, request);
 
