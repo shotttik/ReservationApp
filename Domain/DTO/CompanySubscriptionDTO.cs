@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Domain.DTO.Company;
+using Domain.Enums;
 using System.Text.Json.Serialization;
 
 namespace Domain.DTO
@@ -7,6 +8,7 @@ namespace Domain.DTO
     {
         public int Id { get; set; }
         public int CompanyId { get; set; }
+        public CompanyDTOGeneral? Company { get; set; }
         public int SubscriptionPlanId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

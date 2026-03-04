@@ -7,7 +7,7 @@
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
 
-                ["ID"] = "ID",
+                ["Id"] = "Id",
                 ["Overall"] = "Overall",
                 // if forpublic is false then add Status map
                 ["Locale"] = "Locale",

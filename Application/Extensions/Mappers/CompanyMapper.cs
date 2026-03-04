@@ -19,9 +19,9 @@ namespace Application.Extensions.Mappers
                 Phone = company.Phone,
                 Type = company.Type,
                 ActiveStatus = company.ActiveStatus,
-                Branches = company.Branches.Select(e => e.MapToDTO()),
                 CreatedAt = company.CreatedAt,
                 Viewed = company.Viewed,
+                Branches = company.Branches.Select(e => e.MapToDTO()),
                 Services = company.Services.Select(s => new ServiceDTO
                 {
                     Id = s.Id,
@@ -39,6 +39,21 @@ namespace Application.Extensions.Mappers
                     ImageUrlOriginal = cm.Media.OriginalUrl
                 }).ToList(),
                 Subscription = company.Subscription?.MapToDTO()
+            };
+        }
+        public static Domain.DTO.Company.CompanyDTOGeneral MapToDTOGeneral(this Company company)
+        {
+            return new Domain.DTO.Company.CompanyDTOGeneral
+            {
+                Id = company.Id,
+                Name = company.Name,
+                IN = company.IN,
+                Email = company.Email,
+                Phone = company.Phone,
+                Type = company.Type,
+                ActiveStatus = company.ActiveStatus,
+                CreatedAt = company.CreatedAt,
+                Viewed = company.Viewed,
             };
         }
         public static Company MapToEntity(this CompanyCreateRequest request) => new()

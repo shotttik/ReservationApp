@@ -4,7 +4,7 @@
     {
         public static readonly Dictionary<string, string> DtoToEntityPath = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["ID"] = "ID",
+            ["Id"] = "Id",
             ["CompanyId"] = "CompanyId",
             ["SubscriptionPlanId"] = "SubscriptionPlanId",
             ["StartDate"] = "StartDate",

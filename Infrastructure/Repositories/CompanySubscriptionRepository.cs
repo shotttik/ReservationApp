@@ -50,7 +50,8 @@ namespace Infrastructure.Repositories
         public async Task<PagedList<CompanySubscriptionDTO>> RetrievePaged(PagedParameters parameters)
         {
             var query = _dbSet
-               .AsQueryable();
+                .Include(e => e.Company)
+                .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
 

@@ -11,6 +11,7 @@ namespace Application.Extensions.Mappers
             {
                 Id = entity.Id,
                 CompanyId = entity.CompanyId,
+                Company = entity.Company.MapToDTOGeneral(),
                 SubscriptionPlanId = entity.SubscriptionPlanId,
                 StartDate = entity.StartDate,
                 EndDate = entity.EndDate,
