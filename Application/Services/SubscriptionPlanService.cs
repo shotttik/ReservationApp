@@ -57,7 +57,7 @@ namespace Application.Services
                 return Result.Failure(SubscriptionPlanResults.NotFound);
             }
 
-            if (subscriptionPlan.CompanySubscriptions.Count > 0)
+            if (await _subscriptionPlanRepository.HasCompanySubscriptions(id))
             {
                 return Result.Failure(SubscriptionPlanResults.CantDelete);
             }

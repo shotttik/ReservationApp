@@ -16,5 +16,10 @@ namespace Infrastructure.Repositories
                 .Include(s => s.CompanySubscriptions)
                 .FirstOrDefaultAsync();
         }
+        public async Task<bool> HasCompanySubscriptions(int planId)
+        {
+            return await dbContext.CompanySubscriptions
+                .AnyAsync(x => x.SubscriptionPlanId == planId);
+        }
     }
 }
