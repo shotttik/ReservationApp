@@ -15,7 +15,14 @@ namespace Application.Services
         {
             _subscriptionPlanRepository = subscriptionPlanRepository;
         }
+        public async Task<Result<SubscriptionPlanDTO>> Create(SubscriptionPlanCreateRequest request)
+        {
+            var subscriptionPlan = request.MapToEntity();
 
+            await _subscriptionPlanRepository.Add(subscriptionPlan);
+
+            return Result.Success(subscriptionPlan.MapToDTO());
+        }
         public async Task<Result<IEnumerable<SubscriptionPlanDTO>>> GetAll()
         {
             var subscriptionPlans = await _subscriptionPlanRepository.GetAll();
@@ -40,6 +47,23 @@ namespace Application.Services
             await _subscriptionPlanRepository.Update(subscriptionPlan);
 
             return subscriptionPlan.MapToDTO();
+        }
+
+        public async Task<Result> Delete(int id)
+        {
+            var subscriptionPlan = await _subscriptionPlanRepository.GetWithCompanySubscriptions(id);
+            if (subscriptionPlan == null)
+            {
+                return Result.Failure(SubscriptionPlanResults.NotFound);
+            }
+
+            if (subscriptionPlan.CompanySubscriptions.Count > 0)
+            {
+                return Result.Failure(SubscriptionPlanResults.CantDelete);
+            }
+            await _subscriptionPlanRepository.Delete(subscriptionPlan);
+
+            return Result.Success(GenericResults.Deleted);
         }
     }
 }

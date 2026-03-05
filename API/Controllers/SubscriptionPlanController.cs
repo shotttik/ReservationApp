@@ -42,6 +42,47 @@ namespace API.Controllers
             return result.ToResponse();
         }
 
+        /// <summary>  
+        /// Create an Subscription plan.  
+        /// </summary>  
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="request">The request containing subscription plan details.</param>  
+        /// <returns>SubscriptionPlanDTO if the plan is created successfully or Error details.</returns>  
+        [HttpPost]
+        [HasPermission(Permission.SubscriptionPlanCreate)]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromBody] SubscriptionPlanCreateRequest request)
+        {
+            var result = await _subscriptionPlanService.Create(request);
+
+            return result.ToResponse();
+        }
+
+        /// <summary>  
+        /// Create an Subscription plan.  
+        /// </summary>  
+        /// <remarks>
+        /// Required role: <strong>SuperAdmin</strong>
+        /// </remarks>
+        /// <param name="id">The ID of the Subscription plan.</param>  
+        /// <returns>Success result if the plan is delete successfully or error details.</returns>  
+        [HttpDelete("{id:int}")]
+        [HasPermission(Permission.SubscriptionPlanDelete)]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _subscriptionPlanService.Delete(id);
+
+            return result.ToResponse();
+        }
 
         /// <summary>  
         /// Updates an existing Subscription plan.  
@@ -51,7 +92,7 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="id">The ID of the Subscription plan.</param>  
         /// <param name="request">The request containing updated subscription plan details.</param>  
-        /// <returns>Success result if the plan is updated successfully.</returns>  
+        /// <returns>Success result if the plan is updated successfully or error details.</returns>  
         [HttpPut("{id:int}")]
         [HasPermission(Permission.SubscriptionPlanUpdate)]
         [Logging(LoggingType.Full)]

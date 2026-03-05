@@ -6,6 +6,17 @@ namespace Application.Extensions.Mappers
 {
     public static class SubscriptionPlanMapper
     {
+        public static SubscriptionPlan MapToEntity(this SubscriptionPlanCreateRequest request)
+        {
+            return new SubscriptionPlan()
+            {
+                Name = request.Name,
+                PriceMonthly = request.PriceMonthly,
+                MaxEmployees = request.MaxEmployees,
+                MaxBookingsPerMonth = request.MaxBookingsPerMonth,
+                MaxBranches = request.MaxBranches
+            };
+        }
         public static SubscriptionPlanDTO MapToDTO(this SubscriptionPlan entity)
         {
             return new SubscriptionPlanDTO

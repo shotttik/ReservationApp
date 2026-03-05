@@ -20,6 +20,8 @@ namespace Infrastructure.Configurations.CompanyReleated
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
 
+            builder.HasIndex(cs => cs.CompanyId).IsUnique();
+
             builder.HasOne(cs => cs.Company)
                 .WithOne(c => c.Subscription)
                 .HasForeignKey<CompanySubscription>(cs => cs.CompanyId)

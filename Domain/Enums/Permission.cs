@@ -110,10 +110,14 @@
         ReviewUpdate,
         ReviewInviteCreate,
         // ==== Subscription ====
+        SubscriptionPlanCreate,
         SubscriptionPlanUpdate,
+        SubscriptionPlanDelete,
 
         // ==== CompanySubscriptionUpdate ====
+        CompanySubscriptionCreate,
         CompanySubscriptionUpdate,
+        CompanySubscriptionDelete,
         CompanySubscriptionGet,
     }
 }
