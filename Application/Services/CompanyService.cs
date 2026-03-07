@@ -1,5 +1,4 @@
 ﻿using Application.Authentication;
-using Application.Common.Requests;
 using Application.Common.Requests.Company;
 using Application.Common.Results;
 using Application.Extensions;
@@ -216,7 +215,7 @@ namespace Application.Services
             var isSuperAdmin = authService.IsInRole(Role.SuperAdmin.Name);
             var company = isSuperAdmin ?
                 await companyRepository.GetFullData(id)
-                :await companyRepository.GetFullDataPublic(id);
+                : await companyRepository.GetFullDataPublic(id);
 
             if (company is null)
             {

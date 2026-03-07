@@ -48,7 +48,7 @@ namespace Application.Services
 
             await _companySubscriptionRepository.Update(companySubscription);
 
-            return companySubscription.MapToDTO();
+            return companySubscription.MapToDTOWithCompany();
         }
 
         // can be accessed by company admin and super admin
@@ -100,7 +100,7 @@ namespace Application.Services
             companySubscription.Extend(request.AdditionalMonths);
             await _companySubscriptionRepository.Update(companySubscription);
 
-            return Result.Success<CompanySubscriptionDTO>(companySubscription.MapToDTO(), CompanySubscriptionResults.PlanExtended);
+            return Result.Success<CompanySubscriptionDTO>(companySubscription.MapToDTOWithCompany(), CompanySubscriptionResults.PlanExtended);
         }
         public async Task<Result> SetAutoRenew(int companyId, SetAutoRenewRequest request)
         {
@@ -140,7 +140,7 @@ namespace Application.Services
             companySubscription.UpdatePeriod(request.StartDate, request.EndDate);
             await _companySubscriptionRepository.Update(companySubscription);
 
-            return Result.Success<CompanySubscriptionDTO>(companySubscription.MapToDTO(), CompanySubscriptionResults.PeriodUpdated);
+            return Result.Success<CompanySubscriptionDTO>(companySubscription.MapToDTOWithCompany(), CompanySubscriptionResults.PeriodUpdated);
         }
     }
 }
