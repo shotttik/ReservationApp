@@ -11,5 +11,6 @@ namespace Domain.Entities.CompanyReleated
         public int CompanyID { get; set; }
         public Company Company { get; set; } = null!;
         public ICollection<Booking> Bookings { get; set; } = [];
+        public ICollection<EmployeeService> EmployeeServices { get; set; } = [];
     }
 }

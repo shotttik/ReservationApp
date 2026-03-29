@@ -18,5 +18,6 @@ namespace Domain.Interfaces.Repositories
         Task<BookingWithLatestPendingVerification?> GetContactUpdatableWithLatestPendingVerification(int bookingId);
         Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference, string contact);
         Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference);
+        Task<bool> HasFutureBooking(int employeeId, int [] serviceIds);
     }
 }

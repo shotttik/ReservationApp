@@ -1,4 +1,5 @@
-﻿using Domain.DTO.WorkSchedule;
+﻿using Domain.DTO.Company;
+using Domain.DTO.WorkSchedule;
 using Domain.Enums;
 using System.Text.Json.Serialization;
 
@@ -17,6 +18,7 @@ namespace Domain.DTO.User
         public string? ProfileImageUrlWebp { get; set; }
         public string? ProfileImageUrlOriginal { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
+        public List<ServiceDTO> Services { get; set; } = [];
         [JsonIgnore]
         public bool IsPublicUser => Role.Id == (int)Enums.Role.PublicUser;
         [JsonIgnore]

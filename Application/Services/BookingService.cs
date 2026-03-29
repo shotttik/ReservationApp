@@ -366,6 +366,11 @@ namespace Application.Services
             {
                 return BookingResults.ServiceDoesntExists;
             }
+            bool employeeHasService = employee.EmployeeServices.Any(e => e.ServiceId == service.Id);
+            if (!employeeHasService)
+            {
+                return BookingResults.EmployeeServiceDoesntExists;
+            }
 
             if (!employee.IsAvailable(startTime))
             {

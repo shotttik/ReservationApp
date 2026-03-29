@@ -24,6 +24,8 @@ namespace Domain.Entities.User
         public ICollection<WorkSchedule> WorkSchedules { get; set; } = [];
         public ICollection<WorkScheduleException> WorkScheduleExceptions { get; set; } = [];
         public ICollection<UserAccountMedia> UserAccountMedia { get; set; } = [];
+        public ICollection<EmployeeService> EmployeeServices { get; set; } = [];
+
         //is available by given date time (eg workschedule + exceptions)
         public bool IsAvailable(DateTime dateTime)
         {

@@ -167,5 +167,11 @@ namespace Infrastructure.Repositories
                 ))
                 .FirstOrDefaultAsync();
         }
+        public async Task<bool> HasFutureBooking(int employeeId, int [] serviceIds)
+        {
+            return await _dbSet.Where(b => b.EmployeeID == employeeId
+                && serviceIds.Contains(b.ServiceID)
+                && b.StartTime > DateTime.UtcNow).AnyAsync();
+        }
     }
 }

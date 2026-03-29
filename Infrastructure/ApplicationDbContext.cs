@@ -71,6 +71,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
             modelBuilder.ApplyConfiguration(new CompanySubscriptionConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeServiceConfiguration());
 
             // Branch Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());

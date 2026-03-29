@@ -14,6 +14,7 @@ namespace Domain.Interfaces.Repositories
             CancellationToken cancellationToken,
             bool forPublic);
         Task<Company?> GetWithBranches(int id);
+        Task<Company?> GetWithBranchesAndServices(int id);
         Task<Company?> GetWithMedia(int id);
     }
 }

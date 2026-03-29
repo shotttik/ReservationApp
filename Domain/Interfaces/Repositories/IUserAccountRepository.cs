@@ -6,6 +6,7 @@ namespace Domain.Interfaces.Repositories
     {
         Task<UserAccount?> GetAuthorizationData(int ID);
         Task<UserAccount?> GetByUserLoginDataID(int userLoginDataID);
+        Task<UserAccount?> GetWithEmployeeServices(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkSchedules(int userLoginDataID);
         Task<UserAccount?> GetByUserLoginDataIDWithWorkScheduleExceptions(int userLoginDataID);
         Task<UserAccount?> GetEmployeeByUserLoginDataIDWithBookingData(int userLoginDataID);

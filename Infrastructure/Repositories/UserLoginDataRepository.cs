@@ -32,6 +32,9 @@ namespace Infrastructure.Repositories
                .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.UserAccountMedia)
                         .ThenInclude(uam => uam.Media)
+               .Include(u => u.UserAccount)
+                    .ThenInclude(ua => ua.EmployeeServices)
+                        .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync();
 
             return userLoginData;
@@ -48,6 +51,9 @@ namespace Infrastructure.Repositories
                 .Include(u => u.UserAccount)
                    .ThenInclude(u => u.UserAccountMedia)
                         .ThenInclude(uam => uam.Media)
+                .Include(u => u.UserAccount)
+                    .ThenInclude(ua => ua.EmployeeServices)
+                        .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync();
 
             return userLoginData;

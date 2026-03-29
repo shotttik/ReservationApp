@@ -101,6 +101,13 @@ namespace Infrastructure.Repositories
                 .Include(e => e.Branches)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Company?> GetWithBranchesAndServices(int id)
+        {
+            return await _dbSet.Where(e => e.Id == id)
+                .Include(e => e.Branches)
+                .Include(e => e.Services)
+                .FirstOrDefaultAsync();
+        }
         public async Task<Company?> GetWithMedia(int id)
         {
             return await _dbSet.Where(e => e.Id == id)

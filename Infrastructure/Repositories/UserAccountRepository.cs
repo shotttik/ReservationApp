@@ -43,7 +43,18 @@ namespace Infrastructure.Repositories
         {
             var userAccount = await _dbSet
                 .Where(ua => ua.UserLoginData.Id == userLoginDataID)
-                .Include(ua=> ua.UserLoginData)
+                .Include(ua => ua.UserLoginData)
+                .FirstOrDefaultAsync();
+
+            return userAccount;
+        }
+
+        public async Task<UserAccount?> GetWithEmployeeServices(int userLoginDataID)
+        {
+            var userAccount = await _dbSet
+                .Where(ua => ua.UserLoginData.Id == userLoginDataID)
+                .Include(ua => ua.UserLoginData)
+                .Include(ua => ua.EmployeeServices)
                 .FirstOrDefaultAsync();
 
             return userAccount;
@@ -81,7 +92,7 @@ namespace Infrastructure.Repositories
 
             var userAccount = await _dbSet
                 .Where(e =>
-                e.UserLoginData.Id == userLoginDataID && 
+                e.UserLoginData.Id == userLoginDataID &&
                 e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
                 e.Branch != null &&
                 e.Branch.ActiveStatus == Domain.Enums.ActiveStatus.Active &&
@@ -93,6 +104,7 @@ namespace Infrastructure.Repositories
                 .Include(e => e.BookingsAsEmployee)
                 .Include(e => e.WorkSchedules)
                 .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
+                .Include(e => e.EmployeeServices)
                 .FirstOrDefaultAsync();
 
             return userAccount;
@@ -120,7 +132,7 @@ namespace Infrastructure.Repositories
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var userAccount = await _dbSet
-                .Where(e => e.UserLoginData.Id == userLoginDataID 
+                .Where(e => e.UserLoginData.Id == userLoginDataID
                 && e.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
                 .Include(e => e.Company)
                     .ThenInclude(c => c!.Services)

@@ -5,6 +5,7 @@
         #region Errors
         public static readonly Error EmployeeDoesntExists = Error.Validation("Booking.EmployeeDoesntExists", "Employee Doesn't exists.");
         public static readonly Error ServiceDoesntExists = Error.Validation("Booking.ServiceDoesntExists", "Service Doesn't exists.");
+        public static readonly Error EmployeeServiceDoesntExists = Error.Validation("Booking.EmployeeServiceDoesntExists", "Employee Service Doesn't exists.");
         public static readonly Error EmployeeNotAvailable = Error.Validation("Booking.EmployeeNotAvailable", "Employee is not available at the requested time.");
         public static readonly Error ClientAlreadyHasBookingAtThatTime = Error.Validation("Booking.ClientAlreadyHasBookingAtThatTime", "Client already has a booking at that time.");
         public static readonly Error EmployeeAlreadyHasBookingAtThatTime = Error.Validation("Booking.EmployeeAlreadyHasBookingAtThatTime", "Employee already has a booking at that time.");

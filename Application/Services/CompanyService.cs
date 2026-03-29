@@ -32,6 +32,7 @@ namespace Application.Services
         private readonly IUserService userService;
         private readonly IAccessGuard accessGuard;
         private readonly ISubscriptionGuard subscriptionGuard;
+        private readonly IBookingRepository bookingRepository;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
@@ -46,7 +47,8 @@ namespace Application.Services
             IUserLoginDataRepository userLoginDataRepository,
             IUserService userService,
             IAccessGuard accessGuard,
-            ISubscriptionGuard subscriptionGuard)
+            ISubscriptionGuard subscriptionGuard,
+            IBookingRepository bookingRepository)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
@@ -61,6 +63,7 @@ namespace Application.Services
             this.userService = userService;
             this.accessGuard = accessGuard;
             this.subscriptionGuard = subscriptionGuard;
+            this.bookingRepository = bookingRepository;
         }
 
         public async Task<Result<string>> InviteEmployee(InviteEmployeeRequest request)
@@ -357,12 +360,12 @@ namespace Application.Services
             {
                 return Result.Failure(accessError);
             }
-            var userAccount = await userAccountRepository.GetByUserLoginDataID(request.Id);
+            var userAccount = await userAccountRepository.GetWithEmployeeServices(request.Id);
             if (userAccount is null || userAccount.CompanyID != routeCompanyId)
             {
                 return Result.Failure(AuthResults.UserDoesntExists);
             }
-            var company = await companyRepository.GetWithBranches(routeCompanyId);
+            var company = await companyRepository.GetWithBranchesAndServices(routeCompanyId);
             if (request.BranchId.HasValue)
             {
                 if (company == null || !company.HasBranch((int)request.BranchId))
@@ -375,6 +378,63 @@ namespace Application.Services
             if (request.LastName is not null) userAccount.LastName = request.LastName;
             if (request.Gender.HasValue) userAccount.Gender = request.Gender.Value;
             if (request.DateOfBirth.HasValue) userAccount.DateOfBirth = request.DateOfBirth.Value;
+            if (request.ServiceIds is not null)
+            {
+                var requestedIds = request.ServiceIds
+                    .Where(id => id > 0)
+                    .ToHashSet();
+
+                // 🔴 VALIDATION: services must belong to company
+                if (requestedIds.Count > 0)
+                {
+                    var companyServiceIds = company.Services
+                        .Select(s => s.Id)
+                        .ToHashSet();
+
+                    if (!requestedIds.IsSubsetOf(companyServiceIds))
+                    {
+                        return Result.Failure(ServiceResults.InvalidServiceForCompany);
+                    }
+                }
+
+
+                var existing = userAccount.EmployeeServices;
+                var existingIds = existing.Select(x => x.ServiceId).ToHashSet();
+
+                // Compute diff
+                var toAdd = requestedIds.Except(existingIds).ToList();
+                var toRemove = existing
+                    .Where(x => !requestedIds.Contains(x.ServiceId))
+                    .ToList();
+
+                // ⚠️ Optional: protect future bookings
+                if (toRemove.Count > 0)
+                {
+                    var removeIds = toRemove.Select(x => x.ServiceId).ToHashSet();
+
+                    var hasFutureBookings = await bookingRepository.HasFutureBooking(request.Id, [.. removeIds]);
+
+                    if (hasFutureBookings)
+                        return Result.Failure(ServiceResults.CannotRemoveServiceWithFutureBookings);
+                }
+
+                // Apply ADD
+                foreach (var serviceId in toAdd)
+                {
+                    existing.Add(new EmployeeService
+                    {
+                        EmployeeId = userAccount.Id,
+                        ServiceId = serviceId
+                    });
+                }
+
+                // Apply REMOVE (hard delete)
+                foreach (var item in toRemove)
+                {
+                    existing.Remove(item);
+                }
+            }
+
             await userAccountRepository.Update(userAccount);
             await authService.RefreshUserCache(request.Id);
 

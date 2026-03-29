@@ -37,6 +37,7 @@ namespace Application.Extensions.Mappers
                 CompanyId = user.UserAccount.CompanyID,
                 BranchId = user.UserAccount.BranchId,
                 WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
+                Services = [.. user.UserAccount.EmployeeServices.Select(es => es.Service.MapToDTO())],
                 ActiveStatus = user.ActiveStatus,
                 CreatedAt = user.CreatedAt
             };
@@ -76,6 +77,7 @@ namespace Application.Extensions.Mappers
                 },
                 CompanyId = user.UserAccount.CompanyID,
                 WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
+                Services = [.. user.UserAccount.EmployeeServices.Select(es => es.Service.MapToDTO())],
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
             };
