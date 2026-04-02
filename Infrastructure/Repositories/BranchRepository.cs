@@ -10,6 +10,36 @@ namespace Infrastructure.Repositories
         public BranchRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
         }
+
+        public override async Task<Branch> Add(Branch entity)
+        {
+            if (entity.IsMain)
+            {
+                await _dbSet.Where(e => e.IsMain)
+                    .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(e => e.IsMain, false)
+                    .SetProperty(e => e.UpdatedAt, DateTime.UtcNow));
+            }
+            await _dbSet.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
+
+            return entity;
+        }
+
+        public override async Task Update(Branch entity)
+        {
+            if (entity.IsMain)
+            {
+                await _dbSet.Where(e => e.IsMain)
+                    .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(e => e.IsMain, false)
+                    .SetProperty(e => e.UpdatedAt, DateTime.UtcNow));
+            }
+            entity.UpdateTimestamp();
+            _dbSet.Update(entity);
+            await dbContext.SaveChangesAsync();
+        }
+
         // Countries da citis  wamsaghebi calke repository ar gvchirdeba,zedmetia, radgan mxolod wamoghebas vaketebt sxva arapers
         public async Task<List<StateDTO>> GetSatesByCountry(int countryID)
         {

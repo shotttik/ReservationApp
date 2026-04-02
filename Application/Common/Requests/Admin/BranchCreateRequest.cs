@@ -23,5 +23,6 @@ namespace Application.Common.Requests.Admin
         public decimal? Latitude { get; set; }
         [DecimalPrecision(20, 15, ErrorMessage = "Longitude must have a precision of 20 and scale of 15.")]
         public decimal? Longitude { get; set; }
+        public bool IsMain { get; set; }
     }
 }

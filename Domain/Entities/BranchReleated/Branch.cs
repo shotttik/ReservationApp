@@ -14,6 +14,7 @@ namespace Domain.Entities.BranchReleated
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public string? State { get; set; }
+        public bool IsMain { get; set; }
         public int CompanyId { get; set; }
         public Company Company { get; set; } = null!;
         public ICollection<UserAccount> UserAccounts { get; set; } = [];

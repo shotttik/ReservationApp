@@ -17,7 +17,8 @@ namespace Application.Extensions.Mappers
                 Country = request.Country,
                 State = request.State,
                 Latitude = request.Latitude,
-                Longitude = request.Longitude
+                Longitude = request.Longitude,
+                IsMain = request.IsMain
             };
         }
 
@@ -34,7 +35,8 @@ namespace Application.Extensions.Mappers
                 State = branch.State,
                 Latitude = branch.Latitude,
                 Longitude = branch.Longitude,
-                ActiveStatus = branch.ActiveStatus
+                ActiveStatus = branch.ActiveStatus,
+                IsMain = branch.IsMain
             };
         }
         public static Branch MapToEntity(this BranchUpdateRequest request, Branch existing)
@@ -48,6 +50,7 @@ namespace Application.Extensions.Mappers
             existing.Latitude = request.Latitude;
             existing.Longitude = request.Longitude;
             existing.ActiveStatus = request.ActiveStatus;
+            existing.IsMain = request.IsMain;
 
             return existing;
         }
@@ -63,7 +66,8 @@ namespace Application.Extensions.Mappers
                 Country = request.Country,
                 Latitude = request.Latitude,
                 Longitude = request.Longitude,
-                ActiveStatus = request.ActiveStatus
+                ActiveStatus = request.ActiveStatus,
+                IsMain = request.IsMain
             };
         }
     }
