@@ -100,15 +100,16 @@ namespace Infrastructure
 
                 // 5) Services (attach to actual company IDs)
                 await EnsureServicesAsync(context);
-
-                // 6) Work schedules (after users; per-user/per-day)
+                // 6) Ensure Employee Services exists that attached to company
+                await EnsureEmployeeServicesExists(context);
+                // 7) Work schedules (after users; per-user/per-day)
                 if (companyAdmin?.UserAccount != null)
                     await EnsureDefaultScheduleAsync(context, companyAdmin.UserAccount.Id);
 
                 if (companyEmployee?.UserAccount != null)
                     await EnsureDefaultScheduleAsync(context, companyEmployee.UserAccount.Id);
 
-                // 7) Media last (so every company is present)
+                // 8) Media last (so every company is present)
                 await SeedMediaAsync(context);
 
                 Debug.WriteLine("Database seeding completed successfully.");
@@ -307,20 +308,37 @@ namespace Infrastructure
             var servicesToSeed = new List<Service>
             {
                 new() { Name = "Consultation", CompanyID = c1, Description = "...", Duration = 15, Price = 100.00m },
-                new() { Name = "Web Development", CompanyID = c2, Description = "...", Duration = 15, Price = 5000.00m },
-                new() { Name = "SEO Optimization", CompanyID = c3, Description = "...", Duration = 15, Price = 1500.00m },
-                new() { Name = "Mobile App Development", CompanyID = c1, Description = "...", Duration = 15, Price = 3000.00m },
+                new() { Name = "Web Development", CompanyID = c2, Description = "...", Duration = 30, Price = 5000.00m },
+                new() { Name = "SEO Optimization", CompanyID = c3, Description = "...", Duration = 45, Price = 1500.00m },
+                new() { Name = "Mobile App Development", CompanyID = c1, Description = "...", Duration = 60, Price = 3000.00m },
                 new() { Name = "Digital Marketing", CompanyID = c2, Description = "...", Duration = 15, Price = 2000.00m },
-                new() { Name = "Graphic Design", CompanyID = c3, Description = "...", Duration = 15, Price = 800.00m },
-                new() { Name = "Content Writing", CompanyID = c4, Description = "...", Duration = 15, Price = 500.00m },
-                new() { Name = "Social Media Management", CompanyID = c5, Description = "...", Duration = 15, Price = 1200.00m },
-                new() { Name = "Data Analysis", CompanyID = c1, Description = "...", Duration = 15, Price = 2500.00m },
-                new() { Name = "Email Marketing", CompanyID = c2, Description = "...", Duration = 15, Price = 700.00m },
-                new() { Name = "Brand Strategy", CompanyID = c3, Description = "...", Duration = 15, Price = 1800.00m }
+                new() { Name = "Graphic Design", CompanyID = c3, Description = "...", Duration = 120, Price = 800.00m },
+                new() { Name = "Content Writing", CompanyID = c4, Description = "...", Duration = 10, Price = 500.00m },
+                new() { Name = "Social Media Management", CompanyID = c5, Description = "...", Duration = 5, Price = 1200.00m },
+                new() { Name = "Data Analysis", CompanyID = c1, Description = "...", Duration = 25, Price = 2500.00m },
+                new() { Name = "Email Marketing", CompanyID = c2, Description = "...", Duration = 35, Price = 700.00m },
+                new() { Name = "Brand Strategy", CompanyID = c3, Description = "...", Duration = 55, Price = 1800.00m }
             };
 
             context.Services.AddRange(servicesToSeed);
             await context.SaveChangesAsync();
+        }
+        private static async Task EnsureEmployeeServicesExists(ApplicationDbContext context)
+        {
+            var employee = await context.UserAccounts.Where(e => e.Role == Role.CompanyEmployee).FirstOrDefaultAsync();
+            if (employee != null)
+            {
+                var comapnyServices = await context.Services.Where(e => e.CompanyID == employee.CompanyID).ToArrayAsync();
+                if (comapnyServices != null)
+                {
+                    foreach (var service in comapnyServices)
+                    {
+                        employee.EmployeeServices.Add(new EmployeeService() { EmployeeId = employee.Id, ServiceId = service.Id });
+                    }
+                }
+            }
+            await context.SaveChangesAsync();
+
         }
         private static async Task EnsureSubscriptionPlansExists(ApplicationDbContext context)
         {

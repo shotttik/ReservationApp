@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260525094823_AddedpromoCodesTableAndPermissions")]
+    partial class AddedpromoCodesTableAndPermissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1636,11 +1639,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = 84,
                             Name = "PromoCodeDelete"
-                        },
-                        new
-                        {
-                            Id = 85,
-                            Name = "PromoCodeRead"
                         });
                 });
 
@@ -2067,11 +2065,6 @@ namespace Infrastructure.Migrations
                         },
                         new
                         {
-                            RoleID = 1,
-                            PermissionID = 85
-                        },
-                        new
-                        {
                             RoleID = 3,
                             PermissionID = 6
                         },
@@ -2304,11 +2297,6 @@ namespace Infrastructure.Migrations
                         {
                             RoleID = 3,
                             PermissionID = 83
-                        },
-                        new
-                        {
-                            RoleID = 3,
-                            PermissionID = 85
                         },
                         new
                         {

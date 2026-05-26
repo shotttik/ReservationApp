@@ -60,25 +60,34 @@ namespace Application.Services
             string bookingReference
             )
         {
-            switch (verificationType)
+            try
             {
-                case VerificationType.Email:
-                    var emailMessage = _emailBuilder.BuildCodeVerification(
-                        contact,
-                        displayName,
-                        code,
-                        _bookingSettings.VerificationCodeExpirationMinutes,
-                        bookingReference);
 
-                    await _messageProducer.PublishEmailAsync(emailMessage);
-                    break;
-                case VerificationType.Phone:
-                    var smsMessage = _smsBuilder.BuildCodeVerification(
-                        contact,
-                        code,
-                        _bookingSettings.VerificationCodeExpirationMinutes);
-                    await _messageProducer.PublishSmsAsync(smsMessage);
-                    break;
+                switch (verificationType)
+                {
+
+                    case VerificationType.Email:
+                        var emailMessage = _emailBuilder.BuildCodeVerification(
+                            contact,
+                            displayName,
+                            code,
+                            _bookingSettings.VerificationCodeExpirationMinutes,
+                            bookingReference);
+
+                        await _messageProducer.PublishEmailAsync(emailMessage);
+                        break;
+                    case VerificationType.Phone:
+                        var smsMessage = _smsBuilder.BuildCodeVerification(
+                            contact,
+                            code,
+                            _bookingSettings.VerificationCodeExpirationMinutes);
+                        await _messageProducer.PublishSmsAsync(smsMessage);
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                //TODO can be done something with it pass
             }
         }
         public async Task<Result> Verify(int bookingId, BookingVerificationRequest request)

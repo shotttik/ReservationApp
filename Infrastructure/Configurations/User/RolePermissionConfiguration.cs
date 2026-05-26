@@ -102,6 +102,11 @@ namespace Infrastructure.Configurations.User
             Create(Role.SuperAdmin, Permission.CompanySubscriptionDelete),
             Create(Role.SuperAdmin, Permission.CompanySubscriptionGet),
 
+            Create(Role.SuperAdmin, Permission.PromoCodeCreate),
+            Create(Role.SuperAdmin, Permission.PromoCodeUpdate),
+            Create(Role.SuperAdmin, Permission.PromoCodeDelete),
+            Create(Role.SuperAdmin, Permission.PromoCodeRead),
+
             // ==== CompanyAdmin: Manage Own Company ====
             Create(Role.CompanyAdmin, Permission.CompanyRead),
             Create(Role.CompanyAdmin, Permission.CompanyReadOwn),
@@ -158,6 +163,9 @@ namespace Infrastructure.Configurations.User
             Create(Role.CompanyAdmin, Permission.CompanyMediaUpdate),
             Create(Role.CompanyAdmin, Permission.ReviewInviteCreate),
 
+            Create(Role.CompanyAdmin, Permission.PromoCodeCreate),
+            Create(Role.CompanyAdmin, Permission.PromoCodeUpdate),
+            Create(Role.CompanyAdmin, Permission.PromoCodeRead),
 
             // ==== CompanyEmployee: Can Manage Own Schedule, View Services ====
             Create(Role.CompanyEmployee, Permission.WorkScheduleUserCreate),
