@@ -8,7 +8,7 @@ namespace Domain.DTO
         public int? ClientId { get; set; }
         public int EmployeeId { get; set; }
         public int BranchId { get; set; }
-        public int ServiceId { get; set; } 
+        public int ServiceId { get; set; }
         public string ServiceName { get; set; } = null!; // frontshi service rom ar wamoighos xolme saxelis gamo
         public DateTime StartTime { get; set; }
         public DateTime EndTimeExpected { get; set; }
@@ -17,6 +17,7 @@ namespace Domain.DTO
         public decimal? PriceFull { get; set; }
         public decimal? Discount { get; set; }
         public decimal? PriceFinal { get; set; }
+        public string? PromoCodeValue { get; set; }
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
         public string? CancellationReason { get; set; }
         public string? Note { get; set; }

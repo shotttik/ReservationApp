@@ -20,6 +20,7 @@ namespace Domain.Entities.CompanyReleated
         public ICollection<CompanyFAQCategory> CompanyFAQCategories { get; set; } = [];
         public ICollection<CompanyMedia> CompanyMedia { get; set; } = [];
         public ICollection<Branch> Branches { get; set; } = [];
+        public ICollection<PromoCode> PromoCodes { get; set; } = [];
         public int Viewed { get; set; }
         public bool HasBranch(int branchId) => Branches.Any(e => e.Id == branchId);
     }

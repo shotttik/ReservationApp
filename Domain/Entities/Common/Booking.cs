@@ -24,13 +24,16 @@ namespace Domain.Entities.Common
         public DateTime EndTimeExpected { get; set; }
         public DateTime? EndTime { get; set; }
         public decimal PriceExpected { get; set; }
-        public decimal? PriceFull { get; set; }
+        public decimal PriceFull { get; set; }
         public decimal? Discount { get; set; }
         public decimal? PriceFinal { get; set; }
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
         public string? CancellationReason { get; set; }
         public string? Note { get; set; }
         public string Reference { get; private set; } = null!;
+        public string? PromoCodeValue { get; set; } // snapshot
+        public int? PromoCodeId { get; set; }
+        public virtual PromoCode? PromoCode { get; set; }
         public virtual ReviewInvite ReviewInvite { get; set; } = null!;
         public virtual BookingGuestInfo? GuestInfo { get; set; }
         public virtual ICollection<BookingVerification> Verifications { get; set; } = [];

@@ -44,6 +44,7 @@ namespace Infrastructure
         public DbSet<BookingVerification> BookingVerifications { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<CompanySubscription> CompanySubscriptions { get; set; }
+        public DbSet<PromoCode> PromoCodes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -61,7 +62,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new CompanyFAQConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyFAQCategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CompanyMediaConfiguration());
-
+            modelBuilder.ApplyConfiguration(new PromoCodeConfiguration());
             // Common
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new BookingGuestInfoConfiguration());

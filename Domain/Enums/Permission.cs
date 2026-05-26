@@ -119,6 +119,12 @@
         CompanySubscriptionUpdate,
         CompanySubscriptionDelete,
         CompanySubscriptionGet,
+
+        // ==== Promo Code ====
+        PromoCodeCreate,
+        PromoCodeUpdate,
+        PromoCodeDelete,
+        PromoCodeRead
     }
 }
 

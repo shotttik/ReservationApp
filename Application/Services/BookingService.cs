@@ -26,6 +26,8 @@ namespace Application.Services
         private readonly IGuestBookingService _bookingVerificationService;
         private readonly BookingSettings _bookingSettings;
         private readonly ISubscriptionGuard _subscriptionGuard;
+        private readonly IPromoService _promoService;
+        private readonly IPromoCodeRepository _promoCodeRepository;
 
         public BookingService(
             IBookingRepository bookingRepository,
@@ -34,7 +36,9 @@ namespace Application.Services
             IAccessGuard accessGuard,
             IGuestBookingService bookingVerificationService,
             IOptions<BookingSettings> bookingSettings,
-            ISubscriptionGuard subscriptionGuard
+            ISubscriptionGuard subscriptionGuard,
+            IPromoService promoService,
+            IPromoCodeRepository promoCodeRepository
             )
         {
             _bookingRepository = bookingRepository;
@@ -44,6 +48,8 @@ namespace Application.Services
             _bookingVerificationService = bookingVerificationService;
             _bookingSettings = bookingSettings.Value;
             _subscriptionGuard = subscriptionGuard;
+            _promoService = promoService;
+            _promoCodeRepository = promoCodeRepository;
         }
         public async Task<Result<CreateBookingByGuestResponse>> CreateByGuest(GuestBookingCreateRequest request)
         {
@@ -77,13 +83,40 @@ namespace Application.Services
                 DisplayName = request.GuestInfo.DisplayName
             };
 
+            decimal finalPrice = booking.PriceFull;
+            PromoCode? appliedPromo = null;
+
+            if (!string.IsNullOrEmpty(request.PromoCode))
+            {
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+
+                if (!promoResult.IsValid)
+                    return Result.Failure<CreateBookingByGuestResponse>(promoResult.Error);
+
+                finalPrice -= promoResult.Discount;
+
+                if (finalPrice < 0)
+                    finalPrice = 0;
+
+                booking.PriceFinal = finalPrice;
+
+                appliedPromo = promoResult.Promo;
+
+                booking.PromoCodeValue = appliedPromo!.Code;
+                booking.Discount = promoResult.Discount;
+                booking.PromoCodeId = appliedPromo.Id;
+                if (appliedPromo != null)
+                {
+                    appliedPromo.UsedCount++;
+                    await _promoCodeRepository.Update(appliedPromo);
+                }
+            }
             (var bookingVerification, var code) = _bookingVerificationService.CreateBookingVerification(request.GuestInfo.ContactType);
             booking.Status = BookingStatus.PendingVerification;
             booking.GuestInfo = bookingGuestInfo;
             booking.Verifications.Add(bookingVerification);
 
             await _bookingRepository.Add(booking);
-
             await _bookingVerificationService.SendVerificationNotification(
                 bookingGuestInfo.ContactType,
                 bookingGuestInfo.Contact,
@@ -134,8 +167,35 @@ namespace Application.Services
             }
 
             var booking = request.MapToEntity(service, authUser.UserAccountId, (int)employee.BranchId!, employee.Id);
-            await _bookingRepository.Add(booking);
+            decimal finalPrice = booking.PriceFull;
+            PromoCode? appliedPromo = null;
 
+            if (!string.IsNullOrEmpty(request.PromoCode))
+            {
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+
+                if (!promoResult.IsValid)
+                    return Result.Failure<BookingDTO>(promoResult.Error);
+
+                finalPrice -= promoResult.Discount;
+
+                if (finalPrice < 0)
+                    finalPrice = 0;
+
+                booking.PriceFinal = finalPrice;
+
+                appliedPromo = promoResult.Promo;
+
+                booking.PromoCodeValue = appliedPromo!.Code;
+                booking.Discount = promoResult.Discount;
+                booking.PromoCodeId = appliedPromo.Id;
+                if (appliedPromo != null)
+                {
+                    appliedPromo.UsedCount++;
+                    await _promoCodeRepository.Update(appliedPromo);
+                }
+            }
+            await _bookingRepository.Add(booking);
             var bookingDTO = booking.MapToDTO(showRef: true);
 
             return Result.Success(bookingDTO);
@@ -201,7 +261,34 @@ namespace Application.Services
             }
 
             var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.Id);
+            decimal finalPrice = booking.PriceFull;
+            PromoCode? appliedPromo = null;
 
+            if (!string.IsNullOrEmpty(request.PromoCode))
+            {
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+
+                if (!promoResult.IsValid)
+                    return Result.Failure<BookingDTO>(promoResult.Error);
+
+                finalPrice -= promoResult.Discount;
+
+                if (finalPrice < 0)
+                    finalPrice = 0;
+
+                booking.PriceFinal = finalPrice;
+
+                appliedPromo = promoResult.Promo;
+
+                booking.PromoCodeValue = appliedPromo!.Code;
+                booking.Discount = promoResult.Discount;
+                booking.PromoCodeId = appliedPromo.Id;
+                if (appliedPromo != null)
+                {
+                    appliedPromo.UsedCount++;
+                    await _promoCodeRepository.Update(appliedPromo);
+                }
+            }
             booking.Status = BookingStatus.Accepted;
             if (bookingGuestInfo != null && bookingVerification != null)
             {
@@ -251,6 +338,7 @@ namespace Application.Services
             if (request.IsCompleted)
             {
                 booking.EndTime = DateTime.Now;
+                booking.PriceFinal = booking.PriceFull - booking.Discount;
             }
             if (request.IsCanceled || request.IsFailed)
             {

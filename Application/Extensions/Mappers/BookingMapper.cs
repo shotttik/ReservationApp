@@ -22,6 +22,7 @@ namespace Application.Extensions.Mappers
                 EndTime = booking.EndTime,
                 PriceExpected = booking.PriceExpected,
                 PriceFull = booking.PriceFull,
+                PromoCodeValue = booking.PromoCodeValue,
                 Discount = booking.Discount,
                 PriceFinal = booking.PriceFinal,
                 Status = booking.Status,
@@ -49,6 +50,7 @@ namespace Application.Extensions.Mappers
                 StartTime = request.StartTime,
                 EndTimeExpected = request.StartTime.AddMinutes(service.Duration),
                 PriceExpected = service.Price,
+                PriceFull = service.Price,
                 Note = request.Note
             };
         }
