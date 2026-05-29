@@ -4,6 +4,7 @@
     {
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();
+        Task SaveChangesAsync();
         Task RollbackTransactionAsync();
     }
 }

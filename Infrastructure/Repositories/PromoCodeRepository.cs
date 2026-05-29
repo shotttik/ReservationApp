@@ -15,6 +15,12 @@ namespace Infrastructure.Repositories
 
         }
 
+        public void UpdateWithoutSave(PromoCode entity)
+        {
+            entity.UpdateTimestamp();
+            _dbSet.Update(entity);
+        }
+
         public async Task<PromoCode?> Get(string code, int companyId)
         {
             return await _dbSet.Where(e => e.Code == code

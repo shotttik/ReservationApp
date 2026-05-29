@@ -1,6 +1,5 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
-using Domain.DTO.User;
 using Domain.Entities.Common;
 
 namespace Domain.Interfaces.Repositories
@@ -15,5 +14,6 @@ namespace Domain.Interfaces.Repositories
          PagedParameters parameters,
          CancellationToken cancellationToken,
          int companyID);
+        void UpdateWithoutSave(PromoCode entity);
     }
 }
