@@ -15,6 +15,10 @@ namespace Infrastructure.Repositories
         {
 
         }
+        public async Task AddWithoutSave(Booking entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
         public async Task<bool> HasBookingOverlap(int userId, DateTime start, DateTime end, int? bookingId, bool asEmployee)
         {
             var now = DateTime.UtcNow;

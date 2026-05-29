@@ -25,6 +25,12 @@ namespace Infrastructure.Configurations.Common
             builder
                 .HasIndex(e => e.Reference)
                 .IsUnique();
+            builder.HasIndex(x => new
+            {
+                x.EmployeeID,
+                x.StartTime,
+                x.EndTime
+            });
             builder
                 .Property(e => e.Reference)
                 .HasMaxLength(12)
