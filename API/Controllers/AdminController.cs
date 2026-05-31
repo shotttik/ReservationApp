@@ -161,6 +161,7 @@ namespace API.Controllers
         /// <li><c>CreatedAt</c></li>
         /// <li><c>UpdatedAt</c></li>
         /// </ul>
+        ///  Filtering Example: name~=Company 4||email~=Company40,id==3107
         /// </remarks>
         /// <param name="request">Paging and filtering parameters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>

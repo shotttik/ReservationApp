@@ -171,6 +171,7 @@ namespace API.Controllers
         /// <li><c>CreatedAt</c></li>
         /// <li><c>UpdatedAt</c></li>
         /// </ul>
+        /// Filtering Example: name~=Company 4||email~=Company40,id==3107
         /// </remarks>
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
