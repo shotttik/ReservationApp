@@ -13,30 +13,51 @@ public static class QueryableExtensions
     {
         var allowedPaths = GetValidPropertyPaths<T>();
 
-        // Filtering
         if (!string.IsNullOrWhiteSpace(queryParams.Filter))
         {
-            foreach (var raw in queryParams.Filter.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            var andGroups = queryParams.Filter.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var group in andGroups)
             {
-                var op = PagedResultUtils.Operators.FirstOrDefault(o => raw.Contains(o));
-                if (op == null) continue;
+                var orConditions = group.Split("||", StringSplitOptions.RemoveEmptyEntries);
 
-                var parts = raw.Split(op, 2);
-                if (parts.Length != 2) continue;
+                var expressions = new List<string>();
+                var values = new List<object>();
 
-                var field = parts [0].Trim();
-                var value = parts [1].Trim();
+                for (int i = 0; i < orConditions.Length; i++)
+                {
+                    var raw = orConditions [i];
 
-                if (!allowedPaths.Contains(field)) continue;
+                    var op = PagedResultUtils.Operators.FirstOrDefault(o => raw.Contains(o));
+                    if (op == null)
+                        continue;
 
-                var filterExpression = BuildFilterExpression<T>(field, op, value);
-                if (filterExpression == null) continue;
+                    var parts = raw.Split(op, 2);
+                    if (parts.Length != 2)
+                        continue;
 
-                var typedValue = ConvertValueToPropertyType<T>(field, value);
-                query = query.Where(filterExpression, typedValue);
+                    var field = parts [0].Trim();
+                    var value = parts [1].Trim();
+
+                    if (!allowedPaths.Contains(field))
+                        continue;
+
+                    var expression = BuildFilterExpression<T>(field, op, value);
+                    if (expression == null)
+                        continue;
+
+                    expressions.Add(expression.Replace("@0", $"@{values.Count}"));
+                    values.Add(ConvertValueToPropertyType<T>(field, value));
+                }
+
+                if (expressions.Count > 0)
+                {
+                    query = query.Where(
+                        $"({string.Join(" OR ", expressions)})",
+                        values.ToArray());
+                }
             }
         }
-
         // Sorting
         if (!string.IsNullOrWhiteSpace(queryParams.SortBy))
         {

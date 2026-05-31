@@ -9,7 +9,7 @@ namespace Domain.Abstractions
         public string? SortBy { get; set; }
         public int PageNumber { get; set; } = PagedResultUtils.DefaultPageNumber;
         public int PageSize { get; set; } = PagedResultUtils.DefaultPageSize;
-        
+
         public IEnumerable<string> Validate(IDictionary<string, string> allowedFields, Type entityType)
         {
             var errors = new List<string>();
@@ -53,36 +53,44 @@ namespace Domain.Abstractions
         {
             if (string.IsNullOrWhiteSpace(Filter)) return;
 
-            var filters = Filter.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            // AND groups
+            var andGroups = Filter.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var raw in filters)
+            foreach (var andGroup in andGroups)
             {
-                var op = PagedResultUtils.Operators.FirstOrDefault(o => raw.Contains(o));
-                if (op == null)
+                // OR conditions inside a group
+                var orConditions = andGroup.Split("||", StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var raw in orConditions)
                 {
-                    errors.Add($"Invalid filter operator in: '{raw}'.");
-                    continue;
+
+                    var op = PagedResultUtils.Operators.FirstOrDefault(o => raw.Contains(o));
+                    if (op == null)
+                    {
+                        errors.Add($"Invalid filter operator in: '{raw}'.");
+                        continue;
+                    }
+
+                    var parts = raw.Split(op, 2);
+                    if (parts.Length != 2)
+                    {
+                        errors.Add($"Malformed filter: '{raw}'. Expected format: 'field{op}value'");
+                        continue;
+                    }
+
+                    var field = parts [0].Trim();
+                    var value = parts [1].Trim();
+
+                    if (!allowedFields.TryGetValue(field, out var mappedPath))
+                    {
+                        errors.Add($"Filter field '{field}' is not allowed.");
+                        continue;
+                    }
+
+                    var validationError = ValidateFilterValue(mappedPath, field, op, value, entityType);
+                    if (validationError != null)
+                        errors.Add(validationError);
                 }
-
-                var parts = raw.Split(op, 2);
-                if (parts.Length != 2)
-                {
-                    errors.Add($"Malformed filter: '{raw}'. Expected format: 'field{op}value'");
-                    continue;
-                }
-
-                var field = parts [0].Trim();
-                var value = parts [1].Trim();
-
-                if (!allowedFields.TryGetValue(field, out var mappedPath))
-                {
-                    errors.Add($"Filter field '{field}' is not allowed.");
-                    continue;
-                }
-
-                var validationError = ValidateFilterValue(mappedPath, field, op, value, entityType);
-                if (validationError != null)
-                    errors.Add(validationError);
             }
         }
 
