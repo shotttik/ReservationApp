@@ -484,7 +484,9 @@ namespace Application.Services
             {
                 return Result.Failure<PagedList<UserLoginDataDTO>>(PagedListResults.InvalidPagedParameters(errors.First()));
             }
-            var users = await userLoginDataRepository.RetrievePagedCompanyEmployees(parameters, cancellationToken, userID, routeCompanyId);
+            var mappedParams = PagedParameterMapper.MapToEntityPaths(parameters, allowedFields);
+
+            var users = await userLoginDataRepository.RetrievePagedCompanyEmployees(mappedParams, cancellationToken, userID, routeCompanyId);
 
             return Result.Success(users);
         }

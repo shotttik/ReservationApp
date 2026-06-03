@@ -107,7 +107,7 @@ namespace Application.Authentication
             var userLoginDataID = Convert.ToInt32(principal.FindFirst(ClaimTypes.PrimarySid)?.Value!);
             var userAccountID = Convert.ToInt32(principal.FindFirst(ClaimTypes.Sid)?.Value!);
             var sessionId = principal.FindFirst("SessionID")?.Value!;
-            var role = principal.FindFirst(ClaimTypes.Sid)?.Value!;
+            var role = principal.FindFirst(ClaimTypes.Role)?.Value!;
 
             return (email, userLoginDataID, userAccountID, sessionId, role);
         }

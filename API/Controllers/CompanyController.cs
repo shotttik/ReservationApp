@@ -268,8 +268,22 @@ namespace API.Controllers
         /// Retrieves a paginated list of company employees for the authenticated CompanyAdmin.
         /// </summary>
         /// <remarks>
-        /// This endpoint returns paginated company employees for the authenticated user's company.  
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br></br>
+        /// <b>Paging and filtering parameters:</b><br/>
+        /// <b>Sortable / Filterable Fields:</b>
+        /// <ul>
+        /// <li><c>ID</c></li>
+        /// <li><c>CompanyID</c></li>
+        /// <li><c>FirstName</c></li>
+        /// <li><c>LastName</c></li>
+        /// <li><c>Email</c></li>
+        /// <li><c>VerificationStatus</c></li>
+        /// <li><c>Role.Name</c></li>
+        /// <li><c>ActiveStatus</c></li>
+        /// <li><c>CreatedAt</c></li>
+        /// <li><c>UpdatedAt</c></li>
+        /// </ul>
+        ///  Filtering Example: name~=Company 4||email~=Company40,id==3107
         /// </remarks>
         /// <param name="id">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
