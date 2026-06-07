@@ -88,6 +88,12 @@ namespace Infrastructure.Repositories
             var query = _dbSet
             .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
+            .Include(u => u.UserAccount.EmployeeServices)
+                .ThenInclude(u => u.Service)
+            .Include(u => u.UserAccount)
+                .ThenInclude(u => u.WorkSchedules)
+            .Include(u => u.UserAccount)
+                .ThenInclude(u => u.WorkScheduleExceptions)
             .Where(u => u.Id != authUserID)
             .AsQueryable();
 
@@ -113,7 +119,11 @@ namespace Infrastructure.Repositories
             .Include(u => u.UserAccount)
                 .ThenInclude(ua => ua.Role)
             .Include(u => u.UserAccount.EmployeeServices)
-                .ThenInclude(u=> u.Service)
+                .ThenInclude(u => u.Service)
+            .Include(u => u.UserAccount)
+                .ThenInclude(u => u.WorkSchedules)
+            .Include(u => u.UserAccount)
+                .ThenInclude(u => u.WorkScheduleExceptions)
             .Where(u => u.Id != authUserID && u.UserAccount.CompanyID == companyID)
             .AsQueryable();
 
