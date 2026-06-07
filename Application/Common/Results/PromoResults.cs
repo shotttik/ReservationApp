@@ -20,6 +20,10 @@ namespace Application.Common.Results
         {
             return new PromoResult() { IsValid = false, Error = Error.Validation("PromoCode.Invalid", "Promo code is invalid.") };
         }
+        public static PromoResult ServiceNotFound()
+        {
+            return new PromoResult() { IsValid = false, Error = Error.Validation("PromoCode.ServiceNotFound", "Service for company not found or disabled..") };
+        }
         public static PromoResult Expired()
         {
             return new PromoResult() { IsValid = false, Error = Error.Validation("PromoCode.Expired", "Promo code expired.") };

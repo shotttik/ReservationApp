@@ -13,7 +13,7 @@
             ["MaxUsage"] = "MaxUsage",
             ["UsedCount"] = "UsedCount",
             ["CompanyId"] = "CompanyId",
-            ["MinBookingAmount"] = "MinBookingAmount",
+            ["MinBookingPrice"] = "MinBookingPrice",
             ["ActiveStatus"] = "ActiveStatus",
             ["CreatedAt"] = "CreatedAt",
             ["UpdatedAt"] = "UpdatedAt"

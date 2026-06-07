@@ -13,7 +13,7 @@ namespace Domain.DTO
         public int? MaxUsage { get; set; }
         public int UsedCount { get; set; }
         public int CompanyId { get; set; }
-        public int? MinBookingAmount { get; set; }
+        public int? MinBookingPrice { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

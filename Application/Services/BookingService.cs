@@ -92,7 +92,7 @@ namespace Application.Services
 
             if (!string.IsNullOrEmpty(request.PromoCode))
             {
-                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, service.Id);
 
                 if (!promoResult.IsValid)
                     return Result.Failure<CreateBookingByGuestResponse>(promoResult.Error);
@@ -176,7 +176,7 @@ namespace Application.Services
 
             if (!string.IsNullOrEmpty(request.PromoCode))
             {
-                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, service.Id);
 
                 if (!promoResult.IsValid)
                     return Result.Failure<BookingDTO>(promoResult.Error);
@@ -275,7 +275,7 @@ namespace Application.Services
 
                 if (!string.IsNullOrEmpty(request.PromoCode))
                 {
-                    var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, booking.PriceFull);
+                    var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, service.Id);
 
                     if (!promoResult.IsValid)
                     {

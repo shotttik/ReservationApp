@@ -17,5 +17,11 @@ namespace Infrastructure.Repositories
 
             return await query.ToArrayAsync();
         }
+        public async Task<Service?> Get(int id, int companyId)
+        {
+            return await _dbSet.Where(s => s.Id == id &&
+            s.CompanyID == companyId &&
+            s.ActiveStatus == Domain.Enums.ActiveStatus.Active).FirstOrDefaultAsync();
+        }
     }
 }

@@ -13,20 +13,29 @@ namespace Application.Services
     {
         private readonly IPromoCodeRepository _promoCodeRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly IServiceRepository _serviceRepository;
         private readonly IAccessGuard _accessGuard;
 
-        public PromoService(IPromoCodeRepository promoCodeRepository, ICompanyRepository companyRepository, IAccessGuard accessGuard)
+        public PromoService(IPromoCodeRepository promoCodeRepository,
+            ICompanyRepository companyRepository,
+            IServiceRepository serviceRepository,
+            IAccessGuard accessGuard)
         {
             _promoCodeRepository = promoCodeRepository;
             _companyRepository = companyRepository;
+            _serviceRepository = serviceRepository;
             _accessGuard = accessGuard;
         }
-        public async Task<PromoResult> ApplyPromo(string code, int companyId, decimal bookingAmount)
+        public async Task<PromoResult> ApplyPromo(string code, int companyId, int serviceId)
         {
             var promo = await _promoCodeRepository.Get(code, companyId);
+            var service = await _serviceRepository.Get(serviceId, companyId);
 
             if (promo == null || !promo.IsActive)
                 return PromoResults.Invalid();
+
+            if (service == null)
+                return PromoResults.ServiceNotFound();
 
             if (DateTime.UtcNow < promo.ValidFrom || DateTime.UtcNow > promo.ValidTo)
                 return PromoResults.Expired();
@@ -34,13 +43,13 @@ namespace Application.Services
             if (promo.MaxUsage.HasValue && promo.UsedCount >= promo.MaxUsage)
                 return PromoResults.LimitReached();
 
-            if (promo.MinBookingAmount.HasValue && bookingAmount < promo.MinBookingAmount)
+            if (promo.MinBookingPrice.HasValue && service.Price < promo.MinBookingPrice)
                 return PromoResults.MinAmountReached();
 
             decimal discount = 0;
 
             if (promo.DiscountPercent.HasValue)
-                discount = bookingAmount * promo.DiscountPercent.Value / 100;
+                discount = service.Price * promo.DiscountPercent.Value / 100;
 
             if (promo.DiscountAmount.HasValue)
                 discount = promo.DiscountAmount.Value;
@@ -54,9 +63,9 @@ namespace Application.Services
         }
 
         // this method is only for UX endpoint to check if promo can be applied
-        public async Task<Result<PromoCodeDTO>> ValidateApplyPromo(string code, int companyId, decimal bookingAmount)
+        public async Task<Result<PromoCodeDTO>> ValidateApplyPromo(string code, int companyId, int serviceId)
         {
-            var result = await ApplyPromo(code, companyId, bookingAmount);
+            var result = await ApplyPromo(code, companyId, serviceId);
             if (result.IsValid)
             {
                 return Result.Success(result.Promo!.MapToDTO());
