@@ -16,6 +16,7 @@ namespace Application.Extensions.Mappers
                 EmployeeId = booking.EmployeeID,
                 BranchId = booking.BranchId,
                 ServiceId = booking.Service.Id,
+                CompanyId = booking.Branch.CompanyId,
                 ServiceName = booking.Service.Name,
                 StartTime = booking.StartTime,
                 EndTimeExpected = booking.EndTimeExpected,

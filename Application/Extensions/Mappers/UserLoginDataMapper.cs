@@ -110,7 +110,8 @@ namespace Application.Extensions.Mappers
                     })]
                 },
                 CompanyId = user.UserAccount.CompanyID,
-                WorkSchedules = user.UserAccount.WorkSchedules.Select(e => e.MapToDTO()).ToList(),
+                WorkSchedules = [.. user.UserAccount.WorkSchedules.Select(e => e.MapToDTO())],
+                Services = [.. user.UserAccount.EmployeeServices.Select(e => e.Service.MapToDTO())],
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
             };

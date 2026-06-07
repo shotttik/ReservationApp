@@ -9,6 +9,7 @@ namespace Domain.DTO
         public int EmployeeId { get; set; }
         public int BranchId { get; set; }
         public int ServiceId { get; set; }
+        public int CompanyId { get; set; }
         public string ServiceName { get; set; } = null!; // frontshi service rom ar wamoighos xolme saxelis gamo
         public DateTime StartTime { get; set; }
         public DateTime EndTimeExpected { get; set; }

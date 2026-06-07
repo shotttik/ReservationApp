@@ -59,7 +59,10 @@ namespace Infrastructure.Repositories
 
         public async Task<PagedList<BookingDTO>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
         {
-            var query = _dbSet.Include(e => e.Service).AsQueryable();
+            var query = _dbSet.
+                Include(e => e.Service).
+                Include(e => e.Branch).
+                AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
 
