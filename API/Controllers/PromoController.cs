@@ -32,16 +32,16 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="companyId">Company identifier that owns the promo code.</param>
         /// <param name="code">Promo code entered by the user.</param>
-        /// <param name="bookingAmount">Original booking amount before discount is applied.</param>
+        /// <param name="serviceId">service id that should be used for booking.</param>
         /// <returns>Returns validation result including discount amount if applicable.</returns>
         [HttpGet("validate")]
         [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse<PromoCodeDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ValidateApplyPromo([FromRoute] int companyId, [FromQuery] string code, [FromQuery] decimal bookingAmount)
+        public async Task<IActionResult> ValidateApplyPromo([FromRoute] int companyId, [FromQuery] string code, [FromQuery] int serviceId)
         {
-            var result = await _promoService.ValidateApplyPromo(code, companyId, bookingAmount);
+            var result = await _promoService.ValidateApplyPromo(code, companyId, serviceId);
             return result.ToResponse();
         }
 

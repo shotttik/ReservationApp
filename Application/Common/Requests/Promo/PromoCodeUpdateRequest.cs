@@ -21,7 +21,7 @@ namespace Application.Common.Requests.Promo
         public DateTime ValidTo { get; set; }
         public int? MaxUsage { get; set; }
         public ActiveStatus ActiveStatus { get; set; }
-        public int? MinBookingAmount { get; set; }
+        public int? MinBookingPrice { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -67,12 +67,12 @@ namespace Application.Common.Requests.Promo
                     new [] { nameof(MaxUsage) });
             }
 
-            // MinBookingAmount validation
-            if (MinBookingAmount.HasValue && MinBookingAmount <= 0)
+            // MinBookingPrice validation
+            if (MinBookingPrice.HasValue && MinBookingPrice <= 0)
             {
                 yield return new ValidationResult(
-                    "MinBookingAmount must be greater than 0.",
-                    new [] { nameof(MinBookingAmount) });
+                    "MinBookingPrice must be greater than 0.",
+                    new [] { nameof(MinBookingPrice) });
             }
         }
     }

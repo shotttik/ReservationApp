@@ -19,7 +19,7 @@ namespace Application.Extensions.Mappers
                 MaxUsage = entity.MaxUsage,
                 UsedCount = entity.UsedCount,
                 CompanyId = entity.CompanyId,
-                MinBookingAmount = entity.MinBookingAmount,
+                MinBookingPrice = entity.MinBookingPrice,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
             };
@@ -34,7 +34,7 @@ namespace Application.Extensions.Mappers
                 ValidFrom = request.ValidFrom,
                 ValidTo = request.ValidTo,
                 MaxUsage = request.MaxUsage,
-                MinBookingAmount = request.MinBookingAmount
+                MinBookingPrice = request.MinBookingPrice
             };
         }
 
@@ -47,7 +47,7 @@ namespace Application.Extensions.Mappers
             entity.ValidTo = request.ValidTo;
             entity.MaxUsage = request.MaxUsage;
             entity.ActiveStatus = request.ActiveStatus;
-            entity.MinBookingAmount = request.MinBookingAmount;
+            entity.MinBookingPrice = request.MinBookingPrice;
         }
     }
 }

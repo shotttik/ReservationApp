@@ -20,7 +20,7 @@ namespace Domain.Entities.Common
         public Company Company { get; set; } = null!;
 
         // Optional constraints
-        public int? MinBookingAmount { get; set; } //MinBookingAmount = minimum required price to ALLOW promo usage It’s a restriction, not a calculation
+        public int? MinBookingPrice { get; set; } //minimum required price to ALLOW promo usage It’s a restriction, not a calculation
         public ICollection<Booking> Bookings { get; set; } = []; // optional
     }
 }

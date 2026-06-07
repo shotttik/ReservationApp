@@ -7,8 +7,8 @@ namespace Application.Interfaces
 {
     public interface IPromoService
     {
-        Task<PromoResult> ApplyPromo(string code, int companyId, decimal bookingAmount);
-        Task<Result<PromoCodeDTO>> ValidateApplyPromo(string code, int companyId, decimal bookingAmount);
+        Task<PromoResult> ApplyPromo(string code, int companyId, int serviceId);
+        Task<Result<PromoCodeDTO>> ValidateApplyPromo(string code, int companyId, int serviceId);
         Task<Result<PromoCodeDTO>> Create(int companyId, PromoCodeCreateRequest request);
         Task<Result<PromoCodeDTO>> Update(int id, int companyId, PromoCodeUpdateRequest request);
         Task<Result> Delete(int id, int companyId);

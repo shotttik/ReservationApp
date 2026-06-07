@@ -18,7 +18,7 @@ namespace Domain.DTO.User
         public string? ProfileImageUrlWebp { get; set; }
         public string? ProfileImageUrlOriginal { get; set; }
         public List<WorkScheduleDTO> WorkSchedules { get; set; } = [];
-        public List<WorkScheduleExceptionDTO> WorkScheduleExceptionDTOs { get; set; } = [];
+        public List<WorkScheduleExceptionDTO> WorkScheduleExceptions { get; set; } = [];
         public List<ServiceDTO> Services { get; set; } = [];
         [JsonIgnore]
         public bool IsPublicUser => Role.Id == (int)Enums.Role.PublicUser;
