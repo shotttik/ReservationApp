@@ -126,7 +126,7 @@ namespace Application.Services
                 bookingGuestInfo.Contact,
                 bookingGuestInfo.DisplayName,
                 code,
-                booking.Reference);
+                booking);
 
             var token = JWTGenerator.GenerateGuestToken(booking.Id, _bookingSettings);
             var bookingDTO = booking.MapToDTO();
@@ -318,7 +318,7 @@ namespace Application.Services
                         bookingGuestInfo.Contact,
                         bookingGuestInfo.DisplayName,
                         code,
-                        booking.Reference);
+                        booking);
                 }
                 bookingDTO = booking.MapToDTO();
             }

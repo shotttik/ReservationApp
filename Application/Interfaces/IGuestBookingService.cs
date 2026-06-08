@@ -14,7 +14,7 @@ namespace Application.Interfaces
             string contact,
             string? displayName,
             string code,
-            string bookingReference
+            Booking booking
             );
         Task<Result> Verify(int bookingId, BookingVerificationRequest request);
         Task<Result> ResendVerificationCode(int bookingId);

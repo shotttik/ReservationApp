@@ -1,90 +1,193 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Your Verification Code</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            padding: 40px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-
-        .title {
-            text-align: center;
-            color: #0d6efd;
-            margin-bottom: 20px;
-        }
-
-        .verify-box {
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 8px;
-            text-align: center;
-            background-color: #f1f3f5;
-            padding: 15px 0;
-            border-radius: 8px;
-            color: #0d6efd;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #dee2e6;
-        }
-
-        .reference-box {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            background-color: #f8f9fa;
-            padding: 10px 0;
-            border-radius: 6px;
-            color: #212529;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border: 1px dashed #ced4da;
-            letter-spacing: 2px;
-        }
-
-        .label {
-            text-align: center;
-            font-size: 14px;
-            color: #6c757d;
-            margin-top: 10px;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            margin-top: 30px;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Verification Code</title>
 </head>
-<body>
-    <div class="container">
-        <h2 class="title">Your Verification Code</h2>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif; color:#1f2937;">
 
-        <p>Hello {{FirstName}},</p>
-        <p>Use the verification code below to complete your authentication process:</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:30px 0;">
+        <tr>
+            <td align="center">
 
-        <div class="verify-box">{{VerificationCode}}</div>
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
 
-        <div class="label">Booking Reference</div>
-        <div class="reference-box">{{BookingReference}}</div>
+                    <tr>
+                        <td style="background-color:#111827; padding:28px 32px; text-align:center;">
+                            <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:700;">
+                                Booking Verification
+                            </h1>
+                            <p style="margin:8px 0 0; color:#d1d5db; font-size:14px;">
+                                Use this code to access or manage your booking
+                            </p>
+                        </td>
+                    </tr>
 
-        <p>If you didn’t request this, you can safely ignore this email.</p>
-        <p>This code will expire in <strong>{{ExpirationMinutes}} minutes</strong>.</p>
+                    <tr>
+                        <td style="padding:32px;">
 
-        <div class="footer">© {{Year}} Reservation App. All rights reserved.</div>
-    </div>
+                            <p style="margin:0 0 16px; font-size:16px;">
+                                Hello <strong>{{FirstName}}</strong>,
+                            </p>
+
+                            <p style="margin:0 0 20px; font-size:15px; line-height:1.6; color:#374151;">
+                                We received a request to verify access to your booking.
+                                Please use the verification code below to continue.
+                            </p>
+
+                            <div style="text-align:center; margin:30px 0;">
+                                <div style="display:inline-block; background-color:#f3f4f6; border:1px dashed #9ca3af; border-radius:10px; padding:18px 34px;">
+                                    <div style="font-size:13px; color:#6b7280; margin-bottom:8px;">
+                                        Verification Code
+                                    </div>
+                                    <div style="font-size:34px; letter-spacing:8px; font-weight:700; color:#111827;">
+                                        {{VerificationCode}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#374151;">
+                                This code is valid for <strong>{{ExpirationMinutes}} minutes</strong>.
+                                Do not share this code with anyone. If you did not request this code, you can safely ignore this email.
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:26px 0; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden;">
+                                <tr>
+                                    <td colspan="2" style="background-color:#f9fafb; padding:14px 18px; font-size:16px; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb;">
+                                        Booking Details
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Reference
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        <strong>{{BookingReference}}</strong>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Status
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{BookingStatus}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Service
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{ServiceName}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Duration
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{ServiceDuration}} minutes
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Date
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{BookingDate}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Time
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{BookingStartTime}} - {{BookingEndTime}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Employee
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{EmployeeName}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Branch
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{BranchName}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Address
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{BranchAddress}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280; border-bottom:1px solid #e5e7eb;">
+                                        Price
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; border-bottom:1px solid #e5e7eb; text-align:right;">
+                                        {{PriceFinal}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 18px; font-size:14px; color:#6b7280;">
+                                        Promo Code
+                                    </td>
+                                    <td style="padding:12px 18px; font-size:14px; color:#111827; text-align:right;">
+                                        {{PromoCode}}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="background-color:#f9fafb; border-left:4px solid #111827; padding:14px 16px; margin:24px 0;">
+                                <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#111827;">
+                                    Booking note
+                                </p>
+                                <p style="margin:0; font-size:14px; line-height:1.5; color:#4b5563;">
+                                    {{BookingNote}}
+                                </p>
+                            </div>
+
+                            <p style="margin:24px 0 0; font-size:14px; line-height:1.6; color:#6b7280;">
+                                This verification step helps protect your booking details and prevents unauthorized access.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="background-color:#f9fafb; padding:20px 32px; text-align:center; border-top:1px solid #e5e7eb;">
+                            <p style="margin:0; font-size:12px; color:#9ca3af;">
+                                © {{Year}} Reservation App. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

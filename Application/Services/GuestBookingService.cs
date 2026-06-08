@@ -57,7 +57,7 @@ namespace Application.Services
             string contact,
             string? displayName,
             string code,
-            string bookingReference
+            Booking booking
             )
         {
             try
@@ -72,7 +72,7 @@ namespace Application.Services
                             displayName,
                             code,
                             _bookingSettings.VerificationCodeExpirationMinutes,
-                            bookingReference);
+                            booking);
 
                         await _messageProducer.PublishEmailAsync(emailMessage);
                         break;
@@ -157,7 +157,7 @@ namespace Application.Services
                 booking.GuestInfo.Contact,
                 booking.GuestInfo.DisplayName,
                 code,
-                booking.Reference);
+                booking);
 
             return Result.Success(BookingResults.VerificationCodeSent);
         }
@@ -185,7 +185,7 @@ namespace Application.Services
                 booking.GuestInfo.Contact,
                 booking.GuestInfo.DisplayName,
                 code,
-                booking.Reference);
+                booking);
 
             return Result.Success(BookingResults.VerificationCodeSent);
         }
@@ -253,7 +253,8 @@ namespace Application.Services
                 request.PendingNewContact,
                 booking.GuestInfo!.DisplayName,
                 code,
-                booking.Reference);
+                booking
+                );
 
             return Result.Success(BookingResults.VerificationCodeSent);
         }
