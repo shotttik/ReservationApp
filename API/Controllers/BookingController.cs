@@ -123,7 +123,6 @@ namespace API.Controllers
         /// Changes status for specific booking.
         /// </summary>
         /// <remarks>
-        /// Completed booking status can't change.
         /// SuperAdmin - Can update any booking.
         /// CompanyAdmin - Can update only own company bookings.
         /// CompanyEmployee,PublicUser - Can update only own bookings.
@@ -206,58 +205,6 @@ namespace API.Controllers
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var result = await _bookingService.Delete(id);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Cancels an existing booking.
-        /// </summary>
-        /// <remarks>
-        /// Accessible to the guest who created the booking or the authenticated user associated with the booking.
-        /// Completed/Rejected/PendingVerified/Failed status bookings cannot be cancelled.
-        /// Cancelling a booking will update its status to a cancelled state if the caller is authorized and the
-        /// booking is in a cancellable state. Appropriate validation and authorization failures will be returned
-        /// when cancellation is not allowed.
-        /// </remarks>
-        /// <param name="id">The identifier of the booking to cancel.</param>
-        /// <param name="request">request contains cancelattion reason and its nullable can be provided.</param>
-        /// <returns>
-        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully cancelled.
-        /// Returns validation errors (400), forbidden (403) when the caller is not allowed, or not found (404)
-        /// when the booking does not exist.
-        /// </returns>
-        [HttpPatch("{id:int}/cancel")]
-        [GuestOrUser]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Cancel([FromRoute] int id, [FromBody] BookingCancelRequest? request)
-        {
-            var result = await _bookingService.CancelBooking(id, request);
-            return result.ToResponse();
-        }
-        /// <summary>
-        /// Reschedules an existing booking.
-        /// </summary>
-        /// <remarks>
-        /// Accessible to the guest who created the booking or the authenticated user associated with the booking.
-        /// Only reschedulable bookings can be rescheduled.
-        /// </remarks>
-        /// <param name="id">The identifier of the booking to reschedule.</param>
-        /// <param name="request">Contains the new service, employee, and start time.</param>
-        /// <returns>
-        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully rescheduled.
-        /// Returns validation errors (400), forbidden (403), or not found (404).
-        /// </returns>
-        [HttpPatch("{id:int}/reschedule")]
-        [GuestOrUser]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Reschedule([FromRoute] int id, [FromBody] RescheduleBookingRequest request)
-        {
-            var result = await _bookingService.RescheduleBooking(id, request);
             return result.ToResponse();
         }
     }

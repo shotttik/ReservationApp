@@ -4,6 +4,7 @@ using Application.Common.Requests.Booking;
 using Application.Common.Responses;
 using Application.Common.Results;
 using Application.Interfaces;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -12,15 +13,17 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/guest-bookings")]
     [ApiController]
-    [Tags("Bookings")]
+    [Tags("Guest Bookings")]
     public class GuestBookingController :ControllerBase
     {
         private readonly IGuestBookingService _guestBookingService;
+        private readonly IBookingService _bookingService;
 
         public GuestBookingController(
-            IGuestBookingService guestBookingService)
+            IGuestBookingService guestBookingService, IBookingService bookingService)
         {
             _guestBookingService = guestBookingService;
+            _bookingService = bookingService;
         }
         /// <summary>
         /// Verifies a guest booking using a one-time verification code.
@@ -209,6 +212,95 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateGuestInfoContact([FromRoute] int id, [FromBody] BookingGuestInfoContactUpdateRequest request)
         {
             var result = await _guestBookingService.UpdateGuestInfoContact(id, request);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Cancels an existing booking.
+        /// </summary>
+        /// <remarks>
+        /// <b>Purpose:</b><br/>
+        /// Cancels a booking by updating its status to <c>Canceled</c>.
+        /// <br/><br/>
+        /// <b>Behavior:</b>
+        /// <ul>
+        ///   <li>Booking status changes to <c>Canceled</c>.</li>
+        ///   <li>Cancellation reason can be provided using <c>CancellationReason</c>.</li>
+        ///   <li>If no cancellation reason is provided, the booking will still be cancelled.</li>
+        /// </ul>
+        /// <br/>
+        /// <b>Important:</b>
+        /// <ul>
+        ///   <li>Accessible to the guest who created the booking or the authenticated user associated with the booking.</li>
+        ///   <li>Only cancellable bookings can be cancelled.</li>
+        /// </ul>
+        /// <b>Cancellable if:</b>
+        /// <ul>
+        ///   <li>Booking status is <c>Pending</c>.</li>
+        ///   <li>Booking status is <c>Accepted</c>.</li>
+        /// </ul>
+        /// <br/>
+        /// Required role: Accessible by guest with valid access or authenticated booking owner.
+        /// </remarks>
+        /// <param name="id">The identifier of the booking to cancel.</param>
+        /// <param name="request">Contains the optional cancellation reason.</param>
+        /// <returns>
+        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully cancelled.
+        /// Returns validation errors (400), forbidden (403), or not found (404).
+        /// </returns>
+        [HttpPatch("{id:int}/cancel")]
+        [GuestOrUser]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Cancel([FromRoute] int id, [FromBody] BookingCancelRequest? request)
+        {
+            var result = await _bookingService.CancelBooking(id, request);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Reschedules an existing booking.
+        /// </summary>
+        /// <remarks>
+        /// <b>Purpose:</b><br/>
+        /// Reschedules a booking by updating its start time, employee, and/or service.
+        /// <br/><br/>
+        /// <b>Behavior:</b>
+        /// <ul>
+        ///   <li>Booking status changes to <c>Pending</c>.</li>
+        ///   <li>Booking can be assigned to a new employee using <c>EmployeeId</c>.</li>
+        ///   <li>Booking service can be changed using <c>ServiceId</c>.</li>
+        /// </ul>
+        /// <br/>
+        /// <b>Important:</b>
+        /// <ul>
+        ///   <li>Accessible to the guest who created the booking or the authenticated user associated with the booking.</li>
+        ///   <li>Only reschedulable bookings can be rescheduled.</li>
+        /// </ul>
+        /// <b>Reschedulable if:</b>
+        /// <ul>
+        ///   <li>Booking status allows rescheduling.</li>
+        ///   <li>New start time is at least 30 minutes in the future.</li>
+        /// </ul>
+        /// <br/>
+        /// Required role: Accessible by guest with valid access or authenticated booking owner.
+        /// </remarks>
+        /// <param name="id">The identifier of the booking to reschedule.</param>
+        /// <param name="request">Contains the new service, employee, and start time.</param>
+        /// <returns>
+        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully rescheduled.
+        /// Returns validation errors (400), forbidden (403), or not found (404).
+        /// </returns>
+        [HttpPatch("{id:int}/reschedule")]
+        [GuestOrUser]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Reschedule([FromRoute] int id, [FromBody] RescheduleBookingRequest request)
+        {
+            var result = await _bookingService.RescheduleBooking(id, request);
             return result.ToResponse();
         }
     }
