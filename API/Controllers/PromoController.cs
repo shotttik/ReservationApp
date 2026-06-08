@@ -49,7 +49,8 @@ namespace API.Controllers
         /// Creates a new promo code for a company.
         /// </summary>
         /// <remarks>
-        /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
+        /// Required permission: <strong>PromoCodeCreate</strong>
         /// </remarks>
         /// <param name="companyId">Company under which the promo code will be created.</param>
         /// <param name="request">Promo code creation data including discount rules and validity period.</param>
@@ -70,7 +71,8 @@ namespace API.Controllers
         /// Updates an existing promo code.
         /// </summary>
         /// <remarks>
-        /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
+        /// Required permission: <strong>PromoCodeUpdate</strong>
         /// </remarks>
         /// <param name="companyId">Company that owns the promo code.</param>
         /// <param name="id">Promo code identifier.</param>
@@ -93,7 +95,8 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This operation performs a hard delete. The promo code will no longer be available for validation or future use.
-        /// Required Role: <strong>SuperAdmin</strong>
+        /// Required Role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>PromoCodeDelete</strong>
         /// </remarks>
         /// <param name="companyId">Company that owns the promo code.</param>
         /// <param name="id">Promo code identifier.</param>
@@ -115,7 +118,8 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint returns paginated company promos for the authenticated user's company.  
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>PromoCodeRead</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>

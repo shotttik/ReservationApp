@@ -37,7 +37,8 @@ namespace API.Controllers
         /// Creates a new user under administrator control.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserCreate</strong>
         /// </remarks>
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
@@ -59,7 +60,8 @@ namespace API.Controllers
         /// Updates an existing user's account information.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="id">ID of the user to update.</param>
         /// <param name="request">Partial update payload for user account.</param>
@@ -81,7 +83,8 @@ namespace API.Controllers
         /// Resets password for an existing user.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="id">ID of the user.</param>
         /// <param name="request">request of user password.</param>
@@ -103,7 +106,8 @@ namespace API.Controllers
         /// Deletes a user account. Supports soft and hard delete.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserDelete</strong>
         /// </remarks>
         /// <param name="id">ID of the user to delete.</param>
         /// <param name="force">Set to true for hard delete; false for soft delete (default).</param>
@@ -125,7 +129,8 @@ namespace API.Controllers
         /// Creates a new company.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>CompanyCreate</strong>
         /// </remarks>
         /// <param name="request">Company creation payload including name, email, and identifier.</param>
         /// <returns>Returns success or failure of the creation.</returns>
@@ -147,6 +152,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserRead</strong><br/><br/>
         /// <b>Paging and filtering parameters:</b><br/>
         /// <b>Sortable / Filterable Fields:</b>
         /// <ul>
@@ -183,7 +189,8 @@ namespace API.Controllers
         /// Only CompanyEmployee can have branch.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="request">Assignment data including user ID, company ID, and role.</param>
         /// <returns>Returns assignment result.</returns>
@@ -204,7 +211,8 @@ namespace API.Controllers
         /// Retrieves detailed information about a specific user.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserRead</strong>
         /// </remarks>
         /// <param name="id">User ID.</param>
         /// <returns>User details or error response.</returns>
@@ -227,7 +235,8 @@ namespace API.Controllers
         /// Deletes all active login sessions for a specific user.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserDelete</strong>
         /// </remarks>
         /// <param name="id">ID of the user whose active sessions will be deleted.</param>
         /// <returns>Returns the result of the session termination process.</returns>
@@ -250,7 +259,8 @@ namespace API.Controllers
         /// Updates an existing company's information by ID. Only accessible by SuperAdmin.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>CompanyUpdateFull</strong>
         /// </remarks>
         /// <param name="id">The ID of the company to update.</param>
         /// <param name="request">The updated company information.</param>
@@ -284,7 +294,8 @@ namespace API.Controllers
         /// because they are connected FK cascade delete.
         /// - after deletion employee leaves branch, bookings also deleting. that why soft dalate is good to use if its not mandatory.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>BranchDelete</strong>
         /// </remarks>
         /// <param name="companyId">Company Id</param>
         /// <param name="branchId">Branch Id.</param>

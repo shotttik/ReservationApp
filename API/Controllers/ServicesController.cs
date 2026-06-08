@@ -28,7 +28,8 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Can only be done once if services do not already exist for the company.
-        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
+        /// Required permission: <strong>ServiceCreate</strong>
         /// </remarks>
         /// <param name="companyId">The unique ID of the company.</param>
         /// <param name="request">List of service details to create.</param>
@@ -51,7 +52,8 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// The provided service list must match existing service IDs.
-        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
+        /// Required permission: <strong>ServiceUpdate</strong>
         /// /// </remarks>
         /// <param name="companyId">The unique ID of the company.</param>
         /// <param name="request">List of service updates.</param>
@@ -73,7 +75,8 @@ namespace API.Controllers
         /// Deletes a specific service from the company's service list.  
         /// </summary>  
         /// <remarks>  
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.<br/><br/>
+        /// Required permission: <strong>ServiceDelete</strong>
         /// </remarks>  
         /// <param name="companyId">The unique ID of the company.</param>  
         /// <param name="ID">The unique ID of the service to delete.</param>  
@@ -116,6 +119,7 @@ namespace API.Controllers
         /// Returns the complete list of services, regardless of their active status.
         /// <br/><br/>
         /// <b>Required Roles:</b> SuperAdmin, CompanyAdmin
+        /// <br/><b>Required Permission:</b> ServiceRead
         /// </remarks>
         /// <param name="companyId">Unique identifier of the company.</param>
         /// <response code="200">List of all company services or an empty list if none exist.</response>
