@@ -29,7 +29,7 @@ namespace API.Controllers
         /// Creates a review invite for a completed booking.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>ReviewInviteCreate</strong>
         /// - Booking must exist and be completed.<br/>
         /// - Invite must not already exist.<br/>
@@ -53,7 +53,7 @@ namespace API.Controllers
         /// Submits a review using a valid invite.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>PublicUser</strong>
+        /// Required role: <strong>PublicUser</strong><br/><br/>
         /// Required permission: <strong>ReviewCreate</strong>
         /// - Invite must exist, belong to user, be valid, and not used before.
         /// </remarks>
@@ -78,6 +78,7 @@ namespace API.Controllers
         /// This endpoint allows uploading multiple media files for review.
         ///
         /// <para><b>Required Roles:</b> PublicUser</para>
+        /// <br/><br/>
         /// <para><b>Required Permission:</b> ReviewCreate</para>
         /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
         /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>

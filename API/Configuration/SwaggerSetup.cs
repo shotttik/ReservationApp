@@ -15,6 +15,7 @@ namespace API.Configuration
 
                 options.EnableAnnotations();
                 options.OperationFilter<OperationIdFilter>();
+                options.OperationFilter<RequiredPermissionsOperationFilter>();
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",

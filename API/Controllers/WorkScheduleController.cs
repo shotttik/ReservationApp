@@ -27,7 +27,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Requires valid working hours, no overlaps on the same day, and permission to access the user.
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleUserCreate</strong>
         /// </remarks>
         /// <param name="request">The work schedule details for a specific day and user.</param>
@@ -49,7 +49,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Validates overlaps and ensures the requester has permission to edit the user’s schedule.
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleUserUpdate</strong>
         /// </remarks>
         /// <param name="request">The updated schedule info for the specific entry ID.</param>
@@ -70,7 +70,7 @@ namespace API.Controllers
         /// Deletes an existing work schedule entry by ID.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleUserDelete</strong>
         /// </remarks>
         /// <param name="id">The ID of the schedule entry to delete.</param>
@@ -113,7 +113,7 @@ namespace API.Controllers
         /// Creates a new work schedule exception (e.g. day off, vacation) for a specific user.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleExceptionUserCreate</strong>
         /// </remarks>
         /// <param name="request">The exception details including type, start and end dates.</param>
@@ -135,7 +135,7 @@ namespace API.Controllers
         /// Updates an existing work schedule exception.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleExceptionUserUpdate</strong>
         /// </remarks>
         /// <param name="request">The updated exception info for the specific entry ID.</param>
@@ -157,7 +157,7 @@ namespace API.Controllers
         /// Deletes an existing work schedule exception by ID.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required role: <strong>Accessible by SuperAdmin, CompanyAdmin, CompanyEmployee</strong><br/><br/>
         /// Required permission: <strong>WorkScheduleExceptionUserDelete</strong>
         /// </remarks>
         /// <param name="id">The ID of the exception entry to delete.</param>

@@ -28,7 +28,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Can only be done once if services do not already exist for the company.
-        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>ServiceCreate</strong>
         /// </remarks>
         /// <param name="companyId">The unique ID of the company.</param>
@@ -52,7 +52,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// The provided service list must match existing service IDs.
-        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin, CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>ServiceUpdate</strong>
         /// /// </remarks>
         /// <param name="companyId">The unique ID of the company.</param>
@@ -75,7 +75,7 @@ namespace API.Controllers
         /// Deletes a specific service from the company's service list.  
         /// </summary>  
         /// <remarks>  
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.<br/><br/>
         /// Required permission: <strong>ServiceDelete</strong>
         /// </remarks>  
         /// <param name="companyId">The unique ID of the company.</param>  

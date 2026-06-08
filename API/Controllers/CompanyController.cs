@@ -92,7 +92,7 @@ namespace API.Controllers
         /// <remarks>
         /// Only company admins can invite users to join their company. 
         /// The user must currently be a public user.
-        /// Required role: <strong>CompanyAdmin</strong>
+        /// Required role: <strong>CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>InvitationSend</strong>
         /// </remarks>
         /// <param name="request">Contains the user account ID to invite.</param>
@@ -135,6 +135,7 @@ namespace API.Controllers
         /// This endpoint allows uploading company multiple media files.
         ///
         /// <para><b>Required Roles:</b> SuperAdmin, CompanyAdmin</para>
+        /// <br/><br/>
         /// <para><b>Required Permission:</b> CompanyUpdate</para>
         /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
         /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
@@ -163,7 +164,7 @@ namespace API.Controllers
         /// This endpoint allows a CompanyAdmin to update the <c>Description</c> <c>Phone</c>field of their own company.  
         /// <strong>IMPORTANT</strong>: Also allows update branches, so branches should be provided, provided list of branches will changes existing.
         /// The company is determined from the route param context.
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanyUpdatePartial</strong>
         /// </remarks>
         /// <param name="id">The ID of the target company for which the employee is being created.</param>
@@ -189,7 +190,7 @@ namespace API.Controllers
         /// The request must contain all required information including personal details and login credentials.  
         /// Email addresses must be unique in the system.  
         /// A verification token is automatically generated and assigned to the new user.
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanyEmployeeCreate</strong>
         /// </remarks>
         /// <param name="id">The ID of the target company for which the employee is being created.</param>
@@ -219,7 +220,7 @@ namespace API.Controllers
         /// This endpoint allows a CompanyAdmin to update an existing employee’s first name, last name, gender, and date of birth.
         /// Only authenticated users with appropriate access to the specified company can perform this action.
         /// The employee is identified by their UserLoginData ID.
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanyEmployeeUpdate</strong>
         /// </remarks>
         /// <param name="id">The ID of the company in the route.</param>
@@ -247,7 +248,7 @@ namespace API.Controllers
         /// This endpoint allows a CompanyAdmin to soft delete or permanently delete a company employee (with role CompanyEmployee).  
         /// Only authenticated users with access to the specified company can perform this action.  
         /// The deletion can be a soft delete (default) or a force delete (permanent).
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanyEmployeeDelete</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
@@ -323,7 +324,7 @@ namespace API.Controllers
         /// - Exactly one media must be marked as the main image (`IsMain = true`) in the request.
         /// - if Empty list provided in the request will be removed all medias from the company.
         /// 
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanyMediaUpdate</strong>
         /// </remarks>
         /// <param name="id">The ID of the company to update media for.</param>
@@ -348,7 +349,7 @@ namespace API.Controllers
         /// <remarks>
         /// This endpoint allows you to create branch for company:
         ///
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>BranchCreate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company</param>
@@ -373,7 +374,7 @@ namespace API.Controllers
         /// <remarks>
         /// This endpoint allows you to update branch for company:
         ///
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>BranchUpdate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company</param>
@@ -404,7 +405,7 @@ namespace API.Controllers
         /// - we are doing this because of avoid deletion of branch and releated bookings (for statistic), 
         /// because they are connected FK cascade delete.
         /// 
-        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required role: <strong>CompanyAdmin, SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>BranchDisable</strong>
         /// </remarks>
         /// <param name="companyId">Company Id</param>
@@ -464,7 +465,7 @@ namespace API.Controllers
         /// <remarks>
         /// Updates the subscription plan assigned to the company.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         /// <param name="id">Company Id.</param>
@@ -487,7 +488,7 @@ namespace API.Controllers
         /// <remarks>
         /// Sets subscription period and marks it as Active.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         [HttpPost("{id:int}/subscription/activate")]
@@ -510,7 +511,7 @@ namespace API.Controllers
         /// <remarks>
         /// Cancels the subscription and disables auto-renew.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         [HttpPost("{id:int}/subscription/cancel")]
@@ -528,7 +529,7 @@ namespace API.Controllers
         /// <remarks>
         /// Extends subscription by specified number of months.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         [HttpPost("{id:int}/subscription/extend")]
@@ -550,7 +551,7 @@ namespace API.Controllers
         /// <remarks>
         /// Sets auto-renew flag for subscription.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         [HttpPut("{id:int}/subscription/autorenew")]
@@ -577,7 +578,7 @@ namespace API.Controllers
         /// - Subscription must be Active.
         /// - Start date must be earlier than end date.
         /// 
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
         /// <param name="id">Company Id.</param>

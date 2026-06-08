@@ -36,7 +36,7 @@ namespace API.Controllers
         /// Creates a new FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>FaqCategoryCreate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
@@ -58,7 +58,7 @@ namespace API.Controllers
         /// Updates an existing FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>FaqCategoryUpdate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
@@ -80,7 +80,7 @@ namespace API.Controllers
         /// Deletes an FAQ category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>FaqCategoryDelete</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
@@ -121,7 +121,7 @@ namespace API.Controllers
         /// Creates a new FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>FaqCreate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
@@ -143,7 +143,7 @@ namespace API.Controllers
         /// Updates an existing FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong><br/><br/>
         /// Required permission: <strong>FaqUpdate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
@@ -165,7 +165,7 @@ namespace API.Controllers
         /// Deletes an FAQ within a specific category for a company.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.
+        /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.<br/><br/>
         /// Required permission: <strong>FaqDelete</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  

@@ -46,7 +46,7 @@ namespace API.Controllers
         /// Create an Subscription plan.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>SubscriptionPlanCreate</strong>
         /// </remarks>
         /// <param name="request">The request containing subscription plan details.</param>  
@@ -68,7 +68,7 @@ namespace API.Controllers
         /// Create an Subscription plan.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>SubscriptionPlanDelete</strong>
         /// </remarks>
         /// <param name="id">The ID of the Subscription plan.</param>  
@@ -90,7 +90,7 @@ namespace API.Controllers
         /// Updates an existing Subscription plan.  
         /// </summary>  
         /// <remarks>
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>SubscriptionPlanUpdate</strong>
         /// </remarks>
         /// <param name="id">The ID of the Subscription plan.</param>  

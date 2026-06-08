@@ -194,7 +194,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// This endpoint allows only the SuperAdmin to permanently delete the bookingn).
-        /// Required role: <strong>SuperAdmin</strong>
+        /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>BookingDelete</strong>
         /// </remarks>
         /// <param name="id">The ID of the booking in the route.</param>
