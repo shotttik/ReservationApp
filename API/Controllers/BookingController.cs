@@ -78,6 +78,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin, CompanyAdmin.</strong><br/><br/>
+        /// Required permission: <strong>BookingCreate</strong><br/><br/>
         /// Creates a booking with the specified time, employee, client and service details.  
         /// Only available time slots for the employee and client will be accepted.  
         /// Returns a success message or validation failure.
@@ -128,6 +129,7 @@ namespace API.Controllers
         /// CompanyAdmin - Can update only own company bookings.
         /// CompanyEmployee,PublicUser - Can update only own bookings.
         /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
+        /// Required permission: <strong>BookingUpdate</strong><br/><br/>
         /// </remarks>
         /// <param name="id">booking id</param>
         /// <param name="request">request of booking status change</param>
@@ -193,6 +195,7 @@ namespace API.Controllers
         /// <remarks>
         /// This endpoint allows only the SuperAdmin to permanently delete the bookingn).
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>BookingDelete</strong>
         /// </remarks>
         /// <param name="id">The ID of the booking in the route.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>

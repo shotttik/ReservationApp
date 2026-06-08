@@ -30,6 +30,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin, CompanyAdmin, CompanyEmployee</strong>
+        /// Required permission: <strong>ReviewInviteCreate</strong>
         /// - Booking must exist and be completed.<br/>
         /// - Invite must not already exist.<br/>
         /// Invite is valid for 14 days.
@@ -53,6 +54,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>PublicUser</strong>
+        /// Required permission: <strong>ReviewCreate</strong>
         /// - Invite must exist, belong to user, be valid, and not used before.
         /// </remarks>
         /// <param name="request">Review data</param>
@@ -76,6 +78,7 @@ namespace API.Controllers
         /// This endpoint allows uploading multiple media files for review.
         ///
         /// <para><b>Required Roles:</b> PublicUser</para>
+        /// <para><b>Required Permission:</b> ReviewCreate</para>
         /// <para><b>Max File Size:</b> 1 MB (1,048,576 bytes)</para>
         /// <para><b>Allowed File Types:</b> image/jpeg, image/png</para>
         /// </remarks>
@@ -176,6 +179,7 @@ namespace API.Controllers
         /// All fields must be presented , its PUT bekhtangjy, sxva velebis update argvhirdeba
         /// 
         /// <para><b>Required role:</b>SuperAdmin.</para>
+        /// <para><b>Required permission:</b> ReviewUpdate.</para>
         /// </remarks>
         /// <param name="id">id of the review</param>
         /// <param name="request">request body for params that will update(all must present)</param>

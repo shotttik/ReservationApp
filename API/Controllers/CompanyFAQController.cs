@@ -37,6 +37,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required permission: <strong>FaqCategoryCreate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing category details.</param>  
@@ -58,6 +59,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required permission: <strong>FaqCategoryUpdate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing updated category details.</param>  
@@ -79,6 +81,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required permission: <strong>FaqCategoryDelete</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ category to delete.</param>  
@@ -119,6 +122,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required permission: <strong>FaqCreate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing FAQ details.</param>  
@@ -140,6 +144,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>
+        /// Required permission: <strong>FaqUpdate</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="request">The request containing updated FAQ details.</param>  
@@ -161,6 +166,7 @@ namespace API.Controllers
         /// </summary>  
         /// <remarks>
         /// Required role: <strong>SuperAdmin,CompanyAdmin</strong>.
+        /// Required permission: <strong>FaqDelete</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company.</param>  
         /// <param name="id">The ID of the FAQ to delete.</param>  

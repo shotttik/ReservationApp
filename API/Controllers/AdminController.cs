@@ -38,6 +38,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserCreate</strong>
         /// </remarks>
         /// <param name="request">User creation data including role and optional company assignment.</param>
         /// <returns>Returns success or failure of the operation.</returns>
@@ -60,6 +61,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="id">ID of the user to update.</param>
         /// <param name="request">Partial update payload for user account.</param>
@@ -82,6 +84,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="id">ID of the user.</param>
         /// <param name="request">request of user password.</param>
@@ -104,6 +107,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserDelete</strong>
         /// </remarks>
         /// <param name="id">ID of the user to delete.</param>
         /// <param name="force">Set to true for hard delete; false for soft delete (default).</param>
@@ -126,6 +130,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>CompanyCreate</strong>
         /// </remarks>
         /// <param name="request">Company creation payload including name, email, and identifier.</param>
         /// <returns>Returns success or failure of the creation.</returns>
@@ -147,6 +152,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
+        /// Required permission: <strong>UserRead</strong><br/><br/>
         /// <b>Paging and filtering parameters:</b><br/>
         /// <b>Sortable / Filterable Fields:</b>
         /// <ul>
@@ -184,6 +190,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserUpdate</strong>
         /// </remarks>
         /// <param name="request">Assignment data including user ID, company ID, and role.</param>
         /// <returns>Returns assignment result.</returns>
@@ -205,6 +212,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserRead</strong>
         /// </remarks>
         /// <param name="id">User ID.</param>
         /// <returns>User details or error response.</returns>
@@ -228,6 +236,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>UserDelete</strong>
         /// </remarks>
         /// <param name="id">ID of the user whose active sessions will be deleted.</param>
         /// <returns>Returns the result of the session termination process.</returns>
@@ -251,6 +260,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>CompanyUpdateFull</strong>
         /// </remarks>
         /// <param name="id">The ID of the company to update.</param>
         /// <param name="request">The updated company information.</param>
@@ -285,6 +295,7 @@ namespace API.Controllers
         /// - after deletion employee leaves branch, bookings also deleting. that why soft dalate is good to use if its not mandatory.
         /// 
         /// Required role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>BranchDelete</strong>
         /// </remarks>
         /// <param name="companyId">Company Id</param>
         /// <param name="branchId">Branch Id.</param>

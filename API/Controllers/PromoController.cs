@@ -50,6 +50,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required permission: <strong>PromoCodeCreate</strong>
         /// </remarks>
         /// <param name="companyId">Company under which the promo code will be created.</param>
         /// <param name="request">Promo code creation data including discount rules and validity period.</param>
@@ -71,6 +72,7 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required Role: <strong>SuperAdmin, CompanyAdmin</strong>
+        /// Required permission: <strong>PromoCodeUpdate</strong>
         /// </remarks>
         /// <param name="companyId">Company that owns the promo code.</param>
         /// <param name="id">Promo code identifier.</param>
@@ -94,6 +96,7 @@ namespace API.Controllers
         /// <remarks>
         /// This operation performs a hard delete. The promo code will no longer be available for validation or future use.
         /// Required Role: <strong>SuperAdmin</strong>
+        /// Required permission: <strong>PromoCodeDelete</strong>
         /// </remarks>
         /// <param name="companyId">Company that owns the promo code.</param>
         /// <param name="id">Promo code identifier.</param>
@@ -116,6 +119,7 @@ namespace API.Controllers
         /// <remarks>
         /// This endpoint returns paginated company promos for the authenticated user's company.  
         /// Required role: <strong>CompanyAdmin, SuperAdmin</strong>
+        /// Required permission: <strong>PromoCodeRead</strong>
         /// </remarks>
         /// <param name="companyId">The ID of the company in the route.</param>
         /// <param name="parameters">Pagination and filtering parameters.</param>
