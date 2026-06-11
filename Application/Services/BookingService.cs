@@ -356,7 +356,7 @@ namespace Application.Services
             }
             if (request.IsCompleted)
             {
-                booking.EndTime = DateTime.Now;
+                booking.EndTime = DateTime.UtcNow;
                 booking.PriceFinal = booking.PriceFull - booking.Discount;
             }
             if (request.IsCanceled || request.IsFailed)

@@ -74,8 +74,8 @@ namespace Application.Services
             var reviewInvite = new ReviewInvite()
             {
                 BookingId = bookingId,
-                OpenAt = DateTime.Now,
-                CloseAt = DateTime.Now.AddDays(14),
+                OpenAt = DateTime.UtcNow,
+                CloseAt = DateTime.UtcNow.AddDays(14),
             };
 
             await reviewInviteRepository.Add(reviewInvite);
@@ -97,7 +97,7 @@ namespace Application.Services
                 return Result.Failure(ReviewResults.NotYourInvite);
             }
 
-            if (reviewInvite.CloseAt < DateTime.Now)
+            if (reviewInvite.CloseAt < DateTime.UtcNow)
             {
                 return Result.Failure(ReviewResults.InviteExpired);
             }

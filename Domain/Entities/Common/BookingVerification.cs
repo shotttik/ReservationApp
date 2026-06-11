@@ -14,8 +14,8 @@ namespace Domain.Entities.Common
 
         public void Verify()
         {
-            VerifiedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
+            VerifiedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

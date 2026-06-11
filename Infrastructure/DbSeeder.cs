@@ -43,8 +43,8 @@ namespace Infrastructure
                         var companySubscription = new CompanySubscription()
                         {
                             SubscriptionPlan = freeSubscriptionPlan,
-                            StartDate = DateTime.Now,
-                            EndDate = DateTime.Now.AddMonths(12),
+                            StartDate = DateTime.UtcNow,
+                            EndDate = DateTime.UtcNow.AddMonths(12),
                             Status = Domain.Enums.SubscriptionStatus.Active,
                             AutoRenew = false
                         };
@@ -245,8 +245,8 @@ namespace Infrastructure
             var companySubscription = new CompanySubscription()
             {
                 SubscriptionPlan = enterpriseSubscriptionPlan,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddMonths(12),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMonths(12),
                 Status = Domain.Enums.SubscriptionStatus.Active,
                 AutoRenew = false
             };

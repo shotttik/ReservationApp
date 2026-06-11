@@ -47,7 +47,7 @@ namespace Application.Services
             var codeHash = CodeHasher.GenerateAndHash(_bookingSettings.VerificationCodeLength, out code);
 
             verification.CodeHash = codeHash;
-            verification.ExpiresAt = DateTime.Now.AddMinutes(_bookingSettings.VerificationCodeExpirationMinutes);
+            verification.ExpiresAt = DateTime.UtcNow.AddMinutes(_bookingSettings.VerificationCodeExpirationMinutes);
             verification.VerificationType = verificationType;
 
             return (verification, code);
@@ -106,7 +106,7 @@ namespace Application.Services
                 return Result.Failure(error);
             }
 
-            if (bookingVerification.ExpiresAt < DateTime.Now)
+            if (bookingVerification.ExpiresAt < DateTime.UtcNow)
             {
                 return Result.Failure(BookingResults.VerificationCodeExpired);
             }
@@ -143,7 +143,7 @@ namespace Application.Services
                 return Result.Failure(error);
             }
 
-            if (bookingVerification.ExpiresAt > DateTime.Now)
+            if (bookingVerification.ExpiresAt > DateTime.UtcNow)
             {
                 return Result.Failure(BookingResults.WaitingForVerification);
             }
@@ -171,7 +171,7 @@ namespace Application.Services
             }
             var booking = data.Booking;
 
-            if (data.LatestPendingVerification?.ExpiresAt > DateTime.Now)
+            if (data.LatestPendingVerification?.ExpiresAt > DateTime.UtcNow)
             {
                 return Result.Failure(BookingResults.WaitingForVerification);
             }
@@ -199,7 +199,7 @@ namespace Application.Services
 
             var booking = data.Booking;
             var bookingVerification = data.LatestPendingVerification;
-            if (bookingVerification.ExpiresAt < DateTime.Now)
+            if (bookingVerification.ExpiresAt < DateTime.UtcNow)
             {
                 return Result.Failure<CreateGuestTokenResponse>(BookingResults.VerificationCodeExpired);
             }
@@ -236,7 +236,7 @@ namespace Application.Services
             {
                 return Result.Failure(error);
             }
-            if (data.LatestPendingVerification != null && data.LatestPendingVerification!.ExpiresAt > DateTime.Now)
+            if (data.LatestPendingVerification != null && data.LatestPendingVerification!.ExpiresAt > DateTime.UtcNow)
             {
                 return Result.Failure(BookingResults.WaitingForVerification);
             }
