@@ -37,6 +37,7 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="request">Booking creation request with guest info and verification info.</param>
         /// <returns>BookingDTO when success or error result.</returns>
+        [Tags("Guest Bookings")]
         [HttpPost("guest")]
         [MapToApiVersion("1.0")]
         [Logging(LoggingType.Full)]
