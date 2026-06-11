@@ -13,7 +13,7 @@ namespace API.Controllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/companies")]
     [ApiController]
-    [Tags("Companies FAQs")]
+    [Tags("Company FAQs")]
     public class CompanyFAQController :ControllerBase
     {
         private readonly ICompanyFAQService companyFAQService;

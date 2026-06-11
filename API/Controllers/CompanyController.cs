@@ -144,6 +144,7 @@ namespace API.Controllers
         /// <param name="request">The request containing the media files to upload.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>A result returns address of the image or failure of the upload operation.</returns>
+        [Tags("Company Media")]
         [HttpPost("{id:int}/media")]
         [HasPermission(Permission.CompanyUpdate)]
         [Logging(LoggingType.General)]
@@ -199,6 +200,7 @@ namespace API.Controllers
         /// Success response if the user is created; appropriate error response if email already exists
         /// or access is denied.
         /// </returns>
+        [Tags("Company Employees")]
         [HttpPost("{id:int}/employees")]
         [HasPermission(Permission.CompanyEmployeeCreate)]
         [Logging(LoggingType.General)]
@@ -226,6 +228,7 @@ namespace API.Controllers
         /// <param name="id">The ID of the company in the route.</param>
         /// <param name="request">The update request containing new profile data.</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
+        [Tags("Company Employees")]
         [HttpPatch("{id:int}/employees")]
         [HasPermission(Permission.CompanyEmployeeUpdate)]
         [Logging(LoggingType.Full)]
@@ -255,6 +258,7 @@ namespace API.Controllers
         /// <param name="employeeID">The ID of the employee to delete (UserLoginData ID).</param>
         /// <param name="force">Whether to permanently delete the employee (true) or perform a soft delete (false).</param>
         /// <returns>No content on success; appropriate error response on failure.</returns>
+        [Tags("Company Employees")]
         [HttpDelete("{companyId:int}/employees/{employeeID:int}")]
         [HasPermission(Permission.CompanyEmployeeDelete)]
         [Logging(LoggingType.Full)]
@@ -297,6 +301,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <param name="cancellationToken">Token to cancel the operation.</param>
         /// <returns>Paginated list of company employees or an error response.</returns>
+        [Tags("Company Employees")]
         [HttpGet("{id:int}/employees")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanyEmployeeRead)]
@@ -330,6 +335,7 @@ namespace API.Controllers
         /// <param name="id">The ID of the company to update media for.</param>
         /// <param name="mediaUpdates">A list of media update requests that include file uploads, changes to 'main' status, or removal instructions.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
+        [Tags("Company Media")]
         [HttpPut("{id:int}/media")]
         [HasPermission(Permission.CompanyMediaUpdate)]
         [Logging(LoggingType.General)]
@@ -355,6 +361,7 @@ namespace API.Controllers
         /// <param name="companyId">The ID of the company</param>
         /// <param name="request">the request body of the branch</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
+        [Tags("Company Branches")]
         [HttpPost("{companyId:int}/branches/")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.BranchCreate)]
@@ -381,6 +388,7 @@ namespace API.Controllers
         /// <param name="branchId">The id of the branch </param>
         /// <param name="request">The request body of the branch </param>
         /// <returns>Result indicating success or failure of the operation.</returns>
+        [Tags("Company Branches")]
         [HttpPut("{companyId:int}/branches/{branchId:int}")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.BranchUpdate)]
@@ -411,6 +419,7 @@ namespace API.Controllers
         /// <param name="companyId">Company Id</param>
         /// <param name="branchId">Branch Id.</param>
         /// <returns>Result indicating success or failure of the operation.</returns>
+        [Tags("Company Branches")]
         [HttpDelete("{companyId:int}/branches/{branchId:int}")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.BranchDisable)]
@@ -447,6 +456,7 @@ namespace API.Controllers
         /// <param name="parameters">Pagination parameters including page number, size, and search filters.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company subscription records.</returns>
+        [Tags("Company Subscriptions")]
         [HttpGet("subscriptions")]
         [Logging(LoggingType.General)]
         [HasPermission(Permission.CompanySubscriptionGet)]
@@ -470,6 +480,7 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="id">Company Id.</param>
         /// <param name="subscriptionPlanId">Subscription plan id.</param>
+        [Tags("Company Subscriptions")]
         [HttpPut("{id:int}/subscription/plan/{subscriptionPlanId:int}")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
@@ -491,6 +502,7 @@ namespace API.Controllers
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
+        [Tags("Company Subscriptions")]
         [HttpPost("{id:int}/subscription/activate")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
@@ -514,6 +526,7 @@ namespace API.Controllers
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
+        [Tags("Company Subscriptions")]
         [HttpPost("{id:int}/subscription/cancel")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
@@ -532,6 +545,7 @@ namespace API.Controllers
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
+        [Tags("Company Subscriptions")]
         [HttpPost("{id:int}/subscription/extend")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
@@ -554,6 +568,7 @@ namespace API.Controllers
         /// Required role: <strong>SuperAdmin</strong><br/><br/>
         /// Required permission: <strong>CompanySubscriptionUpdate</strong>
         /// </remarks>
+        [Tags("Company Subscriptions")]
         [HttpPut("{id:int}/subscription/autorenew")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
@@ -583,6 +598,7 @@ namespace API.Controllers
         /// </remarks>
         /// <param name="id">Company Id.</param>
         /// <param name="request">New subscription period.</param>
+        [Tags("Company Subscriptions")]
         [HttpPut("{id:int}/subscription/period")]
         [Logging(LoggingType.Full)]
         [HasPermission(Permission.CompanySubscriptionUpdate)]
