@@ -24,7 +24,7 @@ namespace Application.Extensions
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             services.AddScoped<ICompanySubscriptionService, CompanySubscriptionService>();
             services.AddScoped<IPromoService, PromoService>();
-
+            services.AddScoped<IBookingNotificationService, BookingNotificationService>();
             services.AddScoped<IAccessGuard, AccessGuard>();
             services.AddScoped<ISubscriptionGuard, SubscriptionGuard>();
 

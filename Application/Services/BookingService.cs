@@ -24,7 +24,8 @@ namespace Application.Services
         private readonly IAuthService _authService;
         private readonly IUserAccountRepository _userAccountRepository;
         private readonly IAccessGuard _accessGuard;
-        private readonly IGuestBookingService _bookingVerificationService;
+        private readonly IGuestBookingService _guestBookingService;
+        private readonly IBookingNotificationService _bookingNotificationService;
         private readonly BookingSettings _bookingSettings;
         private readonly ISubscriptionGuard _subscriptionGuard;
         private readonly IPromoService _promoService;
@@ -36,7 +37,8 @@ namespace Application.Services
             IAuthService authService,
             IUserAccountRepository userAccountRepository,
             IAccessGuard accessGuard,
-            IGuestBookingService bookingVerificationService,
+            IGuestBookingService guestBookingService,
+            IBookingNotificationService bookingNotificationService,
             IOptions<BookingSettings> bookingSettings,
             ISubscriptionGuard subscriptionGuard,
             IPromoService promoService,
@@ -48,7 +50,8 @@ namespace Application.Services
             _authService = authService;
             _userAccountRepository = userAccountRepository;
             _accessGuard = accessGuard;
-            _bookingVerificationService = bookingVerificationService;
+            _guestBookingService = guestBookingService;
+            _bookingNotificationService = bookingNotificationService;
             _bookingSettings = bookingSettings.Value;
             _subscriptionGuard = subscriptionGuard;
             _promoService = promoService;
@@ -110,7 +113,7 @@ namespace Application.Services
                 booking.Discount = promoResult.Discount;
                 booking.PromoCodeId = appliedPromo.Id;
             }
-            (var bookingVerification, var code) = _bookingVerificationService.CreateBookingVerification(request.GuestInfo.ContactType);
+            (var bookingVerification, var code) = _guestBookingService.CreateBookingVerification(request.GuestInfo.ContactType);
             booking.Status = BookingStatus.PendingVerification;
             booking.GuestInfo = bookingGuestInfo;
             booking.Verifications.Add(bookingVerification);
@@ -121,7 +124,7 @@ namespace Application.Services
                 appliedPromo.UsedCount++;
                 await _promoCodeRepository.Update(appliedPromo);
             }
-            await _bookingVerificationService.SendVerificationNotification(
+            await _bookingNotificationService.SendVerificationCodeAsync(
                 bookingGuestInfo.ContactType,
                 bookingGuestInfo.Contact,
                 bookingGuestInfo.DisplayName,
@@ -256,7 +259,7 @@ namespace Application.Services
                         DisplayName = request.GuestInfo.DisplayName
                     };
 
-                    (bookingVerification, code) = _bookingVerificationService.CreateBookingVerification(request.GuestInfo.ContactType);
+                    (bookingVerification, code) = _guestBookingService.CreateBookingVerification(request.GuestInfo.ContactType);
                 }
                 else
                 {
@@ -313,7 +316,7 @@ namespace Application.Services
                 await _unitOfWork.CommitTransactionAsync();
                 if (bookingGuestInfo != null)
                 {
-                    await _bookingVerificationService.SendVerificationNotification(
+                    await _bookingNotificationService.SendVerificationCodeAsync(
                         bookingGuestInfo.ContactType,
                         bookingGuestInfo.Contact,
                         bookingGuestInfo.DisplayName,

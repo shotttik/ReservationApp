@@ -9,13 +9,6 @@ namespace Application.Interfaces
     public interface IGuestBookingService
     {
         (BookingVerification, string code) CreateBookingVerification(VerificationType verificationType);
-        Task SendVerificationNotification(
-            VerificationType verificationType,
-            string contact,
-            string? displayName,
-            string code,
-            Booking booking
-            );
         Task<Result> Verify(int bookingId, BookingVerificationRequest request);
         Task<Result> ResendVerificationCode(int bookingId);
         Task<Result> SendGuestAccessCode(GuestBookingAccessRequest request);

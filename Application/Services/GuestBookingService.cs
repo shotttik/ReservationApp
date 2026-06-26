@@ -22,6 +22,7 @@ namespace Application.Services
         private readonly IBookingRepository _bookingRepository;
         private readonly IAccessGuard _accessGuard;
         private readonly IBookingVerificationRepository _bookingVerificationRepository;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         public GuestBookingService(
             IOptions<BookingSettings> bookingSettings,
@@ -30,7 +31,8 @@ namespace Application.Services
             ISmsTemplateBuilder smsBuilder,
             IBookingRepository bookingRepository,
             IAccessGuard accessGuard,
-            IBookingVerificationRepository bookingVerificationRepository)
+            IBookingVerificationRepository bookingVerificationRepository,
+            IBookingNotificationService bookingNotificationService)
         {
             _bookingSettings = bookingSettings.Value;
             _emailBuilder = emailBuilder;
@@ -39,6 +41,7 @@ namespace Application.Services
             _bookingRepository = bookingRepository;
             _accessGuard = accessGuard;
             _bookingVerificationRepository = bookingVerificationRepository;
+            _bookingNotificationService = bookingNotificationService;
         }
         public (BookingVerification, string code) CreateBookingVerification(VerificationType verificationType)
         {
@@ -52,44 +55,7 @@ namespace Application.Services
 
             return (verification, code);
         }
-        public async Task SendVerificationNotification(
-            VerificationType verificationType,
-            string contact,
-            string? displayName,
-            string code,
-            Booking booking
-            )
-        {
-            try
-            {
 
-                switch (verificationType)
-                {
-
-                    case VerificationType.Email:
-                        var emailMessage = _emailBuilder.BuildCodeVerification(
-                            contact,
-                            displayName,
-                            code,
-                            _bookingSettings.VerificationCodeExpirationMinutes,
-                            booking);
-
-                        await _messageProducer.PublishEmailAsync(emailMessage);
-                        break;
-                    case VerificationType.Phone:
-                        var smsMessage = _smsBuilder.BuildCodeVerification(
-                            contact,
-                            code,
-                            _bookingSettings.VerificationCodeExpirationMinutes);
-                        await _messageProducer.PublishSmsAsync(smsMessage);
-                        break;
-                }
-            }
-            catch (Exception)
-            {
-                //TODO can be done something with it pass
-            }
-        }
         public async Task<Result> Verify(int bookingId, BookingVerificationRequest request)
         {
             var data = await _bookingRepository.GetWithGuestInfoAndLatestPendingVerification(bookingId);
@@ -152,7 +118,7 @@ namespace Application.Services
             newBookingVerification.BookingId = bookingId;
             await _bookingVerificationRepository.Add(newBookingVerification);
 
-            await SendVerificationNotification(
+            await _bookingNotificationService.SendVerificationCodeAsync(
                 booking.GuestInfo.ContactType,
                 booking.GuestInfo.Contact,
                 booking.GuestInfo.DisplayName,
@@ -180,7 +146,7 @@ namespace Application.Services
             newBookingVerification.BookingId = booking.Id;
             await _bookingVerificationRepository.Add(newBookingVerification);
 
-            await SendVerificationNotification(
+            await _bookingNotificationService.SendVerificationCodeAsync(
                 booking.GuestInfo.ContactType,
                 booking.GuestInfo.Contact,
                 booking.GuestInfo.DisplayName,
@@ -248,7 +214,7 @@ namespace Application.Services
             booking.Status = BookingStatus.PendingVerification;
             booking.Verifications.Add(newBookingVerification);
             await _bookingRepository.Update(booking);
-            await SendVerificationNotification(
+            await _bookingNotificationService.SendVerificationCodeAsync(
                 request.ContactType,
                 request.PendingNewContact,
                 booking.GuestInfo!.DisplayName,
