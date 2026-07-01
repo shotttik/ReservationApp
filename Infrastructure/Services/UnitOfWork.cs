@@ -43,6 +43,6 @@ namespace Infrastructure.Services
         public void Dispose()
         {
             _transaction?.Dispose();
-        }
+            }
     }
 }

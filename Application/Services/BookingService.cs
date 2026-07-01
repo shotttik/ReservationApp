@@ -511,6 +511,21 @@ namespace Application.Services
 
             return updatedBookingDTO;
         }
+        public async Task<Result<BookingDTO>> Get(int bookingId)
+        {
+
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.NotFound);
+            }
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            if (error != Error.None)
+            {
+                return Result.Failure<BookingDTO>(error);
+            }
+            return Result.Success(booking.MapToDTO(true));
+        }
 
         private async Task NotifyCompanyBookingAsync(
             int companyId,

@@ -190,6 +190,36 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
+        /// Retrieves a booking by its identifier.
+        /// </summary>
+        /// <remarks>
+        /// Returns the full BookingDTO for the specified booking id. The caller must be a guest or an authenticated user.
+        /// Example: GET /api/v1/bookings/123
+        /// </remarks>
+        /// <param name="id">The unique identifier of the booking to retrieve.</param>
+        /// <returns>
+        /// 200: Success — Returns a SuccessResponse containing the BookingDTO.
+        /// 400: Bad Request — The provided id is invalid.
+        /// 404: Not Found — No booking exists with the specified id.
+        /// </returns>
+        /// <response code="200">Successful operation. Returns booking details.</response>
+        /// <response code="400">Bad request - invalid id supplied.</response>
+        /// <response code="404">Booking not found.</response>
+        [HttpGet("{id:int}")]
+        [Logging(LoggingType.General)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [GuestOrUser]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> Get([FromRoute] int id)
+        {
+            var result = await _bookingService.Get(id);
+            return result.ToResponse();
+        }
+
+        /// <summary>
         /// Deletes the booking
         /// </summary>
         /// <remarks>
