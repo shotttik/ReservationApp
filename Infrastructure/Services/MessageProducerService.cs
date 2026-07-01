@@ -38,6 +38,9 @@ namespace Infrastructure.Services
         public Task PublishSmsAsync(object payload, CancellationToken cancellationToken = default)
             => PublishAsync(payload, routingKey: _settings.RouteKey(QueueType.SMS), cancellationToken);
 
+        public Task PublishNotificationAsync(object payload, CancellationToken cancellationToken = default)
+            => PublishAsync(payload, routingKey: _settings.RouteKey(QueueType.Notification), cancellationToken);
+
         // Core publish method
         private async Task PublishAsync(object payload, string routingKey, CancellationToken cancellationToken)
         {
@@ -103,6 +106,14 @@ namespace Infrastructure.Services
                     arguments: null,
                     cancellationToken: cancellationToken);
 
+                await _channel.QueueDeclareAsync(
+                    queue: _settings.Queue(QueueType.Notification),
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null,
+                    cancellationToken: cancellationToken);
+
                 await _channel.QueueBindAsync(
                     queue: _settings.Queue(QueueType.Email),
                     exchange: _settings.ExchangeName,
@@ -114,6 +125,13 @@ namespace Infrastructure.Services
                     queue: _settings.Queue(QueueType.SMS),
                     exchange: _settings.ExchangeName,
                     routingKey: _settings.RouteKey(QueueType.SMS),
+                    arguments: null,
+                    cancellationToken: cancellationToken);
+
+                await _channel.QueueBindAsync(
+                    queue: _settings.Queue(QueueType.Notification),
+                    exchange: _settings.ExchangeName,
+                    routingKey: _settings.RouteKey(QueueType.Notification),
                     arguments: null,
                     cancellationToken: cancellationToken);
 

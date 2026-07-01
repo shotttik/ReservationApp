@@ -101,6 +101,7 @@ namespace Infrastructure.Repositories
             var booking = await _dbSet
                 .Where(e => e.Id == bookingId)
                 .Include(e => e.Branch)
+                .Include(e => e.Service)
                 .FirstOrDefaultAsync();
 
             return booking;

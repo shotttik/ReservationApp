@@ -3,6 +3,7 @@
     public enum QueueType
     {
         Email,
-        SMS
+        SMS,
+        Notification
     }
 }

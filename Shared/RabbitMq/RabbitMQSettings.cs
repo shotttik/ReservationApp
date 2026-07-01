@@ -10,6 +10,7 @@
         public required string ExchangeName { get; set; }
         public required string EmailQueue { get; set; }
         public required string SMSQueue { get; set; }
+        public string NotificationQueue { get; set; } = "notification_queue";
 
         public string Queue(QueueType queue)
         {
@@ -17,6 +18,7 @@
             {
                 QueueType.Email => EmailQueue,
                 QueueType.SMS => SMSQueue,
+                QueueType.Notification => NotificationQueue,
                 _ => throw new ArgumentException("Invalid queue type provided", nameof(queue))
             };
         }
@@ -26,6 +28,7 @@
             {
                 QueueType.Email => EmailQueue.Split("_").First(),
                 QueueType.SMS => SMSQueue.Split("_").First(),
+                QueueType.Notification => NotificationQueue.Split("_").First(),
                 _ => throw new ArgumentException("Invalid queue type provided", nameof(queue))
             };
         }

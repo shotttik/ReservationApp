@@ -1,4 +1,5 @@
 ﻿using Application.Authentication;
+using API.Services;
 using Application.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,10 @@ namespace API.Configuration
             // Common services
             services.AddHttpContextAccessor();
             services.AddAuthorization();
+            services.AddSignalR();
+            services.AddScoped<SignalRRealtimeNotificationService>();
+            services.AddHostedService<RealtimeNotificationDispatcherService>();
+            services.AddHostedService<NotificationOutboxDispatcherService>();
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
             services.AddScoped<IAuthorizationHandler, GuestOrUserAuthorizationHandler>();
 

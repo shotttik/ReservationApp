@@ -12,6 +12,7 @@ namespace API.Configuration
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
+                        options.Events = CreateSignalRJwtBearerEvents();
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
@@ -26,6 +27,7 @@ namespace API.Configuration
                     })
                     .AddJwtBearer("Guest", options =>
                     {
+                        options.Events = CreateSignalRJwtBearerEvents();
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = false,
@@ -42,6 +44,26 @@ namespace API.Configuration
                     });
 
             return services;
+        }
+
+        private static JwtBearerEvents CreateSignalRJwtBearerEvents()
+        {
+            return new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query ["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        path.StartsWithSegments("/hubs/notifications"))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            };
         }
     }
 }

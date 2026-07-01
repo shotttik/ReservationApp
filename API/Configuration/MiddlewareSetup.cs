@@ -1,4 +1,5 @@
 ﻿using API.Middlewares;
+using API.Hubs;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -22,6 +23,7 @@ namespace API.Configuration
             app.UseAuthorization();
             app.UseRateLimiter();
             app.MapControllers();
+            app.MapHub<NotificationsHub>("/hubs/notifications");
             app.UseMiddleware<LoggingMiddleware>();
 
             return app;

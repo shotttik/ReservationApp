@@ -45,6 +45,8 @@ namespace Infrastructure
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<CompanySubscription> CompanySubscriptions { get; set; }
         public DbSet<PromoCode> PromoCodes { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -72,6 +74,8 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new MediaConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
             modelBuilder.ApplyConfiguration(new CompanySubscriptionConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeServiceConfiguration());
 
             // Branch Releated

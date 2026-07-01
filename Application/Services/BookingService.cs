@@ -1,4 +1,5 @@
 ﻿using Application.Authentication;
+using Application.Common.Notifications;
 using Application.Common.Requests.Booking;
 using Application.Common.Responses;
 using Application.Common.Results;
@@ -26,6 +27,7 @@ namespace Application.Services
         private readonly IAccessGuard _accessGuard;
         private readonly IGuestBookingService _guestBookingService;
         private readonly IBookingNotificationService _bookingNotificationService;
+        private readonly IRealtimeNotificationService _realtimeNotificationService;
         private readonly BookingSettings _bookingSettings;
         private readonly ISubscriptionGuard _subscriptionGuard;
         private readonly IPromoService _promoService;
@@ -39,6 +41,7 @@ namespace Application.Services
             IAccessGuard accessGuard,
             IGuestBookingService guestBookingService,
             IBookingNotificationService bookingNotificationService,
+            IRealtimeNotificationService realtimeNotificationService,
             IOptions<BookingSettings> bookingSettings,
             ISubscriptionGuard subscriptionGuard,
             IPromoService promoService,
@@ -52,6 +55,7 @@ namespace Application.Services
             _accessGuard = accessGuard;
             _guestBookingService = guestBookingService;
             _bookingNotificationService = bookingNotificationService;
+            _realtimeNotificationService = realtimeNotificationService;
             _bookingSettings = bookingSettings.Value;
             _subscriptionGuard = subscriptionGuard;
             _promoService = promoService;
@@ -133,6 +137,13 @@ namespace Application.Services
 
             var token = JWTGenerator.GenerateGuestToken(booking.Id, _bookingSettings);
             var bookingDTO = booking.MapToDTO();
+            await NotifyCompanyBookingAsync(
+                companyId,
+                "booking.created",
+                "New guest booking",
+                $"A guest booking was created for {bookingDTO.ServiceName}.",
+                bookingDTO);
+
             var response = new CreateBookingByGuestResponse()
             {
                 Booking = bookingDTO,
@@ -204,6 +215,12 @@ namespace Application.Services
                 await _promoCodeRepository.Update(appliedPromo);
             }
             var bookingDTO = booking.MapToDTO(showRef: true);
+            await NotifyCompanyBookingAsync(
+                companyId,
+                "booking.created",
+                "New client booking",
+                $"A client booking was created for {bookingDTO.ServiceName}.",
+                bookingDTO);
 
             return Result.Success(bookingDTO);
         }
@@ -324,6 +341,12 @@ namespace Application.Services
                         booking);
                 }
                 bookingDTO = booking.MapToDTO();
+                await NotifyCompanyBookingAsync(
+                    companyId,
+                    "booking.created",
+                    "New booking",
+                    $"A booking was created for {bookingDTO.ServiceName}.",
+                    bookingDTO);
             }
             catch
             {
@@ -368,6 +391,11 @@ namespace Application.Services
             }
             booking.Status = request.Status;
             await _bookingRepository.Update(booking);
+            await NotifyBookingChangedAsync(
+                booking,
+                "booking.statusChanged",
+                "Booking status changed",
+                $"Booking status changed to {booking.Status}.");
 
             return Result.Success(BookingResults.StatusChanged);
         }
@@ -417,6 +445,11 @@ namespace Application.Services
             }
             booking.Cancel(request?.CancellationReason);
             await _bookingRepository.Update(booking);
+            await NotifyBookingChangedAsync(
+                booking,
+                "booking.canceled",
+                "Booking canceled",
+                "A booking was canceled.");
 
             return Result.Success(BookingResults.Canceled);
         }
@@ -468,8 +501,63 @@ namespace Application.Services
 
             await _bookingRepository.Update(booking);
 
-            return booking.MapToDTO();
+            var updatedBookingDTO = booking.MapToDTO();
+            await NotifyBookingChangedAsync(
+                booking,
+                "booking.rescheduled",
+                "Booking rescheduled",
+                "A booking was rescheduled.",
+                updatedBookingDTO);
+
+            return updatedBookingDTO;
         }
+
+        private async Task NotifyCompanyBookingAsync(
+            int companyId,
+            string type,
+            string title,
+            string message,
+            BookingDTO booking)
+        {
+            await _realtimeNotificationService.SendToCompanyAsync(
+                companyId,
+                new RealtimeNotificationPayload
+                {
+                    Type = type,
+                    Title = title,
+                    Message = message,
+                    Data = booking
+                });
+        }
+
+        private async Task NotifyBookingChangedAsync(
+            Booking booking,
+            string type,
+            string title,
+            string message,
+            BookingDTO? bookingDTO = null)
+        {
+            bookingDTO ??= booking.MapToDTO();
+            var notification = new RealtimeNotificationPayload
+            {
+                Type = type,
+                Title = title,
+                Message = message,
+                Data = bookingDTO
+            };
+
+            await _realtimeNotificationService.SendToCompanyAsync(booking.Branch.CompanyId, notification);
+
+            if (booking.ClientID.HasValue)
+            {
+                await _realtimeNotificationService.SendToUserAsync(booking.ClientID.Value, notification);
+            }
+            else
+            {
+                await _realtimeNotificationService.SendToGuestBookingAsync(booking.Id, notification);
+            }
+        }
+
         private async Task<Error> ValidateCreateRequest(Service? service, UserAccount employee, DateTime startTime, int? clientUserAccountId, int? bookingId = null)
         {
             if (service == null)
