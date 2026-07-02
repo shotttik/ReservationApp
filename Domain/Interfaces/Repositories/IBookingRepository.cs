@@ -1,5 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.DTO;
+using Domain.DTO.User;
 using Domain.Entities.Common;
 
 namespace Domain.Interfaces.Repositories
@@ -10,6 +11,7 @@ namespace Domain.Interfaces.Repositories
         Task<List<Booking>> GetDataForAllActiveEmployees(int branchId, DateOnly startDate, DateOnly endDate);
         Task<PagedList<BookingDTO>> RetrievePaged(
             PagedParameters parameters,
+            AuthUser authUser,
             CancellationToken cancellationToken);
         Task<Booking?> GetWithReviewInvite(int bookingId);
         Task<Booking?> GetWithBranchAndReviewInvite(int bookingId);

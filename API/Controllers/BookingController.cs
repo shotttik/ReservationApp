@@ -153,7 +153,11 @@ namespace API.Controllers
         /// Retrieves a paginated list of bookings.
         /// </summary>
         /// <remarks>
-        /// Required role: <strong>Accessible by everyone</strong><br/><br/>
+        /// SuperAdmin - Can retrieve all bookings.<br/>
+        /// CompanyAdmin - Can retrieve bookings for their own company.<br/>
+        /// CompanyEmployee - Can retrieve their own bookings.<br/>
+        /// PublicUser - Can retrieve their own bookings.<br/>
+        /// Required role: <strong>Only Authorized Users</strong><br/><br/>
         /// <b>Paging and filtering parameters:</b><br/>
         /// <b>Sortable / Filterable Fields:</b>
         /// <ul>
@@ -179,6 +183,7 @@ namespace API.Controllers
         /// <param name="cancellationToken">Request cancellation token.</param>
         /// <returns>Paged list of company records.</returns>
         [HttpGet()]
+        [Authorize]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(typeof(SuccessResponse<PagedList<BookingDTO>>), StatusCodes.Status200OK)]

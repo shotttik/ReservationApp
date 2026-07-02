@@ -405,6 +405,7 @@ namespace Application.Services
         }
         public async Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
         {
+            var authUser = await _authService.GetCurrentUser();
             var allowedFields = BookingFieldMap.DtoToEntityPath;
             var errors = parameters.Validate(allowedFields, typeof(Booking));
 
@@ -415,6 +416,7 @@ namespace Application.Services
 
             var bookings = await _bookingRepository.RetrievePaged(
                 parameters,
+                authUser,
                 cancellationToken);
 
             return bookings;

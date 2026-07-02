@@ -1,11 +1,13 @@
 ﻿using Application.Extensions.Mappers;
 using Domain.Abstractions;
 using Domain.DTO;
+using Domain.DTO.User;
 using Domain.Entities.Common;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -57,13 +59,14 @@ namespace Infrastructure.Repositories
                 ).Include(e => e.Service).ToListAsync();
         }
 
-        public async Task<PagedList<BookingDTO>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
+        public async Task<PagedList<BookingDTO>> RetrievePaged(PagedParameters parameters, AuthUser authUser, CancellationToken cancellationToken)
         {
             var query = _dbSet.
                 Include(e => e.Service).
                 Include(e => e.Branch).
                 AsQueryable();
 
+            query = ApplyAuthUserFilter(query, authUser);
             query = query.ApplyQueryParamsAsync(parameters);
 
             var totalCount = await query.CountAsync(cancellationToken);
@@ -180,6 +183,27 @@ namespace Infrastructure.Repositories
             return await _dbSet.Where(b => b.EmployeeID == employeeId
                 && serviceIds.Contains(b.ServiceID)
                 && b.StartTime > DateTime.UtcNow).AnyAsync();
+        }
+        private IQueryable<Booking> ApplyAuthUserFilter(
+        IQueryable<Booking> query,
+        AuthUser authUser)
+        {
+            switch (authUser.Role.Id)
+            {
+                case (int)Role.SuperAdmin:
+
+                    break;
+                case (int)Role.PublicUser:
+                    query = query.Where(b => b.ClientID == authUser.UserAccountId);
+                    break;
+                case (int)Role.CompanyAdmin:
+                    query = query.Where(b => b.Branch.CompanyId == authUser.CompanyId);
+                    break;
+                case (int)Role.CompanyEmployee:
+                    query = query.Where(b => b.Branch.CompanyId == authUser.CompanyId && b.EmployeeID == authUser.UserAccountId);
+                    break;
+            }
+            return query;
         }
     }
 }
