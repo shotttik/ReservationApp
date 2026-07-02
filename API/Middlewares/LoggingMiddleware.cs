@@ -25,7 +25,7 @@ namespace API.Middlewares
         public async Task Invoke(HttpContext context)
         {
             LogContext.PushProperty("LogTarget", "HTTP");
-            
+
             loggingType = GetLoggingType(context);
 
             try
@@ -40,15 +40,15 @@ namespace API.Middlewares
 
                     HttpRequest request = context.Request;
 
-                    if (request.ContentType != null && request.ContentType.ToLower().Contains("application/json"))
+                    if (loggingType == LoggingType.Full)
                     {
-                        var requestBody = await ReadBodyFromRequest(request);
-                        LogContext.PushProperty("RequestBody", requestBody);
+                        if (request.ContentType != null && request.ContentType.ToLower().Contains("application/json"))
+                        {
+                            var requestBody = await ReadBodyFromRequest(request);
+                            LogContext.PushProperty("RequestBody", requestBody);
 
-                    }
-                    else // Log when getting multipart/form-data;
-                    {
-                        if (loggingType == LoggingType.Full)
+                        }
+                        else // Log when getting multipart/form-data;
                         {
                             LogRequestBody(context);
                         }
