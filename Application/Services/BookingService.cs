@@ -380,6 +380,10 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.SameStatus);
             }
+            if (booking.Status == BookingStatus.Completed)
+            {
+                return Result.Failure(BookingResults.CannotChangeStatus);
+            }
             if (request.IsCompleted)
             {
                 booking.EndTime = DateTime.UtcNow;
