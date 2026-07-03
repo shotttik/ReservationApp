@@ -8,6 +8,10 @@ namespace API.Configuration
     {
         public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration config)
         {
+            var jwtIssuer = GetRequiredConfigValue(config, "Jwt:Issuer");
+            var jwtAudience = GetRequiredConfigValue(config, "Jwt:Audience");
+            var jwtKey = GetRequiredConfigValue(config, "Jwt:Key");
+            var guestJwtKey = GetRequiredConfigValue(config, "BookingSettings:GuestToken:Key");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -19,9 +23,9 @@ namespace API.Configuration
                             ValidateAudience = true,
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
-                            ValidIssuer = config ["Jwt:Issuer"],
-                            ValidAudience = config ["Jwt:Audience"],
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config ["Jwt:Key"]!)),
+                            ValidIssuer = jwtIssuer,
+                            ValidAudience = jwtAudience,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
                             ClockSkew = TimeSpan.Zero
                         };
                     })
@@ -37,13 +41,24 @@ namespace API.Configuration
                             ValidateIssuerSigningKey = true,
 
                             IssuerSigningKey = new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(config ["BookingSettings:GuestToken:Key"]!)
+                                Encoding.UTF8.GetBytes(guestJwtKey)
                             ),
                             ClockSkew = TimeSpan.Zero
                         };
                     });
 
             return services;
+        }
+
+        private static string GetRequiredConfigValue(IConfiguration config, string key)
+        {
+            var value = config[key];
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+
+            throw new InvalidOperationException($"Missing required configuration value '{key}'.");
         }
 
         private static JwtBearerEvents CreateSignalRJwtBearerEvents()

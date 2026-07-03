@@ -197,17 +197,9 @@ namespace API.Middlewares
             context.Response.StatusCode = serverErrorCode;
             context.Response.ContentType = "application/json";
 
-            if (loggingType != LoggingType.None)
-            {
-                LogContext.PushProperty("StatusCode", serverErrorCode);
-                LogContext.PushProperty("Response", errorMessage);
-                logger.LogError(ex, "Exception has occurred");
-
-                //@TODO Remove before production Log to console
-                Console.WriteLine($"Error: {ex}");
-                Console.WriteLine($"Status Code: {serverErrorCode}");
-                Console.WriteLine($"Response: {errorMessage}");
-            }
+            LogContext.PushProperty("StatusCode", serverErrorCode);
+            LogContext.PushProperty("Response", errorMessage);
+            logger.LogError(ex, "Unhandled exception returned {StatusCode}", serverErrorCode);
 
             await context.Response.WriteAsJsonAsync(problemDetails);
         }

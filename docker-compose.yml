@@ -83,6 +83,10 @@ services:
       DOTNET_ENVIRONMENT: "Docker"
       ASPNETCORE_ENVIRONMENT: "Docker"
       ASPNETCORE_URLS: "http://+:8080"
+      Jwt__Key: "0F37AA521B33461D8530CD54312D8AFB"
+      Jwt__Issuer: "https://myapp.example.com"
+      Jwt__Audience: "https://api.example.com"
+      BookingSettings__GuestToken__Key: "0F37AA521B333461D8530CD54312D8AFB123"
     ports: ["5000:8080"]
     depends_on:
       sqlserver:

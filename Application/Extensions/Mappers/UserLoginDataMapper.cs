@@ -10,8 +10,9 @@ namespace Application.Extensions.Mappers
         public static AuthUser MapToAuthorizationData(this UserLoginData user, AppUrls appUrls)
         {
             var baseUri = new Uri(appUrls.ApiBaseUrl);
-            var webpUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl);
-            var originalUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.OriginalUrl);
+            var media = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media;
+            var webpUrl = BuildMediaUrl(baseUri, media?.RemoteUrl);
+            var originalUrl = BuildMediaUrl(baseUri, media?.OriginalUrl);
             var userDTO = new AuthUser
             {
                 Email = user.Email,
@@ -22,8 +23,8 @@ namespace Application.Extensions.Mappers
                 LastName = user.UserAccount.LastName,
                 Gender = user.UserAccount.Gender.HasValue ? (Gender?)user.UserAccount.Gender : null,
                 DateOfBirth = user.UserAccount.DateOfBirth,
-                ProfileImageUrlWebp = webpUri.ToString(),
-                ProfileImageUrlOriginal = originalUri.ToString(),
+                ProfileImageUrlWebp = webpUrl,
+                ProfileImageUrlOriginal = originalUrl,
                 Role = new RoleDTO
                 {
                     Id = user.UserAccount.Role!.ID,
@@ -47,8 +48,9 @@ namespace Application.Extensions.Mappers
         public static UserLoginDataDTO MapToDTO(this UserLoginData user, AppUrls appUrls)
         {
             var baseUri = new Uri(appUrls.ApiBaseUrl);
-            var webpUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.RemoteUrl);
-            var originalUri = new Uri(baseUri, user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media.OriginalUrl);
+            var media = user.UserAccount.UserAccountMedia.FirstOrDefault()?.Media;
+            var webpUrl = BuildMediaUrl(baseUri, media?.RemoteUrl);
+            var originalUrl = BuildMediaUrl(baseUri, media?.OriginalUrl);
 
             var userDTO = new UserLoginDataDTO
             {
@@ -63,8 +65,8 @@ namespace Application.Extensions.Mappers
                 ActiveStatus = user.ActiveStatus,
                 EmailVerificationStatus = user.EmailVerificationStatus,
                 PhoneVerificationStatus = user.PhoneVerificationStatus,
-                ProfileImageUrlWebp = webpUri.ToString(),
-                ProfileImageUrlOriginal = originalUri.ToString(),
+                ProfileImageUrlWebp = webpUrl,
+                ProfileImageUrlOriginal = originalUrl,
                 Role = new RoleDTO
                 {
                     Id = user.UserAccount.Role!.ID,
@@ -118,6 +120,16 @@ namespace Application.Extensions.Mappers
             };
 
             return userDTO;
+        }
+
+        private static string? BuildMediaUrl(Uri baseUri, string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return null;
+            }
+
+            return new Uri(baseUri, relativePath).ToString();
         }
     }
 }

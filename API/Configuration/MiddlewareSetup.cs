@@ -12,6 +12,7 @@ namespace API.Configuration
         {
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
@@ -24,7 +25,6 @@ namespace API.Configuration
             app.UseRateLimiter();
             app.MapControllers();
             app.MapHub<NotificationsHub>("/hubs/notifications");
-            app.UseMiddleware<LoggingMiddleware>();
 
             return app;
         }
