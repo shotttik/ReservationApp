@@ -70,6 +70,7 @@ namespace Infrastructure.Repositories
         {
             var query = _dbSet
                 .Include(e => e.Services)
+                .Include(e => e.Subscription)
                 .AsSplitQuery()
                 .AsQueryable();
 
@@ -90,7 +91,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var companies = await query
-                .OrderBy(e=> e.Id)
+                .OrderBy(e => e.Id)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
