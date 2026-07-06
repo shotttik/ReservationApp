@@ -50,7 +50,7 @@ namespace API.Controllers
             return result.ToResponse();
         }
         /// <summary>
-        /// Deletes all active sessions for the current user.
+        /// Deletes active sessions for the current user except current one.
         /// </summary>
         /// <returns>Success if all sessions were removed.</returns>
         [HttpDelete]
@@ -58,9 +58,9 @@ namespace API.Controllers
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteAllActiveSessions()
+        public async Task<IActionResult> DeleteAllActiveSessionsExceptCurrent()
         {
-            var result = await userService.DeleteAllActiveSessions();
+            var result = await userService.DeleteAllActiveSessions(ExceptCurrent: true);
             return result.ToResponse();
         }
     }

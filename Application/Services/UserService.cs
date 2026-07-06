@@ -135,7 +135,7 @@ namespace Application.Services
                sessionInfo.RefreshTokenExpTime - DateTime.UtcNow
             );
 
-            var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(user.Id))
+            var sessions = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(user.Id))
                 ?? new List<string>();
 
             if (!sessions.Contains(sessionInfo.SessionId))
@@ -147,7 +147,7 @@ namespace Application.Services
             var userActiveSessionsTTL = TimeSpan.FromDays(expDays);
 
             await cacheService.SetAsync(
-                CacheUtils.ActiveSessionsKey(user.Id),
+                CacheUtils.UserSessionsKey(user.Id),
                 sessions,
                 userActiveSessionsTTL
             );
@@ -221,10 +221,10 @@ namespace Application.Services
             var userId = sessionInfo.AuthUser.Id;
             await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionID));
 
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId)) ?? new List<string>();
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(userId)) ?? new List<string>();
             if (sessionIds.Remove(sessionID))
             {
-                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(userId), sessionIds);
+                await cacheService.SetAsync(CacheUtils.UserSessionsKey(userId), sessionIds);
             }
 
             return Result.Success(AuthResults.Logouted);
@@ -378,7 +378,7 @@ namespace Application.Services
         public async Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions()
         {
             var AuthUser = await authService.GetCurrentUser();
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.Id));
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(AuthUser.Id));
 
             var sessions = new List<SessionInfoSummaryDTO>();
             foreach (var sessionId in sessionIds!)
@@ -408,31 +408,51 @@ namespace Application.Services
                 return Result.Failure(AuthResults.SessionNotFound);
             }
             await cacheService.RemoveAsync(sessionKey);
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(AuthUser.Id)) ?? new List<string>();
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(AuthUser.Id)) ?? new List<string>();
             if (sessionIds.Remove(sessionId))
             {
-                await cacheService.SetAsync(CacheUtils.ActiveSessionsKey(AuthUser.Id), sessionIds);
+                await cacheService.SetAsync(CacheUtils.UserSessionsKey(AuthUser.Id), sessionIds);
             }
 
             return Result.Success(AuthResults.SessionRemoved);
         }
 
-        public async Task<Result> DeleteAllActiveSessions(int? UserID = null)
+        /// <summary>
+        /// There are two <see href="https://bing.com">params</see>.
+        /// <list type="number">
+        /// <item><param name="UserID">The user <em>id</em></param></item>
+        /// <item><param name="ExceptCurrent">Used when authuser called this method</param></item>
+        /// </list>
+        /// </summary>
+        /// <returns>The <strong>Application.Common.Results.Result</strong>.</returns>
+        public async Task<Result> DeleteAllActiveSessions(int? UserID = null, bool ExceptCurrent = false)
         {
             UserID ??= authService.GetUserLoginDataID();
-            var activeSessionsKey = CacheUtils.ActiveSessionsKey((int)UserID);
-            var sessionIds = await cacheService.GetAsync<List<string>>(activeSessionsKey);
+            var userSessionsKey = CacheUtils.UserSessionsKey((int)UserID);
+            var currentSessionId = ExceptCurrent ? authService.GetSessionID() : null;
+            var sessionIds = await cacheService.GetAsync<List<string>>(userSessionsKey);
             if (sessionIds == null || sessionIds.Count == 0)
             {
                 return Result.Success(AuthResults.NoActiveSessions);
             }
             foreach (var sessionId in sessionIds)
             {
+                if (currentSessionId != null && sessionId == currentSessionId)
+                {
+                    continue;
+                }
                 await cacheService.RemoveAsync(CacheUtils.SessionKey(sessionId));
             }
-            await cacheService.RemoveAsync(CacheUtils.ActiveSessionsKey((int)UserID));
-
-            return Result.Success(AuthResults.AllSessionsRemoved);
+            if (currentSessionId != null)
+            {
+                await cacheService.SetAsync(userSessionsKey, new List<string> { currentSessionId });
+                return Result.Success(AuthResults.SessionsRemoved);
+            }
+            else
+            {
+                await cacheService.RemoveAsync(CacheUtils.UserSessionsKey((int)UserID));
+                return Result.Success(AuthResults.AllSessionsRemoved);
+            }
         }
 
         // administrator can delete any user, otherwise only current user can delete their own account

@@ -21,7 +21,7 @@ namespace Application.Interfaces
         Task<Result> Update(UpdateUserRequest request);
         Task<Result<List<SessionInfoSummaryDTO>>> GetActiveSessions();
         Task<Result> DeleteActiveSession(string sessionId);
-        Task<Result> DeleteAllActiveSessions(int? UserID = null);
+        Task<Result> DeleteAllActiveSessions(int? UserID = null, bool ExceptCurrent = false);
         Task<Result> Delete(int? userID, bool force);
         Task<Result> UploadProfileImage(UploadUserProfileImageRequest request, CancellationToken cancellationToken);
     }

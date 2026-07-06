@@ -41,6 +41,7 @@
         public static readonly SuccessInfo UserUpdated = new("Auth.UserUpdated", "User updated successfully.");
         public static readonly SuccessInfo SessionRemoved = new("Auth.SessionRemoved", "Session removed successfully.");
         public static readonly SuccessInfo AllSessionsRemoved = new("Auth.AllSessionsRemoved", "All sessions removed successfully, and logged out.");
+        public static readonly SuccessInfo SessionsRemoved = new("Auth.SessionsRemoved", "other active sessions removed successfully.");
         public static readonly SuccessInfo UserCreated = new("Auth.UserCreated", "User created successfully.");
         public static readonly SuccessInfo UserAssignedToCompany = new("Auth.UserAssignedToCompany", "User assigned to company successfully.");
 

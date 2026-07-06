@@ -66,7 +66,7 @@ namespace Application.Services
             if (user == null) return;
 
             var authUser = user.MapToAuthorizationData(appUrls);
-            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.ActiveSessionsKey(userId));
+            var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(userId));
 
             if (sessionIds == null) return;
 
