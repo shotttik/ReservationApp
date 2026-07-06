@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Application.Common.Results;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -24,6 +26,44 @@ namespace API.Configuration
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config ["Jwt:Key"]!)),
                             ClockSkew = TimeSpan.Zero
                         };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnChallenge = async context =>
+                            {
+                                context.HandleResponse();
+
+                                var errorMessage = "Authentication is required.";
+
+                                if (context.AuthenticateFailure is SecurityTokenExpiredException)
+                                {
+                                    errorMessage = "Access token has expired.";
+                                }
+
+                                var problemDetails = new ProblemDetails
+                                {
+                                    Status = StatusCodes.Status401Unauthorized,
+                                    Title = "Unauthorized",
+                                    Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                                    Extensions =
+                        {
+                        {
+                            "errors",
+                            new[]
+                            {
+                                Error.Unauthorized(
+                                    "Authorization.Unauthorized",
+                                    errorMessage)
+                            }
+                        }
+                        }
+                                };
+
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                context.Response.ContentType = "application/problem+json";
+
+                                await context.Response.WriteAsJsonAsync(problemDetails);
+                            }
+                        };
                     })
                     .AddJwtBearer("Guest", options =>
                     {
@@ -41,6 +81,45 @@ namespace API.Configuration
                             ),
                             ClockSkew = TimeSpan.Zero
                         };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnChallenge = async context =>
+                            {
+                                context.HandleResponse();
+
+                                var errorMessage = "Authentication is required.";
+
+                                if (context.AuthenticateFailure is SecurityTokenExpiredException)
+                                {
+                                    errorMessage = "Access token has expired.";
+                                }
+
+                                var problemDetails = new ProblemDetails
+                                {
+                                    Status = StatusCodes.Status401Unauthorized,
+                                    Title = "Unauthorized",
+                                    Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                                    Extensions =
+                        {
+                        {
+                            "errors",
+                            new[]
+                            {
+                                Error.Unauthorized(
+                                    "Authorization.Unauthorized",
+                                    errorMessage)
+                            }
+                        }
+                        }
+                                };
+
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                context.Response.ContentType = "application/problem+json";
+
+                                await context.Response.WriteAsJsonAsync(problemDetails);
+                            }
+                        };
+
                     });
 
             return services;

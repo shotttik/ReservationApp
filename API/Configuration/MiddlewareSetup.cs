@@ -1,5 +1,5 @@
-﻿using API.Middlewares;
-using API.Hubs;
+﻿using API.Hubs;
+using API.Middlewares;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -10,21 +10,29 @@ namespace API.Configuration
     {
         public static WebApplication UseConfiguredMiddleware(this WebApplication app)
         {
-            app.UseCors("AllowAll");
             app.UseHttpsRedirection();
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-            Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+                    Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
                 RequestPath = "/uploads"
             });
+
             app.UseRouting();
+
+            app.UseCors("AllowAll");
+
+            app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseRateLimiter();
+
             app.MapControllers();
             app.MapHub<NotificationsHub>("/hubs/notifications");
-            app.UseMiddleware<LoggingMiddleware>();
 
             return app;
         }

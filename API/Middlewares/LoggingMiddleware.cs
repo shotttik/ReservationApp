@@ -1,11 +1,8 @@
 ﻿using API.Attributes;
-using Application.Common.Results;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Serilog.Context;
 using Shared.Extensions;
-using System.Net;
 
 namespace API.Middlewares
 {
@@ -13,7 +10,6 @@ namespace API.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<LoggingMiddleware> logger;
-        //private AuthUser? AuthUser;
         private LoggingType loggingType;
 
         public LoggingMiddleware(RequestDelegate next, ILogger<LoggingMiddleware> logger)
@@ -28,44 +24,19 @@ namespace API.Middlewares
 
             loggingType = GetLoggingType(context);
 
-            try
+            if (loggingType == LoggingType.None)
             {
-                if (loggingType == LoggingType.None)
-                {
-                    await _next(context);
-                }
-                else
-                {
-                    LogRequestDetails(context);
-
-                    HttpRequest request = context.Request;
-
-                    if (loggingType == LoggingType.Full)
-                    {
-                        if (request.ContentType != null && request.ContentType.ToLower().Contains("application/json"))
-                        {
-                            var requestBody = await ReadBodyFromRequest(request);
-                            LogContext.PushProperty("RequestBody", requestBody);
-
-                        }
-                        else // Log when getting multipart/form-data;
-                        {
-                            LogRequestBody(context);
-                        }
-                    }
-
-                    await LogResponseDetails(context);
-
-
-                }
-
-
+                await _next(context);
+                return;
             }
-            catch (Exception ex)
-            {
-                await HandleException(context, ex);
-            }
+
+            LogRequestDetails(context);
+
+            await LogRequestBodyByLoggingType(context);
+
+            await LogResponseDetails(context);
         }
+
         private async Task<string> ReadBodyFromRequest(HttpRequest request)
         {
             // Ensure the request's body can be read multiple times 
@@ -152,6 +123,7 @@ namespace API.Middlewares
             try
             {
                 using var responseBody = new MemoryStream();
+
                 if (loggingType != LoggingType.General)
                 {
                     context.Response.Body = responseBody;
@@ -161,55 +133,42 @@ namespace API.Middlewares
 
                 if (loggingType != LoggingType.General)
                 {
-
                     responseBody.Seek(0, SeekOrigin.Begin);
-                    var responseText = new StreamReader(responseBody).ReadToEnd();
+                    var responseText = await new StreamReader(responseBody).ReadToEndAsync();
+
                     LogContext.PushProperty("Response", responseText);
 
                     responseBody.Seek(0, SeekOrigin.Begin);
                     await responseBody.CopyToAsync(originalBodyStream);
-
                 }
+
                 LogContext.PushProperty("StatusCode", context.Response.StatusCode);
-                logger.LogInformation("Success");
+
+                if (context.Response.StatusCode >= 500)
+                {
+                    if (context.Items.TryGetValue("Exception", out var value) &&
+                        value is Exception ex)
+                    {
+                        logger.LogError(ex, "Exception has occurred");
+                    }
+                    else
+                    {
+                        logger.LogError("Server failure");
+                    }
+                }
+                else if (context.Response.StatusCode >= 400)
+                {
+                    logger.LogWarning("Request finished with client error");
+                }
+                else
+                {
+                    logger.LogInformation("Success");
+                }
             }
             finally
             {
                 context.Response.Body = originalBodyStream;
             }
-        }
-        private async Task HandleException(HttpContext context, Exception ex)
-        {
-            var serverErrorCode = (int)HttpStatusCode.InternalServerError;
-            var error = Error.Failure("Server.Failure", ex.Message);
-            var problemDetails = new ProblemDetails
-            {
-                Status = serverErrorCode,
-                Title = "Internal Server Error",
-                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Extensions = { { "errors", new [] { error } } }
-            };
-            var errorMessage = JsonConvert.SerializeObject(problemDetails, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-
-            context.Response.StatusCode = serverErrorCode;
-            context.Response.ContentType = "application/json";
-
-            if (loggingType != LoggingType.None)
-            {
-                LogContext.PushProperty("StatusCode", serverErrorCode);
-                LogContext.PushProperty("Response", errorMessage);
-                logger.LogError(ex, "Exception has occurred");
-
-                //@TODO Remove before production Log to console
-                Console.WriteLine($"Error: {ex}");
-                Console.WriteLine($"Status Code: {serverErrorCode}");
-                Console.WriteLine($"Response: {errorMessage}");
-            }
-
-            await context.Response.WriteAsJsonAsync(problemDetails);
         }
 
         private static LoggingType GetLoggingType(HttpContext context)
@@ -220,7 +179,24 @@ namespace API.Middlewares
 
             return (LoggingType)loggingType;
         }
+        private async Task LogRequestBodyByLoggingType(HttpContext context)
+        {
+            if (loggingType != LoggingType.Full)
+                return;
 
+            HttpRequest request = context.Request;
+
+            if (request.ContentType != null &&
+                request.ContentType.ToLower().Contains("application/json"))
+            {
+                var requestBody = await ReadBodyFromRequest(request);
+                LogContext.PushProperty("RequestBody", requestBody);
+            }
+            else // Log when getting multipart/form-data
+            {
+                LogRequestBody(context);
+            }
+        }
     }
 
 }
