@@ -58,6 +58,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync();
 
             var companies = await query
+                .OrderBy(e => e.Id)
                 .Select(e => e.MapToDTOWithCompany())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)

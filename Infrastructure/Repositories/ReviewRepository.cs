@@ -24,6 +24,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var reviews = await query
+                .OrderBy(e=> e.Id)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)

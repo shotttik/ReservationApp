@@ -39,6 +39,7 @@ namespace Infrastructure.Repositories
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.Id == id)
+                .AsSplitQuery()
                    .FirstOrDefaultAsync();
         }
         public async Task<Company?> GetFullDataPublic(int id)
@@ -56,6 +57,7 @@ namespace Infrastructure.Repositories
                 .Include(c => c.CompanyMedia)
                     .ThenInclude(cm => cm.Media)
                 .Where(e => e.Id == id && e.ActiveStatus == ActiveStatus.Active)
+                .AsSplitQuery()
                    .FirstOrDefaultAsync();
 
             return company;
@@ -68,6 +70,7 @@ namespace Infrastructure.Repositories
         {
             var query = _dbSet
                 .Include(e => e.Services)
+                .AsSplitQuery()
                 .AsQueryable();
 
             if (forPublic)
@@ -87,6 +90,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var companies = await query
+                .OrderBy(e=> e.Id)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)

@@ -124,6 +124,7 @@ namespace Infrastructure.Repositories
                         .OrderByDescending(v => v.CreatedAt)
                         .FirstOrDefault()
                 ))
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
         }
 
@@ -142,6 +143,7 @@ namespace Infrastructure.Repositories
                         .OrderByDescending(v => v.CreatedAt)
                         .FirstOrDefault()
                 ))
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
         }
 
@@ -161,6 +163,7 @@ namespace Infrastructure.Repositories
                         .OrderByDescending(v => v.CreatedAt)
                         .FirstOrDefault()
                 ))
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
         }
 

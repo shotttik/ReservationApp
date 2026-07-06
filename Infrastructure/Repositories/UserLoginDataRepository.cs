@@ -35,8 +35,8 @@ namespace Infrastructure.Repositories
                .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.EmployeeServices)
                         .ThenInclude(es => es.Service)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
-
             return userLoginData;
         }
         public async Task<UserLoginData?> GetFullUserData(int ID)
@@ -54,6 +54,7 @@ namespace Infrastructure.Repositories
                 .Include(u => u.UserAccount)
                     .ThenInclude(ua => ua.EmployeeServices)
                         .ThenInclude(es => es.Service)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
 
             return userLoginData;
@@ -95,6 +96,7 @@ namespace Infrastructure.Repositories
             .Include(u => u.UserAccount)
                 .ThenInclude(u => u.WorkScheduleExceptions)
             .Where(u => u.Id != authUserID)
+            .AsSplitQuery()
             .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
@@ -102,6 +104,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var users = await query
+                .OrderBy(u => u.Id)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
@@ -125,6 +128,7 @@ namespace Infrastructure.Repositories
             .Include(u => u.UserAccount)
                 .ThenInclude(u => u.WorkScheduleExceptions)
             .Where(u => u.Id != authUserID && u.UserAccount.CompanyID == companyID)
+            .AsSplitQuery()
             .AsQueryable();
 
             query = query.ApplyQueryParamsAsync(parameters);
@@ -132,6 +136,7 @@ namespace Infrastructure.Repositories
             var totalCount = await query.CountAsync(cancellationToken);
 
             var users = await query
+                .OrderBy(u=> u.Id)
                 .Select(e => e.MapToDTO())
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)

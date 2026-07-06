@@ -105,6 +105,7 @@ namespace Infrastructure.Repositories
                 .Include(e => e.WorkSchedules)
                 .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
                 .Include(e => e.EmployeeServices)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
 
             return userAccount;
@@ -139,6 +140,7 @@ namespace Infrastructure.Repositories
                 .Include(e => e.BookingsAsEmployee)
                 .Include(e => e.WorkSchedules)
                 .Include(e => e.WorkScheduleExceptions.Where(wse => wse.EndDate >= today))
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
 
             return userAccount;
