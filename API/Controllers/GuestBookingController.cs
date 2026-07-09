@@ -259,49 +259,5 @@ namespace API.Controllers
             var result = await _bookingService.CancelBooking(id, request);
             return result.ToResponse();
         }
-
-        /// <summary>
-        /// Reschedules an existing booking.
-        /// </summary>
-        /// <remarks>
-        /// <b>Purpose:</b><br/>
-        /// Reschedules a booking by updating its start time, employee, and/or service.
-        /// <br/><br/>
-        /// <b>Behavior:</b>
-        /// <ul>
-        ///   <li>Booking status changes to <c>Pending</c>.</li>
-        ///   <li>Booking can be assigned to a new employee using <c>EmployeeId</c>.</li>
-        ///   <li>Booking service can be changed using <c>ServiceId</c>.</li>
-        /// </ul>
-        /// <br/>
-        /// <b>Important:</b>
-        /// <ul>
-        ///   <li>Accessible to the guest who created the booking or the authenticated user associated with the booking.</li>
-        ///   <li>Only reschedulable bookings can be rescheduled.</li>
-        /// </ul>
-        /// <b>Reschedulable if:</b>
-        /// <ul>
-        ///   <li>Booking status allows rescheduling.</li>
-        ///   <li>New start time is at least 30 minutes in the future.</li>
-        /// </ul>
-        /// <br/>
-        /// Required role: Accessible by guest with valid access or authenticated booking owner.
-        /// </remarks>
-        /// <param name="id">The identifier of the booking to reschedule.</param>
-        /// <param name="request">Contains the new service, employee, and start time.</param>
-        /// <returns>
-        /// Returns a <see cref="SuccessResponse"/> when the booking is successfully rescheduled.
-        /// Returns validation errors (400), forbidden (403), or not found (404).
-        /// </returns>
-        [HttpPatch("{id:int}/reschedule")]
-        [GuestOrUser]
-        [Logging(LoggingType.Full)]
-        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Reschedule([FromRoute] int id, [FromBody] RescheduleBookingRequest request)
-        {
-            var result = await _bookingService.RescheduleBooking(id, request);
-            return result.ToResponse();
-        }
     }
 }
