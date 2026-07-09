@@ -1,5 +1,4 @@
 ﻿using Application.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,7 +9,7 @@ namespace Application.Authentication
 {
     public static class JWTGenerator
     {
-        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, string sessionID, string role, IConfiguration configuration)
+        public static string GenerateAccessToken(int userLoginDataID, int userAccountID, string email, string sessionID, string role, JwtOptions jwtOptions)
         {
             var claims = new []
             {
@@ -22,20 +21,20 @@ namespace Application.Authentication
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // unique identifier for the token
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration ["Jwt:Key"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: configuration ["Jwt:Issuer"],
-                audience: configuration ["Jwt:Audience"],
+                issuer: jwtOptions.Issuer,
+                audience: jwtOptions.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtOptions.AccessTokenExpirationMinutes)),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public static string GenerateGuestToken(int bookingId, BookingSettings bookingSettings)
+        public static string GenerateGuestToken(int bookingId, BookingOptions bookingSettings)
         {
             var claims = new []
             {
@@ -64,14 +63,14 @@ namespace Application.Authentication
             return HashToken(secureToken);
         }
 
-        public static ClaimsPrincipal GetPrincipalFromExpiredToken(string token, IConfiguration configuration)
+        public static ClaimsPrincipal GetPrincipalFromExpiredToken(string token, JwtOptions jwtOptions)
         {
             var tokenValidationParameteres = new TokenValidationParameters
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration ["Jwt:Key"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 ValidateLifetime = false
             };
             var tokenHandler = new JwtSecurityTokenHandler();

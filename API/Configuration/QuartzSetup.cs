@@ -9,8 +9,8 @@ namespace API.Configuration
     {
         public static void AddQuartzJobs(this IServiceCollection services, IConfiguration configuration)
         {
-            var fixedOptions = new MediaCleanupJobSettings();
-            configuration.GetSection(MediaCleanupJobSettings.ConfigurationSection).Bind(fixedOptions);
+            var fixedOptions = new MediaCleanupJobOptions();
+            configuration.GetSection(MediaCleanupJobOptions.ConfigurationSection).Bind(fixedOptions);
 
             services.AddQuartz(q =>
             {

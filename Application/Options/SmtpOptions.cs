@@ -1,7 +1,8 @@
 ﻿namespace Application.Options
 {
-    public class SmtpSettings
+    public class SmtpOptions
     {
+        public const string ConfigurationSection = "SmtpSettings";
         public required string Host { get; set; }
         public int Port { get; set; }
         public string Name { get; set; } = "NoReply";

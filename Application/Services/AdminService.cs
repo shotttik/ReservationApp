@@ -1,5 +1,4 @@
 ﻿using Application.Authentication;
-using Application.Common.Requests;
 using Application.Common.Requests.Admin;
 using Application.Common.Results;
 using Application.Extensions.Mappers;
@@ -26,7 +25,9 @@ namespace Application.Services
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
         private readonly ISubscriptionPlanRepository _subscriptionPlanRepository;
-        private readonly AppUrls appUrls;
+        private readonly AppUrls _appUrls;
+        private readonly JwtOptions _jwtOptions;
+
 
         public AdminService(
             IUserLoginDataRepository userLoginDataRepository,
@@ -36,7 +37,8 @@ namespace Application.Services
             IConfiguration configuration,
             IUserService userService,
             ISubscriptionPlanRepository subscriptionPlanRepository,
-            IOptions<AppUrls> appUrls
+            IOptions<AppUrls> appUrls,
+            IOptions<JwtOptions> jwtOptions
             )
         {
             this.userLoginDataRepository = userLoginDataRepository;
@@ -46,7 +48,8 @@ namespace Application.Services
             this.configuration = configuration;
             this.userService = userService;
             _subscriptionPlanRepository = subscriptionPlanRepository;
-            this.appUrls = appUrls.Value;
+            _appUrls = appUrls.Value;
+            _jwtOptions = jwtOptions.Value;
         }
 
         public async Task<Result> UserCreate(UserCreateRequest request)
@@ -68,7 +71,7 @@ namespace Application.Services
                 }
             }
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
-            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             var userAccount = new UserAccount()
@@ -256,7 +259,7 @@ namespace Application.Services
             {
                 return Result.Failure<UserLoginDataDTO>(AuthResults.UserNotFound);
             }
-            return Result.Success(user.MapToDTO(appUrls));
+            return Result.Success(user.MapToDTO(_appUrls));
         }
     }
 }

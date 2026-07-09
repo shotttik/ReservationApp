@@ -28,7 +28,7 @@ namespace Application.Services
         private readonly IGuestBookingService _guestBookingService;
         private readonly IBookingNotificationService _bookingNotificationService;
         private readonly IRealtimeNotificationService _realtimeNotificationService;
-        private readonly BookingSettings _bookingSettings;
+        private readonly BookingOptions _bookingSettings;
         private readonly ISubscriptionGuard _subscriptionGuard;
         private readonly IPromoService _promoService;
         private readonly IPromoCodeRepository _promoCodeRepository;
@@ -42,7 +42,7 @@ namespace Application.Services
             IGuestBookingService guestBookingService,
             IBookingNotificationService bookingNotificationService,
             IRealtimeNotificationService realtimeNotificationService,
-            IOptions<BookingSettings> bookingSettings,
+            IOptions<BookingOptions> bookingSettings,
             ISubscriptionGuard subscriptionGuard,
             IPromoService promoService,
             IPromoCodeRepository promoCodeRepository,

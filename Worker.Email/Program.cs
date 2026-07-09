@@ -14,7 +14,7 @@ builder.Logging.AddSerilog(Log.Logger);
 var configuration = builder.Configuration;
 builder.Services.Configure<RabbitMQSettings>(
     configuration.GetSection("RabbitMQ"));
-builder.Services.Configure<SmtpSettings>(
+builder.Services.Configure<SmtpOptions>(
     configuration.GetSection("SmtpSettings"));
 // services
 builder.Services.AddSingleton<IEmailService, EmailService>();

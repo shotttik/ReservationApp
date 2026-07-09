@@ -7,7 +7,6 @@ using Application.Options;
 using Domain.Entities.Common;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
 using Shared.Utilities;
 
@@ -15,29 +14,21 @@ namespace Application.Services
 {
     public class GuestBookingService :IGuestBookingService
     {
-        private readonly BookingSettings _bookingSettings;
-        private readonly ISmsTemplateBuilder _smsBuilder;
-        private readonly IEmailTemplateBuilder _emailBuilder;
-        private readonly IMessageProducerService _messageProducer;
+        private readonly BookingOptions _bookingSettings;
         private readonly IBookingRepository _bookingRepository;
         private readonly IAccessGuard _accessGuard;
         private readonly IBookingVerificationRepository _bookingVerificationRepository;
         private readonly IBookingNotificationService _bookingNotificationService;
 
         public GuestBookingService(
-            IOptions<BookingSettings> bookingSettings,
-            IEmailTemplateBuilder emailBuilder,
-            IMessageProducerService messageProducer,
-            ISmsTemplateBuilder smsBuilder,
+            IOptions<BookingOptions> bookingSettings,
+
             IBookingRepository bookingRepository,
             IAccessGuard accessGuard,
             IBookingVerificationRepository bookingVerificationRepository,
             IBookingNotificationService bookingNotificationService)
         {
             _bookingSettings = bookingSettings.Value;
-            _emailBuilder = emailBuilder;
-            _messageProducer = messageProducer;
-            _smsBuilder = smsBuilder;
             _bookingRepository = bookingRepository;
             _accessGuard = accessGuard;
             _bookingVerificationRepository = bookingVerificationRepository;

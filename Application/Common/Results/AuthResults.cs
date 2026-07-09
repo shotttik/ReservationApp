@@ -3,7 +3,7 @@
     public class AuthResults
     {
         #region Errors
-        public static readonly Error NotAuthenticated = Error.Forbidden("Auth.NotAuthenticated", "User is not authenticated.");
+        public static readonly Error NotAuthenticated = Error.Unauthorized("Auth.NotAuthenticated", "User is not authenticated.");
         public static readonly Error UserNotFound = Error.NotFound("Auth.UserNotFound", "User not found");
         public static readonly Error UserDoesntExists = Error.Validation("Auth.UserDoesntExists", "User does not exist");
         public static readonly Error InvalidPassword = Error.Validation("Auth.InvalidPassword", "Invalid password");

@@ -36,7 +36,9 @@ namespace Application.Services
         private readonly IEmailTemplateBuilder emailBuilder;
         private readonly IMessageProducerService messageProducer;
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly AppUrls appUrls;
+        private readonly AppUrls _appUrls;
+        private readonly JwtOptions _jwtOptions;
+        private readonly MediaLimitsOptions _mediaLimitsOptions;
 
         public UserService(
            IConfiguration configuration,
@@ -50,7 +52,9 @@ namespace Application.Services
            IUserAccountMediaRepository userAccountMediaRepository,
            IEmailTemplateBuilder emailBuilder,
            IOptions<AppUrls> appUrls,
-           IMessageProducerService messageProducer)
+           IOptions<JwtOptions> jwtOptions,
+           IMessageProducerService messageProducer,
+           IOptions<MediaLimitsOptions> mediaLimitsOptions)
         {
             this.configuration = configuration;
             this.userAccountRepository = userAccountRepository;
@@ -63,7 +67,9 @@ namespace Application.Services
             this.emailBuilder = emailBuilder;
             this.messageProducer = messageProducer;
             this.httpContextAccessor = httpContextAccessor;
-            this.appUrls = appUrls.Value;
+            _appUrls = appUrls.Value;
+            _jwtOptions = jwtOptions.Value;
+            _mediaLimitsOptions = mediaLimitsOptions.Value;
         }
 
         public async Task<Result> Register(RegisterUserRequest request)
@@ -75,7 +81,7 @@ namespace Application.Services
 
             (byte [] hash, byte [] salt) = PasswordHasher.HashPassword(request.Password);
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
-            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             var userAccount = new UserAccount
@@ -99,7 +105,7 @@ namespace Application.Services
             };
 
             await userLoginDataRepository.Add(userLoginData);
-            var emailMessage = emailBuilder.BuildVerification(request.Email, request.FirstName, appUrls.VerificationLink);
+            var emailMessage = emailBuilder.BuildVerification(request.Email, request.FirstName, _appUrls.VerificationLink);
             await messageProducer.PublishEmailAsync(emailMessage);
 
             return Result.Success(AuthResults.Registered);
@@ -125,9 +131,9 @@ namespace Application.Services
                 return Result.Failure<LoginResponse>(AuthResults.UserDisabledCantBeUsed);
             }
 
-            var AuthUser = user.MapToAuthorizationData(appUrls);
-            var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, configuration, AuthUser);
-            var accessToken = JWTGenerator.GenerateAccessToken(user.Id, user.UserAccount.Id, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, configuration);
+            var AuthUser = user.MapToAuthorizationData(_appUrls);
+            var sessionInfo = SessionHelper.BuildSessionInfo(httpContextAccessor.HttpContext!, AuthUser, _jwtOptions);
+            var accessToken = JWTGenerator.GenerateAccessToken(user.Id, user.UserAccount.Id, user.Email, sessionInfo.SessionId, AuthUser.Role.Name, _jwtOptions);
 
             await cacheService.SetAsync(
                CacheUtils.SessionKey(sessionInfo.SessionId),
@@ -143,7 +149,7 @@ namespace Application.Services
                 sessions.Add(sessionInfo.SessionId);
             }
 
-            var expDays = Convert.ToDouble(configuration ["Jwt:UserActiveSessionsExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.UserActiveSessionsExpirationDays);
             var userActiveSessionsTTL = TimeSpan.FromDays(expDays);
 
             await cacheService.SetAsync(
@@ -156,13 +162,13 @@ namespace Application.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = sessionInfo.RefreshToken,
-                AccessTokenExpTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:AccessTokenExpirationMinutes"])),
+                AccessTokenExpTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtOptions.AccessTokenExpirationMinutes)),
             }, AuthResults.Success);
         }
         public async Task<Result<RefreshResponse>> Refresh(RefreshTokenRequest request)
         {
             // get access token from bearer
-            var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, configuration);
+            var principal = JWTGenerator.GetPrincipalFromExpiredToken(request.AccessToken, _jwtOptions);
             if (principal == null)
             {
                 return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
@@ -179,9 +185,9 @@ namespace Application.Services
             {
                 return Result.Failure<RefreshResponse>(AuthResults.InvalidToken);
             }
-            var newAccessToken = JWTGenerator.GenerateAccessToken(userLoginDataID, userAccountID, email, sessionId, role, configuration);
+            var newAccessToken = JWTGenerator.GenerateAccessToken(userLoginDataID, userAccountID, email, sessionId, role, _jwtOptions);
             var newRefreshToken = JWTGenerator.GenerateAndHashSecureToken();
-            var refreshTokenExpirationTime = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
+            var refreshTokenExpirationTime = DateTime.UtcNow.AddDays(Convert.ToDouble(_jwtOptions.RefreshTokenExpirationDays));
 
             // Update session info
             session.LastAccessedAt = DateTime.UtcNow;
@@ -237,7 +243,7 @@ namespace Application.Services
                 return Result.Success<string>(string.Empty, AuthResults.CheckEmail);
             }
             var recoveryToken = JWTGenerator.GenerateAndHashSecureToken();
-            var recoveryTokenTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration ["Jwt:RecoveryTokenExpirationMinutes"]));
+            var recoveryTokenTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_jwtOptions.RecoveryTokenExpirationMinutes));
             userLoginData.RecoveryToken = recoveryToken;
             userLoginData.RecoveryTokenExpTime = recoveryTokenTime;
             await userLoginDataRepository.Update(userLoginData);
@@ -331,7 +337,7 @@ namespace Application.Services
                 return Result.Failure(AuthResults.EmailChangeAlreadyRequested);
             }
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
-            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             userLoginData.PendingNewEmail = request.Email;
@@ -339,7 +345,7 @@ namespace Application.Services
             userLoginData.EmailVerificationTokenExpTime = verificationTokenExpirationTime;
 
             await userLoginDataRepository.Update(userLoginData);
-            var emailMessage = emailBuilder.BuildVerification(request.Email, AuthUser.FirstName, appUrls.VerificationLink);
+            var emailMessage = emailBuilder.BuildVerification(request.Email, AuthUser.FirstName, _appUrls.VerificationLink);
             await messageProducer.PublishEmailAsync(emailMessage);
 
             return Result.Success(AuthResults.CheckEmail);
@@ -493,7 +499,7 @@ namespace Application.Services
             cancellationToken.ThrowIfCancellationRequested();
             var userAccountId = authService.GetUserAccountID();
 
-            var error = request.File.IsValidImage(configuration);
+            var error = request.File.IsValidImage(_mediaLimitsOptions);
             if (error != Error.None)
             {
                 return Result.Failure(error);

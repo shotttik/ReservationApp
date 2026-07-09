@@ -1,6 +1,7 @@
-﻿using Application.Authentication;
-using API.Services;
+﻿using API.Services;
+using Application.Authentication;
 using Application.Common.Results;
+using Application.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -55,7 +56,7 @@ namespace API.Configuration
             // Redis
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = config.GetSection("Redis") ["ConnectionString"];
+                options.Configuration = config [ConnectionStrings.RedisConnection];
             });
 
             // Common services

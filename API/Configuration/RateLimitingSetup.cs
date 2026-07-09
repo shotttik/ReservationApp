@@ -9,9 +9,7 @@ namespace API.Configuration
         public static IServiceCollection AddRateLimitingServices(this IServiceCollection services, IConfiguration config)
         {
             var fixedOptions = new FixedRateLimitOptions();
-            config.GetSection(FixedRateLimitOptions.FixedRateLimit).Bind(fixedOptions);
-
-            services.Configure<FixedRateLimitOptions>(config.GetSection(FixedRateLimitOptions.FixedRateLimit));
+            config.GetSection(FixedRateLimitOptions.ConfigurationSection).Bind(fixedOptions);
 
             services.AddRateLimiter(options =>
             {

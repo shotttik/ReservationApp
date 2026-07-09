@@ -7,7 +7,6 @@ using Domain.DTO.User;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Utilities;
@@ -20,21 +19,21 @@ namespace Application.Services
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ICacheService cacheService;
         private readonly IUserLoginDataRepository userLoginDataRepository;
-        private readonly IConfiguration configuration;
-        private readonly AppUrls appUrls;
+        private readonly AppUrls _appUrls;
+        private readonly JwtOptions _jwtOptions;
 
         public AuthService(IHttpContextAccessor httpContextAccessor,
             ICacheService cacheService,
             IUserLoginDataRepository userLoginDataRepository,
-            IConfiguration configuration,
-            IOptions<AppUrls> appUrls
+            IOptions<AppUrls> appUrls,
+            IOptions<JwtOptions> jwtOptions
             )
         {
             this.httpContextAccessor = httpContextAccessor;
             this.cacheService = cacheService;
             this.userLoginDataRepository = userLoginDataRepository;
-            this.configuration = configuration;
-            this.appUrls = appUrls.Value;
+            _appUrls = appUrls.Value;
+            _jwtOptions = jwtOptions.Value;
         }
 
         public async Task<AuthUser> GetCurrentUser()
@@ -65,7 +64,7 @@ namespace Application.Services
             var user = await userLoginDataRepository.GetFullUserData(userId);
             if (user == null) return;
 
-            var authUser = user.MapToAuthorizationData(appUrls);
+            var authUser = user.MapToAuthorizationData(_appUrls);
             var sessionIds = await cacheService.GetAsync<List<string>>(CacheUtils.UserSessionsKey(userId));
 
             if (sessionIds == null) return;
@@ -102,7 +101,7 @@ namespace Application.Services
             var ttl = session.RefreshTokenExpTime - DateTime.UtcNow;
             if (ttl <= TimeSpan.Zero)
             {
-                var expDays = Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]);
+                var expDays = Convert.ToDouble(_jwtOptions.RefreshTokenExpirationDays);
                 ttl = TimeSpan.FromDays(expDays);
             }
             await cacheService.SetAsync(sessionKey, session, ttl);

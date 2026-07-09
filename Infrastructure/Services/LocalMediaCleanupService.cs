@@ -13,15 +13,15 @@ namespace Infrastructure.Services
 
         private readonly IMediaRepository _mediaRepository;
         private readonly ILogger<MediaCleanupJob> _logger;
-        private readonly MediaCleanupJobSettings _mediaCleanupJobSettings;
+        private readonly MediaCleanupJobOptions _mediaCleanupJobOptions;
         public LocalMediaCleanupService(
             IMediaRepository mediaRepository,
             ILogger<MediaCleanupJob> logger,
-            IOptions<MediaCleanupJobSettings> options)
+            IOptions<MediaCleanupJobOptions> mediaCleanupJobOptions)
         {
             _mediaRepository = mediaRepository;
             _logger = logger;
-            _mediaCleanupJobSettings = options.Value;
+            _mediaCleanupJobOptions = mediaCleanupJobOptions.Value;
         }
         public async Task CleanupOrphanedMediaAsync()
         {
@@ -46,7 +46,7 @@ namespace Infrastructure.Services
                 {
                     try
                     {
-                        if (_mediaCleanupJobSettings.DryRun)
+                        if (_mediaCleanupJobOptions.DryRun)
                         {
                             _logger.LogInformation($"Would delete file: {webp.AbsolutePath}");
                         }
@@ -69,7 +69,7 @@ namespace Infrastructure.Services
                     }
                     try
                     {
-                        if (_mediaCleanupJobSettings.DryRun)
+                        if (_mediaCleanupJobOptions.DryRun)
                         {
                             _logger.LogInformation($"Would delete file: {original}");
                         }

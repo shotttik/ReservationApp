@@ -1,6 +1,6 @@
 ﻿namespace Application.Options
 {
-    public class BookingSettings
+    public class BookingOptions
     {
         public const string ConfigurationSection = "BookingSettings";
         public int VerificationCodeLength { get; set; }

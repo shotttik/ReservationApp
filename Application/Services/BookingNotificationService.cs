@@ -10,14 +10,14 @@ namespace Application.Services
 {
     public class BookingNotificationService :IBookingNotificationService
     {
-        private readonly BookingSettings _bookingSettings;
+        private readonly BookingOptions _bookingSettings;
         private readonly IEmailTemplateBuilder _emailBuilder;
         private readonly ISmsTemplateBuilder _smsBuilder;
         private readonly IMessageProducerService _messageProducer;
         private readonly ILogger<BookingNotificationService> _logger;
 
         public BookingNotificationService(
-            IOptions<BookingSettings> bookingSettings,
+            IOptions<BookingOptions> bookingSettings,
             IEmailTemplateBuilder emailBuilder,
             ISmsTemplateBuilder smsBuilder,
             IMessageProducerService messageProducer,

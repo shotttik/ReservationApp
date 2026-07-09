@@ -1,6 +1,8 @@
-﻿using Domain.Interfaces.Services;
+﻿using Application.Options;
+using Domain.Interfaces.Services;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace Infrastructure.Services
@@ -8,11 +10,13 @@ namespace Infrastructure.Services
     public class CacheService :ICacheService
     {
         private readonly IDistributedCache _cache;
+        private readonly RedisOptions _redisOptions;
         private readonly TimeSpan _defaultExpiration;
 
-        public CacheService(IConfiguration configuration, IDistributedCache cache)
+        public CacheService(IConfiguration configuration, IDistributedCache cache, IOptions<RedisOptions> redisOptions)
         {
             _cache = cache;
+            _redisOptions = redisOptions.Value;
             var expirationMinutes = configuration.GetValue<double>("Redis:CacheExpirationMinutes", 30);
             _defaultExpiration = TimeSpan.FromMinutes(expirationMinutes);
         }

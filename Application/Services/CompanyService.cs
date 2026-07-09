@@ -5,6 +5,7 @@ using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Application.Options;
 using Domain.Abstractions;
 using Domain.DTO.Company;
 using Domain.DTO.User;
@@ -13,7 +14,7 @@ using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -21,7 +22,6 @@ namespace Application.Services
     {
         private readonly IUserAccountRepository userAccountRepository;
         private readonly ICompanyInvitationRepository companyInvitationRepository;
-        private readonly IConfiguration configuration;
         private readonly IAuthService authService;
         private readonly IServiceRepository serviceRepository;
         private readonly ICompanyRepository companyRepository;
@@ -33,11 +33,12 @@ namespace Application.Services
         private readonly IAccessGuard accessGuard;
         private readonly ISubscriptionGuard subscriptionGuard;
         private readonly IBookingRepository bookingRepository;
+        private readonly MediaLimitsOptions _mediaLimitsOptions;
+        private readonly JwtOptions _jwtOptions;
 
         public CompanyService(
             IUserAccountRepository userAccountRepository,
             ICompanyInvitationRepository companyInvitationRepository,
-            IConfiguration configuration,
             IAuthService authService,
             IServiceRepository serviceRepository,
             ICompanyRepository companyRepository,
@@ -48,11 +49,12 @@ namespace Application.Services
             IUserService userService,
             IAccessGuard accessGuard,
             ISubscriptionGuard subscriptionGuard,
-            IBookingRepository bookingRepository)
+            IBookingRepository bookingRepository,
+            IOptions<MediaLimitsOptions> mediaLimitsOptions,
+            IOptions<JwtOptions> jwtOptions)
         {
             this.userAccountRepository = userAccountRepository;
             this.companyInvitationRepository = companyInvitationRepository;
-            this.configuration = configuration;
             this.authService = authService;
             this.serviceRepository = serviceRepository;
             this.companyRepository = companyRepository;
@@ -64,6 +66,8 @@ namespace Application.Services
             this.accessGuard = accessGuard;
             this.subscriptionGuard = subscriptionGuard;
             this.bookingRepository = bookingRepository;
+            _mediaLimitsOptions = mediaLimitsOptions.Value;
+            _jwtOptions = jwtOptions.Value;
         }
 
         public async Task<Result<string>> InviteEmployee(InviteEmployeeRequest request)
@@ -91,7 +95,7 @@ namespace Application.Services
             }
             await companyInvitationRepository.RevokePreviousInvite(request.UserAccountId);
 
-            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var invitation = new CompanyInvitation()
             {
                 CompanyID = AuthUser.CompanyId!.Value,
@@ -245,7 +249,7 @@ namespace Application.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var error = item.IsValidImage(configuration);
+                var error = item.IsValidImage(_mediaLimitsOptions);
                 if (error != Error.None)
                 {
                     return Result.Failure<List<string>>(error);
@@ -322,7 +326,7 @@ namespace Application.Services
             }
 
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
-            var expDays = Convert.ToDouble(configuration ["Jwt:VerificationTokenExpirationDays"]);
+            var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
 
             var userAccount = new UserAccount()

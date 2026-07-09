@@ -1,6 +1,6 @@
 ﻿namespace Application.Options
 {
-    public class MediaCleanupJobSettings
+    public class MediaCleanupJobOptions
     {
         public const string ConfigurationSection = "Quartz:MediaCleanupJobSettings";
         public string Cron { get; set; } = null!;

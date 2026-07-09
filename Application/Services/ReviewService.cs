@@ -4,6 +4,7 @@ using Application.Extensions;
 using Application.Extensions.Mappers;
 using Application.Extensions.Mappers.Pagination;
 using Application.Interfaces;
+using Application.Options;
 using Domain.Abstractions;
 using Domain.DTO.Review;
 using Domain.Entities.Common;
@@ -12,6 +13,7 @@ using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -25,7 +27,7 @@ namespace Application.Services
         private readonly IMediaRepository mediaRepository;
         private readonly IReviewMediaRepository reviewMediaRepository;
         private readonly IFileStorageService fileStorageService;
-        private readonly IConfiguration configuration;
+        private readonly MediaLimitsOptions _mediaLimitsOptions;
 
         public ReviewService(
             IReviewInviteRepository reviewInviteRepository,
@@ -36,7 +38,7 @@ namespace Application.Services
             IMediaRepository mediaRepository,
             IReviewMediaRepository reviewMediaRepository,
             IFileStorageService fileStorageService,
-            IConfiguration configuration)
+            IOptions<MediaLimitsOptions> mediaLimitsOptions)
         {
             this.reviewInviteRepository = reviewInviteRepository;
             this.bookingRepository = bookingRepository;
@@ -46,7 +48,7 @@ namespace Application.Services
             this.mediaRepository = mediaRepository;
             this.reviewMediaRepository = reviewMediaRepository;
             this.fileStorageService = fileStorageService;
-            this.configuration = configuration;
+            _mediaLimitsOptions = mediaLimitsOptions.Value;
         }
 
 
@@ -136,7 +138,7 @@ namespace Application.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var error = item.IsValidImage(configuration);
+                var error = item.IsValidImage(_mediaLimitsOptions);
                 if (error != Error.None)
                 {
                     return Result.Failure<List<int>>(error);

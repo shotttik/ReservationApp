@@ -1,6 +1,5 @@
 ﻿using Application.Common.Requests.Company;
 using Application.Common.Results;
-using Application.Common.Security;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO.Company;
@@ -25,7 +24,6 @@ namespace Application.Services
             this.companyFAQRepository = companyFAQRepository;
             this.companyFAQCategoryRepository = companyFAQCategoryRepository;
             this.companyAccessGuard = companyAccessGuard;
-            FAQLimitPerCategory = configuration.GetValue<int>("CompanyLimits:FAQLimitPerCategory");
         }
 
         public async Task<Result> Create(int routeCompanyId, CompanyFAQCreateRequest request)

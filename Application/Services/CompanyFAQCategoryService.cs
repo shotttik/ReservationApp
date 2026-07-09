@@ -1,11 +1,11 @@
 ﻿using Application.Common.Requests.Company;
 using Application.Common.Results;
-using Application.Common.Security;
 using Application.Extensions.Mappers;
 using Application.Interfaces;
+using Application.Options;
 using Domain.DTO.Company;
 using Domain.Interfaces.Repositories;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services
 {
@@ -13,15 +13,15 @@ namespace Application.Services
     {
         private readonly ICompanyFAQCategoryRepository companyFAQCategoryRepository;
         private readonly IAccessGuard companyAccessGuard;
-        private readonly int MaxFAQCategories;
+        private readonly CompanyOptions _companyOptions;
         public CompanyFAQCategoryService(
             ICompanyFAQCategoryRepository companyFAQCategoryRepository,
             IAccessGuard companyAccessGuard,
-            IConfiguration configuration)
+            IOptions<CompanyOptions> companyOptions)
         {
             this.companyFAQCategoryRepository = companyFAQCategoryRepository;
             this.companyAccessGuard = companyAccessGuard;
-            MaxFAQCategories = configuration.GetValue<int>("CompanyLimits:MaxFAQCategories");
+            _companyOptions = companyOptions.Value;
         }
 
         public async Task<Result> Create(int routeCompanyId, CompanyFAQCategoryCreateRequest request)
@@ -31,7 +31,7 @@ namespace Application.Services
                 return Result.Failure(accessError);
 
             var existingCount = await companyFAQCategoryRepository.Count(routeCompanyId);
-            if (existingCount >= MaxFAQCategories)
+            if (existingCount >= _companyOptions.MaxFAQCategories)
             {
                 return Result.Failure(CompanyResults.MaxFAQCategoriesReached);
             }

@@ -12,11 +12,11 @@ namespace Infrastructure.Services
 {
     public class EmailService :IEmailService
     {
-        private readonly SmtpSettings _smtpSettings;
+        private readonly SmtpOptions _smtpSettings;
         private readonly ILogger<IEmailService> _logger;
 
         public EmailService(
-            IOptions<SmtpSettings> smtpSettings,
+            IOptions<SmtpOptions> smtpSettings,
             ILogger<IEmailService> logger)
         {
             _smtpSettings = smtpSettings.Value;

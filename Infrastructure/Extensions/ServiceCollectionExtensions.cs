@@ -46,10 +46,6 @@ namespace Infrastructure.Extensions
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
             services.AddScoped<IImageProcessingService, ImageProcessingService>();
             services.AddScoped<IMediaCleanupService, LocalMediaCleanupService>();
-            services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
-            services.Configure<AppUrls>(configuration.GetSection("AppUrls"));
-            services.AddOptions<BookingSettings>().BindConfiguration(BookingSettings.ConfigurationSection);
-            services.AddOptions<MediaCleanupJobSettings>().BindConfiguration(MediaCleanupJobSettings.ConfigurationSection);
             // email
             services.AddSingleton<IEmailTemplateBuilder, EmailTemplateBuilder>();
             services.AddSingleton<ISmsTemplateBuilder, SmsTemplateBuilder>();
@@ -59,7 +55,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(configuration.GetConnectionString(ConnectionStrings.DefaultConnection)));
 
 
             return services;

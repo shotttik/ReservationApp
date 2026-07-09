@@ -1,15 +1,15 @@
 ﻿using Application.Authentication;
+using Application.Options;
 using Domain.DTO;
 using Domain.DTO.User;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Shared.Utilities;
 
 namespace Application.Helpers
 {
     internal static class SessionHelper
     {
-        public static SessionInfoDTO BuildSessionInfo(HttpContext context, IConfiguration configuration, AuthUser user)
+        public static SessionInfoDTO BuildSessionInfo(HttpContext context, AuthUser user, JwtOptions jwtOptions)
         {
             var userAgent = context.Request.Headers ["User-Agent"].ToString();
             var ip = context.Connection.RemoteIpAddress?.ToString();
@@ -25,7 +25,7 @@ namespace Application.Helpers
             };
 
             var refreshToken = JWTGenerator.GenerateAndHashSecureToken();
-            var refreshTokenExpTime = DateTime.UtcNow.AddDays(Convert.ToDouble(configuration ["Jwt:RefreshTokenExpirationDays"]));
+            var refreshTokenExpTime = DateTime.UtcNow.AddDays(Convert.ToDouble(jwtOptions.RefreshTokenExpirationDays));
 
             return new SessionInfoDTO
             {

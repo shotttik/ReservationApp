@@ -1,4 +1,5 @@
 ﻿using Application.Common.Results;
+using Application.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -8,8 +9,13 @@ namespace API.Configuration
 {
     public static class AuthenticationSetup
     {
-        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
         {
+            var jwtOptions = new JwtOptions();
+            configuration.GetSection(JwtOptions.ConfigurationSection).Bind(jwtOptions);
+
+            var bookingOptions = new BookingOptions();
+            configuration.GetSection(BookingOptions.ConfigurationSection).Bind(bookingOptions);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -21,9 +27,9 @@ namespace API.Configuration
                             ValidateAudience = true,
                             ValidateLifetime = true,
                             ValidateIssuerSigningKey = true,
-                            ValidIssuer = config ["Jwt:Issuer"],
-                            ValidAudience = config ["Jwt:Audience"],
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config ["Jwt:Key"]!)),
+                            ValidIssuer = jwtOptions.Issuer,
+                            ValidAudience = jwtOptions.Audience,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                             ClockSkew = TimeSpan.Zero
                         };
                         options.Events = new JwtBearerEvents
@@ -77,7 +83,7 @@ namespace API.Configuration
                             ValidateIssuerSigningKey = true,
 
                             IssuerSigningKey = new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(config ["BookingSettings:GuestToken:Key"]!)
+                                Encoding.UTF8.GetBytes(bookingOptions.GuestToken.Key)
                             ),
                             ClockSkew = TimeSpan.Zero
                         };
