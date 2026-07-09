@@ -16,5 +16,6 @@ namespace Domain.Interfaces.Repositories
         Task<Company?> GetWithBranches(int id);
         Task<Company?> GetWithBranchesAndServices(int id);
         Task<Company?> GetWithMedia(int id);
+        Task<bool> HasBranch(int id, int branchId);
     }
 }

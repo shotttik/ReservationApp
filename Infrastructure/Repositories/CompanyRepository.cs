@@ -120,5 +120,9 @@ namespace Infrastructure.Repositories
                     .ThenInclude(e => e.Media)
                 .FirstOrDefaultAsync();
         }
+        public async Task<bool> HasBranch(int id, int branchId)
+        {
+            return await _dbSet.AnyAsync(e => e.Id == id && e.Branches.Any(b => b.Id == branchId));
+        }
     }
 }

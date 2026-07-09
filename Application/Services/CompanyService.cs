@@ -325,6 +325,12 @@ namespace Application.Services
                 return Result.Failure(AuthResults.EmailAlreadyExists);
             }
 
+            var brachExists = await companyRepository.HasBranch(routeCompanyId, request.BranchId);
+            if (!brachExists)
+            {
+                return Result.Failure(CompanyResults.InvalidBranchId);
+            }
+
             var verificationToken = JWTGenerator.GenerateAndHashSecureToken();
             var expDays = Convert.ToDouble(_jwtOptions.VerificationTokenExpirationDays);
             var verificationTokenExpirationTime = DateTime.UtcNow.AddDays(expDays);
