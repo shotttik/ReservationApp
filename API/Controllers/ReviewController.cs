@@ -36,14 +36,14 @@ namespace API.Controllers
         /// Invite is valid for 14 days.
         /// </remarks>
         /// <param name="bookingId">Booking ID</param>
-        [HttpPost("invites/bookings/{bookingId}")]
+        [HttpPost("invite")]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
         [HasPermission(Permission.ReviewInviteCreate)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> CreateInvite(int bookingId)
+        public async Task<IActionResult> CreateInvite([FromQuery] int bookingId)
         {
             var result = await reviewService.CreateInvite(bookingId);
 

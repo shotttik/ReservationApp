@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
 
             var companies = await query
                 .OrderBy(e => e.Id)
-                .Select(e => e.MapToDTO())
+                .Select(e => e.MapToDTO(false))
                 .Skip((parameters.PageNumber - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync(cancellationToken);
