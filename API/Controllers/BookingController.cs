@@ -271,7 +271,7 @@ namespace API.Controllers
         ///   <li>New start time is at least 30 minutes in the future.</li>
         /// </ul>
         /// <br/>
-        /// Required role: Accessible by guest with valid access or authenticated booking owner.
+        /// Required role: Accessible by guest with valid access or authenticated booking owner (could be guest).
         /// </remarks>
         /// <param name="id">The identifier of the booking to reschedule.</param>
         /// <param name="request">Contains the new service, employee, and start time.</param>
@@ -281,12 +281,36 @@ namespace API.Controllers
         /// </returns>
         [HttpPatch("{id:int}/reschedule")]
         [GuestOrUser]
+        [EnableRateLimiting("fixed")]
         [Logging(LoggingType.Full)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Reschedule([FromRoute] int id, [FromBody] RescheduleBookingRequest request)
         {
             var result = await _bookingService.RescheduleBooking(id, request);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// Updates the note for a specific booking.
+        /// </summary>
+        /// <remarks> 
+        /// Required role: Accessible by guest with valid access or authenticated booking owner (could be guest).
+        /// </remarks>
+        /// <param name="id">The ID of the booking to update.</param>
+        /// <param name="request">The request containing the updated note.</param>
+        /// <returns>Success message or error result.</returns>
+        /// <response code="200">Successfully updated the booking note.</response>
+        [HttpPatch("{id:int}/note")]
+        [Logging(LoggingType.Full)]
+        [EnableRateLimiting("fixed")]
+        [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [GuestOrUser]
+        [MapToApiVersion("1.0")]
+        public async Task<IActionResult> UpdateNote([FromRoute] int id, [FromBody] UpdateBookingNoteRequest request)
+
+        {
+            var result = await _bookingService.UpdateNote(id, request);
             return result.ToResponse();
         }
     }

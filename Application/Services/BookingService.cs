@@ -532,6 +532,33 @@ namespace Application.Services
             }
             return Result.Success(booking.MapToDTO(true));
         }
+        public async Task<Result<BookingDTO>> UpdateNote(int bookingId, UpdateBookingNoteRequest request)
+        {
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.NotFound);
+            }
+            var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            if (error != Error.None)
+            {
+                return Result.Failure<BookingDTO>(error);
+            }
+            booking.Note = request.Note;
+            booking.UpdateTimestamp();
+
+            await _bookingRepository.Update(booking);
+
+            var updatedBookingDTO = booking.MapToDTO();
+            await NotifyBookingChangedAsync(
+                booking,
+                "booking.noteUpdated",
+                "Booking note updated",
+                "A booking note was updated.",
+                updatedBookingDTO);
+
+            return Result.Success(updatedBookingDTO);
+        }
 
         private async Task NotifyCompanyBookingAsync(
             int companyId,

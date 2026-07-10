@@ -3,7 +3,6 @@ using Application.Common.Responses;
 using Application.Common.Results;
 using Domain.Abstractions;
 using Domain.DTO;
-using Domain.Entities.Common;
 
 namespace Application.Interfaces
 {
@@ -19,5 +18,6 @@ namespace Application.Interfaces
         Task<Result> Delete(int bookingId);
         Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request);
         Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request);
+        Task<Result<BookingDTO>> UpdateNote(int bookingId, UpdateBookingNoteRequest request);
     }
 }
