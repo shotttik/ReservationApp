@@ -35,6 +35,39 @@ namespace Application.Extensions.Mappers
             };
         }
 
+        public static BookingFullDTO MapToFullDTO(this Booking booking)
+        {
+            return new BookingFullDTO
+            {
+                Id = booking.Id,
+                ClientId = booking.ClientID,
+                Client = booking.Client?.MapToDTO(),
+                EmployeeId = booking.EmployeeID,
+                Employee = booking.Employee.MapToDTO(),
+                BranchId = booking.BranchId,
+                Branch = booking.Branch.MapToDTO(),
+                ServiceId = booking.Service.Id,
+                Service = booking.Service.MapToDTO(),
+                CompanyId = booking.Branch.CompanyId,
+                Company = booking.Branch.Company.MapToDTO(onlyCompany: true),
+                GuestInfo = booking.GuestInfo?.MapToDTO(),
+                ServiceName = booking.Service.Name,
+                StartTime = booking.StartTime,
+                EndTimeExpected = booking.EndTimeExpected,
+                EndTime = booking.EndTime,
+                PriceExpected = booking.PriceExpected,
+                PriceFull = booking.PriceFull,
+                PromoCodeValue = booking.PromoCodeValue,
+                Discount = booking.Discount,
+                PriceFinal = booking.PriceFinal,
+                Status = booking.Status,
+                CancellationReason = booking.CancellationReason,
+                Note = booking.Note,
+                Reference = booking.Reference,
+                CreatedAt = booking.CreatedAt,
+                UpdatedAt = booking.UpdatedAt
+            };
+        }
         public static Booking MapToEntity(
             this ClientBookingCreateRequest request,
             Service service,

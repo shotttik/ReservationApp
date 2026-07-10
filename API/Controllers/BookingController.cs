@@ -198,7 +198,7 @@ namespace API.Controllers
         /// Retrieves a booking by its identifier.
         /// </summary>
         /// <remarks>
-        /// Returns the full BookingDTO for the specified booking id. The caller must be a guest or an authenticated user.
+        /// Returns the full BookingFullDTO for the specified booking id. The caller must be a guest or an authenticated user.
         /// Example: GET /api/v1/bookings/123
         /// </remarks>
         /// <param name="id">The unique identifier of the booking to retrieve.</param>
@@ -213,14 +213,14 @@ namespace API.Controllers
         [HttpGet("{id:int}")]
         [Logging(LoggingType.General)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<BookingFullDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [GuestOrUser]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var result = await _bookingService.Get(id);
+            var result = await _bookingService.GetFullData(id);
             return result.ToResponse();
         }
 

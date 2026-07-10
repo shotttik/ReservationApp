@@ -109,6 +109,23 @@ namespace Infrastructure.Repositories
 
             return booking;
         }
+        public async Task<Booking?> GetFullData(int bookingId)
+        {
+            var booking = await _dbSet
+                .Where(e => e.Id == bookingId)
+                .Include(e => e.Employee)
+                    .ThenInclude(e => e.Role)
+                .Include(e => e.Client)
+                    .ThenInclude(c => c!.Role)
+                .Include(e => e.Branch)
+                    .ThenInclude(b => b.Company)
+                .Include(e => e.Service)
+                .Include(e => e.GuestInfo)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+            return booking;
+        }
         public async Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId)
         {
             return await _dbSet

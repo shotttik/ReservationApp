@@ -16,6 +16,7 @@ namespace Domain.Interfaces.Repositories
         Task<Booking?> GetWithReviewInvite(int bookingId);
         Task<Booking?> GetWithBranchAndReviewInvite(int bookingId);
         Task<Booking?> GetWithBranch(int bookingId);
+        Task<Booking?> GetFullData(int bookingId);
         Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(int bookingId);
         Task<BookingWithLatestPendingVerification?> GetContactUpdatableWithLatestPendingVerification(int bookingId);
         Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference, string contact);

@@ -517,20 +517,20 @@ namespace Application.Services
 
             return updatedBookingDTO;
         }
-        public async Task<Result<BookingDTO>> Get(int bookingId)
+        public async Task<Result<BookingFullDTO>> GetFullData(int bookingId)
         {
 
-            var booking = await _bookingRepository.GetWithBranch(bookingId);
+            var booking = await _bookingRepository.GetFullData(bookingId);
             if (booking == null)
             {
-                return Result.Failure<BookingDTO>(BookingResults.NotFound);
+                return Result.Failure<BookingFullDTO>(BookingResults.NotFound);
             }
             var error = await _accessGuard.EnsureAccessToBooking(booking.Id, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
             if (error != Error.None)
             {
-                return Result.Failure<BookingDTO>(error);
+                return Result.Failure<BookingFullDTO>(error);
             }
-            return Result.Success(booking.MapToDTO(true));
+            return Result.Success(booking.MapToFullDTO());
         }
         public async Task<Result<BookingDTO>> UpdateNote(int bookingId, UpdateBookingNoteRequest request)
         {

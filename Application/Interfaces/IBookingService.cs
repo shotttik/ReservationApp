@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task<Result<List<BookingDTO>>> GetWeeklyPublicData(int branchId, DateOnly targetDate);
         Task<Result> ChangeStatus(int bookingId, BookingStatusChangeRequest request);
         Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken);
-        Task<Result<BookingDTO>> Get(int bookingId);
+        Task<Result<BookingFullDTO>> GetFullData(int bookingId);
         Task<Result> Delete(int bookingId);
         Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request);
         Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request);

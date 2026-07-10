@@ -1,4 +1,7 @@
-﻿using Domain.Enums;
+﻿using Domain.DTO.Branch;
+using Domain.DTO.Company;
+using Domain.DTO.User;
+using Domain.Enums;
 
 namespace Domain.DTO
 {

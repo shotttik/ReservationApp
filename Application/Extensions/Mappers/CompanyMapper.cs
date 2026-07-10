@@ -7,7 +7,7 @@ namespace Application.Extensions.Mappers
 {
     public static class CompanyMapper
     {
-        public static Domain.DTO.Company.CompanyDTO MapToDTO(this Company company)
+        public static Domain.DTO.Company.CompanyDTO MapToDTO(this Company company, bool onlyCompany = false)
         {
             return new Domain.DTO.Company.CompanyDTO
             {
@@ -21,8 +21,8 @@ namespace Application.Extensions.Mappers
                 ActiveStatus = company.ActiveStatus,
                 CreatedAt = company.CreatedAt,
                 Viewed = company.Viewed,
-                Branches = company.Branches.Select(e => e.MapToDTO()),
-                Services = company.Services.Select(s => new ServiceDTO
+                Branches = onlyCompany ? [] : company.Branches.Select(e => e.MapToDTO()),
+                Services = onlyCompany ? [] : company.Services.Select(s => new ServiceDTO
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -31,7 +31,7 @@ namespace Application.Extensions.Mappers
                     Price = s.Price,
                     ActiveStatus = s.ActiveStatus,
                 }).ToList(),
-                Media = company.CompanyMedia.Select(cm => new CompanyMediaDTO
+                Media = onlyCompany ? [] : company.CompanyMedia.Select(cm => new CompanyMediaDTO
                 {
                     Id = cm.MediaID,
                     IsMain = cm.IsMain,
