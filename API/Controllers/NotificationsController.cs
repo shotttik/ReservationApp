@@ -49,6 +49,7 @@ namespace API.Controllers
         /// <returns>List of notification records for the current authenticated user.</returns>
         [HttpGet("mine")]
         [Logging(LoggingType.Full)]
+        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<List<NotificationDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -75,6 +76,7 @@ namespace API.Controllers
         /// <returns>Success message or error result.</returns>
         [HttpPost("{id:int}/read")]
         [Logging(LoggingType.Full)]
+        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -83,6 +85,27 @@ namespace API.Controllers
         {
             var result = await _notificationInboxService.MarkReadAsync(id, cancellationToken);
 
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// Marks all notifications as read for the current authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
+        /// Use this endpoint when Vue marks all notifications as opened, dismissed, or seen in the
+        /// notification menu.
+        /// </remarks>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Success message or error result.</returns>
+        [HttpPost("read-all")]
+        [Authorize]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> MarkReadAll(CancellationToken cancellationToken)
+        {
+            var result = await _notificationInboxService.MarkReadAllAsync(cancellationToken);
             return result.ToResponse();
         }
     }

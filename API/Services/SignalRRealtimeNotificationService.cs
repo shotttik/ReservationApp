@@ -42,7 +42,7 @@ namespace API.Services
                 NotificationTargetType.User => NotificationGroups.User(notification.TargetId),
                 NotificationTargetType.Company => NotificationGroups.Company(notification.TargetId),
                 NotificationTargetType.Branch => NotificationGroups.Branch(notification.TargetId),
-                NotificationTargetType.GuestBooking => NotificationGroups.GuestBooking(notification.TargetId),
+                //NotificationTargetType.GuestBooking => NotificationGroups.GuestBooking(notification.TargetId),
                 _ => throw new InvalidOperationException($"Unsupported notification target type {notification.TargetType}.")
             };
         }

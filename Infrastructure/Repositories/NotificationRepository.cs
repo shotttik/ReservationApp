@@ -84,6 +84,19 @@ namespace Infrastructure.Repositories
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task MarkReadAllForUserAsync(
+            int userAccountId,
+            int? companyId,
+            int? branchId,
+            CancellationToken cancellationToken)
+        {
+            var notifications = await ForUserQuery(userAccountId, companyId, branchId)
+                .Where(e => e.ReadAt == null)
+                .ExecuteUpdateAsync(e => e.SetProperty(n => n.ReadAt, n => DateTime.UtcNow)
+                    .SetProperty(n => n.UpdatedAt, n => DateTime.UtcNow), cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         private IQueryable<Notification> ForUserQuery(int userAccountId, int? companyId, int? branchId)
         {
             return _dbSet.Where(e =>

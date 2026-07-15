@@ -45,13 +45,13 @@ namespace Application.Services
             return CreateAsync(NotificationTargetType.Branch, branchId, notification, cancellationToken);
         }
 
-        public Task SendToGuestBookingAsync(
-            int bookingId,
-            RealtimeNotificationPayload notification,
-            CancellationToken cancellationToken = default)
-        {
-            return CreateAsync(NotificationTargetType.GuestBooking, bookingId, notification, cancellationToken);
-        }
+        //public Task SendToGuestBookingAsync(
+        //    int bookingId,
+        //    RealtimeNotificationPayload notification,
+        //    CancellationToken cancellationToken = default)
+        //{
+        //    return CreateAsync(NotificationTargetType.GuestBooking, bookingId, notification, cancellationToken);
+        //}
 
         private async Task CreateAsync(
             NotificationTargetType targetType,

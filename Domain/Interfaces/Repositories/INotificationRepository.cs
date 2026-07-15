@@ -10,5 +10,6 @@ namespace Domain.Interfaces.Repositories
         Task MarkDeliveredAsync(Notification notification, CancellationToken cancellationToken);
         Task MarkFailedAsync(Notification notification, string error, CancellationToken cancellationToken);
         Task MarkReadAsync(Notification notification, CancellationToken cancellationToken);
+        Task MarkReadAllForUserAsync(int userAccountId, int? companyId, int? branchId, CancellationToken cancellationToken);
     }
 }

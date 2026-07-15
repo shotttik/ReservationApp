@@ -7,5 +7,6 @@ namespace Application.Interfaces
     {
         Task<Result<List<NotificationDTO>>> GetMineAsync(bool unreadOnly, int take, CancellationToken cancellationToken);
         Task<Result> MarkReadAsync(int notificationId, CancellationToken cancellationToken);
+        Task<Result> MarkReadAllAsync(CancellationToken cancellationToken);
     }
 }

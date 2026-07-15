@@ -137,8 +137,8 @@ namespace Application.Services
 
             var token = JWTGenerator.GenerateGuestToken(booking.Id, _bookingSettings);
             var bookingDTO = booking.MapToDTO();
-            await NotifyCompanyBookingAsync(
-                companyId,
+            await NotifyBookingAsync(
+                booking,
                 "booking.created",
                 "New guest booking",
                 $"A guest booking was created for {bookingDTO.ServiceName}.",
@@ -215,8 +215,8 @@ namespace Application.Services
                 await _promoCodeRepository.Update(appliedPromo);
             }
             var bookingDTO = booking.MapToDTO(showRef: true);
-            await NotifyCompanyBookingAsync(
-                companyId,
+            await NotifyBookingAsync(
+                booking,
                 "booking.created",
                 "New client booking",
                 $"A client booking was created for {bookingDTO.ServiceName}.",
@@ -341,8 +341,8 @@ namespace Application.Services
                         booking);
                 }
                 bookingDTO = booking.MapToDTO();
-                await NotifyCompanyBookingAsync(
-                    companyId,
+                await NotifyBookingAsync(
+                    booking,
                     "booking.created",
                     "New booking",
                     $"A booking was created for {bookingDTO.ServiceName}.",
@@ -395,7 +395,7 @@ namespace Application.Services
             }
             booking.Status = request.Status;
             await _bookingRepository.Update(booking);
-            await NotifyBookingChangedAsync(
+            await NotifyBookingAsync(
                 booking,
                 "booking.statusChanged",
                 "Booking status changed",
@@ -451,7 +451,7 @@ namespace Application.Services
             }
             booking.Cancel(request?.CancellationReason);
             await _bookingRepository.Update(booking);
-            await NotifyBookingChangedAsync(
+            await NotifyBookingAsync(
                 booking,
                 "booking.canceled",
                 "Booking canceled",
@@ -508,7 +508,7 @@ namespace Application.Services
             await _bookingRepository.Update(booking);
 
             var updatedBookingDTO = booking.MapToDTO();
-            await NotifyBookingChangedAsync(
+            await NotifyBookingAsync(
                 booking,
                 "booking.rescheduled",
                 "Booking rescheduled",
@@ -550,7 +550,7 @@ namespace Application.Services
             await _bookingRepository.Update(booking);
 
             var updatedBookingDTO = booking.MapToDTO();
-            await NotifyBookingChangedAsync(
+            await NotifyBookingAsync(
                 booking,
                 "booking.noteUpdated",
                 "Booking note updated",
@@ -577,8 +577,7 @@ namespace Application.Services
                     Data = booking
                 });
         }
-
-        private async Task NotifyBookingChangedAsync(
+        private async Task NotifyBookingAsync(
             Booking booking,
             string type,
             string title,
@@ -594,15 +593,11 @@ namespace Application.Services
                 Data = bookingDTO
             };
 
-            await _realtimeNotificationService.SendToCompanyAsync(booking.Branch.CompanyId, notification);
+            await _realtimeNotificationService.SendToUserAsync(booking.EmployeeID, notification);
 
             if (booking.ClientID.HasValue)
             {
                 await _realtimeNotificationService.SendToUserAsync(booking.ClientID.Value, notification);
-            }
-            else
-            {
-                await _realtimeNotificationService.SendToGuestBookingAsync(booking.Id, notification);
             }
         }
 

@@ -59,6 +59,16 @@ namespace Application.Services
             return Result.Success("Notification.Read", "Notification marked as read.");
         }
 
+        public async Task<Result> MarkReadAllAsync(CancellationToken cancellationToken)
+        {
+            var user = await _authService.GetCurrentUser();
+            await _notificationRepository.MarkReadAllForUserAsync(
+                user.UserAccountId,
+                user.CompanyId,
+                user.BranchId,
+                cancellationToken);
+            return Result.Success("Notification.ReadAll", "All notifications marked as read.");
+        }
         private static NotificationDTO MapToDTO(Notification notification)
         {
             return new NotificationDTO
