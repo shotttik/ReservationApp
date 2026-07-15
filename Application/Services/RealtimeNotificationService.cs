@@ -59,10 +59,14 @@ namespace Application.Services
             RealtimeNotificationPayload notification,
             CancellationToken cancellationToken)
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
             var dataJson = notification.Data == null
                 ? null
-                : JsonSerializer.Serialize(notification.Data);
-
+                : JsonSerializer.Serialize(notification.Data, options);
+            
             var entity = new Notification
             {
                 TargetType = targetType,
