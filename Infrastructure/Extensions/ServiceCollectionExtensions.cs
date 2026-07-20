@@ -2,12 +2,12 @@
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Templates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.RabbitMq;
 
 
 namespace Infrastructure.Extensions
@@ -40,6 +40,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<ICompanySubscriptionRepository, CompanySubscriptionRepository>();
             services.AddScoped<IPromoCodeRepository, PromoCodeRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationRecipientRepository, NotificationRecipientRepository>();
             services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();

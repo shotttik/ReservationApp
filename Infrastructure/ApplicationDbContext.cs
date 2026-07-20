@@ -47,6 +47,7 @@ namespace Infrastructure
         public DbSet<PromoCode> PromoCodes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
+        public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -76,6 +77,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new CompanySubscriptionConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationRecipientConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeServiceConfiguration());
 
             // Branch Releated

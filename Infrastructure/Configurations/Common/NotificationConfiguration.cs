@@ -29,19 +29,11 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.DataJson)
                 .HasColumnType("nvarchar(max)");
 
-            builder.Property(e => e.DeliveryStatus)
-                .HasConversion<int>()
-                .IsRequired();
-
-            builder.Property(e => e.LastDeliveryError)
-                .HasMaxLength(2000);
-
             builder.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("GETDATE()")
                 .ValueGeneratedOnAdd();
 
-            builder.HasIndex(e => new { e.TargetType, e.TargetId, e.ReadAt });
-            builder.HasIndex(e => new { e.DeliveryStatus, e.DeliveryAttempts, e.CreatedAt });
+            builder.HasIndex(e => new { e.TargetType, e.TargetId, });
         }
     }
 }

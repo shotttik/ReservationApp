@@ -25,11 +25,11 @@ namespace API.Controllers
     [ApiController]
     [Tags("Notifications")]
     [Authorize]
-    public class NotificationsController :ControllerBase
+    public class NotificationController :ControllerBase
     {
         private readonly INotificationInboxService _notificationInboxService;
 
-        public NotificationsController(INotificationInboxService notificationInboxService)
+        public NotificationController(INotificationInboxService notificationInboxService)
         {
             _notificationInboxService = notificationInboxService;
         }
@@ -39,9 +39,13 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
-        /// Returns durable notifications that belong to the current user, user's company, or user's branch.  
-        /// Use this endpoint from Vue after page load, login, refresh, or SignalR reconnect to recover notifications missed while the client was offline.  
-        /// Live notifications are received separately from SignalR event <c>notification</c> on hub <c>/hubs/notifications</c>.
+        /// Returns durable notifications assigned to the current authenticated user.  
+        /// Company and branch notifications are expanded into per-user notification recipient records,
+        /// so read/unread state is tracked separately for each user.
+        /// Use this endpoint from Vue after page load, login, refresh, or SignalR reconnect to recover
+        /// notifications missed while the client was offline.
+        /// Live notifications are received separately from SignalR event <c>notification</c> on hub
+        /// <c>/hubs/notifications</c>.
         /// </remarks>
         /// <param name="unreadOnly">When true, returns only notifications that have not been marked as read.</param>
         /// <param name="take">Maximum number of notifications to return. The server clamps this value between 1 and 100.</param>
@@ -68,8 +72,9 @@ namespace API.Controllers
         /// </summary>
         /// <remarks>
         /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
-        /// Use this endpoint when Vue marks a notification as opened, dismissed, or seen in the notification menu.  
-        /// The notification must belong to the current user, user's company, or user's branch.
+        /// Marks the current user's recipient row as read.  
+        /// For company and branch notifications, this only marks the notification as read for the current user,
+        /// not for every user in the company or branch.
         /// </remarks>
         /// <param name="id">Notification ID.</param>
         /// <param name="cancellationToken">Request cancellation token.</param>
@@ -106,6 +111,48 @@ namespace API.Controllers
         public async Task<IActionResult> MarkReadAll(CancellationToken cancellationToken)
         {
             var result = await _notificationInboxService.MarkReadAllAsync(cancellationToken);
+            return result.ToResponse();
+        }
+        /// <summary>
+        /// SOFT Deletes a single notification for the current authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
+        /// Deletes the current user's recipient row for the specified notification id.
+        /// For company/branch notifications this removes the record only for the current user.
+        /// </remarks>
+        /// <param name="id">Notification ID.</param>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Success message or error result.</returns>
+        [HttpDelete("{id:int}")]
+        [Logging(LoggingType.Full)]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await _notificationInboxService.DeleteAsync(id, cancellationToken);
+            return result.ToResponse();
+        }
+
+        /// <summary>
+        /// SOFT Deletes all notifications for the current authenticated user.
+        /// </summary>
+        /// <remarks>
+        /// Required role: <strong>Accessible only authorized.</strong><br/><br/>
+        /// Use this endpoint when the client wants to remove all notification recipient records for the current user.
+        /// </remarks>
+        /// <param name="cancellationToken">Request cancellation token.</param>
+        /// <returns>Success message or error result.</returns>
+        [HttpDelete("delete-all")]
+        [Authorize]
+        [Logging(LoggingType.Full)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteAll(CancellationToken cancellationToken)
+        {
+            var result = await _notificationInboxService.DeleteAllAsync(cancellationToken);
             return result.ToResponse();
         }
     }

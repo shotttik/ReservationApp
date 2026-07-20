@@ -12,5 +12,7 @@ namespace Domain.Interfaces.Repositories
         Task<UserAccount?> GetEmployeeByUserLoginDataIDWithBookingData(int userLoginDataID);
         Task<UserAccount?> GetByEmailWithClientBookingData(string email);
         Task<UserAccount?> GetByUserLoginDataIDWithBookingData(int userLoginDataID);
+        Task<List<int>> GetActiveUserAccountIdsByCompanyIdAsync(int companyId, CancellationToken cancellationToken);
+        Task<List<int>> GetActiveUserAccountIdsByBranchIdAsync(int branchId, CancellationToken cancellationToken);
     }
 }

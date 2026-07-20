@@ -11,13 +11,16 @@ namespace Application.Services
     public class RealtimeNotificationService :IRealtimeNotificationService
     {
         private readonly INotificationRepository _notificationRepository;
+        private readonly IUserAccountRepository _userAccountRepository;
         private readonly IOutboxMessageRepository _outboxMessageRepository;
 
         public RealtimeNotificationService(
             INotificationRepository notificationRepository,
+            IUserAccountRepository userAccountRepository,
             IOutboxMessageRepository outboxMessageRepository)
         {
             _notificationRepository = notificationRepository;
+            _userAccountRepository = userAccountRepository;
             _outboxMessageRepository = outboxMessageRepository;
         }
 
@@ -26,7 +29,11 @@ namespace Application.Services
             RealtimeNotificationPayload notification,
             CancellationToken cancellationToken = default)
         {
-            return CreateAsync(NotificationTargetType.User, userAccountId, notification, cancellationToken);
+            return CreateAsync(
+                NotificationTargetType.User,
+                userAccountId,
+                notification,
+                cancellationToken);
         }
 
         public Task SendToCompanyAsync(
@@ -34,7 +41,11 @@ namespace Application.Services
             RealtimeNotificationPayload notification,
             CancellationToken cancellationToken = default)
         {
-            return CreateAsync(NotificationTargetType.Company, companyId, notification, cancellationToken);
+            return CreateAsync(
+                NotificationTargetType.Company,
+                companyId,
+                notification,
+                cancellationToken);
         }
 
         public Task SendToBranchAsync(
@@ -42,16 +53,12 @@ namespace Application.Services
             RealtimeNotificationPayload notification,
             CancellationToken cancellationToken = default)
         {
-            return CreateAsync(NotificationTargetType.Branch, branchId, notification, cancellationToken);
+            return CreateAsync(
+                NotificationTargetType.Branch,
+                branchId,
+                notification,
+                cancellationToken);
         }
-
-        //public Task SendToGuestBookingAsync(
-        //    int bookingId,
-        //    RealtimeNotificationPayload notification,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    return CreateAsync(NotificationTargetType.GuestBooking, bookingId, notification, cancellationToken);
-        //}
 
         private async Task CreateAsync(
             NotificationTargetType targetType,
@@ -59,14 +66,33 @@ namespace Application.Services
             RealtimeNotificationPayload notification,
             CancellationToken cancellationToken)
         {
+            var createdAt = notification.CreatedAt == default
+                ? DateTime.UtcNow
+                : notification.CreatedAt;
+
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
+
             var dataJson = notification.Data == null
                 ? null
                 : JsonSerializer.Serialize(notification.Data, options);
-            
+
+            var recipientUserIds = await GetRecipientUserIdsAsync(
+                targetType,
+                targetId,
+                cancellationToken);
+
+            recipientUserIds = recipientUserIds
+                .Distinct()
+                .ToList();
+
+            if (recipientUserIds.Count == 0)
+            {
+                return;
+            }
+
             var entity = new Notification
             {
                 TargetType = targetType,
@@ -75,8 +101,18 @@ namespace Application.Services
                 Title = notification.Title,
                 Message = notification.Message,
                 DataJson = dataJson,
-                CreatedAt = notification.CreatedAt
+                CreatedAt = createdAt
             };
+
+            foreach (var userAccountId in recipientUserIds)
+            {
+                entity.Recipients.Add(new NotificationRecipient
+                {
+                    UserAccountId = userAccountId,
+                    DeliveryStatus = NotificationStatus.Pending,
+                    CreatedAt = createdAt
+                });
+            }
 
             await _notificationRepository.Add(entity, cancellationToken);
 
@@ -97,9 +133,34 @@ namespace Application.Services
                 {
                     Type = notification.Type,
                     PayloadJson = JsonSerializer.Serialize(message),
-                    CreatedAt = notification.CreatedAt
+                    CreatedAt = createdAt
                 },
                 cancellationToken);
+        }
+
+        private async Task<List<int>> GetRecipientUserIdsAsync(
+            NotificationTargetType targetType,
+            int targetId,
+            CancellationToken cancellationToken)
+        {
+            return targetType switch
+            {
+                NotificationTargetType.User =>
+                    new List<int> { targetId },
+
+                NotificationTargetType.Company =>
+                    await _userAccountRepository.GetActiveUserAccountIdsByCompanyIdAsync(
+                        targetId,
+                        cancellationToken),
+
+                NotificationTargetType.Branch =>
+                    await _userAccountRepository.GetActiveUserAccountIdsByBranchIdAsync(
+                        targetId,
+                        cancellationToken),
+
+                _ => throw new InvalidOperationException(
+                    $"Unsupported notification target type {targetType}.")
+            };
         }
     }
 }

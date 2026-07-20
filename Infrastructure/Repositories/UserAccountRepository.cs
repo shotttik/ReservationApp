@@ -145,5 +145,26 @@ namespace Infrastructure.Repositories
 
             return userAccount;
         }
+
+        public async Task<List<int>> GetActiveUserAccountIdsByCompanyIdAsync(int companyId, CancellationToken cancellationToken)
+        {
+            var userIds = await _dbSet
+                .Where(u => u.CompanyID != null && u.CompanyID == companyId
+                && u.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
+                .Select(u => u.Id)
+                .ToListAsync(cancellationToken);
+            return userIds;
+        }
+
+        public Task<List<int>> GetActiveUserAccountIdsByBranchIdAsync(int branchId, CancellationToken cancellationToken)
+        {
+            var userIds = _dbSet
+                .Where(u => u.BranchId != null && u.BranchId == branchId
+                && u.UserLoginData.ActiveStatus == Domain.Enums.ActiveStatus.Active)
+                .Select(u => u.Id)
+                .ToListAsync(cancellationToken);
+
+            return userIds;
+        }
     }
 }

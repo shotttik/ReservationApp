@@ -139,9 +139,7 @@ namespace Application.Services
             var bookingDTO = booking.MapToDTO();
             await NotifyBookingAsync(
                 booking,
-                "booking.created",
-                "New guest booking",
-                $"A guest booking was created for {bookingDTO.ServiceName}.",
+                BookingNotificationResults.BookingCreatedByGuest(service.Name),
                 bookingDTO);
 
             var response = new CreateBookingByGuestResponse()
@@ -217,9 +215,7 @@ namespace Application.Services
             var bookingDTO = booking.MapToDTO(showRef: true);
             await NotifyBookingAsync(
                 booking,
-                "booking.created",
-                "New client booking",
-                $"A client booking was created for {bookingDTO.ServiceName}.",
+                BookingNotificationResults.BookingCreatedByClient(service.Name),
                 bookingDTO);
 
             return Result.Success(bookingDTO);
@@ -343,9 +339,7 @@ namespace Application.Services
                 bookingDTO = booking.MapToDTO();
                 await NotifyBookingAsync(
                     booking,
-                    "booking.created",
-                    "New booking",
-                    $"A booking was created for {bookingDTO.ServiceName}.",
+                    BookingNotificationResults.BookingCreatedByAdmin(service.Name),
                     bookingDTO);
             }
             catch
@@ -397,10 +391,8 @@ namespace Application.Services
             await _bookingRepository.Update(booking);
             await NotifyBookingAsync(
                 booking,
-                "booking.statusChanged",
-                "Booking status changed",
-                $"Booking status changed to {booking.Status}.");
-
+                BookingNotificationResults.BookingStatusChanged(booking.Reference, booking.Status.ToString()),
+                booking.MapToDTO());
             return Result.Success(BookingResults.StatusChanged);
         }
         public async Task<Result<PagedList<BookingDTO>>> RetrievePaged(PagedParameters parameters, CancellationToken cancellationToken)
@@ -453,9 +445,8 @@ namespace Application.Services
             await _bookingRepository.Update(booking);
             await NotifyBookingAsync(
                 booking,
-                "booking.canceled",
-                "Booking canceled",
-                "A booking was canceled.");
+                BookingNotificationResults.BookingCancelled(booking.Reference, booking.Service.Name),
+                booking.MapToDTO());
 
             return Result.Success(BookingResults.Canceled);
         }
@@ -510,9 +501,7 @@ namespace Application.Services
             var updatedBookingDTO = booking.MapToDTO();
             await NotifyBookingAsync(
                 booking,
-                "booking.rescheduled",
-                "Booking rescheduled",
-                "A booking was rescheduled.",
+                BookingNotificationResults.BookingRescheduled(booking.Reference, request.StartTime),
                 updatedBookingDTO);
 
             return updatedBookingDTO;
@@ -552,9 +541,7 @@ namespace Application.Services
             var updatedBookingDTO = booking.MapToDTO();
             await NotifyBookingAsync(
                 booking,
-                "booking.noteUpdated",
-                "Booking note updated",
-                "A booking note was updated.",
+                BookingNotificationResults.BookingNoteUpdated(booking.Reference),
                 updatedBookingDTO);
 
             return Result.Success(updatedBookingDTO);
@@ -579,17 +566,15 @@ namespace Application.Services
         }
         private async Task NotifyBookingAsync(
             Booking booking,
-            string type,
-            string title,
-            string message,
+            NotificationResult notificationResult,
             BookingDTO? bookingDTO = null)
         {
             bookingDTO ??= booking.MapToDTO();
             var notification = new RealtimeNotificationPayload
             {
-                Type = type,
-                Title = title,
-                Message = message,
+                Type = notificationResult.Type,
+                Title = notificationResult.Title,
+                Message = notificationResult.Message,
                 Data = bookingDTO
             };
 

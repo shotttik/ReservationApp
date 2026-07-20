@@ -33,7 +33,9 @@ namespace API.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Unhandled error while dispatching realtime notifications.");
+                    _logger.LogError(
+                        ex,
+                        "Unhandled error while dispatching realtime notifications.");
                 }
 
                 await Task.Delay(PollDelay, stoppingToken);
@@ -43,26 +45,40 @@ namespace API.Services
         private async Task DispatchBatchAsync(CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<INotificationRepository>();
-            var signalR = scope.ServiceProvider.GetRequiredService<SignalRRealtimeNotificationService>();
 
-            var notifications = await repository.GetPendingForDeliveryAsync(BatchSize, MaxAttempts, cancellationToken);
+            var recipientRepository = scope.ServiceProvider
+                .GetRequiredService<INotificationRecipientRepository>();
 
-            foreach (var notification in notifications)
+            var signalR = scope.ServiceProvider
+                .GetRequiredService<SignalRRealtimeNotificationService>();
+
+            var recipients = await recipientRepository.GetPendingForDeliveryAsync(
+                BatchSize,
+                MaxAttempts,
+                cancellationToken);
+
+            foreach (var recipient in recipients)
             {
                 try
                 {
-                    await signalR.SendAsync(notification, cancellationToken);
-                    await repository.MarkDeliveredAsync(notification, cancellationToken);
+                    await signalR.SendAsync(recipient, cancellationToken);
+
+                    await recipientRepository.MarkDeliveredAsync(
+                        recipient,
+                        cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning(
                         ex,
-                        "Failed to deliver realtime notification {NotificationId}.",
-                        notification.Id);
+                        "Failed to deliver realtime notification {NotificationId} to user {UserAccountId}.",
+                        recipient.NotificationId,
+                        recipient.UserAccountId);
 
-                    await repository.MarkFailedAsync(notification, ex.Message, cancellationToken);
+                    await recipientRepository.MarkFailedAsync(
+                        recipient,
+                        ex.Message,
+                        cancellationToken);
                 }
             }
         }

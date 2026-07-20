@@ -4,6 +4,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720095549_AddedNotificationRecipientAndActiveStatus")]
+    partial class AddedNotificationRecipientAndActiveStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -659,8 +662,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastDeliveryError")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
@@ -676,11 +678,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NotificationId");
+
                     b.HasIndex("UserAccountId");
 
-                    b.HasIndex("NotificationId", "UserAccountId", "DeliveryStatus", "DeliveryAttempts", "CreatedAt");
-
-                    b.ToTable("NotificationRecipients");
+                    b.ToTable("NotificationRecipient");
                 });
 
             modelBuilder.Entity("Domain.Entities.Common.OutboxMessage", b =>

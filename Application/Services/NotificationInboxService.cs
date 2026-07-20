@@ -1,23 +1,22 @@
 using Application.Common.Results;
+using Application.Extensions.Mappers;
 using Application.Interfaces;
 using Domain.DTO;
-using Domain.Entities.Common;
 using Domain.Interfaces.Repositories;
-using System.Text.Json;
 
 namespace Application.Services
 {
     public class NotificationInboxService :INotificationInboxService
     {
         private readonly IAuthService _authService;
-        private readonly INotificationRepository _notificationRepository;
+        private readonly INotificationRecipientRepository _notificationRecipientRepository;
 
         public NotificationInboxService(
             IAuthService authService,
-            INotificationRepository notificationRepository)
+            INotificationRecipientRepository notificationRecipientRepository)
         {
             _authService = authService;
-            _notificationRepository = notificationRepository;
+            _notificationRecipientRepository = notificationRecipientRepository;
         }
 
         public async Task<Result<List<NotificationDTO>>> GetMineAsync(
@@ -28,63 +27,78 @@ namespace Application.Services
             var user = await _authService.GetCurrentUser();
             var safeTake = Math.Clamp(take, 1, 100);
 
-            var notifications = await _notificationRepository.GetForUserAsync(
+            var recipients = await _notificationRecipientRepository.GetForUserAsync(
                 user.UserAccountId,
-                user.CompanyId,
-                user.BranchId,
                 unreadOnly,
                 safeTake,
                 cancellationToken);
 
-            return notifications.Select(MapToDTO).ToList();
+            return recipients.Select(e => e.MapToDTO()).ToList();
         }
 
-        public async Task<Result> MarkReadAsync(int notificationId, CancellationToken cancellationToken)
+        public async Task<Result> MarkReadAsync(
+            int notificationId,
+            CancellationToken cancellationToken)
         {
             var user = await _authService.GetCurrentUser();
-            var notification = await _notificationRepository.GetForUserByIdAsync(
+
+            var recipient = await _notificationRecipientRepository.GetForUserByIdAsync(
                 notificationId,
                 user.UserAccountId,
-                user.CompanyId,
-                user.BranchId,
                 cancellationToken);
 
-            if (notification == null)
+            if (recipient == null)
             {
-                return Result.Failure(Error.NotFound("Notification.NotFound", "Notification not found."));
+                return Result.Failure(NotificationInboxResults.NotFound);
             }
 
-            await _notificationRepository.MarkReadAsync(notification, cancellationToken);
+            await _notificationRecipientRepository.MarkReadAsync(
+                recipient,
+                cancellationToken);
 
-            return Result.Success("Notification.Read", "Notification marked as read.");
+            return Result.Success(NotificationInboxResults.Read);
         }
 
-        public async Task<Result> MarkReadAllAsync(CancellationToken cancellationToken)
+        public async Task<Result> MarkReadAllAsync(
+            CancellationToken cancellationToken)
         {
             var user = await _authService.GetCurrentUser();
-            await _notificationRepository.MarkReadAllForUserAsync(
+
+            await _notificationRecipientRepository.MarkReadAllForUserAsync(
                 user.UserAccountId,
-                user.CompanyId,
-                user.BranchId,
                 cancellationToken);
-            return Result.Success("Notification.ReadAll", "All notifications marked as read.");
+
+            return Result.Success(NotificationInboxResults.ReadAll);
         }
-        private static NotificationDTO MapToDTO(Notification notification)
+
+        public async Task<Result> DeleteAsync(
+            int notificationId,
+            CancellationToken cancellationToken)
         {
-            return new NotificationDTO
+            var user = await _authService.GetCurrentUser();
+            var recipient = await _notificationRecipientRepository.GetForUserByIdAsync(
+                notificationId,
+                user.UserAccountId,
+                cancellationToken);
+            if (recipient == null)
             {
-                Id = notification.Id,
-                TargetType = notification.TargetType,
-                TargetId = notification.TargetId,
-                Type = notification.Type,
-                Title = notification.Title,
-                Message = notification.Message,
-                Data = string.IsNullOrWhiteSpace(notification.DataJson)
-                    ? null
-                    : JsonSerializer.Deserialize<object>(notification.DataJson),
-                CreatedAt = notification.CreatedAt,
-                ReadAt = notification.ReadAt
-            };
+                return Result.Failure(NotificationInboxResults.NotFound);
+            }
+            await _notificationRecipientRepository.DisableAsync(
+                recipient,
+                cancellationToken);
+            return Result.Success(NotificationInboxResults.Deleted);
+        }
+
+        public async Task<Result> DeleteAllAsync(CancellationToken cancellationToken)
+        {
+            var user = await _authService.GetCurrentUser();
+
+            await _notificationRecipientRepository.DisableAllForUserAsync(
+                user.UserAccountId,
+                cancellationToken);
+
+            return Result.Success(NotificationInboxResults.DeletedAll);
         }
     }
 }
