@@ -13,7 +13,6 @@
             ["EndTimeExpected"] = "EndTimeExpected",
             ["EndTime"] = "EndTime",
             ["PriceExpected"] = "PriceExpected",
-            ["PriceFull"] = "PriceFull",
             ["Discount"] = "Discount",
             ["PriceFinal"] = "PriceFinal",
             ["Status"] = "Status",

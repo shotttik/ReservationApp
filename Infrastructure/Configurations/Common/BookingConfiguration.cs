@@ -14,7 +14,6 @@ namespace Infrastructure.Configurations.Common
             builder.Property(e => e.PriceExpected).HasPrecision(18, 2).IsRequired();
             builder.Property(e => e.Discount).HasPrecision(18, 2);
             builder.Property(e => e.PriceFinal).HasPrecision(18, 2);
-            builder.Property(e => e.PriceFull).HasPrecision(18, 2);
             builder.Property(e => e.CancellationReason)
                 .HasMaxLength(2000);
             builder.Property(e => e.Note)

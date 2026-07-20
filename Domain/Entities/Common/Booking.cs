@@ -24,7 +24,6 @@ namespace Domain.Entities.Common
         public DateTime EndTimeExpected { get; set; }
         public DateTime? EndTime { get; set; }
         public decimal PriceExpected { get; set; }
-        public decimal PriceFull { get; set; }
         public decimal? Discount { get; set; }
         public decimal? PriceFinal { get; set; }
         public BookingStatus Status { get; set; } = BookingStatus.Pending;

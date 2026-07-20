@@ -170,7 +170,6 @@ namespace API.Controllers
         /// <li><c>EndTimeExpected</c></li>
         /// <li><c>EndTime</c></li>
         /// <li><c>PriceExpected</c></li>
-        /// <li><c>PriceFull</c></li>
         /// <li><c>Discount</c></li>
         /// <li><c>PriceFinal</c></li>
         /// <li><c>Status</c></li>

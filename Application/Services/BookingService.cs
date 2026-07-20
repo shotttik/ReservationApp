@@ -94,7 +94,7 @@ namespace Application.Services
                 DisplayName = request.GuestInfo.DisplayName
             };
 
-            decimal finalPrice = booking.PriceFull;
+            decimal finalPrice = booking.PriceExpected;
             PromoCode? appliedPromo = null;
 
             if (!string.IsNullOrEmpty(request.PromoCode))
@@ -183,7 +183,7 @@ namespace Application.Services
             }
 
             var booking = request.MapToEntity(service, authUser.UserAccountId, (int)employee.BranchId!, employee.Id);
-            decimal finalPrice = booking.PriceFull;
+            decimal finalPrice = booking.PriceExpected;
             PromoCode? appliedPromo = null;
 
             if (!string.IsNullOrEmpty(request.PromoCode))
@@ -286,7 +286,7 @@ namespace Application.Services
                 }
 
                 var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.Id);
-                decimal finalPrice = booking.PriceFull;
+                decimal finalPrice = booking.PriceExpected;
                 PromoCode? appliedPromo = null;
 
                 if (!string.IsNullOrEmpty(request.PromoCode))
@@ -381,7 +381,7 @@ namespace Application.Services
             if (request.IsCompleted)
             {
                 booking.EndTime = DateTime.UtcNow;
-                booking.PriceFinal = booking.PriceFull - booking.Discount;
+                booking.PriceFinal = booking.PriceExpected - booking.Discount;
             }
             if (request.IsCanceled || request.IsFailed)
             {
