@@ -26,7 +26,7 @@
         public static readonly Error NotValidForVerification = Error.Validation("Booking.NotValidForVerification", "Booking doesn't exists or is not valid for verification process.");
         public static readonly Error NotValidForGuestAccess = Error.Validation("Booking.NotValidForGuestAccess", "Booking doesn't exists or is not valid for guest access.");
         public static readonly Error IsNotCancelable = Error.Validation("Booking.IsNotCancelable", "Booking is not cancelable.");
-        public static readonly Error IsNotReschedulable = Error.Validation("Booking.IsNotReschedulable", "Booking cannot be rescheduled");
+        public static readonly Error IsNotReschedulable = Error.Validation("Booking.IsNotReschedulable", "Booking cannot be rescheduled, because status is Pending or Accepted. or StartTime is not in the future less than 30 minutes.");
         public static readonly Error EmployeeIsInDifferentCompany = Error.Validation("Booking.EmployeeIsInDifferentCompany", "When updating booking employee, employee must be in the same company as booking.");
         public static readonly Error CannotChangeStatus = Error.Validation("Booking.CannotChangeStatus", "Booking status cannot be changed to the requested status.");
         #endregion
