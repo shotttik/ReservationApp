@@ -1,4 +1,5 @@
 ﻿using Application.Options;
+using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure.Repositories;
@@ -42,6 +43,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationRecipientRepository, NotificationRecipientRepository>();
             services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+            services.AddScoped<IBookingHistoryRepository, BookingHistoryRepository>();
 
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
@@ -54,6 +56,7 @@ namespace Infrastructure.Extensions
             services.AddSingleton<IMessageProducerService, MessageProducerService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IBookingHistoryWriter, BookingHistoryWriter>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString(ConnectionStrings.DefaultConnection)));

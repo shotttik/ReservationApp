@@ -19,5 +19,8 @@ namespace Application.Interfaces
         Task<Result> CancelBooking(int bookingId, BookingCancelRequest? request);
         Task<Result<BookingDTO>> RescheduleBooking(int bookingId, RescheduleBookingRequest request);
         Task<Result<BookingDTO>> UpdateNote(int bookingId, UpdateBookingNoteRequest request);
+        Task<Result<List<BookingHistoryDto>>> GetBookingHistoryAsync(
+            int bookingId,
+            CancellationToken cancellationToken);
     }
 }

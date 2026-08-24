@@ -36,6 +36,8 @@ namespace Domain.Entities.Common
         public virtual ReviewInvite ReviewInvite { get; set; } = null!;
         public virtual BookingGuestInfo? GuestInfo { get; set; }
         public virtual ICollection<BookingVerification> Verifications { get; set; } = [];
+        public ICollection<BookingHistory> History { get; set; } = [];
+
         public bool IsCompleted => Status == BookingStatus.Completed;
 
         public static string GenerateReference()

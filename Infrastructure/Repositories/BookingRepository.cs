@@ -225,5 +225,12 @@ namespace Infrastructure.Repositories
             }
             return query;
         }
+
+        public async Task UpdateWithoutSave(Booking entity)
+        {
+            entity.UpdateTimestamp();
+            _dbSet.Update(entity);
+        }
+
     }
 }

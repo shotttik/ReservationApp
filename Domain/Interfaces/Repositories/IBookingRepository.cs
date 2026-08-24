@@ -23,5 +23,6 @@ namespace Domain.Interfaces.Repositories
         Task<BookingWithLatestPendingVerification?> GetWithGuestInfoAndLatestPendingVerification(string reference);
         Task<bool> HasFutureBooking(int employeeId, int [] serviceIds);
         Task AddWithoutSave(Booking entity);
+        Task UpdateWithoutSave(Booking entity);
     }
 }

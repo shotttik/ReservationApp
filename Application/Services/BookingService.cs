@@ -13,6 +13,7 @@ using Domain.Entities.Common;
 using Domain.Entities.CompanyReleated;
 using Domain.Entities.User;
 using Domain.Enums;
+using Domain.Interfaces;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Microsoft.Extensions.Options;
@@ -33,6 +34,8 @@ namespace Application.Services
         private readonly IPromoService _promoService;
         private readonly IPromoCodeRepository _promoCodeRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IBookingHistoryWriter _bookingHistoryWriter;
+        private readonly IBookingHistoryRepository _bookingHistoryRepository;
 
         public BookingService(
             IBookingRepository bookingRepository,
@@ -46,7 +49,9 @@ namespace Application.Services
             ISubscriptionGuard subscriptionGuard,
             IPromoService promoService,
             IPromoCodeRepository promoCodeRepository,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IBookingHistoryWriter bookingHistoryWriter,
+            IBookingHistoryRepository bookingHistoryRepository
             )
         {
             _bookingRepository = bookingRepository;
@@ -61,6 +66,8 @@ namespace Application.Services
             _promoService = promoService;
             _promoCodeRepository = promoCodeRepository;
             _unitOfWork = unitOfWork;
+            _bookingHistoryWriter = bookingHistoryWriter;
+            _bookingHistoryRepository = bookingHistoryRepository;
         }
         public async Task<Result<CreateBookingByGuestResponse>> CreateByGuest(GuestBookingCreateRequest request)
         {
@@ -223,94 +230,94 @@ namespace Application.Services
 
         public async Task<Result<BookingDTO>> CreateByAdmin(AdminBookingCreateRequest request)
         {
-            await _unitOfWork.BeginTransactionAsync();
             BookingDTO bookingDTO;
+            var employeeResult = await GetValidEmployee(request.EmployeeId);
+            if (!employeeResult.IsSuccess)
+                return Result.Failure<BookingDTO>(employeeResult.Error);
+            var employee = employeeResult.Value!;
+            var companyID = employee.CompanyID!.Value;
+
+            var accessError = await _accessGuard.EnsureAccessToCompanyEmployee(companyID, employee.UserLoginDataID);
+            if (accessError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(accessError);
+            }
+            var service = employee.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
+            if (service == null)
+            {
+                return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
+            }
+
+            var companyId = (int)employee.CompanyID!;
+            var subscriptionError = await _subscriptionGuard.EnsureCanCreateBookingAsync(companyId);
+            if (subscriptionError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(subscriptionError);
+            }
+
+            BookingGuestInfo? bookingGuestInfo = null;
+            BookingVerification? bookingVerification = null;
+            string code = string.Empty;
+            if (request.ClientId != null)
+            {
+                var clientAccount = await _userAccountRepository.GetByUserLoginDataIDWithBookingData((int)request.ClientId);
+                if (clientAccount == null)
+                {
+                    return Result.Failure<BookingDTO>(BookingResults.ClientDoesntExists);
+                }
+            }
+            else if (request.GuestInfo != null)
+            {
+                bookingGuestInfo = new BookingGuestInfo()
+                {
+                    ContactType = request.GuestInfo.ContactType,
+                    Contact = request.GuestInfo.Contact,
+                    DisplayName = request.GuestInfo.DisplayName
+                };
+
+                (bookingVerification, code) = _guestBookingService.CreateBookingVerification(request.GuestInfo.ContactType);
+            }
+            else
+            {
+                return Result.Failure<BookingDTO>(BookingResults.ClientOrGuestInfoMustBeProvided);
+            }
+            var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, request.ClientId);
+
+            if (requestValidationError != Error.None)
+            {
+                return Result.Failure<BookingDTO>(requestValidationError);
+            }
+
+            var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.Id);
+            decimal finalPrice = booking.PriceExpected;
+            PromoCode? appliedPromo = null;
+
+            if (!string.IsNullOrEmpty(request.PromoCode))
+            {
+                var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, service.Id);
+
+                if (!promoResult.IsValid)
+                {
+                    return Result.Failure<BookingDTO>(promoResult.Error);
+                }
+
+                finalPrice -= promoResult.Discount;
+
+                if (finalPrice < 0)
+                    finalPrice = 0;
+
+                booking.PriceFinal = finalPrice;
+
+                appliedPromo = promoResult.Promo;
+
+                booking.PromoCodeValue = appliedPromo!.Code;
+                booking.Discount = promoResult.Discount;
+                booking.PromoCodeId = appliedPromo.Id;
+            }
+            await _unitOfWork.BeginTransactionAsync();
+
             try
             {
-
-                var employeeResult = await GetValidEmployee(request.EmployeeId);
-                if (!employeeResult.IsSuccess)
-                    return Result.Failure<BookingDTO>(employeeResult.Error);
-                var employee = employeeResult.Value!;
-                var companyID = employee.CompanyID!.Value;
-
-                var accessError = await _accessGuard.EnsureAccessToCompanyEmployee(companyID, employee.UserLoginDataID);
-                if (accessError != Error.None)
-                {
-                    return Result.Failure<BookingDTO>(accessError);
-                }
-                var service = employee.Company!.Services.FirstOrDefault(s => s.Id == request.ServiceId);
-                if (service == null)
-                {
-                    return Result.Failure<BookingDTO>(BookingResults.ServiceDoesntExists);
-                }
-
-                var companyId = (int)employee.CompanyID!;
-                var subscriptionError = await _subscriptionGuard.EnsureCanCreateBookingAsync(companyId);
-                if (subscriptionError != Error.None)
-                {
-                    return Result.Failure<BookingDTO>(subscriptionError);
-                }
-
-                BookingGuestInfo? bookingGuestInfo = null;
-                BookingVerification? bookingVerification = null;
-                string code = string.Empty;
-                if (request.ClientId != null)
-                {
-                    var clientAccount = await _userAccountRepository.GetByUserLoginDataIDWithBookingData((int)request.ClientId);
-                    if (clientAccount == null)
-                    {
-                        return Result.Failure<BookingDTO>(BookingResults.ClientDoesntExists);
-                    }
-                }
-                else if (request.GuestInfo != null)
-                {
-                    bookingGuestInfo = new BookingGuestInfo()
-                    {
-                        ContactType = request.GuestInfo.ContactType,
-                        Contact = request.GuestInfo.Contact,
-                        DisplayName = request.GuestInfo.DisplayName
-                    };
-
-                    (bookingVerification, code) = _guestBookingService.CreateBookingVerification(request.GuestInfo.ContactType);
-                }
-                else
-                {
-                    return Result.Failure<BookingDTO>(BookingResults.ClientOrGuestInfoMustBeProvided);
-                }
-                var requestValidationError = await ValidateCreateRequest(service, employee, request.StartTime, request.ClientId);
-
-                if (requestValidationError != Error.None)
-                {
-                    return Result.Failure<BookingDTO>(requestValidationError);
-                }
-
-                var booking = request.MapToEntity(service, request.ClientId, (int)employee.BranchId!, employee.Id);
-                decimal finalPrice = booking.PriceExpected;
-                PromoCode? appliedPromo = null;
-
-                if (!string.IsNullOrEmpty(request.PromoCode))
-                {
-                    var promoResult = await _promoService.ApplyPromo(request.PromoCode, companyId, service.Id);
-
-                    if (!promoResult.IsValid)
-                    {
-                        return Result.Failure<BookingDTO>(promoResult.Error);
-                    }
-
-                    finalPrice -= promoResult.Discount;
-
-                    if (finalPrice < 0)
-                        finalPrice = 0;
-
-                    booking.PriceFinal = finalPrice;
-
-                    appliedPromo = promoResult.Promo;
-
-                    booking.PromoCodeValue = appliedPromo!.Code;
-                    booking.Discount = promoResult.Discount;
-                    booking.PromoCodeId = appliedPromo.Id;
-                }
                 booking.Status = BookingStatus.Accepted;
                 if (bookingGuestInfo != null && bookingVerification != null)
                 {
@@ -378,17 +385,57 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.CannotChangeStatus);
             }
+            var changes = new List<BookingFieldChange>();
+
+            var oldStatus = booking.Status;
+            var oldEndTime = booking.EndTime;
+            var oldPriceFinal = booking.PriceFinal;
+            var oldCancellationReason = booking.CancellationReason;
+
             if (request.IsCompleted)
             {
                 booking.EndTime = DateTime.UtcNow;
-                booking.PriceFinal = booking.PriceExpected - booking.Discount;
+                booking.PriceFinal = booking.PriceExpected - (booking.Discount ?? 0m);
             }
             if (request.IsCanceled || request.IsFailed)
             {
                 booking.CancellationReason = request.CancellationReason;
             }
             booking.Status = request.Status;
-            await _bookingRepository.Update(booking);
+            AddChange(
+                changes,
+                nameof(Booking.Status),
+                oldStatus,
+                booking.Status);
+
+            AddChange(
+                changes,
+                nameof(Booking.EndTime),
+                oldEndTime,
+                booking.EndTime);
+
+            AddChange(
+                changes,
+                nameof(Booking.PriceFinal),
+                oldPriceFinal,
+                booking.PriceFinal);
+
+            AddChange(
+                changes,
+                nameof(Booking.CancellationReason),
+                oldCancellationReason,
+                booking.CancellationReason);
+
+            var actor = GetCurrentBookingActor(booking.Id);
+
+            await _bookingHistoryWriter.Add(
+                booking,
+                ActionType.StatusChanged,
+                changes,
+                actor);
+
+            await _bookingRepository.UpdateWithoutSave(booking);
+
             await NotifyBookingAsync(
                 booking,
                 BookingNotificationResults.BookingStatusChanged(booking.Reference, booking.Status.ToString()),
@@ -546,7 +593,25 @@ namespace Application.Services
 
             return Result.Success(updatedBookingDTO);
         }
+        public async Task<Result<List<BookingHistoryDto>>> GetBookingHistoryAsync(
+            int bookingId,
+            CancellationToken cancellationToken)
+        {
+            var booking = await _bookingRepository.GetWithBranch(bookingId);
+            if (booking == null)
+            {
+                return Result.Failure<List<BookingHistoryDto>>(BookingResults.NotFound);
+            }
+            var accessError = await _accessGuard.EnsureAccessToBooking(bookingId, booking.ClientID, booking.EmployeeID, booking.Branch.CompanyId);
+            if (accessError != Error.None)
+            {
+                return Result.Failure<List<BookingHistoryDto>>(accessError);
+            }
+            var records = await _bookingHistoryRepository.GetAll(bookingId, cancellationToken);
+            var history = records.Select(x => x.HistoryMapToEntity()).ToList();
 
+            return Result.Success(history);
+        }
         private async Task NotifyCompanyBookingAsync(
             int companyId,
             string type,
@@ -630,6 +695,63 @@ namespace Application.Services
                 return Result.Failure<UserAccount>(BookingResults.EmployeeDoesntExists);
 
             return Result.Success(employee);
+        }
+
+        private static void AddChange<T>(
+            ICollection<BookingFieldChange> changes,
+            string field,
+            T oldValue,
+            T newValue)
+        {
+            if (EqualityComparer<T>.Default.Equals(oldValue, newValue))
+                return;
+
+            changes.Add(new BookingFieldChange(
+                field,
+                FormatHistoryValue(oldValue),
+                FormatHistoryValue(newValue)));
+        }
+
+        private static string? FormatHistoryValue<T>(T value)
+        {
+            if (value is null)
+                return null;
+
+            return value switch
+            {
+                DateTime dateTime =>
+                    dateTime.ToUniversalTime().ToString("O"),
+
+                DateTimeOffset dateTimeOffset =>
+                    dateTimeOffset.ToUniversalTime().ToString("O"),
+
+                Enum enumValue =>
+                    enumValue.ToString(),
+
+                _ => Convert.ToString(
+                    value,
+                    System.Globalization.CultureInfo.InvariantCulture)
+            };
+        }
+        private BookingActor GetCurrentBookingActor(int? bookingId = null)
+        {
+            if (bookingId.HasValue &&
+                _authService.IsGuestForBooking(bookingId.Value))
+            {
+                return new BookingActor(
+                    null,
+                    BookingChangeSource.Guest);
+            }
+
+            var userId = _authService.GetUserAccountID();
+
+            var source = _authService.IsInRole("Admin")
+                ? BookingChangeSource.Administrator
+                : BookingChangeSource.User;
+
+            return new BookingActor(
+                userId,
+                source);
         }
     }
 }

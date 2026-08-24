@@ -48,6 +48,7 @@ namespace Infrastructure
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
         public DbSet<NotificationRecipient> NotificationRecipients { get; set; }
+        public DbSet<BookingHistory> BookingHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // User Releated
@@ -79,7 +80,7 @@ namespace Infrastructure
             modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationRecipientConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeServiceConfiguration());
-
+            modelBuilder.ApplyConfiguration(new BookingHistoryConfiguration());
             // Branch Releated
             modelBuilder.ApplyConfiguration(new CountryConfiguration());
             modelBuilder.ApplyConfiguration(new CityConfiguration());
