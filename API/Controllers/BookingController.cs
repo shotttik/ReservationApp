@@ -320,7 +320,7 @@ namespace API.Controllers
         /// <param name="id">The identifier of the booking to retrieve history for.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> which on success contains a <see cref="SuccessResponse{BookingDTO}"/> with the booking history,
+        /// An <see cref="IActionResult"/> which on success contains a success response with a list of <see cref="BookingHistoryDto"/> items,
         /// or a <see cref="ProblemDetails"/> on error.
         /// </returns>
         /// <response code="200">Returns the booking history.</response>
@@ -329,7 +329,7 @@ namespace API.Controllers
         [GuestOrUser]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
-        [ProducesResponseType(typeof(SuccessResponse<BookingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<BookingHistoryDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHistory(
