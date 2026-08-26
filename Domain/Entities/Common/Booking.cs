@@ -50,7 +50,7 @@ namespace Domain.Entities.Common
         public bool IsCancelable => Status == BookingStatus.Pending || Status == BookingStatus.Accepted;
         public void Cancel(string? cancelationReason)
         {
-            CancellationReason = cancelationReason ?? null;
+            CancellationReason = cancelationReason;
             Status = BookingStatus.Canceled;
             UpdatedAt = DateTime.UtcNow;
         }

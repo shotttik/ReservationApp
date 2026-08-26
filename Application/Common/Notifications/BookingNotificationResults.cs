@@ -30,7 +30,7 @@ namespace Application.Common.Notifications
         };
         public static NotificationResult BookingCancelled(string bookingRef, string serviceName) => new NotificationResult
         {
-            Type = $"booking.{ActionType.Cancelled}",
+            Type = $"booking.{ActionType.Canceled}",
             Title = "Booking Cancelled",
             Message = $"The booking {bookingRef} for {serviceName} has been cancelled."
         };

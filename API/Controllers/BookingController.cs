@@ -317,7 +317,7 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves the history for a specific booking.
         /// </summary>
-        /// <param name="bookingId">The identifier of the booking to retrieve history for.</param>
+        /// <param name="id">The identifier of the booking to retrieve history for.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>
         /// An <see cref="IActionResult"/> which on success contains a <see cref="SuccessResponse{BookingDTO}"/> with the booking history,
@@ -325,7 +325,7 @@ namespace API.Controllers
         /// </returns>
         /// <response code="200">Returns the booking history.</response>
         /// <response code="400">If the request is invalid.</response>
-        [HttpGet("{bookingId:int}/history")]
+        [HttpGet("{id:int}/history")]
         [GuestOrUser]
         [Logging(LoggingType.Full)]
         [EnableRateLimiting("fixed")]
@@ -333,13 +333,13 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [MapToApiVersion("1.0")]
         public async Task<IActionResult> GetHistory(
-            int bookingId,
+            int id,
             CancellationToken cancellationToken)
         {
 
             var result = await _bookingService
                 .GetBookingHistoryAsync(
-                    bookingId,
+                    id,
                     cancellationToken);
 
             return result.ToResponse();

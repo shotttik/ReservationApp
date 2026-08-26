@@ -4,7 +4,7 @@
     {
         Created,
         Deleted,
-        Cancelled,
+        Canceled,
         StatusChanged,
         Rescheduled,
         NoteUpdated,

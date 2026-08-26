@@ -488,8 +488,32 @@ namespace Application.Services
             {
                 return Result.Failure(BookingResults.IsNotCancelable);
             }
+            var oldStatus = booking.Status;
+            var oldCancellationReason =
+                booking.CancellationReason;
             booking.Cancel(request?.CancellationReason);
-            await _bookingRepository.Update(booking);
+            var changes = new List<BookingFieldChange>();
+
+            AddChange(
+                changes,
+                nameof(Booking.Status),
+                oldStatus,
+                booking.Status);
+
+            AddChange(
+                changes,
+                nameof(Booking.CancellationReason),
+                oldCancellationReason,
+                booking.CancellationReason);
+
+            await _bookingHistoryWriter.Add(
+                booking,
+                ActionType.Canceled,
+                changes,
+                GetCurrentBookingActor(booking.Id));
+
+            await _unitOfWork.SaveChangesAsync();
+
             await NotifyBookingAsync(
                 booking,
                 BookingNotificationResults.BookingCancelled(booking.Reference, booking.Service.Name),
@@ -533,6 +557,11 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(BookingResults.IsNotReschedulable);
             }
+            var oldServiceId = booking.ServiceID;
+            var oldEmployeeId = booking.EmployeeID;
+            var oldStartTime = booking.StartTime;
+            var oldEndTimeExpected = booking.EndTimeExpected;
+            var oldStatus = booking.Status;
 
             booking.Service = service;
             booking.ServiceID = service.Id;
@@ -543,7 +572,45 @@ namespace Application.Services
             booking.Status = BookingStatus.Pending;
             booking.UpdateTimestamp();
 
-            await _bookingRepository.Update(booking);
+            var changes = new List<BookingFieldChange>();
+
+            AddChange(
+                changes,
+                nameof(Booking.ServiceID),
+                oldServiceId,
+                booking.ServiceID);
+
+            AddChange(
+                changes,
+                nameof(Booking.EmployeeID),
+                oldEmployeeId,
+                booking.EmployeeID);
+
+            AddChange(
+                changes,
+                nameof(Booking.StartTime),
+                oldStartTime,
+                booking.StartTime);
+
+            AddChange(
+                changes,
+                nameof(Booking.EndTimeExpected),
+                oldEndTimeExpected,
+                booking.EndTimeExpected);
+
+            AddChange(
+                changes,
+                nameof(Booking.Status),
+                oldStatus,
+                booking.Status);
+
+            await _bookingHistoryWriter.Add(
+                booking,
+                ActionType.Rescheduled,
+                changes,
+                GetCurrentBookingActor(booking.Id));
+
+            await _unitOfWork.SaveChangesAsync();
 
             var updatedBookingDTO = booking.MapToDTO();
             await NotifyBookingAsync(
@@ -580,12 +647,28 @@ namespace Application.Services
             {
                 return Result.Failure<BookingDTO>(error);
             }
+            var oldNote = booking.Note;
+
             booking.Note = request.Note;
             booking.UpdateTimestamp();
+            var changes = new List<BookingFieldChange>();
 
-            await _bookingRepository.Update(booking);
+            AddChange(
+                changes,
+                nameof(Booking.Note),
+                oldNote,
+                booking.Note);
+
+            await _bookingHistoryWriter.Add(
+                booking,
+                ActionType.NoteUpdated,
+                changes,
+                GetCurrentBookingActor(booking.Id));
+
+            await _unitOfWork.SaveChangesAsync();
 
             var updatedBookingDTO = booking.MapToDTO();
+
             await NotifyBookingAsync(
                 booking,
                 BookingNotificationResults.BookingNoteUpdated(booking.Reference),
